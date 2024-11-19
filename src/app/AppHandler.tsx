@@ -11,8 +11,19 @@ import {
   APPLICATION_CARE_GIVER,
   APPLICATION_SUPER_ADMIN,
 } from "@config/config";
+import { useSnackbar } from "notistack";
+import { useEffect } from "react";
 
 const AppHandler = () => {
+  const { enqueueSnackbar } = useSnackbar();
+  const { message, type, timestamp } = useAppSelector((state) => state.common);
+
+  useEffect(()=>{
+    if (message && timestamp) {
+      enqueueSnackbar(message, { variant: type,anchorOrigin: { vertical: 'bottom', horizontal: 'right' } });
+    }
+  },[message,timestamp])
+
   const router = createBrowserRouter([
     {
       path: "/",

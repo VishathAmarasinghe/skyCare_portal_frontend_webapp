@@ -7,3 +7,7 @@ function getCrossItems<Role>(a: Role[], b: Role[]): Role[] {
     return b.includes(element);
   });
 }
+
+// capitalize fist letter of a string
+export const capitalize = (str?: string) =>
+  str ? str.charAt(0).toUpperCase() + str.slice(1) : '';

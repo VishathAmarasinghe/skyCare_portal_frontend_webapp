@@ -6,7 +6,7 @@ export const tokens = (mode: PaletteMode) => ({
   ...(mode === "dark"
     ? {
         grey: {
-          100: "ffffff",
+          100: "#ffffff",
           200: "#e0e0e0",
           300: "#666666",
           400: "#3d3d3d",

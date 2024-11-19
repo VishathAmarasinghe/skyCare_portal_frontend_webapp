@@ -1,3 +1,5 @@
+import { SvgIconProps } from "@mui/material";
+
 export enum ConfirmationType {
   update = "update",
   send = "send",
@@ -21,4 +23,10 @@ export interface PreLoaderProps {
 
 export interface ErrorHandlerProps {
   message: string | null;
+}
+
+export interface DashboardCardProps {
+  title: string;
+  value: number;
+  icon: React.ElementType<SvgIconProps>;
 }

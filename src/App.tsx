@@ -14,10 +14,12 @@ import "./App.css";
 
 // Other imports
 import { SnackbarProvider } from "notistack";
+import { APIService } from "@utils/apiService";
 
 export const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
 function App() {
+  
   document.title = APP_NAME;
   const processLocalThemeMode = (): ThemeMode => {
     var localMode: ThemeMode | null = localStorage.getItem(

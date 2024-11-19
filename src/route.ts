@@ -42,7 +42,7 @@ interface RouteDetail {
 
 export const routes: RouteObjectWithRole[] = [
   {
-    path: "/",
+    path: "/Dashboard",
     text: "Dashboard",
     icon: React.createElement(DashboardIcon),
     element: React.createElement(View.dashboardView),
@@ -62,6 +62,15 @@ export const routes: RouteObjectWithRole[] = [
       APPLICATION_SUPER_ADMIN,
       APPLICATION_CARE_GIVER,
     ],
+    children: [
+      {
+        path:"clientInfo",
+        text:"Client Information",
+        icon:undefined,
+        element:React.createElement(View.clientView),
+        allowRoles:[APPLICATION_ADMIN,APPLICATION_SUPER_ADMIN,APPLICATION_CARE_GIVER]
+      }
+    ]
   },
   {
     path: "/Appointments",

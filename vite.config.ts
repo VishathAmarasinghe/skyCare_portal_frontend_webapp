@@ -9,6 +9,12 @@ export default defineConfig({
       "@config": resolve(__dirname, "src/config"),
       "@utils": resolve(__dirname, "src/utils"),
       "@theme": resolve(__dirname, "src/theme"),
-},
+      "@component": resolve(__dirname, "src/component"),
+      "@app": resolve(__dirname, "src/app"),
+      "@view": resolve(__dirname, "src/view"),
+      "@context": resolve(__dirname, "src/context"),
+      "@slices": resolve(__dirname, "src/slices"),
+      "@types": resolve(__dirname, "src/types"),
+    },
   },
 });

@@ -19,11 +19,13 @@ import {
   Tooltip,
 } from "@mui/material";
 import { RootState, useAppSelector } from "../../slices/store";
-import { APP_NAME } from "@config/config";
+import { APP_NAME, AppConfig } from "@config/config";
 import ProfileDrawer from "../../View/dashboard-view/panel/ProfileDrawer";
+import { APIService } from "@utils/apiService";
 
 const Header = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  APIService.initialize(AppConfig.serviceUrls.getUserInfo);
 
   //drawer open state
   const [open, setOpen] = useState<boolean>(false);
@@ -61,14 +63,14 @@ const Header = () => {
           },
         }}
       >
-        <img
+        {/* <img
           alt="SkyCare Portal"
           style={{
             height: "55px",
             maxWidth: "260px",
           }}
           src={appLogo}
-        ></img>
+        ></img> */}
         <Typography
           variant="h5"
           sx={{
