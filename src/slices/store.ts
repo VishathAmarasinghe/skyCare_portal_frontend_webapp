@@ -4,13 +4,15 @@ import clientReducer from './clientSlice/client';
 import SelectorReducer from './selectorSlice/selector';
 import CommonReducer from './commonSlice/common';
 import NoteReducer from './NotesSlice/notes';
+import CarePlanReducer from './carePlanSlice/carePlan';
 
 export const store = configureStore({
   reducer: {
     clients:clientReducer,
     selector:SelectorReducer,
     common:CommonReducer,
-    notes:NoteReducer
+    notes:NoteReducer,
+    carePlans:CarePlanReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

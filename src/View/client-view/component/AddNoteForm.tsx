@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
-import { Formik, Field, Form, FormikProps } from "formik";
+import { Formik, Field, Form, FormikProps, validateYupSchema } from "formik";
 import * as Yup from "yup";
 import { Notes, resetSubmitState, saveNotes } from "@slices/NotesSlice/notes";
 import { useSearchParams } from "react-router-dom";
@@ -29,12 +29,12 @@ const validationSchema = Yup.object({
   shiftStartTime: Yup.string().when("noteType", {
     is: "Shift Note",
     then: Yup.string().required("Shift Start Time is required"),
-    otherwise: Yup.string(),
+    otherwise: Yup.string().nullable(),
   }),
   shiftEndTime: Yup.string().when("noteType", {
     is: "Shift Note",
     then: Yup.string().required("Shift End Time is required"),
-    otherwise: Yup.string(),
+    otherwise: Yup.string().nullable(),
   }),
   careplanID: Yup.string().nullable(),
   taskID: Yup.string().when("noteType", {
@@ -79,8 +79,8 @@ const AddNoteForm = () => {
     <Formik
       initialValues={{
         noteType: "Internal Note",
-        shiftStartTime: "",
-        shiftEndTime: "",
+        shiftStartTime: null,
+        shiftEndTime: null,
         careplanID: "",
         taskID: "",
         appointmentID: "",
@@ -95,6 +95,7 @@ const AddNoteForm = () => {
       }}
       validationSchema={validationSchema}
       onSubmit={(values, { setSubmitting }) => {
+        
         const notePayload: Notes = { ...values };
         if (notePayload.careplanID === "") notePayload.careplanID = null;
         if (notePayload.taskID === "") notePayload.taskID = null;
@@ -116,6 +117,7 @@ const AddNoteForm = () => {
         useEffect(() => {
           if (noteStates.submitState == State.success) {
             resetForm();
+            setUploadedFiles([]);
           }
         }, [noteStates.submitState]);
         return (

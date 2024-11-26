@@ -15,6 +15,8 @@ export const AppConfig = {
     clientStatus: `${ServiceBaseUrl}/clients-status`,
     clientTypes: `${ServiceBaseUrl}/client-type`,
     notes: `${ServiceBaseUrl}/notes`,
-
+    carePlans: `${ServiceBaseUrl}/careplans`,
+    carePlanStatus: `${ServiceBaseUrl}/careplan-status`,
+    goalOutcomes: `${ServiceBaseUrl}/goal-outcome`,
   },
 };

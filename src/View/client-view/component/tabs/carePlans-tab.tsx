@@ -1,12 +1,46 @@
 import { Button, Stack } from '@mui/material'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import CarePlanTable from '../CarePlanTable'
+import AddNewCarePlanModal from '../../modal/AddNewCarePlanModal'
+import { useSearchParams } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from '@slices/store'
+import { State } from '../../../../types/types'
+import { fetchCarePlansByClientID, fetchCarePlanStatusList, fetchGoalOutcomes, resetSubmitState } from '@slices/carePlanSlice/carePlan'
 
 const CarePlansTab = () => {
+  const [isCarePlanModalVisible, setIsCarePlanModalVisible] = useState<boolean>(false);
+  const [searchParams] = useSearchParams();
+  const clientID = searchParams.get('clientID');
+  const dispatch = useAppDispatch();
+
+  const carePlans = useAppSelector((state)=>state.carePlans);
+
+
+  useEffect(()=>{
+    if(carePlans.submitState === State.success){
+      setIsCarePlanModalVisible(false);
+      resetSubmitState();
+      fetchCarePlansRelatedToClient();
+    }
+  },[])
+
+  useEffect(()=>{
+    fetchCarePlansRelatedToClient();
+  },[clientID])
+
+
+  const fetchCarePlansRelatedToClient = async () => {
+    if (clientID!==null && clientID!==undefined && clientID!=='') {
+      dispatch(fetchCarePlansByClientID(clientID)); 
+      dispatch(fetchCarePlanStatusList());
+      dispatch(fetchGoalOutcomes());
+    }
+  }
   return (
     <Stack width="100%" height="80%" border="2px solid red">
+      <AddNewCarePlanModal isCarePlanAddModalVisible={isCarePlanModalVisible} setIsCarePlanAddModalVisible={setIsCarePlanModalVisible}/>
         <Stack width="100%" flexDirection="row" alignItems="end" justifyContent="flex-end">
-            <Button variant='contained'>Add Care Plan</Button>
+            <Button variant='contained' onClick={()=>setIsCarePlanModalVisible(true)}>Add Care Plan</Button>
         </Stack>
         <Stack width="100%" height="480px">
             <CarePlanTable/>

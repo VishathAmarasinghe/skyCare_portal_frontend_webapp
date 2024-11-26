@@ -6,6 +6,8 @@ import TaskIcon from '@mui/icons-material/Task';
 
 export const CREATE_CLIENT_STEPS = ["Basic Info", "Interests and Dislikes", "Address Info"];
 
+export const CREATE_CARE_PLAN_STEPS = ["Basic Info", "Goals", "Billing/budget"];
+
 export const phoneNoRegex = /^\+?[1-9]\d{1,14}$/
 
 export const DASHBOARD_CARDS:DashboardCardProps[]=[

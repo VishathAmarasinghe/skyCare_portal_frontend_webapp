@@ -21,36 +21,31 @@ import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useAppSelector } from "@slices/store";
+import { CarePlan } from "@slices/carePlanSlice/carePlan";
+import { State } from "../../../types/types";
 
 function CustomToolbar() {
   return (
     <GridToolbarContainer>
-      <GridToolbarColumnsButton
-        placeholder={undefined}
-        onPointerEnterCapture={undefined}
-        onPointerLeaveCapture={undefined}
-      />
-      <GridToolbarFilterButton
-        placeholder={undefined}
-        onPointerEnterCapture={undefined}
-        onPointerLeaveCapture={undefined}
-      />
+      <GridToolbarColumnsButton/>
+      <GridToolbarFilterButton/>
       <GridToolbarQuickFilter placeholder="Search" />
     </GridToolbarContainer>
   );
 }
 
 const initialColumns: GridColDef[] = [
-  { field: "carePlanID", headerName: "Care Plan ID", width: 100, align: "center" },
+  { field: "careplanID", headerName: "Care Plan ID", width: 100, align: "left" },
   { field: "startDate", headerName: "Start Date" },
   { field: "endDate", headerName: "End Date" },
 
   {
-    field: "carePlan",
-    headerName: "Care Plan",
+    field: "title",
+    headerName: "Title",
     flex: 1,
     headerAlign: "center",
-    align: "center",
+    align: "left",
   },
   {
     field: "status",
@@ -89,56 +84,40 @@ const initialColumns: GridColDef[] = [
     },
   },
 ];
-
-const sampleRows = [
-    {
-      carePlanID: "CP001",
-      startDate: "2023-01-01",
-      endDate: "2023-06-01",
-      carePlan: "General Health",
-      status: "Active",
-    },
-    {
-      carePlanID: "CP002",
-      startDate: "2023-02-15",
-      endDate: "2023-07-15",
-      carePlan: "Diabetes Management",
-      status: "Pending",
-    },
-    {
-      carePlanID: "CP003",
-      startDate: "2023-03-10",
-      endDate: "2023-09-10",
-      carePlan: "Cardiac Care",
-      status: "Completed",
-    },
-  ];
-  
-  
+ 
 
 interface ClientTableProps {}
 
 const CarePlanTable = ({}: ClientTableProps) => {
+  const carePlanDetails  = useAppSelector((state)=>state.carePlans);
+  const [carePlans, setCarePlans] = useState<CarePlan[]>([]);
   const theme = useTheme();
 
-  const handlePageChange = (newPage: number) => {};
+  useEffect(()=>{
+    setCarePlans(carePlanDetails.carePlans);
+  },[carePlanDetails.state])
+
 
   return (
     <Box sx={{ height: "100%", width: "100%" }}>
       <DataGrid
-        rows={sampleRows}
+        rows={carePlans}
         columns={initialColumns}
-        getRowId={(row) => row.carePlanID}
+        getRowId={(row) => row.careplanID}
         density="compact"
-        disableSelectionOnClick
+        loading={carePlanDetails.state === State.loading}
         pagination
-        page={1}
-        pageSize={5}
-        onPageChange={handlePageChange}
-        components={{
-          Toolbar: CustomToolbar,
+        paginationMode="client"
+        initialState={{
+          pagination: {
+            paginationModel: { pageSize: 5 },
+          },
+        }}
+        slots={{
+          toolbar: CustomToolbar,
         }}
         sx={{
+          
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: "white",
           },

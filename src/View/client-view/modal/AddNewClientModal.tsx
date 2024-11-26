@@ -52,6 +52,7 @@ const AddNewClientModal = ({ isClientAddModalVisible, setIsClientAddModalVisible
       title="Add New Client"
       width="80%"
       centered
+      maskClosable={false}
       open={isClientAddModalVisible}
       onOk={() => setIsClientAddModalVisible(false)}
       onCancel={() => setIsClientAddModalVisible(false)}

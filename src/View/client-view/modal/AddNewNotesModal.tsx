@@ -1,7 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Modal } from 'antd';
 import {Box, Button} from "@mui/material";
 import AddNoteForm from '../component/AddNoteForm';
+import { useAppSelector } from '@slices/store';
+import { State } from '../../../types/types';
 
 type AddNewNotesModalProps = {
     isNoteModalVisible: boolean;
@@ -14,6 +16,7 @@ const AddNewNotesModal = ({isNoteModalVisible,setIsNoteModalVisible}:AddNewNotes
       title="Add Notes"
       width="80%"
       centered
+      maskClosable={false}
       open={isNoteModalVisible}
       onOk={() => setIsNoteModalVisible(false)}
       onCancel={() => setIsNoteModalVisible(false)}

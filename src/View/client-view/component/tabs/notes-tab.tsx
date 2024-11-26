@@ -19,6 +19,7 @@ const NotesTab = () => {
     if(noteState.submitState === State.success){
       setIsNoteModalVisible(false);
       resetSubmitState();
+      fetchNotesRelatedToClient();
     }
   },[])
 
