@@ -1,5 +1,8 @@
-import { fetchGoalOutcomes } from "@slices/carePlanSlice/carePlan";
+import { Note } from "@mui/icons-material";
+import { fetchGoalOutcomes, UpdateCarePlan } from "@slices/carePlanSlice/carePlan";
 import { saveClient } from "@slices/clientSlice/client";
+import { updateEmployee } from "@slices/EmployeeSlice/employee";
+import { updateNotes } from "@slices/NotesSlice/notes";
 
 // snack messages
 export const SnackMessage = {
@@ -11,6 +14,12 @@ export const SnackMessage = {
     saveClient:"Client saved successfully",
     saveNotes:"Notes saved successfully",
     saveCarePlans:"Care plans saved successfully",
+    updateNotes : "Notes updated successfully",
+    NoteDeleted:"Note deleted successfully",
+    updateCarePlan:"Care plan updated successfully",
+    saveEmployee:"Employee saved successfully",
+    saveCareGiver:"Care giver saved successfully",
+    updateEmployee:"Employee updated successfully",
 
   },
   error: {
@@ -31,6 +40,19 @@ export const SnackMessage = {
     fetchCarePlans:"Failed to fetch care plans",
     fetchCarePlanStatus:"Failed to fetch care plan status",
     fetchGoalOutcomes:"Failed to fetch goal outcomes",
+    updateNotes:"Failed to update notes",
+    NoteDeleted:"Failed to delete note",
+    updateCarePlan:"Failed to update care plan",
+    fetchEmployees:"Failed to fetch employees",
+    saveEmployee:"Failed to save employee",
+    fetchSingleEmployee:"Failed to fetch employee",
+    fetchCareGivers:"Failed to fetch care givers",
+    saveCareGiver:"Failed to save care giver",
+    fetchSingleCareGiver:"Failed to fetch care giver",
+    fetchCareGiverDocumentTypes:"Failed to fetch care giver document types",
+    fetchCareGiverPaymentTypes:"Failed to fetch care giver payment types",
+    updateEmployee:"Failed to update employee",
+    fetchAppointments:"Failed to fetch appointments",
         
   },
   warning: {},

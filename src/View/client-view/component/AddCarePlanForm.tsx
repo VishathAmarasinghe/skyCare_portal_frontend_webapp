@@ -16,20 +16,38 @@ import dayjs from "dayjs";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { Formik, FieldArray, Form, FormikProps } from "formik";
-import { CarePlan, CarePlanStatus, GoalOutcome, saveCarePlan } from "../../../slices/carePlanSlice/carePlan";
+import { CarePlan, CarePlanStatus, GoalOutcome, saveCarePlan, UpdateCarePlan } from "../../../slices/carePlanSlice/carePlan";
 import * as Yup from "yup";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { useSearchParams } from "react-router-dom";
 import { Client } from "@slices/clientSlice/client";
 import { State } from "../../../types/types";
 
-const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
+interface AddCarePlanFormProps {
+    isEditMode:boolean; 
+    setIsEditMode:React.Dispatch<React.SetStateAction<boolean>>;
+    activeStepper: number;
+}
+
+const AddCarePlanForm = ({activeStepper,isEditMode,setIsEditMode}:AddCarePlanFormProps) => {
     const carePlanSlice = useAppSelector(state=>state.carePlans);
     const clientDetails = useAppSelector(state=>state.clients);
     const [carePlanStatusList, setCarePlanStatusList] = useState<CarePlanStatus[]>([]);
     const [clientList,setSelectedClientList] = useState<{clientID:String,name:String}[]>([]);
     const [goalOutcomeList,setGoalOutcomeList] = useState<GoalOutcome[]>([]);
     const [searchParams] = useSearchParams();
+    const [initialValues,setInitialValues]= useState<CarePlan>(
+        {
+            title: "",
+            careplanID: "",
+            carePlanStatusID: "",
+            startDate: "",
+            endDate: "",
+            clientID: "",
+            carePlanLongTermGoals: [],
+            carePlanBillables: [],
+        }
+    );
     const clientID = searchParams.get('clientID');
     const dispatch = useAppDispatch();
 
@@ -40,12 +58,35 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
 
     useEffect(()=>{
         if (clientID!==null && clientID!==undefined && clientID!=='') {
-            if (clientDetails.selectedClient){
-                let client = clientDetails.selectedClient;
+            if (clientDetails?.selectedClient){
+                let client = clientDetails?.selectedClient;
                 setSelectedClientList([...clientList,{clientID:clientID,name:client.firstName+" "+client.lastName}]);
           }
         }
     },[clientID])
+
+    useEffect(()=>{
+        console.log("Selected Care Plan",carePlanSlice.selectedCarePlan);
+        
+        if(carePlanSlice.selectedCarePlan){
+            setInitialValues({
+                ...carePlanSlice.selectedCarePlan,
+                carePlanStatusID:carePlanStatusList.find((status)=>status.status === carePlanSlice?.selectedCarePlan?.carePlanStatusID)?.careplanStatusID as string,
+                
+            })
+        }else{
+            setInitialValues({
+                title: "",
+                careplanID: "",
+                carePlanStatusID: "",
+                startDate: "",
+                endDate: "",
+                clientID: "",
+                carePlanLongTermGoals: [],
+                carePlanBillables: [],
+            })
+        }
+    },[carePlanSlice.selectedCarePlan])
 
     const validationSchema = Yup.object({
         title: Yup.string().required("Title is required"),
@@ -84,25 +125,19 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
             })
           )
       });
-      
-
-  const initialValues: CarePlan = {
-    title: "",
-    carePlanStatusID: "",
-    startDate: "",
-    endDate: "",
-    clientID: "",
-    carePlanLongTermGoals: [],
-    carePlanBillables: [],
-  };
 
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
+      enableReinitialize={true}
       onSubmit={(values) => {
         console.log("Form Submitted", values);
-        dispatch(saveCarePlan(values));
+        if(carePlanSlice.selectedCarePlan){
+            dispatch(UpdateCarePlan(values));
+        }else{
+            dispatch(saveCarePlan(values));
+        }
       }}
     >
       {({
@@ -119,6 +154,11 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
                     resetForm();
                 }
             },[carePlanSlice.submitState])
+
+            useEffect(()=>{
+                console.log("errors",errors);
+                
+            },[errors])
             
         return (
         <Form>
@@ -130,6 +170,7 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
                   fullWidth
                   name="title"
                   label="Title"
+                  InputProps={{ readOnly: !isEditMode }}
                   value={values.title}
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -150,6 +191,7 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
                     value={values.carePlanStatusID}
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    readOnly={!isEditMode}
                   >
                     {
                         carePlanStatusList.map((status)=>(
@@ -171,6 +213,7 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
                   <Select
                     name="clientID"
                     onBlur={handleBlur}
+                    readOnly={!isEditMode}
                     value={values.clientID}
                     onChange={handleChange}
                   >
@@ -190,6 +233,7 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
                   type="date"
                   name="startDate"
                   label="Start Date"
+                  InputProps={{ readOnly: !isEditMode }}
                   value={values.startDate}
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -204,6 +248,7 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
                   type="date"
                   name="endDate"
                   label="End Date"
+                  InputProps={{ readOnly: !isEditMode }}
                   value={values.endDate}
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -236,6 +281,7 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
                           <TextField
                             fullWidth
                             onBlur={handleBlur}
+                            InputProps={{ readOnly: !isEditMode }}
                             name={`carePlanLongTermGoals[${index}].longTermGoal`}
                             label="Long Term Goal"
                             value={
@@ -250,6 +296,7 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
                             name={`carePlanLongTermGoals[${index}].achieveWay`}
                             label="Achieve Way"
                             onBlur={handleBlur}
+                            InputProps={{ readOnly: !isEditMode }}
                             value={
                               values.carePlanLongTermGoals[index].achieveWay
                             }
@@ -267,6 +314,7 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
                             fullWidth
                             name={`carePlanLongTermGoals[${index}].supportWay`}
                             label="Support Way"
+                            InputProps={{ readOnly: !isEditMode }}
                             onBlur={handleBlur}
                             value={
                               values.carePlanLongTermGoals[index].supportWay
@@ -282,8 +330,9 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
                         <Grid item xs={12}>
                           <TextField
                             fullWidth
+                            InputProps={{ readOnly: !isEditMode }}
                             name={`carePlanLongTermGoals[${index}].notes`}
-                            label="Long Term Goal"
+                            label="Additional notes"
                             onBlur={handleBlur}
                             value={
                               values.carePlanLongTermGoals[index].notes
@@ -328,6 +377,7 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
                                         name={`carePlanLongTermGoals[${index}].carePlanShortTermGoals[${subIndex}].goalTitle`}
                                         label="Goal Title"
                                         onBlur={handleBlur}
+                                        InputProps={{ readOnly: !isEditMode }}
                                         value={shortTermGoal.goalTitle}
                                         onChange={handleChange}
                                       />
@@ -338,6 +388,7 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
                                         name={`carePlanLongTermGoals[${index}].carePlanShortTermGoals[${subIndex}].goalDescription`}
                                         label="Goal Description"
                                         onBlur={handleBlur}
+                                        InputProps={{ readOnly: !isEditMode }}
                                         value={shortTermGoal.goalDescription}
                                         onChange={handleChange}
                                       />
@@ -354,6 +405,7 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
                                             Goal Outcome Type
                                         </InputLabel>
                                         <Select
+                                        readOnly={!isEditMode}
                                           name= {`carePlanLongTermGoals[${index}].carePlanShortTermGoals[${subIndex}].goalOutcomeTypeID`}
                                           value={values.carePlanLongTermGoals?.[index]?.carePlanShortTermGoals?.[subIndex]?.goalOutcomeTypeID}
                                           onChange={handleChange}
@@ -375,6 +427,7 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
                                         fullWidth
                                         name={`carePlanLongTermGoals[${index}].carePlanShortTermGoals[${subIndex}].outcomeDetails`}
                                         label="Outcome Details"
+                                        InputProps={{ readOnly: !isEditMode }}
                                         onBlur={handleBlur}
                                         value={shortTermGoal.outcomeDetails}
                                         onChange={handleChange}
@@ -392,6 +445,7 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
                                         name={`carePlanLongTermGoals[${index}].carePlanShortTermGoals[${subIndex}].goalStrategy`}
                                         label="Goal Strategy"
                                         onBlur={handleBlur}
+                                        InputProps={{ readOnly: !isEditMode }}
                                         value={shortTermGoal.goalStrategy}
                                         onChange={handleChange}
                                       />
@@ -409,7 +463,8 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
                             )}
                             <Button
                               color="primary"
-                              variant="contained"
+                              variant="outlined"
+                                disabled={!isEditMode}
                               onClick={() =>
                                 pushShortTermGoal({
                                   shortTermGoalID: "",
@@ -430,7 +485,8 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
                   ))}
                   <Button
                     color="primary"
-                    variant="contained"
+                    variant="outlined"
+                    disabled={!isEditMode}
                     onClick={() =>
                       push({
                         longTermGoal: "",
@@ -464,6 +520,7 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
                           fullWidth
                           name={`carePlanBillables[${index}].name`}
                           label="Billable Item Name"
+                          InputProps={{ readOnly: !isEditMode }}
                           onBlur={handleBlur}
                           value={values.carePlanBillables[index].name}
                           onChange={handleChange}
@@ -475,6 +532,7 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
                           name={`carePlanBillables[${index}].amount`}
                           label="Amount"
                           type="number"
+                          InputProps={{ readOnly: !isEditMode }}
                           onBlur={handleBlur}
                           value={values.carePlanBillables[index].amount}
                           onChange={handleChange}
@@ -490,7 +548,8 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
                   ))}
                   <Button
                     color="primary"
-                    variant="contained"
+                    disabled={!isEditMode}
+                    variant="outlined"
                     onClick={() =>
                       push({
                         name: "",
@@ -507,9 +566,9 @@ const AddCarePlanForm = ({ activeStepper }: { activeStepper: number }) => {
 
           <Grid container spacing={2} mt={2}>
             <Grid item>
-              <Button color="primary" variant="contained" type="submit">
+              <button id="carePlan-submit-btn" style={{display:"none"}} type="submit">
                 Submit
-              </Button>
+              </button>
             </Grid>
           </Grid>
         </Form>

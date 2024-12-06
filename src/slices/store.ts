@@ -5,6 +5,9 @@ import SelectorReducer from './selectorSlice/selector';
 import CommonReducer from './commonSlice/common';
 import NoteReducer from './NotesSlice/notes';
 import CarePlanReducer from './carePlanSlice/carePlan';
+import AppointmentReducer from './AppointmentSlice/appointment';
+import EmployeeReducer from './EmployeeSlice/employee';
+import CareGiverReducer from './CareGiverSlice/careGiver';
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +16,9 @@ export const store = configureStore({
     common:CommonReducer,
     notes:NoteReducer,
     carePlans:CarePlanReducer,
+    appointments:AppointmentReducer,
+    employees:EmployeeReducer,
+    careGivers:CareGiverReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

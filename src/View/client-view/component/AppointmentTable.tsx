@@ -21,10 +21,10 @@ import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useAppDispatch, useAppSelector } from "@slices/store";
-import { CarePlan, fetchSingleCarePlan } from "@slices/carePlanSlice/carePlan";
 import { State } from "../../../types/types";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { useAppDispatch, useAppSelector } from "../../../slices/store";
+import { Appointment, fetchAppointmentTypes, fetchSingleAppointment } from "../../../slices/AppointmentSlice/appointment";
 
 function CustomToolbar() {
   return (
@@ -42,34 +42,51 @@ interface ClientTableProps {
   setIsCarePlanModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const CarePlanTable = ({isCarePlanModalVisible,setIsCarePlanModalVisible}: ClientTableProps) => {
-  const carePlanDetails  = useAppSelector((state)=>state.carePlans);
-  const [carePlans, setCarePlans] = useState<CarePlan[]>([]);
+const AppointmentTable = ({isCarePlanModalVisible,setIsCarePlanModalVisible}: ClientTableProps) => {
+  const appointmentSlice  = useAppSelector((state)=>state.appointments);
+  const [Appointments, setAppointments] = useState<Appointment[]>([]);
   const theme = useTheme();
   const dispatch = useAppDispatch();
 
   useEffect(()=>{
-    setCarePlans(carePlanDetails.carePlans);
-  },[carePlanDetails.state])
+    setAppointments(appointmentSlice.appointments);
+  },[appointmentSlice.state])
 
   const initialColumns: GridColDef[] = [
-    { field: "careplanID", headerName: "Care Plan ID", width: 100, align: "left" },
-    { field: "startDate", headerName: "Start Date" },
-    { field: "endDate", headerName: "End Date" },
-  
+    { field: "appointmentID", headerName: "Appointment ID", width: 100, align: "left" },
+    { field: "title", headerName: "Title",flex:1 },
+    { 
+      field: "appointmentTypeID", 
+      headerName: "Appointment Type",
+      renderCell: (params) => {
+        const appointmentType = appointmentSlice.appointmentTypes.find(
+          (type) => type.appointmentTypeID === params.value
+        );
+    
+        return (
+          <Chip
+          size="small"
+            label={appointmentType?.name || "Unknown"}
+            style={{
+              backgroundColor: appointmentType?.color || "#ccc", // Set chip color from the type
+              color: "#fff", // Ensure text is visible on colored backgrounds
+            }}
+          />
+        );
+      }
+    }, 
     {
-      field: "title",
-      headerName: "Title",
-      flex: 1,
+      field: "startDate",
+      headerName: "Start Date",
       headerAlign: "center",
       align: "left",
     },
     {
-      field: "carePlanStatusID",
-      headerName: "Status",
+      field: "endDate",
+      headerName: "End Date",
       width: 100,
       headerAlign: "center",
-      align: "center",
+      align: "left",
     },
     {
       field: "action",
@@ -83,12 +100,9 @@ const CarePlanTable = ({isCarePlanModalVisible,setIsCarePlanModalVisible}: Clien
   
             <IconButton
               aria-label="view"
-              onClick={() => {setIsCarePlanModalVisible(true); dispatch(fetchSingleCarePlan(params.row.careplanID))}}
+              onClick={() => {dispatch(fetchSingleAppointment(params?.row?.appointmentID))}}
             >
               <RemoveRedEyeOutlinedIcon />
-            </IconButton>
-            <IconButton>
-            <DeleteOutlineIcon/>
             </IconButton>
           </Stack>
         );
@@ -100,11 +114,11 @@ const CarePlanTable = ({isCarePlanModalVisible,setIsCarePlanModalVisible}: Clien
   return (
     <Box sx={{ height: "100%", width: "100%" }}>
       <DataGrid
-        rows={carePlans}
+        rows={Appointments}
         columns={initialColumns}
-        getRowId={(row) => row.careplanID}
+        getRowId={(row) => row.appointmentID}
         density="compact"
-        loading={carePlanDetails.state === State.loading}
+        loading={appointmentSlice.state === State.loading}
         pagination
         paginationMode="client"
         initialState={{
@@ -132,4 +146,4 @@ const CarePlanTable = ({isCarePlanModalVisible,setIsCarePlanModalVisible}: Clien
   );
 };
 
-export default CarePlanTable
+export default AppointmentTable

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import BasicInfoTab from '../component/tabs/BasicInfo-tab';
 import InterestTab from '../component/tabs/Interest-tab';
 import NotesTab from '../component/tabs/Notes-tab';
+import AppointmentTab from '../component/tabs/Appointments-tab';
 import CarePlanTab from '../component/tabs/carePlans-tab';
 import { useSearchParams } from "react-router-dom";
 import { useAppDispatch } from "@slices/store";
@@ -66,7 +67,9 @@ const ClientInfoPanel = () => {
               <Tab label="Interest" value="2" />
               <Tab label="Notes" value="3" />
               <Tab label="Care Plans" value="4" />
-              <Tab label="Documents" value="5" />
+              <Tab label="Appointments" value="5" />
+              <Tab label="Tasks" value="6" />
+              <Tab label="Documents" value="7" />
             </TabList>
           </Box>
           <TabPanel value="1">
@@ -80,6 +83,9 @@ const ClientInfoPanel = () => {
           </TabPanel>
           <TabPanel value="4">
             <CarePlanTab/>
+          </TabPanel>
+          <TabPanel value="5">
+            <AppointmentTab/>
           </TabPanel>
         </TabContext>
       </Stack>

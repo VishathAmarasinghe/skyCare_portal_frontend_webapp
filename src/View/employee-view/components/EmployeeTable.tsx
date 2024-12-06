@@ -21,6 +21,9 @@ import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useAppDispatch, useAppSelector } from "@slices/store";
+import { Employee, fetchSingleEmployee } from "@slices/EmployeeSlice/employee";
+import { FILE_DOWNLOAD_BASE_URL } from "@config/config";
 
 function CustomToolbar() {
   return (
@@ -31,59 +34,6 @@ function CustomToolbar() {
     </GridToolbarContainer>
   );
 }
-
-const initialColumns: GridColDef[] = [
-  { field: "employeeID", headerName: "Employee ID", width: 100, align: "center" },
-  { field: "firstName", headerName: "First Name", width: 130 },
-  { field: "lastName", headerName: "Last Name", width: 130 },
-  {
-    field: "email",
-    headerName: "Email",
-    flex: 1,
-    renderCell: (params) => (
-      <Chip
-        avatar={<Avatar>{params.row.email.charAt(0).toUpperCase()}</Avatar>}
-        label={params.value}
-        variant="outlined"
-      />
-    ),
-  },
-  {
-    field: "occupation",
-    headerName: "Occupation",
-    width: 100,
-    headerAlign: "center",
-    align: "center",
-  },
-  {
-    field: "action",
-    headerName: "Action",
-    width: 150,
-    renderCell: (params) => {
-      const navigate = useNavigate();
-      return (
-        <Stack flexDirection="row">
-          <IconButton>
-            <EditIcon />
-          </IconButton>
-
-          <IconButton>
-            <DeleteIcon />
-          </IconButton>
-
-          <IconButton
-            aria-label="view"
-            onClick={() => {
-              navigate(`/Clients/clientInfo?clientID=${params.row.clientID}`);
-            }}
-          >
-            <RemoveRedEyeOutlinedIcon />
-          </IconButton>
-        </Stack>
-      );
-    },
-  },
-];
 
 const sampleEmployees = [
     {
@@ -129,24 +79,108 @@ interface ClientTableProps {
 
 const EmployeeTable = ({ }: ClientTableProps) => {
   const theme = useTheme();
+  const employeeSlice = useAppSelector((state)=>state.employees);
+  const [employees,setEmployees]=useState<Employee[]>([])
+  const dispatch = useAppDispatch();
+
+  useEffect(()=>{
+    setEmployees(employeeSlice.employees)
+  },[employeeSlice.state])
 
   const handlePageChange = (newPage: number) => {
     
   };
 
+  const initialColumns: GridColDef[] = [
+    { field: "employeeID", headerName: "Employee ID", width: 100, align: "center" },
+    { field: "firstName", headerName: "First Name", width: 130 },
+    { field: "lastName", headerName: "Last Name", width: 130 },
+    {
+      field: "email",
+      headerName: "Email",
+      flex: 1,
+      renderCell: (params) => {
+        const employeeImage = employees?.find((emp)=>emp.employeeID===params?.row?.employeeID)?.profile_photo;
+        console.log("employee image is",employeeImage);
+        
+        return (
+        <Chip
+          avatar={
+            <Avatar
+              src={employeeImage?`${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(employeeImage)}`:""} // Replace with your avatar URL logic
+              alt={params.row.firstName || params.row.lastName || params.row.email}
+            >
+              {params.row?.email?.charAt(0).toUpperCase()}
+            </Avatar>
+          }
+          label={params.value}
+          variant="outlined"
+        />
+        )
+      }
+    },
+    {
+      field: "accessRole",
+      headerName: "Occupation",
+      width: 150,
+      headerAlign: "center",
+      align: "center",
+      renderCell: (params) => {
+        const role = params.value; // Role value (e.g., "Admin" or "CareGiver")
+        let color: "default" | "success" | "primary" = "default";
+    
+        // Assign colors based on the role
+        switch (role) {
+          case "Admin":
+            color = "success"; // Green color
+            break;
+          case "CareGiver":
+            color = "primary"; // Blue color
+            break;
+          default:
+            color = "default"; // Default grey
+        }
+    
+        return <Chip size="small" label={role} color={color} variant="outlined" />;
+      },
+    },    
+    {
+      field: "action",
+      headerName: "Action",
+      width: 110,
+      renderCell: (params) => {
+        const navigate = useNavigate();
+        return (
+          <Stack flexDirection="row">
+            <IconButton
+              aria-label="view"
+              onClick={() =>dispatch(fetchSingleEmployee(params.row.employeeID))}
+            >
+              <RemoveRedEyeOutlinedIcon />
+            </IconButton>
+          </Stack>
+        );
+      },
+    },
+  ];
+
   return (
+    
     <Box sx={{ height: "100%", width: "100%" }}>
       <DataGrid
-        rows={sampleEmployees}
+        rows={employees}
         columns={initialColumns}
         getRowId={(row) => row.employeeID}
         density="compact"
-        paginationMode="server"
-        page={1}
-        pageSize={5}
-        onPageChange={handlePageChange}
-        components={{
-          Toolbar: CustomToolbar,
+        pagination
+        paginationMode="client"
+        initialState={{
+          pagination: {
+            paginationModel: { pageSize: 5 },
+          },
+        }}
+        slots={{
+          toolbar: CustomToolbar,
         }}
         sx={{
           

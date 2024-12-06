@@ -12,21 +12,28 @@ const CarePlansTab = () => {
   const [searchParams] = useSearchParams();
   const clientID = searchParams.get('clientID');
   const dispatch = useAppDispatch();
+  const [isEditMode,setIsEditMode]=useState<boolean>(false);
 
   const carePlans = useAppSelector((state)=>state.carePlans);
 
 
   useEffect(()=>{
-    if(carePlans.submitState === State.success){
+    if(carePlans.submitState === State.success || carePlans.updateState === State.success){
       setIsCarePlanModalVisible(false);
       resetSubmitState();
       fetchCarePlansRelatedToClient();
     }
-  },[])
+  },[carePlans.submitState,carePlans.updateState])
 
   useEffect(()=>{
     fetchCarePlansRelatedToClient();
   },[clientID])
+
+  useEffect(()=>{ 
+    if(isCarePlanModalVisible){
+      fetchCarePlansRelatedToClient();
+    }
+  },[isCarePlanModalVisible])
 
 
   const fetchCarePlansRelatedToClient = async () => {
@@ -38,12 +45,12 @@ const CarePlansTab = () => {
   }
   return (
     <Stack width="100%" height="80%" border="2px solid red">
-      <AddNewCarePlanModal isCarePlanAddModalVisible={isCarePlanModalVisible} setIsCarePlanAddModalVisible={setIsCarePlanModalVisible}/>
+      <AddNewCarePlanModal isEditMode={isEditMode} setIsEditMode={setIsEditMode} isCarePlanAddModalVisible={isCarePlanModalVisible} setIsCarePlanAddModalVisible={setIsCarePlanModalVisible}/>
         <Stack width="100%" flexDirection="row" alignItems="end" justifyContent="flex-end">
             <Button variant='contained' onClick={()=>setIsCarePlanModalVisible(true)}>Add Care Plan</Button>
         </Stack>
         <Stack width="100%" height="480px">
-            <CarePlanTable/>
+            <CarePlanTable isCarePlanModalVisible={isCarePlanModalVisible} setIsCarePlanModalVisible={setIsCarePlanModalVisible}/>
         </Stack>
     </Stack>
   )

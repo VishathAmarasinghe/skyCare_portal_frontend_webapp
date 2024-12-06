@@ -8,6 +8,10 @@ export const CREATE_CLIENT_STEPS = ["Basic Info", "Interests and Dislikes", "Add
 
 export const CREATE_CARE_PLAN_STEPS = ["Basic Info", "Goals", "Billing/budget"];
 
+export const CREATE_APPOINTMENT_STEPS = ["Basic Info", "Address & Participants", "Uploads"];
+
+export const  CREATE_CARE_GIVER_STEPS = ["Basic Info", "File Uploads", "Salary"];
+
 export const phoneNoRegex = /^\+?[1-9]\d{1,14}$/
 
 export const DASHBOARD_CARDS:DashboardCardProps[]=[

@@ -5,6 +5,7 @@ export const APPLICATION_SUPER_ADMIN =
   import.meta.env.VITE_APPLICATION_SUPER_ADMIN ?? "";
 export const APPLICATION_CARE_GIVER =
   import.meta.env.VITE_APPLICATION_CARE_GIVER ?? "";
+export const FILE_DOWNLOAD_BASE_URL =`${import.meta.env.VITE_BACKEND_BASE_URL}${import.meta.env.VITE_FILE_DOWNLOAD_PATH}?filePath=`;
 
 export const AppConfig = {
   serviceUrls: {
@@ -18,5 +19,11 @@ export const AppConfig = {
     carePlans: `${ServiceBaseUrl}/careplans`,
     carePlanStatus: `${ServiceBaseUrl}/careplan-status`,
     goalOutcomes: `${ServiceBaseUrl}/goal-outcome`,
+    appointments: `${ServiceBaseUrl}/appointments`,
+    employees: `${ServiceBaseUrl}/employees`,
+    careGivers: `${ServiceBaseUrl}/care-givers`,
+    careGiverDocumentTypes: `${ServiceBaseUrl}/care-giver-document-types`,
+    careGiverPaymentTypes: `${ServiceBaseUrl}/care-giver-payment-types`,
+    appointmentTypes: `${ServiceBaseUrl}/appointment-types`,
   },
 };

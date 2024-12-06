@@ -11,16 +11,25 @@ import {
   SelectChangeEvent,
   Stack,
   Typography,
+  useTheme,
 } from "@mui/material";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { Formik, Field, Form, FormikProps, validateYupSchema } from "formik";
 import * as Yup from "yup";
-import { Notes, resetSubmitState, saveNotes } from "@slices/NotesSlice/notes";
+import {
+  NoteFiles,
+  Notes,
+  resetSubmitState,
+  saveNotes,
+  updateNotes,
+} from "@slices/NotesSlice/notes";
 import { useSearchParams } from "react-router-dom";
 import dayjs from "dayjs";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { State } from "../../../types/types";
-import { Upload } from "antd";
+import { Card, Upload } from "antd";
+import FileListTable from "../../../component/common/FileListTable";
+import FileViewerWithModal from "../../../component/common/FileViewerWithModal";
 
 // Validation schema using Yup
 const validationSchema = Yup.object({
@@ -52,32 +61,90 @@ const validationSchema = Yup.object({
   sharedGroup: Yup.string().required("Shared Group is required"),
 });
 
-const AddNoteForm = () => {
+interface AddNoteFormProps {
+  isNoteModalVisible: boolean;
+  isEditMode: boolean;
+}
+
+export interface UIShowingFile {
+  name: string;
+  docID: string;
+  status: "New" | "Old";
+}
+
+const AddNoteForm: React.FC<AddNoteFormProps> = ({
+  isNoteModalVisible,
+  isEditMode,
+}) => {
   const [jobType, setJobType] = useState<"appointment" | "task" | "none">(
     "none"
   );
   const [uploadedFils, setUploadedFiles] = useState<File[]>([]);
+  const [previouslyUploadedFiles, setPreviouslyUploadedFiles] = useState<
+    NoteFiles[]
+  >([]);
+  const [UIShowingFile, setUIShowingFile] = useState<UIShowingFile[]>([]);
   const [searchParams] = useSearchParams();
+  const theme = useTheme();
   const dispatch = useAppDispatch();
   const clientID = searchParams.get("clientID");
   const noteStates = useAppSelector((state) => state.notes);
+  const [psdImageShowerModalOpen, setPsdImageShowerModalOpen] =
+    useState<boolean>(false);
+  const [imageViewerImageURl, setImageViewerImageURl] = useState<File | string>(
+    ""
+  );
+  const [initialValues, setInitialValues] = useState<Notes>({
+    noteType: "Internal Note",
+    shiftStartTime: null,
+    shiftEndTime: null,
+    careplanID: "",
+    taskID: "",
+    appointmentID: "",
+    effectiveDate: dayjs().format("YYYY-MM-DD").toString(),
+    description: "",
+    sharedGroup: "All",
+    clientID: clientID || "",
+    createDate: dayjs().format("YYYY-MM-DD").toString(),
+    createdBy: "Admin",
+    noteID: "",
+    title: "",
+    documents: null,
+  });
+
   const [clientAppointmentAndTask, setClientAppointmentAndTask] = useState<{
     appointments: string[];
     tasks: string[];
   }>({ appointments: [], tasks: [] });
 
-  const handleJobTypeChange = (event: SelectChangeEvent<string>) => {
-    setJobType(event.target.value as "appointment" | "task" | "none");
-  };
+  useEffect(() => {
+    console.log("ui showing files", UIShowingFile);
+    console.log("uploaded files", uploadedFils);
+    console.log("previously uploaded files", previouslyUploadedFiles);
+  }, [UIShowingFile, uploadedFils, previouslyUploadedFiles]);
 
-  const handleUploadChange = (info: any) => {
-    const files = info.fileList.map((file: any) => file.originFileObj);
-    setUploadedFiles(files);
-  };
+  useEffect(() => {
+    if (noteStates.selectedNote != null) {
+      console.log("initial valies  ", noteStates.selectedNote);
 
-  return (
-    <Formik
-      initialValues={{
+      setInitialValues({
+        ...noteStates.selectedNote,
+        effectiveDate: dayjs(noteStates.selectedNote.effectiveDate).format("YYYY-MM-DD").toString(),
+        careplanID: noteStates.selectedNote.careplanID || "",
+        taskID: noteStates.selectedNote.taskID || "",
+        appointmentID: noteStates.selectedNote.appointmentID || "",
+      });
+
+      console.log("");
+      setUIShowingFile([
+        ...(noteStates.selectedNote.documents?.map((doc) => ({
+          name: doc.docID?.split(".")[0] || "",
+          docID: doc.docID,
+          status: "Old" as "Old",
+        })) || []),
+      ]);
+    } else {
+      setInitialValues({
         noteType: "Internal Note",
         shiftStartTime: null,
         shiftEndTime: null,
@@ -92,8 +159,96 @@ const AddNoteForm = () => {
         createdBy: "Admin",
         noteID: "",
         title: "",
-      }}
+        documents: null,
+      });
+      setUploadedFiles([]);
+    }
+  }, [noteStates.selectedNote, isNoteModalVisible]);
+
+  useEffect(() => {
+    console.log("initial values ", initialValues);
+  }, [initialValues]);
+
+  const handleClosePDFViewer = () => {
+    setPsdImageShowerModalOpen(false);
+    setImageViewerImageURl("");
+  };
+
+  const handleJobTypeChange = (event: SelectChangeEvent<string>) => {
+    setJobType(event.target.value as "appointment" | "task" | "none");
+  };
+
+  const handleUploadChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      setUploadedFiles((prevFiles) => [...prevFiles, ...filesArray]);
+
+      const previousUploadedFiles = UIShowingFile.filter(
+        (file) => file.status === "Old"
+      );
+      const newUploadedFiles = UIShowingFile?.filter((file) => file.status === "New");
+      setUIShowingFile([
+        ...filesArray.map((file: File) => ({
+          name: file.name,
+          docID: file.name || file.name,
+          status: "New" as "New",
+        })),
+        ...previousUploadedFiles,
+        ...newUploadedFiles
+      ]);
+    }
+  };
+
+  const handleView = (file: UIShowingFile) => {
+    console.log("Viewing file", file);
+    if (file.status === "Old") {
+      const viewingFile = noteStates?.selectedNote?.documents?.find(
+        (f) => f.docID == file.docID
+      );
+      if (viewingFile?.document) {
+        setImageViewerImageURl(viewingFile?.document);
+        setPsdImageShowerModalOpen(true);
+      }
+    } else if (file.status === "New") {
+      console.log("file kos ",file);
+      
+      const viewingFile = uploadedFils.find((f) => f.name == file.docID);
+      if (viewingFile) {
+        console.log("Viewing file", viewingFile);
+        setImageViewerImageURl(new File([viewingFile], viewingFile.name)); 
+        setPsdImageShowerModalOpen(true);
+      
+      }
+    }
+  };
+
+  const handleDeleteUploaded = (file: UIShowingFile) => {
+    if (file.status === "New") {
+      setUploadedFiles(uploadedFils.filter((f) => f.name !== file.docID));
+    } else if (file.status === "Old") {
+      const deletingFile =
+        noteStates?.selectedNote?.documents?.find(
+          (f) => f.docID == file.docID
+        ) || [];
+      setPreviouslyUploadedFiles(
+        Array.isArray(deletingFile) ? [...deletingFile] : [deletingFile]
+      );
+    }
+    const newFiles = UIShowingFile.filter((f) => f.docID !== file.docID);
+    setUIShowingFile(newFiles);
+    console.log("Deleted previously uploaded file", file);
+  };
+
+  const handleDownload = (file: UIShowingFile) => {
+    console.log("Downloading file", file);
+    // Handle download logic here
+  };
+
+  return (
+    <Formik
+      initialValues={initialValues}
       validationSchema={validationSchema}
+      enableReinitialize={true}
       onSubmit={(values, { setSubmitting }) => {
         
         const notePayload: Notes = { ...values };
@@ -101,8 +256,13 @@ const AddNoteForm = () => {
         if (notePayload.taskID === "") notePayload.taskID = null;
         if (notePayload.appointmentID === "") notePayload.appointmentID = null;
         console.log(values);
-        console.log("Uploading files ",uploadedFils);
-        dispatch(saveNotes({notes:notePayload, files:uploadedFils}));
+        console.log("Uploading files ", uploadedFils);
+        if (noteStates.selectedNote) {
+          notePayload.documents=previouslyUploadedFiles;
+          dispatch(updateNotes({ notes: notePayload, files: uploadedFils }));
+        } else {
+          dispatch(saveNotes({ notes: notePayload, files: uploadedFils }));
+        }
       }}
     >
       {({
@@ -115,11 +275,18 @@ const AddNoteForm = () => {
         resetForm,
       }: FormikProps<Notes>) => {
         useEffect(() => {
-          if (noteStates.submitState == State.success) {
+          if (noteStates.submitState == State.success || noteStates.updateState == State.success) {
             resetForm();
             setUploadedFiles([]);
+            setUIShowingFile([]);
+            setPreviouslyUploadedFiles([]);
           }
         }, [noteStates.submitState]);
+
+        useEffect(() => {
+          console.log("errors", errors);
+          
+        }, [errors]);
         return (
           <Form>
             <Grid container spacing={3}>
@@ -127,6 +294,7 @@ const AddNoteForm = () => {
               <Grid item xs={12}>
                 <TextField
                   fullWidth
+                  InputProps={{ readOnly: !isEditMode }}
                   type="text"
                   name="title"
                   label="Note Title"
@@ -143,6 +311,7 @@ const AddNoteForm = () => {
                   <InputLabel>Note Type</InputLabel>
                   <Select
                     name="noteType"
+                    readOnly={!isEditMode}
                     value={values.noteType}
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -163,6 +332,7 @@ const AddNoteForm = () => {
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
+                      InputProps={{ readOnly: !isEditMode }}
                       type="datetime-local"
                       name="shiftStartTime"
                       label="Shift Start Time"
@@ -181,6 +351,7 @@ const AddNoteForm = () => {
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
+                      InputProps={{ readOnly: !isEditMode }}
                       type="datetime-local"
                       name="shiftEndTime"
                       label="Shift End Time"
@@ -203,6 +374,7 @@ const AddNoteForm = () => {
                   <InputLabel>Careplan</InputLabel>
                   <Select
                     name="careplanID"
+                    readOnly={!isEditMode}
                     value={values.careplanID || ""}
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -226,6 +398,7 @@ const AddNoteForm = () => {
                     value={jobType}
                     onChange={handleJobTypeChange}
                     onBlur={handleBlur}
+                    readOnly={!isEditMode}
                     label="Job Type"
                   >
                     <MenuItem value="appointment">Appointment</MenuItem>
@@ -239,6 +412,7 @@ const AddNoteForm = () => {
                   <FormControl fullWidth>
                     <InputLabel>Select relevent {jobType}</InputLabel>
                     <Select
+                      readOnly={!isEditMode}
                       name={
                         jobType == "appointment" ? "appointmentID" : "taskID"
                       }
@@ -276,6 +450,7 @@ const AddNoteForm = () => {
                   type="date"
                   name="effectiveDate"
                   label="Effective Date"
+                  InputProps={{ readOnly: !isEditMode }}
                   value={values.effectiveDate}
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -293,6 +468,7 @@ const AddNoteForm = () => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     label="Shared Group"
+                    readOnly={!isEditMode}
                   >
                     <MenuItem value="All">All Members</MenuItem>
                     <MenuItem value="Internal">Internal Admins</MenuItem>
@@ -305,6 +481,7 @@ const AddNoteForm = () => {
                 <TextField
                   fullWidth
                   name="description"
+                  InputProps={{ readOnly: !isEditMode }}
                   label="Description"
                   value={values.description}
                   onChange={handleChange}
@@ -323,21 +500,39 @@ const AddNoteForm = () => {
                 Submit
               </button>
             </Grid>
-            <Stack width="100%" border="2px solid red">
+            <Stack width="100%" border="1px solid #ccc" bgcolor={theme.palette.background.default} borderRadius={1}  sx={{p:1,my:1}}>
               <Typography variant="h6" my={1}>
                 Upload Notes
               </Typography>
-              <Stack width="100%">
-                <Upload
-                  beforeUpload={() => false}
-                  onChange={handleUploadChange}
-                  listType="picture"
-                >
-                  <Button variant="contained">
-                    <FileUploadIcon />
+              <Stack width="100%" flexDirection="column">
+                <FileViewerWithModal
+                  file={imageViewerImageURl}
+                  isVisible={psdImageShowerModalOpen}
+                  onClose={handleClosePDFViewer}
+                />
+                <FileListTable
+                  files={UIShowingFile}
+                  onDownload={handleDownload}
+                  onView={handleView}
+                  onDelete={handleDeleteUploaded}
+                />
+
+                {isEditMode && (
+                  <Button
+                    variant="outlined"
+                    component="label"
+                    startIcon={<FileUploadIcon />}
+                  >
                     Upload Notes
+                    <input
+                      type="file"
+                      hidden
+                      accept="application/pdf, image/png, image/jpeg"
+                      onChange={handleUploadChange}
+                      multiple
+                    />
                   </Button>
-                </Upload>
+                )}
               </Stack>
             </Stack>
           </Form>

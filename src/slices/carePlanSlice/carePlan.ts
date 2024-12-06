@@ -32,6 +32,7 @@ export interface CarePlanBillable {
 
 export interface CarePlan {
   title: string;
+  careplanID: string;
   carePlanStatusID: string;
   startDate: string;
   endDate: string;
@@ -110,7 +111,7 @@ export const fetchGoalOutcomes = createAsyncThunk(
   }
 );
 
-// Fetch careplans by clientID
+// Fetch care plans by clientID
 export const fetchCarePlansByClientID = createAsyncThunk(
   "carePlans/fetchCarePlansByClient",
   async (clientID: String, { dispatch, rejectWithValue }) => {
@@ -139,6 +140,67 @@ export const fetchCarePlansByClientID = createAsyncThunk(
     });
   }
 );
+
+// Fetch care plans by clientID
+export const fetchAllCarePlans = createAsyncThunk(
+  "carePlans/fetchAllCarePlans",
+  async (_, { dispatch, rejectWithValue }) => {
+    return new Promise<CarePlan[]>((resolve, reject) => {
+      APIService.getInstance()
+        .get(AppConfig.serviceUrls.carePlans)
+        .then((response) => {
+          console.log("care plan response", response.data);
+          resolve(response.data);
+        })
+        .catch((error) => {
+          if (axios.isCancel(error)) {
+            return rejectWithValue("Request canceled");
+          }
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.fetchCarePlans
+                  : String(error.response?.data?.message),
+              type: "error",
+            })
+          );
+          reject(error.response?.data?.message);
+        });
+    });
+  }
+);
+
+// Fetch care plans by clientID
+export const fetchSingleCarePlan = createAsyncThunk(
+    "carePlans/fetchSingleCarePlan",
+    async (carePlanID: String, { dispatch, rejectWithValue }) => {
+      return new Promise<CarePlan>((resolve, reject) => {
+        APIService.getInstance()
+          .get(AppConfig.serviceUrls.carePlans + `/${carePlanID}`)
+          .then((response) => {
+            console.log("care plan response", response.data);
+            resolve(response.data);
+          })
+          .catch((error) => {
+            if (axios.isCancel(error)) {
+              return rejectWithValue("Request canceled");
+            }
+            dispatch(
+              enqueueSnackbarMessage({
+                message:
+                  error.response?.status === HttpStatusCode.InternalServerError
+                    ? SnackMessage.error.fetchCarePlans
+                    : String(error.response?.data?.message),
+                type: "error",
+              })
+            );
+            reject(error.response?.data?.message);
+          });
+      });
+    }
+  );
+
 
 // Fetch careplans by clientID
 export const saveCarePlan = createAsyncThunk(
@@ -174,6 +236,44 @@ export const saveCarePlan = createAsyncThunk(
       });
     }
   );
+
+
+  // Fetch care plans by clientID
+export const UpdateCarePlan = createAsyncThunk(
+    "carePlans/UpdateCarePlan",
+    async (payload:CarePlan, { dispatch, rejectWithValue }) => {
+      return new Promise<CarePlan>((resolve, reject) => {
+        APIService.getInstance()
+          .put(AppConfig.serviceUrls.carePlans+`/${payload.careplanID}`,payload)
+          .then((response) => {
+            dispatch(
+                enqueueSnackbarMessage({
+                  message: SnackMessage.success.updateCarePlan,
+                  type: 'success',
+                })
+              );
+            resolve(response.data);
+          })
+          .catch((error) => {
+            if (axios.isCancel(error)) {
+              return rejectWithValue("Request canceled");
+            }
+            dispatch(
+              enqueueSnackbarMessage({
+                message:
+                  error.response?.status === HttpStatusCode.InternalServerError
+                    ? SnackMessage.error.updateCarePlan
+                    : String(error.response?.data?.message),
+                type: "error",
+              })
+            );
+            reject(error.response?.data?.message);
+          });
+      });
+    }
+  );
+
+
 
 // Fetch careplans by clientID
 export const fetchCarePlanStatusList = createAsyncThunk(
@@ -212,7 +312,11 @@ const CarePlanSlice = createSlice({
   reducers: {
     resetSubmitState(state) {
       state.submitState = State.idle;
+        state.updateState = State.idle;
     },
+    resetSelectedCarePlan(state){
+        state.selectedCarePlan=null;
+      }
   },
   extraReducers: (builder) => {
     builder
@@ -254,9 +358,60 @@ const CarePlanSlice = createSlice({
       .addCase(fetchGoalOutcomes.rejected, (state) => {
         state.state = State.failed;
         state.stateMessage = "Failed to fetch goal outcomes!";
+      })
+      .addCase(saveCarePlan.pending, (state) => {
+        state.submitState = State.loading;
+        state.stateMessage = "Saving care Plan...";
+      })
+      .addCase(saveCarePlan.fulfilled, (state, action) => {
+        state.submitState = State.success;
+        state.stateMessage = "Successfully saved care plan!";
+      })
+      .addCase(saveCarePlan.rejected, (state) => {
+        state.submitState = State.failed;
+        state.stateMessage = "Failed to save care plans!";
+      })
+      .addCase(fetchSingleCarePlan.pending, (state) => {
+        state.state = State.loading;
+        state.stateMessage = "fetching care Plan...";
+      })
+      .addCase(fetchSingleCarePlan.fulfilled, (state, action) => {
+        state.state = State.success;
+        state.stateMessage = "Successfully fetched care plan!";
+        state.selectedCarePlan = action.payload;
+      })
+      .addCase(fetchSingleCarePlan.rejected, (state) => {
+        state.state = State.failed;
+        state.stateMessage = "Failed to fetch care plan!";
+      })
+      .addCase(UpdateCarePlan.pending, (state) => {
+        state.updateState = State.loading;
+        state.stateMessage = "fetching care Plan...";
+      })
+      .addCase(UpdateCarePlan.fulfilled, (state, action) => {
+        state.updateState = State.success;
+        state.stateMessage = "Successfully fetched care plan!";
+        state.selectedCarePlan = action.payload;
+      })
+      .addCase(UpdateCarePlan.rejected, (state) => {
+        state.updateState = State.failed;
+        state.stateMessage = "Failed to fetch care plan!";
+      })
+      .addCase(fetchAllCarePlans.pending, (state) => {
+        state.state = State.loading;
+        state.stateMessage = "fetching care Plan...";
+      })
+      .addCase(fetchAllCarePlans.fulfilled, (state, action) => {
+        state.state = State.success;
+        state.stateMessage = "Successfully fetched care plan!";
+        state.carePlans = action.payload;
+      })
+      .addCase(fetchAllCarePlans.rejected, (state) => {
+        state.state = State.failed;
+        state.stateMessage = "Failed to fetch care plan!";
       });
   },
 });
 
-export const { resetSubmitState } = CarePlanSlice.actions;
+export const { resetSubmitState,resetSelectedCarePlan } = CarePlanSlice.actions;
 export default CarePlanSlice.reducer;

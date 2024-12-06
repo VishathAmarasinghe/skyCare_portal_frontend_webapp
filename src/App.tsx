@@ -15,11 +15,12 @@ import "./App.css";
 // Other imports
 import { SnackbarProvider } from "notistack";
 import { APIService } from "@utils/apiService";
+import ConfirmationDialogContextProvider from "@context/DialogContext";
+import { LoadScript } from "@react-google-maps/api";
 
 export const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
 function App() {
-  
   document.title = APP_NAME;
   const processLocalThemeMode = (): ThemeMode => {
     var localMode: ThemeMode | null = localStorage.getItem(
@@ -56,11 +57,20 @@ function App() {
   return (
     <ColorModeContext.Provider value={colorMode}>
       <SnackbarProvider maxSnack={3} preventDuplicate>
-        <ThemeProvider theme={theme}>
-          <Provider store={store}>
-            <AppHandler />
-          </Provider>
-        </ThemeProvider>
+        <LoadScript
+          googleMapsApiKey="AIzaSyB_cvNijyVjUPr189twbkzvxKNPId0rPNk"
+          libraries={["places"]}
+          onError={(e) => console.error("Error loading Google API", e)}
+          onLoad={() => console.log("Google API loaded successfully")}
+        >
+          <ThemeProvider theme={theme}>
+            <Provider store={store}>
+              <ConfirmationDialogContextProvider>
+                <AppHandler />
+              </ConfirmationDialogContextProvider>
+            </Provider>
+          </ThemeProvider>
+        </LoadScript>
       </SnackbarProvider>
     </ColorModeContext.Provider>
   );
