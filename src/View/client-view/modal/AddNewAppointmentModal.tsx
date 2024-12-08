@@ -84,11 +84,11 @@ const AddNewAppointmentModal = ({isAppointmentAddModalVisible: isAddAppointmentM
       closable={false}
       open={isAddAppointmentModalVisible}
       onOk={() => {setIsAppointmentModalVisible(false)}}
-      onCancel={() => {setIsAppointmentModalVisible(false),resetSelectedAppointment()}}
+      onCancel={() => {setIsAppointmentModalVisible(false),dispatch(resetSelectedAppointment())}}
       footer={(
         <Box display="flex" justifyContent="end" width="100%">
           {/* Back Button */}
-          <Button variant="outlined" sx={{mr:1}} onClick={()=>{setIsAppointmentModalVisible(false),resetSelectedAppointment()}}>Cancel</Button>
+          <Button variant="outlined" sx={{mr:1}} onClick={()=>{setIsAppointmentModalVisible(false),dispatch(resetSelectedAppointment())}}>Cancel</Button>
           <Button
             variant="outlined"
             onClick={handleBack}

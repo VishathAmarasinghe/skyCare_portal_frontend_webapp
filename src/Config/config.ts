@@ -25,5 +25,7 @@ export const AppConfig = {
     careGiverDocumentTypes: `${ServiceBaseUrl}/care-giver-document-types`,
     careGiverPaymentTypes: `${ServiceBaseUrl}/care-giver-payment-types`,
     appointmentTypes: `${ServiceBaseUrl}/appointment-types`,
+    authenticaion: `${ServiceBaseUrl}/auth`,
+    jobAssigns: `${ServiceBaseUrl}/job-assigner`,
   },
 };

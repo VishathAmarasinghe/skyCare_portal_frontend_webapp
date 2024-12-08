@@ -49,9 +49,18 @@ export const routes: RouteObjectWithRole[] = [
     allowRoles: [
       APPLICATION_ADMIN,
       APPLICATION_SUPER_ADMIN,
-      APPLICATION_CARE_GIVER,
     ],
   },
+  {
+    path: "/Dashboard/cg",
+    text: "Dashboard",
+    icon: React.createElement(DashboardIcon),
+    element: React.createElement(View.careGiverDashboardView),
+    allowRoles: [
+      APPLICATION_CARE_GIVER
+    ],
+  },
+
   {
     path: "/Clients",
     text: "Clients",
@@ -60,7 +69,6 @@ export const routes: RouteObjectWithRole[] = [
     allowRoles: [
       APPLICATION_ADMIN,
       APPLICATION_SUPER_ADMIN,
-      APPLICATION_CARE_GIVER,
     ],
     children: [
       {
@@ -68,7 +76,7 @@ export const routes: RouteObjectWithRole[] = [
         text:"Client Information",
         icon:undefined,
         element:React.createElement(View.clientView),
-        allowRoles:[APPLICATION_ADMIN,APPLICATION_SUPER_ADMIN,APPLICATION_CARE_GIVER]
+        allowRoles:[APPLICATION_ADMIN,APPLICATION_SUPER_ADMIN]
       }
     ]
   },
@@ -90,8 +98,7 @@ export const routes: RouteObjectWithRole[] = [
     element: React.createElement(View.carePlanView),
     allowRoles: [
       APPLICATION_ADMIN,
-      APPLICATION_SUPER_ADMIN,
-      APPLICATION_CARE_GIVER,
+      APPLICATION_SUPER_ADMIN
     ],
   },
   {
@@ -112,9 +119,7 @@ export const routes: RouteObjectWithRole[] = [
     element: React.createElement(View.EmployeeView),
     allowRoles: [
       APPLICATION_ADMIN,
-      APPLICATION_SUPER_ADMIN,
-      APPLICATION_CARE_GIVER,
-    ],
+      APPLICATION_SUPER_ADMIN],
   },
   {
     path: "/Reports",
@@ -123,9 +128,7 @@ export const routes: RouteObjectWithRole[] = [
     element: React.createElement(View.reportView),
     allowRoles: [
       APPLICATION_ADMIN,
-      APPLICATION_SUPER_ADMIN,
-      APPLICATION_CARE_GIVER,
-    ],
+      APPLICATION_SUPER_ADMIN],
   },
   {
     path: "/Resources",
@@ -134,9 +137,7 @@ export const routes: RouteObjectWithRole[] = [
     element: React.createElement(View.resourceView),
     allowRoles: [
       APPLICATION_ADMIN,
-      APPLICATION_SUPER_ADMIN,
-      APPLICATION_CARE_GIVER,
-    ],
+      APPLICATION_SUPER_ADMIN],
   },
 ];
 export const getActiveRoutesV2 = (

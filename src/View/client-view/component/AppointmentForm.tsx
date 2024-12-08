@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Formik, Field, Form, FormikProps } from "formik";
+import { Formik, Field, Form, FormikProps, FormikHelpers } from "formik";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import * as Yup from "yup";
 import {
@@ -24,6 +24,7 @@ import {
   AppointmentType,
   fetchAppointmentTypes,
   saveAppointment,
+  updateAppointment,
 } from "@slices/AppointmentSlice/appointment";
 import AppointmentParticipantTable from "../../../component/common/AppointmentParticipantTable";
 import { useAppDispatch, useAppSelector } from "@slices/store";
@@ -45,6 +46,8 @@ import { UIShowingFile } from "./AddNoteForm";
 import FileViewerWithModal from "@component/common/FileViewerWithModal";
 import FileListTable from "@component/common/FileListTable";
 import { parseDateTime } from "@utils/utils";
+import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
+import { enqueueSnackbar } from "notistack";
 
 dayjs.extend(isSameOrAfter);
 
@@ -54,7 +57,95 @@ interface CaregiverInfo {
   status: string;
 }
 
-// Validation schema using Yup
+
+interface AppointmentFormProps {
+  isEditMode: boolean;
+  activeStep: number;
+}
+
+const AppointmentForm: React.FC<AppointmentFormProps> = ({
+  isEditMode,
+  activeStep,
+}) => {
+  const [appointmentParticipants, setAppointmentsParticipants] = useState<
+    CaregiverInfo[]
+  >([]);
+  const dispatch = useAppDispatch();
+  const theme = useTheme();
+
+  const [appointmentTypes, setAppointmentTypes] = useState<AppointmentType[]>(
+    []
+  );
+  const [clientList, setClientList] = useState<Client[]>([]);
+  const appointmentSlice = useAppSelector((state) => state.appointments);
+  const clientSlice = useAppSelector((state) => state.clients);
+  const carePlanSlice = useAppSelector((state) => state.carePlans);
+  const careGiverSlice = useAppSelector((state) => state.careGivers);
+  const [autocomplete, setAutocomplete] =
+    useState<google.maps.places.Autocomplete | null>(null);
+  const [carePlans, setCarePlans] = useState<CarePlan[]>([]);
+  const [careGivers, setCareGivers] = useState<CareGiver[]>([]);
+  const [searchInput, setSearchInput] = useState("");
+  const [searchParams] = useSearchParams();
+  const clientID = searchParams.get("clientID");
+  const [selectedClient, setSelectedClient] = useState("");
+  const [addressDetails, setAddressDetails] = useState<any>(null);
+  const [uploadedFils, setUploadedFiles] = useState<File[]>([]);
+  const [previouslyUploadedFiles, setPreviouslyUploadedFiles] = useState<
+    AppointmentAttachment[]
+  >([]);
+  const [UIShowingFile, setUIShowingFile] = useState<UIShowingFile[]>([]);
+  const [psdImageShowerModalOpen, setPsdImageShowerModalOpen] =
+    useState<boolean>(false);
+  const [imageViewerImageURl, setImageViewerImageURl] = useState<File | string>(
+    ""
+  );
+  const [initialValues, setInitialValues] = useState<Appointment>({
+    appointmentID: "",
+    title: "",
+    appointmentTypeID: "",
+    clientID: "",
+    caregiverCount: 0,
+    startDate: "",
+    startTime: "",
+    endDate: "",
+    endTime: "",
+    duration: 0,
+    comment: "",
+    carePlanID: "",
+    taskID: "",
+    broadcastType: "",
+    appointmentAddress: {
+      appointmentAddressID: "",
+      address: "",
+      city: "",
+      state: "",
+      postalCode: "",
+    },
+    attachments: [],
+    recurrenceState: false,
+    recurrentWork: {
+      recurrentWorkID: "",
+      appointmentID: "",
+      taskID: "",
+      recurrenceType: "",
+      startDate: "",
+      endDate: "",
+      frequencyCount: 0,
+      day: "",
+      occurrenceLimit: 0,
+    },
+    jobAssigns: {
+      careGiverIDs: [],
+      taskID: "",
+      appointmentID: "",
+      assignType: "",
+      assigner: "EM00001",
+    },
+  });
+
+
+  // Validation schema using Yup
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is required"),
   appointmentTypeID: Yup.string().required("Appointment Type is required"),
@@ -145,95 +236,31 @@ const validationSchema = Yup.object({
   }),
 });
 
-interface AppointmentFormProps {
-  isEditMode: boolean;
-  activeStep: number;
-}
 
-const AppointmentForm: React.FC<AppointmentFormProps> = ({
-  isEditMode,
-  activeStep,
-}) => {
-  const [appointmentParticipants, setAppointmentsParticipants] = useState<
-    CaregiverInfo[]
-  >([]);
-  const dispatch = useAppDispatch();
-  const theme = useTheme();
 
-  const [appointmentTypes, setAppointmentTypes] = useState<AppointmentType[]>(
-    []
-  );
-  const [clientList, setClientList] = useState<Client[]>([]);
-  const appointmentSlice = useAppSelector((state) => state.appointments);
-  const clientSlice = useAppSelector((state) => state.clients);
-  const carePlanSlice = useAppSelector((state) => state.carePlans);
-  const careGiverSlice = useAppSelector((state) => state.careGivers);
-  const [autocomplete, setAutocomplete] =
-    useState<google.maps.places.Autocomplete | null>(null);
-  const [carePlans, setCarePlans] = useState<CarePlan[]>([]);
-  const [careGivers, setCareGivers] = useState<CareGiver[]>([]);
-  const [searchInput, setSearchInput] = useState("");
-  const [searchParams] = useSearchParams();
-  const clientID = searchParams.get("clientID");
-  const [selectedClient, setSelectedClient] = useState("");
-  const [addressDetails, setAddressDetails] = useState<any>(null);
-  const [uploadedFils, setUploadedFiles] = useState<File[]>([]);
-  const [previouslyUploadedFiles, setPreviouslyUploadedFiles] = useState<
-    AppointmentAttachment[]
-  >([]);
-  const [UIShowingFile, setUIShowingFile] = useState<UIShowingFile[]>([]);
-  const [psdImageShowerModalOpen, setPsdImageShowerModalOpen] =
-    useState<boolean>(false);
-  const [imageViewerImageURl, setImageViewerImageURl] = useState<File | string>(
-    ""
-  );
-  const [initialValues, setInitialValues] = useState<Appointment>({
-    appointmentID: "",
-    title: "",
-    appointmentTypeID: "",
-    clientID: "",
-    caregiverCount: 0,
-    startDate: "",
-    startTime: "",
-    endDate: "",
-    endTime: "",
-    duration: 0,
-    comment: "",
-    carePlanID: "",
-    taskID: "",
-    broadcastType: "",
-    appointmentAddress: {
-      appointmentAddressID: "",
-      address: "",
-      city: "",
-      state: "",
-      postalCode: "",
-    },
-    attachments: [],
-    recurrenceState: false,
-    recurrentWork: {
-      recurrentWorkID: "",
-      appointmentID: "",
-      taskID: "",
-      recurrenceType: "",
-      startDate: "",
-      endDate: "",
-      frequencyCount: 0,
-      day: "",
-      occurrenceLimit: 0,
-    },
-    jobAssigns: {
-      careGiverIDs: [],
-      taskID: "",
-      appointmentID: "",
-      assignType: "",
-      assigner: "EM00001",
-    },
-  });
 
   useEffect(() => {
     if (appointmentSlice?.selectedAppointment) {
-      setInitialValues({...appointmentSlice.selectedAppointment});
+      setInitialValues({
+        ...appointmentSlice.selectedAppointment,
+        jobAssigns: {
+          assigner: appointmentSlice?.selectedAppointment?.jobAssigns?.assigner ?? "EM00001",
+          careGiverIDs: appointmentSlice?.selectedAppointment?.jobAssigns?.careGiverIDs ?? [],
+          appointmentID: appointmentSlice?.selectedAppointment?.appointmentID ?? "",
+          taskID: appointmentSlice?.selectedAppointment?.jobAssigns?.taskID ?? "",
+          assignType: appointmentSlice?.selectedAppointment?.jobAssigns?.assignType ?? ""
+        }
+      });
+
+      if (appointmentSlice.selectedAppointment?.attachments) {
+        setUIShowingFile(
+          appointmentSlice.selectedAppointment.attachments.map((f) => ({
+            name: f.documentID,
+            docID: f.documentID,
+            status: "Old",
+          }))
+        );
+      }
     }
   }, [appointmentSlice?.selectedAppointment]);
 
@@ -361,12 +388,20 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
     }
   };
 
-  const handleSubmit = (values: Appointment) => {
+  const handleSubmit = async (values: Appointment, formikHelpers: FormikHelpers<Appointment>) => {
+    const errors = await formikHelpers.validateForm();
+
+  if (Object.keys(errors).length > 0) {
+    console.log("Validation Errors:", errors); // Log errors for debugging
+    alert("Please fix the validation errors before submitting."); // Optional: Alert user
+    return; // Prevent submission
+  }
     // Handle form submission (save or update)
     console.log("Form Submitted", values);
     if (values.jobAssigns.careGiverIDs?.length>0 || values?.broadcastType=="All Caregivers") {
       if (appointmentSlice.selectedAppointment) {
-        
+        console.log("value is of ",values.appointmentID);
+        dispatch(updateAppointment({appointmentData:values,files:uploadedFils}));
       }else{
         dispatch(saveAppointment({appointmentData:values,files:uploadedFils}));
       }
@@ -378,6 +413,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
       initialValues={initialValues}
       validationSchema={validationSchema}
       enableReinitialize={true}
+      validateOnMount={true}
       onSubmit={handleSubmit}
     >
       {({
@@ -456,6 +492,19 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
             );
           }
         }, [addressDetails]);
+        
+
+        useEffect(()=>{
+          if (appointmentSlice.selectedAppointment) {
+            validationSchema.validate(appointmentSlice.selectedAppointment).then((valid)=>{
+              console.log("Validation is ",valid);
+            }).catch((err)=>{
+              console.log("Error is ",err);
+              
+              enqueueSnackbar({message:err.message,variant:"error",anchorOrigin:{horizontal:"right",vertical:"bottom"}});
+            });
+          }
+        },[appointmentSlice.selectedAppointment])
 
         return (
           <Form>
@@ -486,7 +535,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                         onChange={handleChange}
                         onBlur={handleBlur}
                         label="Appointment Type"
-                        disabled={!isEditMode}
+                        readOnly={!isEditMode}
                       >
                         {appointmentTypes?.map((type) => (
                           <MenuItem
@@ -519,7 +568,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                         }}
                         onBlur={handleBlur}
                         label="Client"
-                        disabled={!isEditMode}
+                        readOnly={!isEditMode}
                       >
                         {clientList?.map((client) => (
                           <MenuItem
@@ -569,7 +618,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                         onChange={handleChange}
                         onBlur={handleBlur}
                         label="Care Plan"
-                        disabled={!isEditMode}
+                        readOnly={!isEditMode}
                       >
                         {carePlans.map((carePlan) => (
                           <MenuItem
@@ -621,7 +670,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                         onChange={handleChange}
                         onBlur={handleBlur}
                         label="Task"
-                        disabled={!isEditMode}
+                        readOnly={!isEditMode}
                       >
                         <MenuItem value="type1">Type 1</MenuItem>
                         <MenuItem value="type2">Type 2</MenuItem>
@@ -642,6 +691,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                       value={values.startDate}
                       onChange={handleChange}
                       onBlur={handleBlur}
+                      
                       error={touched.startDate && Boolean(errors.startDate)}
                       helperText={touched.startDate && errors.startDate}
                       InputProps={{ readOnly: !isEditMode }}
@@ -750,7 +800,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                           );
                         }}
                         label="Recurrence State"
-                        disabled={!isEditMode}
+                        readOnly={!isEditMode}
                       >
                         <MenuItem value="true">Yes</MenuItem>
                         <MenuItem value="false">No</MenuItem>
@@ -773,7 +823,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                             value={values.recurrentWork.recurrenceType || ""}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            disabled={!isEditMode} // Disable if not in edit mode
+                            readOnly={!isEditMode} // Disable if not in edit mode
                           >
                             {["Daily", "Weekly", "Monthly"].map((option) => (
                               <MenuItem key={option} value={option}>
@@ -797,7 +847,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                           label="Recurrence Start Date"
                           type="date"
                           name="recurrentWork.startDate"
-                          value={values.recurrentWork.startDate}
+                          value={values.startDate}
                           onChange={handleChange}
                           onBlur={handleBlur}
                           error={
@@ -808,6 +858,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                             touched.recurrentWork?.startDate &&
                             errors.recurrentWork?.startDate
                           }
+                          disabled
                           InputProps={{ readOnly: !isEditMode }}
                           InputLabelProps={{ shrink: true }}
                         />
@@ -863,6 +914,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                         <FormControl fullWidth>
                           <InputLabel>Day</InputLabel>
                           <Select
+                            readOnly={!isEditMode}
                             name="recurrentWork.day"
                             value={values.recurrentWork.day}
                             onChange={handleChange}
@@ -952,6 +1004,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                             label="Search Address"
                             variant="outlined"
                             fullWidth
+                            InputProps={{ readOnly: !isEditMode }}
                             name="search"
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
@@ -968,6 +1021,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                         required
                         onBlur={handleBlur}
                         name="appointmentAddress.address"
+                        InputProps={{ readOnly: !isEditMode }}                        
                         value={values.appointmentAddress.address}
                         onChange={handleChange}
                         error={
@@ -992,6 +1046,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                         onBlur={handleBlur}
                         name="appointmentAddress.city"
                         value={values.appointmentAddress.city}
+                        InputProps={{ readOnly: !isEditMode }}
                         onChange={handleChange}
                         error={
                           touched.appointmentAddress?.city &&
@@ -1011,6 +1066,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                         name="appointmentAddress.state"
                         onBlur={handleBlur}
                         value={values.appointmentAddress.state}
+                        InputProps={{ readOnly: !isEditMode }}
                         onChange={handleChange}
                         error={
                           touched.appointmentAddress?.state &&
@@ -1031,6 +1087,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                         name="appointmentAddress.postalCode"
                         value={values.appointmentAddress.postalCode}
                         onChange={handleChange}
+                        InputProps={{ readOnly: !isEditMode }}
                         error={
                           touched.appointmentAddress?.postalCode &&
                           Boolean(errors.appointmentAddress?.postalCode)
@@ -1052,6 +1109,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                           value={values.broadcastType}
                           onChange={handleChange}
                           label="Broadcast Type"
+                          readOnly={!isEditMode}
                         >
                           <MenuItem value="All Caregivers">
                             All Caregivers
@@ -1073,6 +1131,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                           <FormControl fullWidth>
                             <InputLabel>Select Caregivers</InputLabel>
                             <Select
+                              readOnly={!isEditMode}
                               multiple
                               value={values?.jobAssigns?.careGiverIDs}
                               onChange={(e) =>
@@ -1150,6 +1209,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                             caregivers={appointmentParticipants}
                             key={"participants"}
                             onDelete={handleDeleteOfParticipant}
+                            
                           />
                         </Grid>
                       </>
@@ -1205,14 +1265,14 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
               {/* Submit Button */}
               <Grid item xs={12}>
                 <Stack direction="row" spacing={2}>
-                  <Button
-                    variant="contained"
-                    color="primary"
+                  <button
+                  id="carePlan-submit-btn"
                     type="submit"
                     disabled={!isEditMode}
+                    style={{display:"none"}}
                   >
                     {isEditMode ? "Save Changes" : "View Appointment"}
-                  </Button>
+                  </button>
                 </Stack>
               </Grid>
             </Grid>

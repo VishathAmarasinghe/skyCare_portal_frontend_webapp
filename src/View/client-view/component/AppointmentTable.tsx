@@ -48,9 +48,9 @@ const AppointmentTable = ({isCarePlanModalVisible,setIsCarePlanModalVisible}: Cl
   const theme = useTheme();
   const dispatch = useAppDispatch();
 
-  useEffect(()=>{
+  useEffect(()=>{    
     setAppointments(appointmentSlice.appointments);
-  },[appointmentSlice.state])
+  },[appointmentSlice.state,appointmentSlice?.appointments])
 
   const initialColumns: GridColDef[] = [
     { field: "appointmentID", headerName: "Appointment ID", width: 100, align: "left" },

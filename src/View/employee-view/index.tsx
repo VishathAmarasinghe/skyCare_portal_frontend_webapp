@@ -7,15 +7,15 @@ import { useAppDispatch, useAppSelector } from "@slices/store";
 import {fetchPaymentTypes,fetchDocumentTypes, CareGiverDocuments, fetchCareGivers, fetchSingleCareGiverByEmployeeID } from '../../slices/CareGiverSlice/careGiver'
 import { fetchEmployeesByRole, resetSelectedEmployee } from "@slices/EmployeeSlice/employee";
 
-
-
 const EmployeeView = () => {
   const theme = useTheme();
   const [selectedUser, setSelectedUser] = useState<"Admin"| "Staff">("Staff");
   const [isEmployeeAddModalVisible, setIsEmployeeAddModalVisible] = useState<boolean>(false);
   const [isStaffAddModalVisible, setIsStaffAddModalVisible] = useState<boolean>(false);
+  const [isEditMode,setIsEditMode]=useState<boolean>(false);
   const employeeSlice = useAppSelector((state)=>state?.employees);
   const careGiverSlice = useAppSelector((state)=>state?.careGivers);
+  const [ ] = useState<boolean>(false);
   
   const dispatch = useAppDispatch();
 
@@ -70,8 +70,8 @@ const EmployeeView = () => {
           Employees
         </Typography>
         <Stack flexDirection="row">
-          <Button variant="contained" sx={{mx:1}} onClick={()=>setIsEmployeeAddModalVisible(true)}>New Admin</Button>
-          <Button variant="contained" onClick={()=>setIsStaffAddModalVisible(true)}>New Staff</Button>
+          <Button variant="contained" sx={{mx:1}} onClick={()=>{setIsEmployeeAddModalVisible(true),setIsEditMode(true)}}>New Admin</Button>
+          <Button variant="contained" onClick={()=>{setIsStaffAddModalVisible(true),setIsEditMode(true)}}>New Staff</Button>
         </Stack>
       </Stack>
 
@@ -107,8 +107,8 @@ const EmployeeView = () => {
 
       {/* Table Section */}
       <Stack width="100%" height="480px">
-        <AdminModal isEmployeeAddModalVisible={isEmployeeAddModalVisible} setIsEmployeeAddModalVisible={setIsEmployeeAddModalVisible}/>
-        <StaffModal isCareGiverAddModalVisible={isStaffAddModalVisible} setIsCareGiverAddModalVisible={setIsStaffAddModalVisible}/>
+        <AdminModal isEditMode={isEditMode} setIsEditMode={setIsEditMode} isEmployeeAddModalVisible={isEmployeeAddModalVisible} setIsEmployeeAddModalVisible={setIsEmployeeAddModalVisible}/>
+        <StaffModal isEditMode={isEditMode} setIsEditMode={setIsEditMode} isCareGiverAddModalVisible={isStaffAddModalVisible} setIsCareGiverAddModalVisible={setIsStaffAddModalVisible}/>
         <EmployeeTable  />
       </Stack>
     </Stack>

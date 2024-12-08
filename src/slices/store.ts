@@ -8,6 +8,7 @@ import CarePlanReducer from './carePlanSlice/carePlan';
 import AppointmentReducer from './AppointmentSlice/appointment';
 import EmployeeReducer from './EmployeeSlice/employee';
 import CareGiverReducer from './CareGiverSlice/careGiver';
+import authReducer from './authSlice/Auth';
 
 export const store = configureStore({
   reducer: {
@@ -19,6 +20,7 @@ export const store = configureStore({
     appointments:AppointmentReducer,
     employees:EmployeeReducer,
     careGivers:CareGiverReducer,
+    auth:authReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

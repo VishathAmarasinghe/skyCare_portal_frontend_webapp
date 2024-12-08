@@ -22,18 +22,22 @@ import { set } from "date-fns";
 interface AddNewClientModalProps {
   isEmployeeAddModalVisible: boolean;
   setIsEmployeeAddModalVisible: (value: boolean) => void;
+  isEditMode:boolean;
+  setIsEditMode:React.Dispatch<React.SetStateAction<boolean>>;
+
 }
 
 const AdminModal = ({
   isEmployeeAddModalVisible: isEmployeeAddModalVisible,
   setIsEmployeeAddModalVisible: setIsEmployeeAddModalVisible,
+  isEditMode,
+  setIsEditMode
 }: AddNewClientModalProps) => {
   const [activeStep, setActiveStep] = useState<number>(0);
   const employeeSlice = useAppSelector((state)=>state?.employees);
   const [loading, setLoading] = useState<boolean>(false);
   const [profilePic, setProfilePic] = useState<File | null>(null);
   const [errorState,setErrorState] = useState<"Pending"|"Validated">("Pending");
-  const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const dispatch = useAppDispatch();
   const [employeeBasicInformation, setEmployeeBasicInformation] = useState<
     Employee

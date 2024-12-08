@@ -31,11 +31,14 @@ import {
   APPLICATION_CARE_GIVER,
   APPLICATION_SUPER_ADMIN,
 } from "@config/config";
+import PreLoader from "@component/common/PreLoader";
+import { selectRoles } from "@slices/authSlice/Auth";
 
 export default function Layout() {
   //snackbar configuration
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
+  const userRoles = useAppSelector(selectRoles);
 
   useEffect(() => {
     if (localStorage.getItem("hris-app-redirect-url")) {
@@ -56,11 +59,7 @@ export default function Layout() {
         <CssBaseline />
 
         <Sidebar
-          roles={[
-            APPLICATION_ADMIN,
-            APPLICATION_SUPER_ADMIN,
-            APPLICATION_CARE_GIVER,
-          ]}
+          roles={userRoles}
           currentPath={location.pathname}
           open={open}
           handleDrawer={() => setOpen(!open)}
@@ -79,7 +78,7 @@ export default function Layout() {
             pb: 6,
           }}
         >
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<PreLoader isLoading={true} message={"Loading"} />}>
             <Outlet />
           </Suspense>
           <Box

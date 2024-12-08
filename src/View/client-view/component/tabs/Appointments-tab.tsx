@@ -5,7 +5,7 @@ import AddNewAppointmentModal from '../../modal/AddNewAppointmentModal';
 import { useSearchParams } from 'react-router-dom'
 import { State } from '../../../../types/types'
 import { useAppDispatch, useAppSelector } from '../../../../slices/store'
-import { fetchAppointmentsByClientID, fetchAppointmentTypes } from '@slices/AppointmentSlice/appointment';
+import { fetchAppointmentsByClientID, fetchAppointmentTypes, resetSelectedAppointment } from '@slices/AppointmentSlice/appointment';
 
 
 const AppointmentsTab = () => {
@@ -21,15 +21,21 @@ const AppointmentsTab = () => {
   },[clientID])
 
   useEffect(()=>{
+    if(appointmentSlice?.submitState===State.success || appointmentSlice?.updateState===State.success){
+      setIsAppointmentModalVisible(false);
+      dispatch(resetSelectedAppointment());
+      setIsEditMode(false);
+    }
+  },[appointmentSlice.submitState,appointmentSlice.updateState])
+
+  useEffect(()=>{
       if(appointmentSlice?.selectedAppointment!==null){
         setIsAppointmentModalVisible(true);
       }
   },[appointmentSlice?.selectedAppointment])
 
   useEffect(()=>{ 
-    if(isAppointmentModalVisible){
       fetchCarePlansRelatedToClient();
-    }
   },[isAppointmentModalVisible])
 
 

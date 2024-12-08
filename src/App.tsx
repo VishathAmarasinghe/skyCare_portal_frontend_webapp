@@ -1,4 +1,4 @@
-import { createContext, useState, useMemo } from "react";
+import { createContext, useState, useMemo, useEffect } from "react";
 import { Provider } from "react-redux";
 
 // MUI imports
@@ -21,6 +21,8 @@ import { LoadScript } from "@react-google-maps/api";
 export const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
 function App() {
+
+  APIService.initialize(AppConfig.serviceUrls.getUserInfo);
   document.title = APP_NAME;
   const processLocalThemeMode = (): ThemeMode => {
     var localMode: ThemeMode | null = localStorage.getItem(

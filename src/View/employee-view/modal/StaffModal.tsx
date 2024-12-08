@@ -14,16 +14,17 @@ import { enqueueSnackbarMessage } from '@slices/commonSlice/common';
 interface AddNewClientModalProps {
   isCareGiverAddModalVisible: boolean;
   setIsCareGiverAddModalVisible: (value: boolean) => void;
+  isEditMode:boolean;
+  setIsEditMode:React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const StaffModal = ({isCareGiverAddModalVisible: IsCareGiverAddModalVisible, setIsCareGiverAddModalVisible: setIsCareGiverAddModalVisible }: AddNewClientModalProps) => {
+const StaffModal = ({isEditMode,setIsEditMode,isCareGiverAddModalVisible: IsCareGiverAddModalVisible, setIsCareGiverAddModalVisible: setIsCareGiverAddModalVisible }: AddNewClientModalProps) => {
   const [activeStep, setActiveStep] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [careGiverDocuments, setCareGiverDocuments] = useState<CareGiverDocuments[]>([]);
   const [careGiverPayments,setCareGiverPayments]= useState<CareGiverPayments[]>([]);
   const [uploadFiles, setUploadFiles] = useState<File[]>([]);
   const [profilePic, setProfilePic] = useState<File | null>(null);
-  const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const careGiverStatus =useAppSelector((state)=>state.careGivers);
   const [errorState,setErrorState] = useState<"Pending"|"Validated">("Pending");
   const dispatch = useAppDispatch();

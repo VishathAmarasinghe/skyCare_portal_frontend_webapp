@@ -20,6 +20,7 @@ export const SnackMessage = {
     saveEmployee:"Employee saved successfully",
     saveCareGiver:"Care giver saved successfully",
     updateEmployee:"Employee updated successfully",
+    login:"Login successful",
 
   },
   error: {
@@ -53,6 +54,9 @@ export const SnackMessage = {
     fetchCareGiverPaymentTypes:"Failed to fetch care giver payment types",
     updateEmployee:"Failed to update employee",
     fetchAppointments:"Failed to fetch appointments",
+    fetchCalenderEvents:"Failed to fetch calender events",
+    login:"Login failed",
+    updateJobAcceptanceState:"Failed to update job state",
         
   },
   warning: {},

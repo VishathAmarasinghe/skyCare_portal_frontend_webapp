@@ -5,6 +5,7 @@ import Layout from "../layout/Layout";
 import { RootState, useAppSelector } from "../slices/store";
 import PreLoader from "../component/common/PreLoader";
 import ErrorHandler from "../component/common/ErrorHandler";
+import LoginPage from "../layout/pages/LoginPage";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import {
   APPLICATION_ADMIN,
@@ -13,46 +14,72 @@ import {
 } from "@config/config";
 import { useSnackbar } from "notistack";
 import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { checkAuthToken } from "@slices/authSlice/Auth";
+import { State } from "../types/types";
 
 const AppHandler = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { message, type, timestamp } = useAppSelector((state) => state.common);
+  const auth = useAppSelector((state) => state.auth);
 
-  useEffect(()=>{
+  useEffect(() => {
+    console.log("auth toles", auth.roles);
+    console.log("system roles ", [APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN, APPLICATION_CARE_GIVER]);
+    
+    
+  }, [auth]);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    checkAuthToken(dispatch);
+  }, [dispatch]);
+
+  useEffect(() => {
     if (message && timestamp) {
-      enqueueSnackbar(message, { variant: type,anchorOrigin: { vertical: 'bottom', horizontal: 'right' } });
+      enqueueSnackbar(message, {
+        variant: type,
+        anchorOrigin: { vertical: "bottom", horizontal: "right" },
+      });
     }
-  },[message,timestamp])
+  }, [message, timestamp]);
 
   const router = createBrowserRouter([
     {
       path: "/",
       element: <Layout />,
       errorElement: <Error />,
-      children: getActiveRoutesV2(routes, [
-        APPLICATION_ADMIN,
-        APPLICATION_CARE_GIVER,
-        APPLICATION_SUPER_ADMIN,
-      ]),
+      children: getActiveRoutesV2(routes, auth?.roles),
+    },
+  ]);
+
+  const preAuthRoutes = createBrowserRouter([
+    {
+      path: "/",
+      element: <LoginPage />,
+      errorElement: <Error />,
+      children: getActiveRoutesV2(routes, []),
     },
   ]);
 
   return (
     <>
-      {/* {auth.status === "loading" && (
+      {auth.status === State.idle && <RouterProvider router={preAuthRoutes} />}
+      {auth.status === State.loading && (
         <PreLoader isLoading={true} message={auth.statusMessage}></PreLoader>
-      )} */}
-      {/* {auth.status === "success" && auth.mode === "active" && ( */}
-      <RouterProvider router={router} />
-      {/* )} */}
-      {/* {auth.status === "success" && auth.mode === "maintenance" && (
+      )}
+      {auth.status === State.success && auth.mode === "active" && (
+        <RouterProvider router={router} />
+      )}
+      {auth.status === State.success && auth.mode === "maintenance" && (
         <MaintenancePage />
       )}
-      {auth.status === "failed" && (
+      {auth.status === State.failed && (
         <ErrorHandler
           message={"Sometimes went wrong while authenticating the user :("}
         />
-      )} */}
+      )}
     </>
   );
 };

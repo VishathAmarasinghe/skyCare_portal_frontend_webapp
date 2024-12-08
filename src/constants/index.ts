@@ -12,6 +12,8 @@ export const CREATE_APPOINTMENT_STEPS = ["Basic Info", "Address & Participants",
 
 export const  CREATE_CARE_GIVER_STEPS = ["Basic Info", "File Uploads", "Salary"];
 
+export const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 export const phoneNoRegex = /^\+?[1-9]\d{1,14}$/
 
 export const DASHBOARD_CARDS:DashboardCardProps[]=[

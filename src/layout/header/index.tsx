@@ -18,17 +18,18 @@ import {
   Stack,
   Tooltip,
 } from "@mui/material";
-import { RootState, useAppSelector } from "../../slices/store";
+import { RootState, useAppDispatch, useAppSelector } from "../../slices/store";
 import { APP_NAME, AppConfig } from "@config/config";
 import ProfileDrawer from "../../View/dashboard-view/panel/ProfileDrawer";
 import { APIService } from "@utils/apiService";
+import { logout } from "@slices/authSlice/Auth";
 
 const Header = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-  APIService.initialize(AppConfig.serviceUrls.getUserInfo);
 
   //drawer open state
   const [open, setOpen] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
 
   console.log("APPP name ", APP_NAME);
 
@@ -135,6 +136,8 @@ const Header = () => {
                 key={"logout"}
                 onClick={() => {
                   handleCloseUserMenu();
+                  dispatch(logout());
+                  window.location.href = "/";
                 }}
               >
                 <Typography textAlign="center">Logout</Typography>

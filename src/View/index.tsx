@@ -8,6 +8,7 @@ const EmployeeView = lazy(() => import("./employee-view"));
 const reportView = lazy(() => import("./report-view"));
 const resourceView = lazy(() => import("./resource-view"));
 const incidentView = lazy(() => import("./incident-view"));
+const careGiverDashboardView = lazy(() => import("./careGiver-dashboard-view"));
 
 export const View = {
   dashboardView,
@@ -18,4 +19,5 @@ export const View = {
   reportView,
   resourceView,
   incidentView,
+  careGiverDashboardView,
 };

@@ -1,7 +1,7 @@
 import { PreLoaderProps } from "../../types/types";
-import wso2Logo from "../../assets/images/wso2-logo.svg";
+import companyLogo from "../../assets/images/app_logo.png";
 import Grid from "@mui/material/Grid";
-import loadingImage from "../../assets/images/loading.svg";
+import loadingImage from "../../assets/images/Loading.gif";
 import { Box, Container, Paper, alpha, useTheme } from "@mui/material";
 import CircularProgress, {
   circularProgressClasses,
@@ -9,6 +9,7 @@ import CircularProgress, {
 } from "@mui/material/CircularProgress";
 import { APP_NAME } from "@config/config";
 import StateWithImage from "../ui/StateWithImage";
+import LinearProgress from '@mui/material/LinearProgress';
 
 function CustomCircularProgress(props: CircularProgressProps) {
   return (
@@ -60,7 +61,7 @@ const PreLoader = (props: PreLoaderProps) => {
         borderRadius: 2,
         paddingY: 5,
         position: "relative",
-        top: 60,
+        top: 120,
         m: "auto",
         maxWidth: "40vw",
       }}
@@ -75,14 +76,14 @@ const PreLoader = (props: PreLoaderProps) => {
         >
           <Grid item xs={12}>
             {!props.hideLogo && (
-              <img alt="logo" width="150" src={wso2Logo}></img>
+              <img alt="logo" width="320" src={companyLogo}></img>
             )}
           </Grid>
           <Grid item xs={12}>
-            <StateWithImage imageUrl={loadingImage} message="asd" />
+            <StateWithImage imageUrl={loadingImage} message="Loading" />
           </Grid>
-          <Grid item xs={12}>
-            {props.isLoading && <CustomCircularProgress />}
+          <Grid item xs={12} width={"100%"}>
+            {props.isLoading && <LinearProgress  />}
           </Grid>
         </Grid>
       </Container>
