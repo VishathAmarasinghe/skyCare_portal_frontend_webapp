@@ -35,8 +35,11 @@ const ClientInfoPanel = () => {
     <Stack
       width="100%"
       height="100%"
+      data-aos="fade-right"
+    data-aos-duration="200"
       flexDirection="column"
-      sx={{ backgroundColor: "white", border: "2px solid red" }}
+      borderRadius={3}
+      sx={{ backgroundColor: "white" }}
     >
       <Stack
         width="100%"

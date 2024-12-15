@@ -53,7 +53,11 @@ const EmployeeView = () => {
   },[isStaffAddModalVisible])
 
   return (
-    <Stack width="100%" border="2px solid red" height="100%">
+    <Stack width="100%"
+    data-aos="fade-right"
+    data-aos-duration="200"
+    sx={{backgroundColor: theme.palette.background.paper, boxShadow: 1, borderRadius: 2}}
+    height="100%">
       {/* Header Section */}
       <Stack
         width="100%"

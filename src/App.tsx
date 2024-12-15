@@ -17,10 +17,20 @@ import { SnackbarProvider } from "notistack";
 import { APIService } from "@utils/apiService";
 import ConfirmationDialogContextProvider from "@context/DialogContext";
 import { LoadScript } from "@react-google-maps/api";
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 export const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
 function App() {
+
+  useEffect(() => {
+    AOS.init({
+      duration: 1000, // Animation duration in milliseconds
+      easing:"ease-in",
+      once:false,
+    });
+  }, []);
 
   APIService.initialize(AppConfig.serviceUrls.getUserInfo);
   document.title = APP_NAME;

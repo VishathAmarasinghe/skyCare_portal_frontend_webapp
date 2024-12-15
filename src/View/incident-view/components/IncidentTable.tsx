@@ -25,8 +25,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 function CustomToolbar() {
   return (
     <GridToolbarContainer>
-      <GridToolbarColumnsButton placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}  />
-      <GridToolbarFilterButton placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
+      <GridToolbarColumnsButton   />
+      <GridToolbarFilterButton  />
       <GridToolbarQuickFilter placeholder="Search" />
     </GridToolbarContainer>
   );
@@ -181,9 +181,7 @@ const IncidentTable = ({ }: ClientTableProps) => {
         columns={initialColumns}
         getRowId={(row) => row.incidentID}
         density="compact"
-        disableSelectionOnClick
         pagination
-        page={1}
         pageSize={5}
         onPageChange={handlePageChange}
         components={{

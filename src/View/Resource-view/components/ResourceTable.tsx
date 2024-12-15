@@ -14,135 +14,138 @@ import {
   Chip,
   IconButton,
   Stack,
-  Typography,
   useTheme,
 } from "@mui/material";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useAppDispatch, useAppSelector } from "@slices/store";
+import { deleteResource, fetchSingleResource, Resource } from "@slices/ResourceSlice/resource";
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import { useConfirmationModalContext } from "@context/DialogContext";
+import { ConfirmationType } from "../../../types/types";
 
 function CustomToolbar() {
   return (
     <GridToolbarContainer>
-      <GridToolbarColumnsButton placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}  />
-      <GridToolbarFilterButton placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
+      <GridToolbarColumnsButton />
+      <GridToolbarFilterButton />
       <GridToolbarQuickFilter placeholder="Search" />
     </GridToolbarContainer>
   );
 }
 
-const initialColumns: GridColDef[] = [
-  { field: "resourceID", headerName: "Resource ID", width: 100, align: "center" },
-  { field: "title", headerName: "Title", width: 130 },
-  { field: "lastUpdatedDate", headerName: "Updated Date", width: 130 },
-  {
-    field: "createdBy",
-    headerName: "Created By",
-    flex: 1,
-    renderCell: (params) => (
-      <Chip
-        avatar={<Avatar>{params.row.creatorName.charAt(0).toUpperCase()}</Avatar>}
-        label={params.value}
-        variant="outlined"
-      />
-    ),
-  },
-  {
-    field: "action",
-    headerName: "Action",
-    width: 150,
-    renderCell: (params) => {
-      const navigate = useNavigate();
-      return (
-        <Stack flexDirection="row">
-          <IconButton>
-            <EditIcon />
-          </IconButton>
+interface ResourceTableProps {}
 
-          <IconButton>
-            <DeleteIcon />
-          </IconButton>
+const ResourceTable = ({}: ResourceTableProps) => {
+  const theme = useTheme();
+  const resourceSlice = useAppSelector((state) => state.resource);
+  const [resources, setResources] = useState<Resource[]>([]);
+  const dispatch = useAppDispatch();
+  const { showConfirmation } = useConfirmationModalContext();
 
+  useEffect(()=>{
+    setResources(resourceSlice.resources);
+  },[resourceSlice?.state])
+
+  const handleDelete = (resourceId: string) => {
+    dispatch(deleteResource({resourceID:resourceId}));
+  };
+
+  const initialColumns: GridColDef[] = [
+    { field: "resourceId", headerName: "Resource ID", width: 100, align: "center" },
+    { field: "resourceName", headerName: "Resource Name", flex: 1 },
+    { field: "validFrom", headerName: "Valid From", width: 130,renderCell:(params)=>new Date(params.value).toLocaleDateString()},
+    { field: "validTo", headerName: "Valid To", width: 130,renderCell:(params)=>new Date(params.value).toLocaleDateString()},
+    {
+      field: "shareType",
+      headerName: "Share Type",
+      width: 250,
+      headerAlign: "center",
+      align: "center",
+      renderCell: (params) => (
+        <Chip
+        size="small"
+          label={params.value}
+          style={{
+            backgroundColor:
+              params.value === "Internal Only" ? "#FFD700" : "#87CEEB",
+            color: "#fff",
+          }}
+        />
+      ),
+    },
+    {
+      field: "creatorId",
+      headerName: "Created By",
+      flex: 1,
+      renderCell: (params) => (
+        <Chip
+        size="small"
+          avatar={<Avatar>{params.row.creatorId.charAt(0).toUpperCase()}</Avatar>}
+          label={params.value}
+          variant="outlined"
+        />
+      ),
+    },
+    {
+      field: "action",
+      headerName: "Action",
+      width: 80,
+      renderCell: (params) => {
+        return (
+          <Stack width={"100%"} flexDirection={"row"}>
           <IconButton
             aria-label="view"
             onClick={() => {
-              navigate(`/Clients/clientInfo?clientID=${params.row.clientID}`);
+              dispatch(fetchSingleResource({resourceID:params.row.resourceId}));
             }}
           >
             <RemoveRedEyeOutlinedIcon />
           </IconButton>
-        </Stack>
-      );
-    },
-  },
-];
-
-const sampleResources = [
-    {
-      resourceID: "RES001",
-      title: "Important Document",
-      lastUpdatedDate: "2023-11-09",
-      createdBy: "John Doe",
-      creatorName: "John Doe",
-    },
-    {
-      resourceID: "RES002",
-      title: "Project Proposal",
-      lastUpdatedDate: "2023-11-08",
-      createdBy: "Jane Smith",
-      creatorName: "Jane Smith",
-    },
-    {
-      resourceID: "RES003",
-      title: "Sales Report",
-      lastUpdatedDate: "2023-11-07",
-      createdBy: "Michael Chen",
-      creatorName: "Michael Chen",
-    },
-    {
-      resourceID: "RES004",
-      title: "Marketing Strategy",
-      lastUpdatedDate: "2023-11-06",
-      createdBy: "Olivia Garcia",
-      creatorName: "Olivia Garcia",
-    },
-    {
-      resourceID: "RES005",
-      title: "Financial Report",
-      lastUpdatedDate: "2023-11-05",
-      createdBy: "David Miller",
-      creatorName: "David Miller",
+          <IconButton
+            aria-label="delete"
+            onClick={() => {
+              showConfirmation(
+                "Delete Resource",
+                `Are you sure you want to delete resource "${params.row.resourceName}"?`,
+                ConfirmationType.update,
+                () => handleDelete(params.row.resourceId),
+                "Delete",
+                "Cancel"
+              );
+            }}
+          >
+            <DeleteOutlineOutlinedIcon />
+          </IconButton>
+          </Stack>
+        );
+      },
     },
   ];
-  
-
-interface ClientTableProps {
-  
-}
-
-const ResourceTable = ({ }: ClientTableProps) => {
-  const theme = useTheme();
 
   const handlePageChange = (newPage: number) => {
-    
+    // Handle pagination if needed
   };
 
   return (
     <Box sx={{ height: "100%", width: "100%" }}>
       <DataGrid
-        rows={sampleResources}
+        rows={resources}
         columns={initialColumns}
-        getRowId={(row) => row.resourceID}
+        getRowId={(row) => row.resourceId}
         density="compact"
-        disableSelectionOnClick
+        // loading={clientInfo.State === State.loading}
         pagination
-        paginationMode="server"
-        page={1}
-        pageSize={5}
-        onPageChange={handlePageChange}
-        components={{
-          Toolbar: CustomToolbar,
+        paginationMode="client"
+        initialState={{
+          pagination: {
+            paginationModel: { pageSize: 10 },
+          },
+        }}
+        slots={{
+          toolbar: CustomToolbar,
         }}
         sx={{
           
@@ -161,4 +164,4 @@ const ResourceTable = ({ }: ClientTableProps) => {
   );
 };
 
-export default ResourceTable
+export default ResourceTable;

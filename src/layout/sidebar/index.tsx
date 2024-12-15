@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   styled,
   Theme,
@@ -20,6 +20,8 @@ import { SIDEBAR_WIDTH } from "../../Config/ui";
 import { useLocation, matchPath, useMatches } from "react-router-dom";
 import { ColorModeContext } from "../../App";
 import { Stack, Typography } from "@mui/material";
+import { fetchMetaEmployees, fetchMetaEmployeesMapping } from "@slices/EmployeeSlice/employee";
+import { useAppDispatch } from "@slices/store";
 
 interface SidebarProps {
   open: boolean;
@@ -51,10 +53,16 @@ function useRouteMatch(patterns: readonly string[]) {
 }
 
 const Sidebar = (props: SidebarProps) => {
+  const dispatch = useAppDispatch();
   const currentIndex = useRouteMatch([
     ...getActiveRouteDetails(props.roles).map((r) => r.path),
   ]);
   const theme = useTheme();
+
+  useEffect(()=>{
+    dispatch(fetchMetaEmployees());
+    dispatch(fetchMetaEmployeesMapping());
+  },[])
 
   return (
     <ColorModeContext.Consumer>

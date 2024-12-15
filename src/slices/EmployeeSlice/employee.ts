@@ -33,6 +33,19 @@ export interface Employee {
   employeePhoneNo: string[];
 }
 
+export interface EmployeeBasicInfoUpdater {
+  employeeID: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface EmployeeMapping{
+  [employeeID: string]: string;
+}
+
 // Define a type for the slice state
 interface EmployeeState {
   state: State;
@@ -41,7 +54,10 @@ interface EmployeeState {
   stateMessage: string | null;
   errorMessage: string | null;
   selectedEmployee: Employee | null;
+  metaAllEmployees:Employee[];
+  metaAllEmployeeMapping:EmployeeMapping;
   employees: Employee[];
+  logedEMployee: Employee | null;
   totalEmployeeCount: number;
   [key: string]: any; // Index signature
 }
@@ -53,10 +69,106 @@ const initialState: EmployeeState = {
   updateState: State.idle,
   stateMessage: '',
   errorMessage: '',
+  metaAllEmployees:[],
+  metaAllEmployeeMapping:{},
+  logedEMployee: null,
   selectedEmployee: null,
   employees: [],
   totalEmployeeCount: 0,
 };
+
+// Fetch all employees
+export const fetchMetaEmployees = createAsyncThunk(
+  'employee/fetchMetaAllEmployees',
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await APIService.getInstance().get(AppConfig.serviceUrls.employees+`/meta/allemployees`);
+      return response.data;
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue('Request canceled');
+      }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.fetchMetaEmployees
+              : String(error.response?.data?.message),
+          type: 'error',
+        })
+      );
+      throw error.response?.data?.message;
+    }
+  }
+);
+
+export const fetchMetaEmployeesMapping = createAsyncThunk(
+  'employee/fetchAllEmployeesMapping',
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await APIService.getInstance().get(AppConfig.serviceUrls.employees+`/meta/careGiverMapping`);
+      return response.data;
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue('Request canceled');
+      }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.fetchMetaEmployees
+              : String(error.response?.data?.message),
+          type: 'error',
+        })
+      );
+      throw error.response?.data?.message;
+    }
+  }
+);
+
+// Save an employee
+export const updateEmployeeBasicInfo = createAsyncThunk(
+  'employee/updateEmployeeBasicInfo',
+  async (
+    payload: { employeeData: EmployeeBasicInfoUpdater; profilePhoto: File | null },
+    { dispatch, rejectWithValue }
+  ) => {
+    try {
+      const formData = new FormData();
+      formData.append('employeeBasicInfo', JSON.stringify(payload.employeeData));
+      if (payload.profilePhoto) {
+        formData.append('profilePic', payload.profilePhoto);
+      }
+
+      const response = await APIService.getInstance().post(AppConfig.serviceUrls.employees+`/update-basic-info`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      dispatch(
+        enqueueSnackbarMessage({
+          message: response.data,
+          type: 'success',
+        })
+      );
+
+      return response.data;
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue('Request canceled');
+      }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.saveEmployee
+              : String(error.response?.data?.message),
+          type: 'error',
+        })
+      );
+      throw error.response?.data?.message;
+    }
+  }
+);
 
 // Fetch all employees
 export const fetchEmployeesByRole = createAsyncThunk(
@@ -99,6 +211,31 @@ export const fetchEmployees = createAsyncThunk(
           message:
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchEmployees
+              : String(error.response?.data?.message),
+          type: 'error',
+        })
+      );
+      throw error.response?.data?.message;
+    }
+  }
+);
+
+
+export const fetchCurrnetEmployee = createAsyncThunk(
+  'employee/fetchCurrentEmployee',
+  async (employeeID: string, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await APIService.getInstance().get(`${AppConfig.serviceUrls.employees}/${employeeID}`);
+      return response.data;
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue('Request canceled');
+      }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.fetchSingleEmployee
               : String(error.response?.data?.message),
           type: 'error',
         })
@@ -298,6 +435,45 @@ const EmployeeSlice = createSlice({
       .addCase(updateEmployee.rejected, (state) => {
         state.updateState = State.failed;
         state.stateMessage = 'Failed to update employees!';
+      })
+      .addCase(fetchMetaEmployees.pending, (state) => {
+        state.state = State.loading;
+        state.stateMessage = 'Fetching meta Employee...';
+      })
+      .addCase(fetchMetaEmployees.fulfilled, (state, action) => {
+        state.state= State.success;
+        state.stateMessage = 'Fetching all meta Employees!';
+        state.metaAllEmployees = action.payload;
+      })
+      .addCase(fetchMetaEmployees.rejected, (state) => {
+        state.state = State.failed;
+        state.stateMessage = 'Failed to fetch meta employees!';
+      })
+      .addCase(fetchMetaEmployeesMapping.pending, (state) => {
+        state.state = State.loading;
+        state.stateMessage = 'Fetching meta Employee...';
+      })
+      .addCase(fetchMetaEmployeesMapping.fulfilled, (state, action) => {
+        state.state= State.success;
+        state.stateMessage = 'Fetching all meta Employees!';
+        state.metaAllEmployeeMapping = action.payload;
+      })
+      .addCase(fetchMetaEmployeesMapping.rejected, (state) => {
+        state.state = State.failed;
+        state.stateMessage = 'Failed to fetch meta employees!';
+      })
+      .addCase(fetchCurrnetEmployee.pending, (state) => {
+        state.state = State.loading;
+        state.stateMessage = 'Fetching meta Employee...';
+      })
+      .addCase(fetchCurrnetEmployee.fulfilled, (state, action) => {
+        state.state= State.success;
+        state.stateMessage = 'Fetching all meta Employees!';
+        state.logedEMployee = action.payload;
+      })
+      .addCase(fetchCurrnetEmployee.rejected, (state) => {
+        state.state = State.failed;
+        state.stateMessage = 'Failed to fetch meta employees!';
       });
   },
 });

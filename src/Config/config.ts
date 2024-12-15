@@ -27,5 +27,12 @@ export const AppConfig = {
     appointmentTypes: `${ServiceBaseUrl}/appointment-types`,
     authenticaion: `${ServiceBaseUrl}/auth`,
     jobAssigns: `${ServiceBaseUrl}/job-assigner`,
+    resources: `${ServiceBaseUrl}/resources`,
+    shiftNotes: `${ServiceBaseUrl}/shift-notes`,
+    otp: `${ServiceBaseUrl}/otp`,
+    incidentTypes: `${ServiceBaseUrl}/incident-types`,
+    incidentStatus: `${ServiceBaseUrl}/incident-status`,
+    incidentQuestions: `${ServiceBaseUrl}/incident-action-types`,
+    dashboard: `${ServiceBaseUrl}/dashboard`,
   },
 };

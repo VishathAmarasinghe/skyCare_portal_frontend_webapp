@@ -66,7 +66,7 @@ const NotesTab = () => {
     }
   }
   return (
-    <Stack width="100%" height="80%" border="2px solid red">
+    <Stack width="100%" height="80%">
         <Stack width="100%" flexDirection="row" alignItems="end" justifyContent="flex-end">
             <Button variant='contained' onClick={()=>{setIsNoteModalVisible(true);setIsEditMode(true)}}>Add Notes</Button>
         </Stack>

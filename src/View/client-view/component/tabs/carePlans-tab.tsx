@@ -44,10 +44,10 @@ const CarePlansTab = () => {
     }
   }
   return (
-    <Stack width="100%" height="80%" border="2px solid red">
+    <Stack width="100%" height="80%" >
       <AddNewCarePlanModal isEditMode={isEditMode} setIsEditMode={setIsEditMode} isCarePlanAddModalVisible={isCarePlanModalVisible} setIsCarePlanAddModalVisible={setIsCarePlanModalVisible}/>
         <Stack width="100%" flexDirection="row" alignItems="end" justifyContent="flex-end">
-            <Button variant='contained' onClick={()=>setIsCarePlanModalVisible(true)}>Add Care Plan</Button>
+            <Button variant='contained' onClick={()=>{setIsCarePlanModalVisible(true),setIsEditMode(true)}}>Add Care Plan</Button>
         </Stack>
         <Stack width="100%" height="480px">
             <CarePlanTable isCarePlanModalVisible={isCarePlanModalVisible} setIsCarePlanModalVisible={setIsCarePlanModalVisible}/>

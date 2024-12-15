@@ -55,7 +55,10 @@ export default function Layout() {
 
   return (
     <ConfirmationModalContextProvider>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: "flex" }}
+      data-aos="fade-up"
+      data-aos-duration="200"
+      >
         <CssBaseline />
 
         <Sidebar

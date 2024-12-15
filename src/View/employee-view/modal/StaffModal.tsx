@@ -10,6 +10,7 @@ import { CareGiver, CareGiverDocuments, CareGiverPayments, saveCareGiver } from 
 import { useAppDispatch, useAppSelector } from '@slices/store';
 import { Employee } from '@slices/EmployeeSlice/employee';
 import { enqueueSnackbarMessage } from '@slices/commonSlice/common';
+import { APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN } from '@config/config';
 
 interface AddNewClientModalProps {
   isCareGiverAddModalVisible: boolean;
@@ -26,8 +27,11 @@ const StaffModal = ({isEditMode,setIsEditMode,isCareGiverAddModalVisible: IsCare
   const [uploadFiles, setUploadFiles] = useState<File[]>([]);
   const [profilePic, setProfilePic] = useState<File | null>(null);
   const careGiverStatus =useAppSelector((state)=>state.careGivers);
+  const employeeSlice = useAppSelector((state)=>state?.employees);
   const [errorState,setErrorState] = useState<"Pending"|"Validated">("Pending");
   const dispatch = useAppDispatch();
+  const [employeeState, setEmployeeState] = useState<"Activated" | "Deactivated" | "Pending">("Pending");
+  const authRole = useAppSelector((state)=>state?.auth?.roles);
   const [employeeBasicInformation, setEmployeeBasicInformation] = useState<
     Employee
   >({
@@ -56,6 +60,12 @@ const StaffModal = ({isEditMode,setIsEditMode,isCareGiverAddModalVisible: IsCare
   });
 
   useEffect(()=>{
+    if (employeeSlice?.selectedEmployee) {
+      setEmployeeState(employeeSlice?.selectedEmployee?.status as "Pending" | "Activated" | "Deactivated");
+    }
+  },[employeeSlice?.selectedEmployee])
+
+  useEffect(()=>{
     setActiveStep(0);
   },[IsCareGiverAddModalVisible])
 
@@ -75,34 +85,60 @@ const StaffModal = ({isEditMode,setIsEditMode,isCareGiverAddModalVisible: IsCare
     setActiveStep((prevStep) => prevStep - 1);
   };
 
+
   useEffect(()=>{
     if (errorState==="Validated") {
-      if (uploadFiles?.length===careGiverDocuments?.length) {
+      if (uploadFiles?.length===careGiverDocuments?.length && careGiverStatus?.selectedCareGiver==null) {
         const careGiverPayload:CareGiver ={
           careGiverDocuments:careGiverDocuments,
           careGiverPayments:careGiverPayments,
           employee:employeeBasicInformation,
           careGiverID:"",
-          status:"Active"
+          status:employeeBasicInformation?.status
         } 
         console.log("uploadFiles",uploadFiles);
         console.log("careGiverDocuments",careGiverDocuments);
-        
         dispatch(saveCareGiver({careGiverData:careGiverPayload,profilePhoto:profilePic,uploadFiles:uploadFiles}));
         setErrorState("Pending");
+    }else if(careGiverStatus?.selectedCareGiver!=null && careGiverStatus?.careGiverDocumentTypes?.length===careGiverDocuments?.length){
+      const careGiverPayload:CareGiver ={
+        careGiverDocuments:careGiverDocuments,
+        careGiverPayments:careGiverPayments,
+        employee:{...employeeBasicInformation,status:employeeState},
+        careGiverID:careGiverStatus.selectedCareGiver.careGiverID,
+        status:employeeState
+      }
+      console.log("careGiverPayload",careGiverPayload);
+      console.log("uploadFiles",uploadFiles);
+      
+      
+      
     }else{
       console.log("errorState",errorState);
       console.log("uploadFiles",uploadFiles);
       console.log("careGiverDocuments",careGiverDocuments);
       dispatch(enqueueSnackbarMessage({message:"Please upload all documents, and fill all the required fields",type:"error"}));
-    }    
+    }   
     }
+    setErrorState("Pending");
   },[errorState])
 
   // Handle save (final step)
   const handleSave = async () => {
     document.getElementById("employeeMainData")?.click();
     employeeBasicInformation.accessRole = "CareGiver";
+  };
+
+  const handleStatusChange = (newStatus: "Activated" | "Deactivated") => {
+    if (careGiverStatus.selectedCareGiver) {
+      const updatedCareGiver = {
+        ...careGiverStatus.selectedCareGiver,
+        status: newStatus,
+      };
+      employeeBasicInformation.status = newStatus;
+      setEmployeeState(newStatus);
+      dispatch(enqueueSnackbarMessage({ message: `Status updated to ${newStatus}`, type: "success" }));
+    }
   };
 
   return (
@@ -115,9 +151,28 @@ const StaffModal = ({isEditMode,setIsEditMode,isCareGiverAddModalVisible: IsCare
       open={IsCareGiverAddModalVisible}
       onOk={() => setIsCareGiverAddModalVisible(false)}
       onCancel={() => setIsCareGiverAddModalVisible(false)}
+
       footer={(
         <Box display="flex" justifyContent="end" width="100%">
           {/* Back Button */}
+          {careGiverStatus.selectedCareGiver && (authRole?.includes(APPLICATION_ADMIN) || authRole?.includes(APPLICATION_SUPER_ADMIN)) && (
+          <Button
+            variant="outlined"
+            sx={{mx: 1}}
+            color={employeeState === "Pending" ? "success" : "error"}
+            onClick={() =>
+              handleStatusChange(
+                employeeState === "Pending"
+                  ? "Activated"
+                  : "Deactivated"
+              )
+            }
+          >
+            {employeeState === "Pending"
+              ? "Activate"
+              : "Deactivate"}
+          </Button>
+        )}
           <Button
             variant="outlined"
             onClick={handleBack}

@@ -5,7 +5,7 @@
 // herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
 // You may not alter or remove any copyright or other notice from copies of this content.
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import appLogo from "../../assets/images/app_logo.png";
 import Typography from "@mui/material/Typography";
 import Toolbar from "@mui/material/Toolbar";
@@ -19,10 +19,11 @@ import {
   Tooltip,
 } from "@mui/material";
 import { RootState, useAppDispatch, useAppSelector } from "../../slices/store";
-import { APP_NAME, AppConfig } from "@config/config";
+import { APP_NAME, AppConfig, APPLICATION_ADMIN, APPLICATION_CARE_GIVER, APPLICATION_SUPER_ADMIN, FILE_DOWNLOAD_BASE_URL } from "@config/config";
 import ProfileDrawer from "../../View/dashboard-view/panel/ProfileDrawer";
 import { APIService } from "@utils/apiService";
 import { logout } from "@slices/authSlice/Auth";
+import { Employee, fetchCurrnetEmployee } from "@slices/EmployeeSlice/employee";
 
 const Header = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -30,6 +31,22 @@ const Header = () => {
   //drawer open state
   const [open, setOpen] = useState<boolean>(false);
   const dispatch = useAppDispatch();
+  const authUser = useAppSelector((state)=>state.auth.userInfo);
+  const roles  = useAppSelector((state)=>state.auth.roles);
+  const employeeSlice = useAppSelector((state: RootState) => state.employees);
+  const [currentUserInfo, setCurrentUserInfo] = useState<Employee | null>(null);
+
+  useEffect(() => {
+    if (authUser?.userID) {
+      dispatch(fetchCurrnetEmployee(authUser?.userID));
+    }
+  }, [authUser?.userID]);
+
+  useEffect(() => {
+    if (employeeSlice.logedEMployee) {
+      setCurrentUserInfo(employeeSlice.logedEMployee);
+    }
+  }, [employeeSlice.logedEMployee]);
 
   console.log("APPP name ", APP_NAME);
 
@@ -64,14 +81,14 @@ const Header = () => {
           },
         }}
       >
-        {/* <img
+        <img
           alt="SkyCare Portal"
           style={{
             height: "55px",
             maxWidth: "260px",
           }}
           src={appLogo}
-        ></img> */}
+        ></img>
         <Typography
           variant="h5"
           sx={{
@@ -84,20 +101,27 @@ const Header = () => {
         <Box sx={{ flexGrow: 0 }}>
           <>
             <Stack flexDirection={"row"} alignItems={"center"} gap={2}>
-              <Box>
+            <Box
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="flex-end"
+                  alignItems="end"
+                >
                 <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                  Vishath
+                  {currentUserInfo?.firstName} {currentUserInfo?.lastName}
                 </Typography>
-                <Typography variant="body2">Admin</Typography>
+                <Typography variant="body2">{
+                  roles.includes(APPLICATION_ADMIN) || roles.includes(APPLICATION_SUPER_ADMIN) ? "Admin" : roles?.includes(APPLICATION_CARE_GIVER)? "Care Giver" : "Unknown User"
+                  }</Typography>
               </Box>
               <Tooltip title="Open settings">
                 <Avatar
                   onClick={handleOpenUserMenu}
                   sx={{ border: 2, borderColor: "primary.main" }}
-                  src={""}
+                  src={currentUserInfo?.profile_photo? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(currentUserInfo?.profile_photo)}` : ""}
                   alt={"Avatar"}
                 >
-                  {"A"}
+                  {currentUserInfo?.firstName?.charAt(0).toUpperCase()}
                 </Avatar>
               </Tooltip>
             </Stack>

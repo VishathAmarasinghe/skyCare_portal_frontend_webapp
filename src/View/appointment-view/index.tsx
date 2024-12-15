@@ -18,17 +18,21 @@ const AppointmentView = () => {
   }
 
   return (
-    <Stack width="100%" border="2px solid red" height="100%">
+    <Stack width="100%"  height="100%" 
+    data-aos="fade-right"
+    data-aos-duration="200"
+    sx={{backgroundColor: theme.palette.background.paper, boxShadow: 1, borderRadius: 2, padding: 2}}
+    >
       <AddNewAppointmentModal isAppointmentAddModalVisible={isAppointmentDetailShowingModalOpen} 
         setIsAppointmentAddModalVisible={setIsAppointmentAddModalVisible}
         isEditMode={isEditing}
         setIsEditMode={setIsEditing}
         />
       <Stack width="100%" flexDirection="row" alignItems="center" height="8%" justifyContent="space-between">
-        <Typography color={theme.palette.primary.main} fontWeight="600" variant="h6">Appointments</Typography>
+        <Typography color={theme.palette.primary.main} fontWeight="600" variant="h5">Appointments</Typography>
         <Button onClick={()=>handleOpenAddNewAppointmentModal()} variant='contained'>Add Appointment</Button>
       </Stack>
-      <Stack width="100%" height="90%" border="2px solid green">
+      <Stack width="100%" height="90%">
         <AppointmentCalender setIsAppointmentAddModalVisible={setIsAppointmentAddModalVisible} setIsEditing={setIsEditing}/>
       </Stack>
     </Stack>

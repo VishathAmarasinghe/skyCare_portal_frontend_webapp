@@ -1,4 +1,4 @@
-import { Button, Stack, useTheme } from "@mui/material";
+import { Button, Stack, Typography, useTheme } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import ClientTable from "../component/ClientTable";
 import AddNewClientModal from "../modal/AddNewClientModal";
@@ -35,8 +35,13 @@ const ClientTablePanel = () => {
     setIsClientAddModalVisible(true);
   }
   return( 
-  <Stack width="100%" height="100%" border="2px solid red"
+  <Stack width="100%" height="100%"
+  data-aos="fade-right"
+    data-aos-duration="200"
   sx={{
+    boxShadow: 1,
+    borderRadius: 2,
+    padding: 2,
     backgroundColor: theme.palette.background.paper ,
 
   }}
@@ -44,13 +49,17 @@ const ClientTablePanel = () => {
     
     <Stack width="100%" flexDirection="row" alignItems="end" justifyContent="flex-end">
       <AddNewClientModal  isClientAddModalVisible={isClientAddModalVisible} setIsClientAddModalVisible={setIsClientAddModalVisible}/>
-      <Button
+      <Stack width="100%" mb={2} flexDirection="row" alignItems="center" height="5%" justifyContent="space-between">
+        <Typography color={theme.palette.primary.main} fontWeight="600" variant="h5">Clients</Typography>
+        <Button
       color="primary"
       variant="contained"
       onClick={handleOpenModel}
       >
         Add Client
       </Button>
+      </Stack>
+      
     </Stack>
     <Stack width="100%" height="80%">
       <ClientTable />

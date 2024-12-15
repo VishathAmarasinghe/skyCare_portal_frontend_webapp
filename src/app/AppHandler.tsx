@@ -17,6 +17,8 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { checkAuthToken } from "@slices/authSlice/Auth";
 import { State } from "../types/types";
+import CareGiverRegistrationPage from "../layout/pages/CareGiverRegistrationPage";
+import ForgetPassword from "../layout/pages/ForgetPassword";
 
 const AppHandler = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -58,13 +60,21 @@ const AppHandler = () => {
     {
       path: "/",
       element: <LoginPage />,
-      errorElement: <Error />,
-      children: getActiveRoutesV2(routes, []),
+      errorElement: <Error />
     },
+    {
+      path: "/registration-caregiver",
+      element: <CareGiverRegistrationPage />,
+    },
+    {
+      path:"/reset-password",
+      element: <ForgetPassword/>,
+    }
   ]);
 
   return (
     <>
+    {/* <RouterProvider router={registrationRoute} /> */}
       {auth.status === State.idle && <RouterProvider router={preAuthRoutes} />}
       {auth.status === State.loading && (
         <PreLoader isLoading={true} message={auth.statusMessage}></PreLoader>

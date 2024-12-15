@@ -23,8 +23,10 @@ import {
   AppointmentAttachment,
   AppointmentType,
   fetchAppointmentTypes,
+  RecurrentAppointmentValues,
   saveAppointment,
   updateAppointment,
+  updateRecurrentAppointment,
 } from "@slices/AppointmentSlice/appointment";
 import AppointmentParticipantTable from "../../../component/common/AppointmentParticipantTable";
 import { useAppDispatch, useAppSelector } from "@slices/store";
@@ -61,11 +63,14 @@ interface CaregiverInfo {
 interface AppointmentFormProps {
   isEditMode: boolean;
   activeStep: number;
+  selectedRecurrentAppointment: RecurrentAppointmentValues| null;
+
 }
 
 const AppointmentForm: React.FC<AppointmentFormProps> = ({
   isEditMode,
   activeStep,
+  selectedRecurrentAppointment
 }) => {
   const [appointmentParticipants, setAppointmentsParticipants] = useState<
     CaregiverInfo[]
@@ -250,7 +255,19 @@ const validationSchema = Yup.object({
           taskID: appointmentSlice?.selectedAppointment?.jobAssigns?.taskID ?? "",
           assignType: appointmentSlice?.selectedAppointment?.jobAssigns?.assignType ?? ""
         }
+        
       });
+      if(selectedRecurrentAppointment!=null){
+        setInitialValues({
+          ...appointmentSlice.selectedAppointment,
+          startDate:selectedRecurrentAppointment.startDate,
+          endDate:selectedRecurrentAppointment.endDate,
+          startTime:selectedRecurrentAppointment.startTime,
+          endTime:selectedRecurrentAppointment.endTime,
+          comment:selectedRecurrentAppointment.comment
+        })
+      }
+      
 
       if (appointmentSlice.selectedAppointment?.attachments) {
         setUIShowingFile(
@@ -261,8 +278,53 @@ const validationSchema = Yup.object({
           }))
         );
       }
+    }else{
+      setAppointmentsParticipants([]);
+      setInitialValues({
+        appointmentID: "",
+        title: "",
+        appointmentTypeID: "",
+        clientID: "",
+        caregiverCount: 0,
+        startDate: "",
+        startTime: "",
+        endDate: "",
+        endTime: "",
+        duration: 0,
+        comment: "",
+        carePlanID: "",
+        taskID: "",
+        broadcastType: "",
+        appointmentAddress: {
+          appointmentAddressID: "",
+          address: "",
+          city: "",
+          state: "",
+          postalCode: "",
+        },
+        attachments: [],
+        recurrenceState: false,
+        recurrentWork: {
+          recurrentWorkID: "",
+          appointmentID: "",
+          taskID: "",
+          recurrenceType: "",
+          startDate: "",
+          endDate: "",
+          frequencyCount: 0,
+          day: "",
+          occurrenceLimit: 0,
+        },
+        jobAssigns: {
+          careGiverIDs: [],
+          taskID: "",
+          appointmentID: "",
+          assignType: "",
+          assigner: "EM00001",
+        },
+      })
     }
-  }, [appointmentSlice?.selectedAppointment]);
+  }, [appointmentSlice?.selectedAppointment,selectedRecurrentAppointment]);
 
   useEffect(() => {
     if (appointmentSlice.state === State.success) {
@@ -391,20 +453,35 @@ const validationSchema = Yup.object({
   const handleSubmit = async (values: Appointment, formikHelpers: FormikHelpers<Appointment>) => {
     const errors = await formikHelpers.validateForm();
 
-  if (Object.keys(errors).length > 0) {
-    console.log("Validation Errors:", errors); // Log errors for debugging
-    alert("Please fix the validation errors before submitting."); // Optional: Alert user
-    return; // Prevent submission
-  }
-    // Handle form submission (save or update)
-    console.log("Form Submitted", values);
-    if (values.jobAssigns.careGiverIDs?.length>0 || values?.broadcastType=="All Caregivers") {
-      if (appointmentSlice.selectedAppointment) {
-        console.log("value is of ",values.appointmentID);
-        dispatch(updateAppointment({appointmentData:values,files:uploadedFils}));
-      }else{
-        dispatch(saveAppointment({appointmentData:values,files:uploadedFils}));
+    if (selectedRecurrentAppointment!=null) {
+      const recurrentWorkValues: RecurrentAppointmentValues = {
+        recurrentAppointmentID:selectedRecurrentAppointment.recurrentAppointmentID,
+        startDate:values.startDate,
+        endDate:values.endDate,
+        startTime:values.startTime,
+        endTime:values.endTime,
+        comment:values.comment
       }
+      console.log("updating recurrnet task ",recurrentWorkValues);
+      dispatch(updateRecurrentAppointment(recurrentWorkValues));
+      
+    }else{
+      if (Object.keys(errors).length > 0) {
+        console.log("Validation Errors:", errors); // Log errors for debugging
+        alert("Please fix the validation errors before submitting."); // Optional: Alert user
+        return; // Prevent submission
+      }
+        // Handle form submission (save or update)
+        console.log("Form Submitted", values);
+        values.recurrentWork.startDate = values.startDate;
+        if (values.jobAssigns.careGiverIDs?.length>0 || values?.broadcastType=="All Caregivers") {
+          if (appointmentSlice.selectedAppointment) {
+            console.log("value is of ",values.appointmentID);
+            dispatch(updateAppointment({appointmentData:values,files:uploadedFils}));
+          }else{
+            dispatch(saveAppointment({appointmentData:values,files:uploadedFils}));
+          }
+        }
     }
   };
 
@@ -501,7 +578,7 @@ const validationSchema = Yup.object({
             }).catch((err)=>{
               console.log("Error is ",err);
               
-              enqueueSnackbar({message:err.message,variant:"error",anchorOrigin:{horizontal:"right",vertical:"bottom"}});
+              // enqueueSnackbar({message:err.message,variant:"error",anchorOrigin:{horizontal:"right",vertical:"bottom"}});
             });
           }
         },[appointmentSlice.selectedAppointment])
@@ -681,8 +758,8 @@ const validationSchema = Yup.object({
                     </FormControl>
                   </Grid>
 
-                  {/* Start Date */}
-                  <Grid item xs={12} sm={3}>
+                  <Grid item xs={12} sm={3}
+                  >
                     <TextField
                       fullWidth
                       label="Start Date"
@@ -691,10 +768,10 @@ const validationSchema = Yup.object({
                       value={values.startDate}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      
+                      sx={{backgroundColor:selectedRecurrentAppointment?theme.palette.background.default:""}}
                       error={touched.startDate && Boolean(errors.startDate)}
                       helperText={touched.startDate && errors.startDate}
-                      InputProps={{ readOnly: !isEditMode }}
+                      InputProps={{ readOnly: selectedRecurrentAppointment && isEditMode===true?false:!isEditMode }}
                       InputLabelProps={{ shrink: true }}
                     />
                   </Grid>
@@ -706,12 +783,13 @@ const validationSchema = Yup.object({
                       label="Start Time"
                       type="time"
                       name="startTime"
+                      sx={{backgroundColor:selectedRecurrentAppointment?theme.palette.background.default:""}}
                       value={values.startTime}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       error={touched.startTime && Boolean(errors.startTime)}
                       helperText={touched.startTime && errors.startTime}
-                      InputProps={{ readOnly: !isEditMode }}
+                      InputProps={{ readOnly: selectedRecurrentAppointment && isEditMode===true?false:!isEditMode }}
                       InputLabelProps={{ shrink: true }}
                     />
                   </Grid>
@@ -723,12 +801,13 @@ const validationSchema = Yup.object({
                       label="End Date"
                       type="date"
                       name="endDate"
+                      sx={{backgroundColor:selectedRecurrentAppointment?theme.palette.background.default:""}}
                       value={values.endDate}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       error={touched.endDate && Boolean(errors.endDate)}
                       helperText={touched.endDate && errors.endDate}
-                      InputProps={{ readOnly: !isEditMode }}
+                      InputProps={{ readOnly: selectedRecurrentAppointment && isEditMode===true?false:!isEditMode }}
                       InputLabelProps={{ shrink: true }}
                     />
                   </Grid>
@@ -740,16 +819,16 @@ const validationSchema = Yup.object({
                       label="End Time"
                       type="time"
                       name="endTime"
+                      sx={{backgroundColor:selectedRecurrentAppointment?theme.palette.background.default:""}}
                       value={values.endTime}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       error={touched.endTime && Boolean(errors.endTime)}
                       helperText={touched.endTime && errors.endTime}
-                      InputProps={{ readOnly: !isEditMode }}
+                      InputProps={{ readOnly: selectedRecurrentAppointment && isEditMode===true?false:!isEditMode }}
                       InputLabelProps={{ shrink: true }}
                     />
                   </Grid>
-
                   {/* Duration */}
                   <Grid item xs={12} sm={3}>
                     <TextField
@@ -975,11 +1054,12 @@ const validationSchema = Yup.object({
                       value={values.comment}
                       onChange={handleChange}
                       onBlur={handleBlur}
+                      sx={{backgroundColor:selectedRecurrentAppointment?theme.palette.background.default:""}}
                       error={touched.comment && Boolean(errors.comment)}
                       helperText={touched.comment && errors.comment}
                       multiline
                       rows={2}
-                      InputProps={{ readOnly: !isEditMode }}
+                      InputProps={{ readOnly: selectedRecurrentAppointment && isEditMode===true?false:!isEditMode }}
                     />
                   </Grid>
                 </>
@@ -1100,121 +1180,126 @@ const validationSchema = Yup.object({
                     </Grid>
                   </Grid>
                   {/* Broadcast Type */}
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} sm={12}>
-                      <FormControl fullWidth>
-                        <InputLabel>Broadcast Type</InputLabel>
-                        <Select
-                          name="broadcastType"
-                          value={values.broadcastType}
-                          onChange={handleChange}
-                          label="Broadcast Type"
-                          readOnly={!isEditMode}
-                        >
-                          <MenuItem value="All Caregivers">
-                            All Caregivers
-                          </MenuItem>
-                          <MenuItem value="Selected Caregivers">
-                            Selected Caregivers
-                          </MenuItem>
-                        </Select>
-                        {touched.broadcastType && errors.broadcastType && (
-                          <FormHelperText error>
-                            {errors.broadcastType}
-                          </FormHelperText>
-                        )}
-                      </FormControl>
-                    </Grid>
-                    {values.broadcastType === "Selected Caregivers" && (
-                      <>
-                        <Grid item xs={12}>
-                          <FormControl fullWidth>
-                            <InputLabel>Select Caregivers</InputLabel>
-                            <Select
-                              readOnly={!isEditMode}
-                              multiple
-                              value={values?.jobAssigns?.careGiverIDs}
-                              onChange={(e) =>
-                                setFieldValue(
-                                  "jobAssigns.careGiverIDs",
-                                  e.target.value as string[]
-                                )
-                              }
-                              renderValue={(selected) => (
-                                <div>
-                                  {(selected as string[]).map((id:string) => {
-                                    const caregiver = careGivers.find(
-                                      (c) => c.careGiverID === id
-                                    );
-                                    return (
-                                      caregiver && (
-                                        <Chip
-                                          key={caregiver?.careGiverID}
-                                          label={`${caregiver.employee?.firstName} ${caregiver?.employee?.lastName}`}
-                                          avatar={
-                                            <Avatar
-                                              src={
-                                                caregiver.employee
-                                                  ?.profile_photo
-                                                  ? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(
-                                                      caregiver.employee
-                                                        ?.profile_photo
-                                                    )}`
-                                                  : ""
-                                              }
-                                              alt={`${caregiver.employee?.firstName} ${caregiver.employee?.lastName}`}
-                                            />
+                  {
+                    appointmentSlice.selectedAppointment==null && (
+                      <Grid container spacing={2}>
+                      <Grid item xs={12} sm={12}>
+                        <FormControl fullWidth>
+                          <InputLabel>Broadcast Type</InputLabel>
+                          <Select
+                            name="broadcastType"
+                            value={values.broadcastType}
+                            onChange={handleChange}
+                            label="Broadcast Type"
+                            readOnly={!isEditMode}
+                          >
+                            <MenuItem value="All Caregivers">
+                              All Caregivers
+                            </MenuItem>
+                            <MenuItem value="Selected Caregivers">
+                              Selected Caregivers
+                            </MenuItem>
+                          </Select>
+                          {touched.broadcastType && errors.broadcastType && (
+                            <FormHelperText error>
+                              {errors.broadcastType}
+                            </FormHelperText>
+                          )}
+                        </FormControl>
+                      </Grid>
+                      {values.broadcastType === "Selected Caregivers" && (
+                        <>
+                          <Grid item xs={12}>
+                            <FormControl fullWidth>
+                              <InputLabel>Select Caregivers</InputLabel>
+                              <Select
+                                readOnly={!isEditMode}
+                                multiple
+                                value={values?.jobAssigns?.careGiverIDs}
+                                onChange={(e) =>
+                                  setFieldValue(
+                                    "jobAssigns.careGiverIDs",
+                                    e.target.value as string[]
+                                  )
+                                }
+                                renderValue={(selected) => (
+                                  <div>
+                                    {(selected as string[]).map((id:string) => {
+                                      const caregiver = careGivers.find(
+                                        (c) => c.careGiverID === id
+                                      );
+                                      return (
+                                        caregiver && (
+                                          <Chip
+                                            key={caregiver?.careGiverID}
+                                            label={`${caregiver.employee?.firstName} ${caregiver?.employee?.lastName}`}
+                                            avatar={
+                                              <Avatar
+                                                src={
+                                                  caregiver.employee
+                                                    ?.profile_photo
+                                                    ? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(
+                                                        caregiver.employee
+                                                          ?.profile_photo
+                                                      )}`
+                                                    : ""
+                                                }
+                                                alt={`${caregiver.employee?.firstName} ${caregiver.employee?.lastName}`}
+                                              />
+                                            }
+                                          />
+                                        )
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                              >
+                                {careGivers.map((caregiver) => (
+                                  <MenuItem
+                                    key={caregiver.careGiverID}
+                                    value={caregiver.careGiverID}
+                                  >
+                                    <Chip
+                                      label={`${caregiver.employee?.firstName} ${caregiver.employee?.lastName}`}
+                                      avatar={
+                                        <Avatar
+                                          src={
+                                            caregiver.employee?.profile_photo
+                                              ? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(
+                                                  caregiver.employee
+                                                    ?.profile_photo
+                                                )}`
+                                              : ""
                                           }
+                                          alt={`${caregiver.employee?.firstName} ${caregiver.employee?.lastName}`}
                                         />
-                                      )
-                                    );
-                                  })}
-                                </div>
-                              )}
-                            >
-                              {careGivers.map((caregiver) => (
-                                <MenuItem
-                                  key={caregiver.careGiverID}
-                                  value={caregiver.careGiverID}
-                                >
-                                  <Chip
-                                    label={`${caregiver.employee?.firstName} ${caregiver.employee?.lastName}`}
-                                    avatar={
-                                      <Avatar
-                                        src={
-                                          caregiver.employee?.profile_photo
-                                            ? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(
-                                                caregiver.employee
-                                                  ?.profile_photo
-                                              )}`
-                                            : ""
-                                        }
-                                        alt={`${caregiver.employee?.firstName} ${caregiver.employee?.lastName}`}
-                                      />
-                                    }
-                                  />
-                                </MenuItem>
-                              ))}
-                            </Select>
-                            {touched.jobAssigns?.careGiverIDs &&
-                              errors.jobAssigns?.careGiverIDs && (
-                                <FormHelperText error>
-                                  {errors.jobAssigns?.careGiverIDs}
-                                </FormHelperText>
-                              )}
-                          </FormControl>
-                        </Grid>
-                        <Grid item xs={12}>
-                          <AppointmentParticipantTable
-                            caregivers={appointmentParticipants}
-                            key={"participants"}
-                            onDelete={handleDeleteOfParticipant}
-                            
-                          />
-                        </Grid>
-                      </>
-                    )}
-                  </Grid>
+                                      }
+                                    />
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                              {touched.jobAssigns?.careGiverIDs &&
+                                errors.jobAssigns?.careGiverIDs && (
+                                  <FormHelperText error>
+                                    {errors.jobAssigns?.careGiverIDs}
+                                  </FormHelperText>
+                                )}
+                            </FormControl>
+                          </Grid>
+                          <Grid item xs={12}>
+                            <AppointmentParticipantTable
+                              caregivers={appointmentParticipants}
+                              key={"participants"}
+                              onDelete={handleDeleteOfParticipant}
+                              
+                            />
+                          </Grid>
+                        </>
+                      )}
+                    </Grid>
+                    )
+                  }
+                  
                 </>
               )}
               {activeStep === 2 && (

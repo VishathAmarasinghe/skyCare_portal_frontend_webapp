@@ -18,7 +18,7 @@ const FileViewerWithModal: React.FC<FileViewerWithModalProps> = ({
   onClose,
 }) => {
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
-  const isPdf = typeof file === "string" ? file.endsWith(".pdf") : file.type === "application/pdf";
+  const isPdf = typeof file === "string" ? file?.endsWith(".pdf") : file?.type === "application/pdf";
 
   const handleDownload = async () => {
     let fileUrl: string;
@@ -86,14 +86,14 @@ const FileViewerWithModal: React.FC<FileViewerWithModalProps> = ({
     >
       {isPdf ? (
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
-          <Viewer key={typeof file === "string" ? file : file.name}
+          <Viewer key={typeof file === "string" ? file : file?.name}
             fileUrl={typeof file === "string" ? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(file)}` : URL.createObjectURL(file)}
             plugins={[defaultLayoutPluginInstance]}
           />
         </Worker>
       ) : (
         <img
-          src={typeof file === "string" ? file : URL.createObjectURL(file)}
+          src={typeof file === "string" ? file : URL?.createObjectURL(file)}
           alt="Preview"
           style={{
             width: "100%",

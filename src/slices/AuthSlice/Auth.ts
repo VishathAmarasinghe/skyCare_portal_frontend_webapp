@@ -19,6 +19,7 @@ export interface UserData{
 export interface AuthState {
     isAuthenticated: boolean
     status: State
+    passwordResetState: State
     mode: "active" | "inactive" | "locked" | "maintenance"
     statusMessage: string | null
     userInfo: UserData | null
@@ -32,6 +33,7 @@ const initialState: AuthState = {
   isAuthenticated: false,
   status: State.idle,
   mode: 'active',
+  passwordResetState: State.idle,
   statusMessage: null,
   userInfo: null,
   decodedIdToken: null,
@@ -78,6 +80,48 @@ export const login = createAsyncThunk(
               message:
                 error?.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.fetchSingleCareGiver
+                  : String(error?.response?.data?.message),
+              type: 'error',
+            })
+          );
+  
+          reject(error?.response?.data?.message || 'An unknown error occurred'); // Reject the promise with an error message
+        }
+      });
+    }
+  );
+
+
+  export const resetPassword = createAsyncThunk(
+    'auth/resetPassword',
+    async (payload: { email: string; password: string,employeeID:string }, { dispatch, rejectWithValue }) => {
+        
+      return new Promise<string>(async (resolve, reject) => {
+        try {
+          const response = await APIService.getInstance().post(
+            `${AppConfig.serviceUrls.authenticaion}/reset`,payload);
+  
+          // Dispatch a success message on login
+          dispatch(
+            enqueueSnackbarMessage({
+              message: response?.status === HttpStatusCode.Ok ? SnackMessage.success.passwordReset: '',
+              type: 'success',
+            })
+          );
+
+          resolve(response.data); // Resolve the promise with the response data
+        } catch (error: any) {
+          if (axios.isCancel(error)) {
+            reject('Request canceled'); // Reject the promise if the request was canceled
+          }
+          console.log("error", error);
+  
+          // Dispatch an error message
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error?.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.passwordReset
                   : String(error?.response?.data?.message),
               type: 'error',
             })
@@ -215,6 +259,18 @@ export const authSlice = createSlice({
         state.roles = [];
         state.exp = 0;
         state.iat = 0;
+      })
+      .addCase(resetPassword.pending, (state) => {
+        state.passwordResetState = State.loading;
+        state.statusMessage = "Resetting Password...";
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.passwordResetState = State.success;
+        state.statusMessage = 'Successfully reset password!';
+      })
+      .addCase(resetPassword.rejected, (state) => {
+        state.passwordResetState = State.failed;
+        state.statusMessage = 'Failed to reset password!';
       });
 }})
 

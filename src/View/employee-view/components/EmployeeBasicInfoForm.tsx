@@ -14,6 +14,7 @@ import { Employee } from "../../../slices/EmployeeSlice/employee";
 import { useAppSelector } from "@slices/store";
 import { State } from "../../../types/types";
 import { FILE_DOWNLOAD_BASE_URL } from "@config/config";
+import { Autocomplete } from "@react-google-maps/api";
 
 // Validation schema using Yup
 const validationSchema = Yup.object({
@@ -64,7 +65,10 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({isEditMode
   const [profilePhotoPreview, setProfilePhotoPreview] = useState<string | null>(null);
   const employeeSlice = useAppSelector((state)=>state.employees);
   const careGiverSlice = useAppSelector((state)=>state.careGivers);
-  const [initialValues, setInitialValues] = useState<Omit<Employee, "employeeID" | "password" | "status">>({
+  const [searchInput, setSearchInput] = useState("");
+  const [addressDetails, setAddressDetails] = useState<any>(null);
+  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
+  const [initialValues, setInitialValues] = useState<Omit<Employee, "employeeID" | "password">>({
     firstName: "",
     lastName: "",
     email: "",
@@ -82,6 +86,7 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({isEditMode
         postal_code: "",
       },
     ],
+    status:"",
     employeeJobRoles: [],
     employeePhoneNo: ["", ""],
   });
@@ -123,7 +128,6 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({isEditMode
       ...values,
       employeeID: employeeSlice?.selectedEmployee?employeeSlice?.selectedEmployee?.employeeID:"",
       password: "",
-      status: ""
     });
     setErrorState("Validated");
   };
@@ -148,6 +152,62 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({isEditMode
               setProfilePic(null);
             }
          },[employeeSlice.submitState])
+
+         const handleAddressSelect = (place: google.maps.places.PlaceResult) => {
+          if (!autocomplete) return;
+          // const place = autocomplete.getPlace();
+          const addressComponents = place?.address_components;
+          const address = place?.formatted_address;
+
+          let city = "";
+          let state = "";
+          let postalCode = "";
+          let latitude = 0;
+          let longitude = 0;
+        
+          // Get the latitude and longitude
+          const location = place?.geometry?.location;
+          if (location) {
+            latitude = location.lat();
+            longitude = location.lng();
+          }
+
+          addressComponents?.forEach((component: any) => {
+            if (component.types.includes("locality")) {
+              city = component.long_name;
+            }
+            if (component.types.includes("administrative_area_level_1")) {
+              state = component.long_name;
+            }
+            if (component.types.includes("postal_code")) {
+              postalCode = component.long_name;
+            }
+          });
+
+          setAddressDetails({
+            address,
+            city,
+            state,
+            postalCode,
+            latitude,
+            longitude,
+          });
+        };
+
+        useEffect(() => {
+          if (addressDetails) {
+            // Update the form values with the selected address details
+            setFieldValue("employeeAddresses[0].address", addressDetails.address);
+            setFieldValue("employeeAddresses[0].state", addressDetails.state);
+            setFieldValue("employeeAddresses[0].city", addressDetails.city);
+            setFieldValue("employeeAddresses[0].longitude", addressDetails.longitude);
+            setFieldValue("employeeAddresses[0].latitude", addressDetails.latitude);
+            setFieldValue(
+              "employeeAddresses[0].postal_code",
+              addressDetails.postalCode
+            );
+          }
+        }, [addressDetails]);
 
         //  useEffect(()=>{
         //   console.log("triggered modal open ",modalOpenState);
@@ -280,6 +340,28 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({isEditMode
                 Employee Address
               </Typography>
               <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                        <Autocomplete
+                          onLoad={(autocompleteInstance) => setAutocomplete(autocompleteInstance)}
+                          onPlaceChanged={() => {
+                            if (autocomplete) {
+                              const place = autocomplete.getPlace();
+                              console.log("Selected Place:", place); // Check the place object
+                              handleAddressSelect(place); // Pass the place data to the handler
+                            }
+                          }}
+                        >
+                          <TextField
+                            label="Search Address"
+                            variant="outlined"
+                            fullWidth
+                            InputProps={{ readOnly: !isEditMode }}
+                            name="search"
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                          />
+                        </Autocomplete>
+                    </Grid>
                 <Grid item xs={12}>
                   <Field
                     as={TextField}

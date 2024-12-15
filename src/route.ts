@@ -10,6 +10,7 @@ import ListAltIcon from "@mui/icons-material/ListAlt";
 import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import StickyNote2Icon from "@mui/icons-material/StickyNote2";
+import SpeakerNotesIcon from '@mui/icons-material/SpeakerNotes';
 
 // APP imports
 import { View } from "./view/index";
@@ -137,6 +138,16 @@ export const routes: RouteObjectWithRole[] = [
     element: React.createElement(View.resourceView),
     allowRoles: [
       APPLICATION_ADMIN,
+      APPLICATION_SUPER_ADMIN],
+  },
+  {
+    path: "/shift-notes",
+    text: "Shift Notes",
+    icon: React.createElement(SpeakerNotesIcon),
+    element: React.createElement(View.shiftNoteView),
+    allowRoles: [
+      APPLICATION_ADMIN,
+      APPLICATION_CARE_GIVER,
       APPLICATION_SUPER_ADMIN],
   },
 ];

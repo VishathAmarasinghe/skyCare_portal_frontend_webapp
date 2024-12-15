@@ -326,6 +326,19 @@ const CareGiverSlice = createSlice({
       .addCase(fetchPaymentTypes.rejected, (state) => {
         state.supportWorkerState = State.failed;
         state.stateMessage = "Failed to fetch caregiver Payment types!";
+      })
+      .addCase(fetchSingleCareGiverByEmployeeID.pending, (state) => {
+        state.state = State.loading;
+        state.stateMessage = "Fetching Caregiver Payment types...";
+      })
+      .addCase(fetchSingleCareGiverByEmployeeID.fulfilled, (state, action) => {
+        state.state = State.success;
+        state.stateMessage = "Successfully fetched caregiver Payment types!";
+        state.selectedCareGiver = action.payload;
+      })
+      .addCase(fetchSingleCareGiverByEmployeeID.rejected, (state) => {
+        state.state = State.failed;
+        state.stateMessage = "Failed to fetch caregiver Payment types!";
       });
   },
 });

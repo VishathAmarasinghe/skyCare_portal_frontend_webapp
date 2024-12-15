@@ -9,6 +9,11 @@ import AppointmentReducer from './AppointmentSlice/appointment';
 import EmployeeReducer from './EmployeeSlice/employee';
 import CareGiverReducer from './CareGiverSlice/careGiver';
 import authReducer from './authSlice/Auth';
+import ResourceReducer from './ResourceSlice/resource';
+import ShiftNoteReducer from './ShiftNoteSlice/ShiftNote';
+import OTPReducer from './OTPSlice/OTP';
+import IncidentReducer from './IncidentSlice/incident';
+import DashboardReducer from './DashboardSlice/dashboard';
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +26,11 @@ export const store = configureStore({
     employees:EmployeeReducer,
     careGivers:CareGiverReducer,
     auth:authReducer,
+    resource:ResourceReducer,
+    shiftNotes:ShiftNoteReducer,
+    otp:OTPReducer,
+    incident:IncidentReducer,
+    dashboard:DashboardReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

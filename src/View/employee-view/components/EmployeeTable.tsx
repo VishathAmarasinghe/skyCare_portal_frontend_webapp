@@ -143,7 +143,42 @@ const EmployeeTable = ({ }: ClientTableProps) => {
     
         return <Chip size="small" label={role} color={color} variant="outlined" />;
       },
-    },    
+    },{
+      field: "status",
+      headerName: "Status",
+      width: 100,
+      headerAlign: "center",
+      align: "center",
+      renderCell: (params) => {
+        const status = params.value;
+        let chipStyle = {}; // Default style
+    
+        // Assign background and text colors based on the status
+        switch (status) {
+          case "Activated":
+            chipStyle = { backgroundColor: "#4caf50", color: "white" }; // Green
+            break;
+          case "Deactivated":
+            chipStyle = { backgroundColor: "#f44336", color: "white" }; // Red
+            break;
+          case "Pending":
+            chipStyle = { backgroundColor: "#ffc107", color: "black" }; // Yellow
+            break;
+          default:
+            chipStyle = { backgroundColor: "#9e9e9e", color: "white" }; // Grey
+        }
+    
+        return (
+          <Chip
+            size="small"
+            label={status}
+            style={chipStyle} // Apply the custom style
+            variant="filled"
+          />
+        );
+      },
+    }
+       ,
     {
       field: "action",
       headerName: "Action",

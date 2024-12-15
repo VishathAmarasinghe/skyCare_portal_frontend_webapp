@@ -13,7 +13,6 @@ import {
   Box,
   Chip,
   IconButton,
-  Typography,
   useTheme,
 } from "@mui/material";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
@@ -25,21 +24,21 @@ import { State } from "../../../types/types";
 function CustomToolbar() {
   return (
     <GridToolbarContainer>
-      <GridToolbarColumnsButton   />
-      <GridToolbarFilterButton  />
+      <GridToolbarColumnsButton />
+      <GridToolbarFilterButton />
       <GridToolbarQuickFilter placeholder="Search" />
     </GridToolbarContainer>
   );
 }
 
 const initialColumns: GridColDef[] = [
-  { field: "clientID", headerName: "Client ID", width: 100, align: "center" },
-  { field: "firstName", headerName: "First Name", width: 130 },
-  { field: "lastName", headerName: "Last Name", width: 130 },
+  { field: "clientID", headerName: "Client ID", flex: 1, align: "center" },
+  { field: "firstName", headerName: "First Name", flex: 1 },
+  { field: "lastName", headerName: "Last Name", flex: 1 },
   {
     field: "email",
     headerName: "Email Address",
-    flex: 1,
+    flex: 2,
     renderCell: (params) => (
       <Chip
         avatar={<Avatar>{params.row.email.charAt(0).toUpperCase()}</Avatar>}
@@ -51,21 +50,21 @@ const initialColumns: GridColDef[] = [
   {
     field: "gender",
     headerName: "Gender",
-    width: 100,
+    flex: 1,
     headerAlign: "center",
     align: "center",
   },
   {
     field: "clientType",
     headerName: "Client Type",
-    width: 150,
+    flex: 1,
     headerAlign: "center",
     align: "center",
   },
   {
     field: "action",
     headerName: "Action",
-    width: 80,
+    flex: 1,
     renderCell: (params) => {
       const navigate = useNavigate();
       return (
@@ -82,28 +81,17 @@ const initialColumns: GridColDef[] = [
   },
 ];
 
-
-
-interface ClientTableProps {
-  
-}
-
-const ClientTable = ({ }: ClientTableProps) => {
+const ClientTable = () => {
   const theme = useTheme();
   const clientInfo = useAppSelector((state) => state.clients);
   const [clients, setClients] = useState<Client[]>([]);
 
-  const handlePageChange = (newPage: number) => {
-    
-  };
-
   useEffect(() => {
-    console.log("function called");
-      setClients(clientInfo.clients);
-    }, [clientInfo.State]);
+    setClients(clientInfo.clients);
+  }, [clientInfo.State]);
 
   return (
-    <Box sx={{ height: "100%", width: "100%" }}>
+    <Box sx={{ height: "100%", width: "100%", display: "flex", flexDirection: "column" }}>
       <DataGrid
         rows={clients}
         columns={initialColumns}
@@ -112,21 +100,19 @@ const ClientTable = ({ }: ClientTableProps) => {
         loading={clientInfo.State === State.loading}
         pagination
         paginationMode="client"
+        autoHeight
         initialState={{
           pagination: {
-            paginationModel: { pageSize: 5 },
+            paginationModel: { pageSize: 15 },
           },
         }}
         slots={{
           toolbar: CustomToolbar,
         }}
         sx={{
-          
+          flexGrow: 1,
           "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: "white",
-          },
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "white",
+            backgroundColor: theme.palette.grey[200],
           },
           "& .MuiDataGrid-columnSeparator": {
             display: "none",

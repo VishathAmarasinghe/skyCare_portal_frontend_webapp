@@ -116,7 +116,7 @@ const BasicInfoTab: React.FC = () => {
     <Stack
       width="100%"
       height="100%"
-      sx={{ border: '2px solid green', padding: '16px' }}
+      sx={{ padding: '16px' }}
       spacing={4}
     >
       <Descriptions

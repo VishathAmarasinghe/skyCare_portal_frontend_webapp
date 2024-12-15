@@ -29,4 +29,5 @@ export interface DashboardCardProps {
   title: string;
   value: number;
   icon: React.ElementType<SvgIconProps>;
+  name:string;
 }

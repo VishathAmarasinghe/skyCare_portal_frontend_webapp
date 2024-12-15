@@ -46,7 +46,7 @@ const AppointmentsTab = () => {
     }
   }
   return (
-    <Stack width="100%" height="80%" border="2px solid red">
+    <Stack width="100%" height="80%">
       <AddNewAppointmentModal isEditMode={isEditMode} setIsEditMode={setIsEditMode} isAppointmentAddModalVisible={isAppointmentModalVisible} setIsAppointmentAddModalVisible={setIsAppointmentModalVisible}/>
         <Stack width="100%" flexDirection="row" alignItems="end" justifyContent="flex-end">
             <Button variant='contained' onClick={()=>{setIsAppointmentModalVisible(true);setIsEditMode(true)}}>Add Appointments</Button>

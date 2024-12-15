@@ -3,7 +3,7 @@ import { Container, alpha, Paper, useTheme } from "@mui/material";
 import { ErrorHandlerProps } from "../../types/types";
 import StateWithImage from "../ui/StateWithImage";
 import React from "react";
-import wso2Logo from "../../assets/images/wso2-logo.svg";
+import companyLogo from "../../assets/images/app_logo.png";
 import notFoundImage from "../../assets/images/not-found.svg";
 
 const ErrorHandler = (props: ErrorHandlerProps) => {
@@ -35,10 +35,11 @@ const ErrorHandler = (props: ErrorHandlerProps) => {
           alignItems="center"
           gap={2}
         >
-          <img alt="logo" width="150" height="auto" src={wso2Logo}></img>
+          <img alt="logo" width="250" height="auto" src={companyLogo}></img>
         </Grid>
         <Grid item xs={12}>
           <StateWithImage
+          
             message={
               props.message || "Something went wrong! Please try again later."
             }
