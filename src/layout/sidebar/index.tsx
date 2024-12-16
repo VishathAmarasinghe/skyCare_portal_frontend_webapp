@@ -81,7 +81,7 @@ const Sidebar = (props: SidebarProps) => {
             sx={{
               display: "flex",
               flexDirection: "column",
-              pt: 7.2,
+              pt: 7.0,
             }}
           >
             {getActiveRouteDetails(props.roles).map((r, idx) => (
@@ -102,8 +102,8 @@ const Sidebar = (props: SidebarProps) => {
           </List>
           <DrawerSpace />
           <DrawerFooter>
-            <Stack flexDirection={"column"} gap={3}>
-              <IconButton
+            <Stack flexDirection={"column"} gap={1}>
+              {/* <IconButton
                 onClick={colorMode.toggleColorMode}
                 color="inherit"
                 sx={{
@@ -131,7 +131,7 @@ const Sidebar = (props: SidebarProps) => {
                       " mode"}
                   </Typography>
                 </span>
-              </IconButton>
+              </IconButton> */}
               <IconButton
                 onClick={props.handleDrawer}
                 sx={{
@@ -186,13 +186,20 @@ const Drawer = styled(MuiDrawer, {
   flexShrink: 0,
   display: "flex",
   whiteSpace: "nowrap",
+  overflow: "hidden", // Prevent scrolling
   ...(open && {
     ...openedMixin(theme),
-    "& .MuiDrawer-paper": openedMixin(theme),
+    "& .MuiDrawer-paper": {
+      ...openedMixin(theme),
+      overflow: "hidden", // Prevent scrolling
+    },
   }),
   ...(!open && {
     ...closedMixin(theme),
-    "& .MuiDrawer-paper": closedMixin(theme),
+    "& .MuiDrawer-paper": {
+      ...closedMixin(theme),
+      overflow: "hidden", // Prevent scrolling
+    },
   }),
 }));
 
@@ -204,6 +211,7 @@ const openedMixin = (theme: Theme): CSSObject => ({
     duration: theme.transitions.duration.enteringScreen,
   }),
   overflowX: "hidden",
+  overflowY: "hidden",
   padding: theme.spacing(0.5),
 });
 

@@ -31,6 +31,8 @@ export const SnackMessage = {
     shiftUpdate:"Shift updated successfully",
     OTPSent:"OTP sent successfully, Please check your email",
     passwordReset:"Password reset successfully",
+    languageUpdated:"Language updated successfully",
+    classificationUpdated:"Classification updated successfully",
 
   },
   error: {
@@ -88,6 +90,10 @@ export const SnackMessage = {
     fetchIncidentStatus:"Failed to fetch incident status",
     fetchIncidentQuestions:"Failed to fetch incident questions",
     fetchDashboard:"Failed to fetch dashboard",
+    languageUpdated:"Failed to update language",
+    classificationUpdated:"Failed to update classification",
+    clientTypeUpdated:"Failed to update client type",
+    clientStatusUpdated:"Failed to update client status",
   },
   warning: {},
 }

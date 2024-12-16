@@ -31,3 +31,22 @@ export interface DashboardCardProps {
   icon: React.ElementType<SvgIconProps>;
   name:string;
 }
+
+export interface SettingsCardProps {
+  title: SettingsCardTitle;
+  icon: React.ElementType<SvgIconProps>;
+  subText: string;
+}
+
+export type SettingsCardTitle =
+  | "Languages"
+  | "Client Type"
+  | "Client Status"
+  | "Client Classification"
+  | "Care Plan Status"
+  | "Appointment Types"
+  | "Incident Types"
+  | "Incident Status"
+  | "Incident Questions"
+  | "Care Giver File Uploads"
+  | "Care Giver Salary";

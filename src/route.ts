@@ -11,6 +11,7 @@ import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import StickyNote2Icon from "@mui/icons-material/StickyNote2";
 import SpeakerNotesIcon from '@mui/icons-material/SpeakerNotes';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 // APP imports
 import { View } from "./view/index";
@@ -150,6 +151,15 @@ export const routes: RouteObjectWithRole[] = [
       APPLICATION_CARE_GIVER,
       APPLICATION_SUPER_ADMIN],
   },
+  {
+    path: "/settings",
+    text: "Settings",
+    icon: React.createElement(SettingsIcon),
+    element: React.createElement(View.SettingsView),
+    allowRoles: [
+      APPLICATION_ADMIN,
+      APPLICATION_SUPER_ADMIN],
+  }
 ];
 export const getActiveRoutesV2 = (
   routes: RouteObjectWithRole[] | undefined,

@@ -206,6 +206,48 @@ export const fetchLanguages = createAsyncThunk(
   )
 
 
+  export const updateLanguage = createAsyncThunk(
+    'selector/UpdateLanguages',
+    async (
+      Payload: Language,
+      { dispatch, rejectWithValue },
+    ) => {
+      return new Promise<Language>((resolve, reject) => {
+        APIService.getInstance()
+          .put(
+            AppConfig.serviceUrls.languages+`/${Payload?.languageID}`, Payload
+          )
+          .then((response) => {
+            console.log('response', response)
+            if(response.status === HttpStatusCode.Created){
+                dispatch(
+                    enqueueSnackbarMessage({
+                      message: SnackMessage.success.languageUpdated,
+                      type: 'success',
+                    }),
+                  )
+              resolve(response.data)
+            }
+          })
+          .catch((error) => {
+            if (axios.isCancel(error)) {
+              return rejectWithValue('Request canceled')
+            }
+            dispatch(
+              // dispatching the error message
+              enqueueSnackbarMessage({
+                message:
+                  error.response?.status === HttpStatusCode.InternalServerError
+                    ? SnackMessage.error.languageUpdated
+                    : String(error.response?.data?.message),
+                type: 'error',
+              }),
+            )
+            reject(error.response?.data?.message)
+          })
+      })
+    },
+  )
     // Fetch classifications
 export const SaveLanguage = createAsyncThunk(
     'selector/SaveLanguages',
@@ -240,6 +282,50 @@ export const SaveLanguage = createAsyncThunk(
                 message:
                   error.response?.status === HttpStatusCode.InternalServerError
                     ? SnackMessage.error.saveLanguage
+                    : String(error.response?.data?.message),
+                type: 'error',
+              }),
+            )
+            reject(error.response?.data?.message)
+          })
+      })
+    },
+  )
+
+
+  export const updateClassification = createAsyncThunk(
+    'selector/updateClassification',
+    async (
+      Payload:ClientClassification,
+      { dispatch, rejectWithValue },
+    ) => {
+      return new Promise<ClientClassification>((resolve, reject) => {
+        APIService.getInstance()
+          .put(
+            AppConfig.serviceUrls.classifications+`/${Payload?.classificationID}`, Payload
+          )
+          .then((response) => {
+            console.log('response', response)
+            if(response.status === HttpStatusCode.Created){
+                dispatch(
+                    enqueueSnackbarMessage({
+                      message: SnackMessage.success.classificationUpdated,
+                      type: 'success',
+                    }),
+                  )
+              resolve(response.data)
+            }
+          })
+          .catch((error) => {
+            if (axios.isCancel(error)) {
+              return rejectWithValue('Request canceled')
+            }
+            dispatch(
+              // dispatching the error message
+              enqueueSnackbarMessage({
+                message:
+                  error.response?.status === HttpStatusCode.InternalServerError
+                    ? SnackMessage.error.classificationUpdated
                     : String(error.response?.data?.message),
                 type: 'error',
               }),
@@ -293,6 +379,50 @@ export const SaveLanguage = createAsyncThunk(
     },
   )
 
+
+  export const updateClientType = createAsyncThunk(
+    'selector/UpdateClientType',
+    async (
+      Payload:ClientType,
+      { dispatch, rejectWithValue },
+    ) => {
+      return new Promise<ClientType>((resolve, reject) => {
+        APIService.getInstance()
+          .post(
+            AppConfig.serviceUrls.clientTypes+`/${Payload?.clientTypeID}`, Payload
+          )
+          .then((response) => {
+            console.log('response', response)
+            if(response.status === HttpStatusCode.Created){
+              dispatch(
+                enqueueSnackbarMessage({
+                  message: 'Client Type Updated successfully',
+                  type: 'success',
+                }),
+              )
+              resolve(response.data)
+            }
+          })
+          .catch((error) => {
+            if (axios.isCancel(error)) {
+              return rejectWithValue('Request canceled')
+            }
+            dispatch(
+              // dispatching the error message
+              enqueueSnackbarMessage({
+                message:
+                  error.response?.status === HttpStatusCode.InternalServerError
+                    ? SnackMessage.error.clientTypeUpdated
+                    : String(error.response?.data?.message),
+                type: 'error',
+              }),
+            )
+            reject(error.response?.data?.message)
+          })
+      })
+    },
+  )
+
   export const saveClientType = createAsyncThunk(
     'selector/SaveClientType',
     async (
@@ -336,6 +466,49 @@ export const SaveLanguage = createAsyncThunk(
     },
   )
   
+  export const updateClientStatus = createAsyncThunk(
+    'selector/UpdateClientStatus',
+    async (
+      Payload:{status:String,clientStatusID:String},
+      { dispatch, rejectWithValue },
+    ) => {
+      return new Promise<ClientStatus>((resolve, reject) => {
+        APIService.getInstance()
+          .post(
+            AppConfig.serviceUrls.clientStatus+`/${Payload?.clientStatusID}`, Payload
+          )
+          .then((response) => {
+            console.log('response', response)
+            if(response.status === HttpStatusCode.Created){
+              dispatch(
+                enqueueSnackbarMessage({
+                  message: 'Client Status updated successfully',
+                  type: 'success',
+                }),
+              )
+              resolve(response.data)
+            }
+          })
+          .catch((error) => {
+            if (axios.isCancel(error)) {
+              return rejectWithValue('Request canceled')
+            }
+            dispatch(
+              // dispatching the error message
+              enqueueSnackbarMessage({
+                message:
+                  error.response?.status === HttpStatusCode.InternalServerError
+                    ? SnackMessage.error.clientStatusUpdated
+                    : String(error.response?.data?.message),
+                type: 'error',
+              }),
+            )
+            reject(error.response?.data?.message)
+          })
+      })
+    },
+  )
+
   export const saveClientStatus = createAsyncThunk(
     'selector/SaveClientStatus',
     async (
@@ -505,6 +678,54 @@ const SelectorSlice = createSlice({
         .addCase(saveClientStatus.rejected, (state, action) => {
           state.submitState = State.failed;
           state.stateMessage = `Failed to save client status: ${action.payload}`;
+        })
+        .addCase(updateLanguage.pending, (state) => {
+          state.updateState = State.loading;
+          state.stateMessage = 'updating Language...';
+        })
+        .addCase(updateLanguage.fulfilled, (state, action: PayloadAction<Language>) => {
+          state.updateState = State.success;
+          state.stateMessage = 'Language updated successfully';
+        })
+        .addCase(updateLanguage.rejected, (state, action) => {
+          state.updateState = State.failed;
+          state.stateMessage = `fail to update Language: ${action.payload}`;
+        })
+        .addCase(updateClassification.pending, (state) => {
+          state.updateState = State.loading;
+          state.stateMessage = 'updating Classifications...';
+        })
+        .addCase(updateClassification.fulfilled, (state, action) => {
+          state.updateState = State.success;
+          state.stateMessage = 'classification updated successfully';
+        })
+        .addCase(updateClassification.rejected, (state, action) => {
+          state.updateState = State.failed;
+          state.stateMessage = `fail to update Classification`;
+        })
+        .addCase(updateClientType.pending, (state) => {
+          state.updateState = State.loading;
+          state.stateMessage = 'updating Client Type...';
+        })
+        .addCase(updateClientType.fulfilled, (state, action) => {
+          state.updateState = State.success;
+          state.stateMessage = 'client Type updated successfully';
+        })
+        .addCase(updateClientType.rejected, (state, action) => {
+          state.updateState = State.failed;
+          state.stateMessage = `fail to update client type`;
+        })
+        .addCase(updateClientStatus.pending, (state) => {
+          state.updateState = State.loading;
+          state.stateMessage = 'updating Client Status...';
+        })
+        .addCase(updateClientStatus.fulfilled, (state, action) => {
+          state.updateState = State.success;
+          state.stateMessage = 'client Status updated successfully';
+        })
+        .addCase(updateClientStatus.rejected, (state, action) => {
+          state.updateState = State.failed;
+          state.stateMessage = `fail to update client Status`;
         });
     },
   });
