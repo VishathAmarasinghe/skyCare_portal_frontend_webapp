@@ -7,20 +7,23 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import dayjs from "dayjs";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
-import { NextAppointmentDTO } from "../../../slices/AppointmentSlice/appointment";
+import { fetchRecurrentAppointmentDetails, NextAppointmentDTO } from "../../../slices/AppointmentSlice/appointment";
 import { ConfirmationType } from "../../../types/types";
 import { useConfirmationModalContext } from "@context/DialogContext";
 import { getCurrnetShiftNoteState, submitStartShiftNote } from "@slices/ShiftNoteSlice/ShiftNote";
 import { set } from "date-fns";
+import EventBusyIcon from "@mui/icons-material/EventBusy";
 
 interface NextAppointmentCardProps {
     setIsEditMode: React.Dispatch<React.SetStateAction<boolean>>;
     setIsModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
     selectedShiftNote:{shiftNoteID: string | null };
     setSelectedShiftNote:React.Dispatch<React.SetStateAction<{shiftNoteID: string | null }>>;  
+    setIsRecurrentModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    isRecurrentModalVisible: boolean;
 }
 
-const NextAppointmentCard = ({setIsEditMode,setIsModalVisible,setSelectedShiftNote,selectedShiftNote}:NextAppointmentCardProps) => {
+const NextAppointmentCard = ({setIsEditMode,isRecurrentModalVisible,setIsRecurrentModalVisible,setIsModalVisible,setSelectedShiftNote,selectedShiftNote}:NextAppointmentCardProps) => {
   const appointmentSlice = useAppSelector((state) => state.appointments);
   const { showConfirmation } = useConfirmationModalContext();
   const dispatch = useAppDispatch();
@@ -38,13 +41,13 @@ const NextAppointmentCard = ({setIsEditMode,setIsModalVisible,setSelectedShiftNo
   },[shiftNotesSlice?.currentShiftNoteState])
 
   useEffect(()=>{
-    if (authUser?.userID && nextAppointment?.recurrentTask.recurrentAppointmentID) {
+    if (authUser?.userID && nextAppointment?.recurrentTask?.recurrentAppointmentID) {
       dispatch(getCurrnetShiftNoteState({
         employeeID: authUser.userID,
-        recurrentAppointmentID: nextAppointment.recurrentTask.recurrentAppointmentID
+        recurrentAppointmentID: nextAppointment?.recurrentTask?.recurrentAppointmentID
       }));
     }
-  },[shiftNotesSlice.startState,nextAppointment])
+  },[shiftNotesSlice?.startState,nextAppointment])
 
   const handleShiftStarted=()=>{
     console.log("shiftNote Availability ",shiftNotesSlice?.currentShiftNoteState?.shiftNoteAvailability);
@@ -61,21 +64,21 @@ const NextAppointmentCard = ({setIsEditMode,setIsModalVisible,setSelectedShiftNo
     if (!nextAppointment) return false;
   
     const startTime = dayjs(
-      `${nextAppointment.recurrentTask.startDate}T${nextAppointment.recurrentTask.startTime}`,
+      `${nextAppointment?.recurrentTask?.startDate}T${nextAppointment?.recurrentTask?.startTime}`,
       "YYYY-MM-DDTHH:mm"
     );
   
     const currentTime = dayjs(); // Get the current time
-    const startWindowTime = startTime.subtract(20, "minutes"); // Start window begins 10 minutes before
+    const startWindowTime = startTime?.subtract(20, "minutes"); // Start window begins 10 minutes before
   
-    return currentTime.isAfter(startWindowTime);
+    return currentTime?.isAfter(startWindowTime);
   };
 
   const handleStartShiftNote = () => {
     if (authUser?.userID && nextAppointment?.recurrentTask.recurrentAppointmentID) {
       dispatch(submitStartShiftNote({
-        employeeID: authUser.userID,
-        recurrentAppointmentID: nextAppointment.recurrentTask.recurrentAppointmentID
+        employeeID: authUser?.userID,
+        recurrentAppointmentID: nextAppointment?.recurrentTask?.recurrentAppointmentID
       }));
     }
   }
@@ -94,15 +97,17 @@ const NextAppointmentCard = ({setIsEditMode,setIsModalVisible,setSelectedShiftNo
         alignItems: "stretch",
       }}
     >
-      {!nextAppointment ? (
+      {!nextAppointment?.recurrentTask ? (
+        <Stack alignItems="center" spacing={2} sx={{ width: "100%", textAlign: "center" }}>
+        <EventBusyIcon color="action" sx={{ fontSize: 48 }} /> {/* Add the icon */}
         <Typography
           variant="h6"
           color="textSecondary"
-          textAlign="center"
           sx={{ width: "100%" }}
         >
-          No upcoming appointments
+          No future appointments
         </Typography>
+      </Stack>
       ) : (
         <>
           {/* Title Section */}
@@ -121,7 +126,10 @@ const NextAppointmentCard = ({setIsEditMode,setIsModalVisible,setSelectedShiftNo
                 startIcon={<VisibilityIcon />}
                 size="small"
                 sx={{ textTransform: "capitalize" }}
-                onClick={() => alert("Viewing appointment details...")}
+                onClick={() => {
+                  dispatch(fetchRecurrentAppointmentDetails({ recurrentAppointmentID: nextAppointment?.recurrentTask?.recurrentAppointmentID }))
+                  setIsRecurrentModalVisible(true);
+                }}
               >
                 View
               </Button>
@@ -177,21 +185,21 @@ const NextAppointmentCard = ({setIsEditMode,setIsModalVisible,setSelectedShiftNo
             <Stack direction="row" alignItems="center">
               <AccessTimeIcon color="action" />
               <Typography variant="body2" ml={1}>
-                <strong>Start:</strong> {dayjs(nextAppointment.recurrentTask.startDate).format("MMM D, YYYY")}{" "}
-                {dayjs(nextAppointment.recurrentTask.startTime, "HH:mm").format("h:mm A")}
+                <strong>Start:</strong> {dayjs(nextAppointment?.recurrentTask?.startDate).format("MMM D, YYYY")}{" "}
+                {dayjs(nextAppointment?.recurrentTask?.startTime, "HH:mm").format("h:mm A")}
               </Typography>
             </Stack>
             <Stack direction="row" alignItems="center">
               <AccessTimeIcon color="action" />
               <Typography variant="body2" ml={1}>
-                <strong>End:</strong> {dayjs(nextAppointment.recurrentTask.endDate).format("MMM D, YYYY")}{" "}
-                {dayjs(nextAppointment.recurrentTask.endTime, "HH:mm").format("h:mm A")}
+                <strong>End:</strong> {dayjs(nextAppointment?.recurrentTask?.endDate).format("MMM D, YYYY")}{" "}
+                {dayjs(nextAppointment?.recurrentTask?.endTime, "HH:mm").format("h:mm A")}
               </Typography>
             </Stack>
             <Stack direction="row" alignItems="center">
               <LocationOnIcon color="action" />
               <Typography variant="body2" ml={1}>
-                <strong>Comment:</strong> {nextAppointment.recurrentTask.comment || "No comments available"}
+                <strong>Comment:</strong> {nextAppointment?.recurrentTask?.comment || "No comments available"}
               </Typography>
             </Stack>
           </Stack>

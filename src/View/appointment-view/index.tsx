@@ -2,8 +2,10 @@ import { Button, Stack, Typography, useTheme } from "@mui/material";
 import React, { useState } from "react";
 import AppointmentCalender from "./components/AppointmentCalender";
 import AddNewAppointmentModal from "@view/client-view/modal/AddNewAppointmentModal";
-import { useAppDispatch } from "@slices/store";
+import { useAppDispatch, useAppSelector } from "@slices/store";
 import { resetSelectedAppointment } from "@slices/AppointmentSlice/appointment";
+import { APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN } from "@config/config";
+import RecurrentAppointmentDetailsModal from "@view/careGiver-dashboard-view/Modal/RecurrentAppointmentDetailsModal";
 
 
 const AppointmentView = () => {
@@ -11,6 +13,8 @@ const AppointmentView = () => {
   const dispatch = useAppDispatch();
   const [isAppointmentDetailShowingModalOpen,setIsAppointmentAddModalVisible] = useState<boolean>(false);
   const [isEditing,setIsEditing] = useState<boolean>(false);
+  const authRole = useAppSelector((State) => State?.auth?.roles);
+  const [recurrentAppointmentVisible, setRecurrentAppointmentVisible] = useState<boolean>(false);
 
   const handleOpenAddNewAppointmentModal = () => {
     setIsAppointmentAddModalVisible(true);
@@ -28,12 +32,16 @@ const AppointmentView = () => {
         isEditMode={isEditing}
         setIsEditMode={setIsEditing}
         />
+        <RecurrentAppointmentDetailsModal open={recurrentAppointmentVisible} onClose={()=>setRecurrentAppointmentVisible(false)}/>
       <Stack width="100%" flexDirection="row" alignItems="center" height="8%" justifyContent="space-between">
         <Typography color={theme.palette.primary.main} fontWeight="600" variant="h5">Appointments</Typography>
-        <Button onClick={()=>handleOpenAddNewAppointmentModal()} variant='contained'>Add Appointment</Button>
+        {
+          authRole?.includes(APPLICATION_ADMIN) || authRole?.includes(APPLICATION_SUPER_ADMIN) ?
+          <Button onClick={()=>handleOpenAddNewAppointmentModal()} variant='contained'>Add Appointment</Button> : null
+        }
       </Stack>
       <Stack width="100%" height="90%">
-        <AppointmentCalender setIsAppointmentAddModalVisible={setIsAppointmentAddModalVisible} setIsEditing={setIsEditing}/>
+        <AppointmentCalender setRecurrentAppointmentVisible={setRecurrentAppointmentVisible} setIsAppointmentAddModalVisible={setIsAppointmentAddModalVisible} setIsEditing={setIsEditing}/>
       </Stack>
     </Stack>
   )

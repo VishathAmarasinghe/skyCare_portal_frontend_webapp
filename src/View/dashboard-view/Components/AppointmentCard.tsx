@@ -11,9 +11,10 @@ const AppointmentCard = ({ todayAppointments }: { todayAppointments: Appointment
       sx={{
         display: 'flex',
         width: '95%',
+        // border:"2px solid red",
         flexDirection: 'column',
-        maxHeight: 300,
-        overflow: 'auto',
+        maxHeight: 347, 
+        overflowY: 'auto', // Enable vertical scrolling
       }}
     >
       <Grid container spacing={1} direction="column">
@@ -25,19 +26,13 @@ const AppointmentCard = ({ todayAppointments }: { todayAppointments: Appointment
             <Grid item xs={12} key={appointment.appointmentID}>
               <Card
                 sx={{
-                //   borderLeft: 5,
-                //   borderLeftColor: theme?.palette.primary.main,
                   boxShadow: 1,
                   borderRadius: 2,
                   padding: 0.5,
                   backgroundColor: theme.palette.background.default,
                 }}
               >
-                <CardContent
-                  sx={{
-                    padding: '8px !important',
-                  }}
-                >
+                <CardContent sx={{ padding: '8px !important' }}>
                   <Stack direction="row" justifyContent="space-between" alignItems="center">
                     <Stack direction="column">
                       <Typography variant="body1" fontWeight={600}>

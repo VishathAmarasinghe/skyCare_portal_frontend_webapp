@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Button, TextField, Select, MenuItem, InputLabel, FormControl, Box, IconButton, SelectChangeEvent, Stack } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Delete, Visibility } from '@mui/icons-material';
 import {IncidentInvolvedParties} from '../../../slices/IncidentSlice/incident';
+import { useAppSelector } from '@slices/store';
 
 interface IncidentInvolvedPartiesComponentProps {
     rows: IncidentInvolvedParties[];
@@ -13,6 +14,7 @@ const IncidentInvolvedPartiesComponent: React.FC<IncidentInvolvedPartiesComponen
   
   const [openModal, setOpenModal] = useState(false);
   const [openViewModal, setOpenViewModal] = useState(false);
+  const incidentSlice = useAppSelector((state)=>state.incident);
   const [formData, setFormData] = useState<IncidentInvolvedParties>({
     partyID: '',
     firstName: '',
@@ -35,6 +37,12 @@ const IncidentInvolvedPartiesComponent: React.FC<IncidentInvolvedPartiesComponen
       type: 'Witness',
     });
   };
+
+  useEffect(() => {
+    if (incidentSlice) {
+      setRows(incidentSlice.selectedIncident?.parties || []);
+    }
+  }, [incidentSlice]);
 
   const handleViewModalClose = () => {
     setOpenViewModal(false);

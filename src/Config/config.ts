@@ -34,5 +34,7 @@ export const AppConfig = {
     incidentStatus: `${ServiceBaseUrl}/incident-status`,
     incidentQuestions: `${ServiceBaseUrl}/incident-action-types`,
     dashboard: `${ServiceBaseUrl}/dashboard`,
+    incident: `${ServiceBaseUrl}/incidents`,
+    
   },
 };

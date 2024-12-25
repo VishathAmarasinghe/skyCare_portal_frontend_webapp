@@ -20,7 +20,7 @@ import { Formik, Form, Field, FormikProps } from "formik";
 import * as Yup from "yup";
 import { Upload, message } from "antd";
 import dayjs from "dayjs";
-import { Client, saveClient } from "@slices/clientSlice/client";
+import { Client, saveClient, updateClient } from "@slices/clientSlice/client";
 import CustomRichTextField from "../../../component/common/CustomRichTextField";
 import { GoogleMap, LoadScript, Autocomplete } from "@react-google-maps/api";
 import { useAppDispatch, useAppSelector } from "@slices/store";
@@ -38,11 +38,54 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [searchInput, setSearchInput] = useState("");
+  const [searchInputPostal, setSearchInputPostal] = useState("");
   const [addressDetails, setAddressDetails] = useState<any>(null);
+  const [addressDetailsPostal, setAddressDetailsPostal] = useState<any>(null);
   const dispatch = useAppDispatch();
   const [checked, setChecked] = useState(false);
   const selector = useAppSelector((state) => state.selector);
   const client = useAppSelector((state) => state.clients);
+  const [autocomplete, setAutocomplete] =
+    useState<google.maps.places.Autocomplete | null>(null);
+  const [initialValue, setInitialValues] = useState({
+    clientID: "",
+    firstName: "",
+    lastName: "",
+    preferredName: "",
+    email: "",
+    gender: "Male",
+    birthday: dayjs().format("YYYY-MM-DD"),
+    clientLanguages: [] as string[],
+    phoneNumbers: ["", ""],
+    clientType: "",
+    clientStatus: "",
+    profilePhoto: "",
+    joinDate: dayjs().format("YYYY-MM-DD"),
+    aboutMe: "",
+    physicalAddress: {
+      id: 0,
+      address: "",
+      city: "",
+      state: "",
+      country: "",
+      postalCode: "",
+      longitude: "",
+      latitude: "",
+    },
+    postalAddress: {
+      id: 0,
+      address: "",
+      city: "",
+      state: "",
+      country: "",
+      postalCode: "",
+      longitude: "",
+      latitude: "",
+    },
+    interests: "",
+    dislikes: "",
+    clientClassifications: [] as string[],
+  });
   const [classifications, setClassifications] = useState<
     { label: string; value: string }[]
   >([]);
@@ -63,6 +106,66 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
   useEffect(() => {
     fetchSupportDetails();
   }, [selector.submitState]);
+
+  useEffect(() => {
+    console.log("Selected Client", client?.selectedClient);
+    
+    if (client?.selectedClient) {
+      setInitialValues({
+        ...client?.selectedClient,
+        clientLanguages:client?.selectedClient?.clientLanguages?.map((lan)=>languages?.filter((lang)=>lang?.label== lan)[0]?.value),
+        clientClassifications:client?.selectedClient?.clientClassifications?.map((cls)=>classifications?.filter((classification)=>classification?.label== cls)[0]?.value),
+        clientType:client?.selectedClient?.clientType?clientTypes?.filter((cType)=>cType?.label== client?.selectedClient?.clientType)[0]?.value:"",
+        clientStatus:client?.selectedClient?.clientStatus?clientStatuses?.filter((status)=>status?.label== client?.selectedClient?.clientStatus)[0]?.value:"",
+        postalAddress: { ...client?.selectedClient?.postalAddress },
+      });
+      console.log("postalAddress",client?.selectedClient?.postalAddress);
+      
+      if(client?.selectedClient?.physicalAddress?.address===client?.selectedClient?.postalAddress?.address && client?.selectedClient?.physicalAddress?.city===client?.selectedClient?.postalAddress?.city && client?.selectedClient?.physicalAddress?.state===client?.selectedClient?.postalAddress?.state && client?.selectedClient?.physicalAddress?.postalCode===client?.selectedClient?.postalAddress?.postalCode){
+        // setChecked(true);
+      }
+    } else {
+      setInitialValues({
+        clientID: "",
+        firstName: "",
+        lastName: "",
+        preferredName: "",
+        email: "",
+        gender: "Male",
+        birthday: dayjs().format("YYYY-MM-DD"),
+        clientLanguages: [] as string[],
+        phoneNumbers: ["", ""],
+        clientType: "",
+        clientStatus: "",
+        profilePhoto: "",
+        joinDate: dayjs().format("YYYY-MM-DD"),
+        aboutMe: "",
+        physicalAddress: {
+          id: 0,
+          address: "",
+          city: "",
+          state: "",
+          country: "",
+          postalCode: "",
+          longitude: "",
+          latitude: "",
+        },
+        postalAddress: {
+          id: 0,
+          address: "",
+          city: "",
+          state: "",
+          country: "",
+          postalCode: "",
+          longitude: "",
+          latitude: "",
+        },
+        interests: "",
+        dislikes: "",
+        clientClassifications: [] as string[],
+      });
+    }
+  }, [client?.selectedClient,languages,clientTypes,classifications,clientStatuses]);
 
   // Update useState after data is loaded
   useEffect(() => {
@@ -108,9 +211,9 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
     await dispatch(fetchClientStatus());
   };
 
-  const checkBoxHandle = (event: React.ChangeEvent<HTMLInputElement>)=>{
+  const checkBoxHandle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked);
-  }
+  };
 
   // Yup validation schema
   const validationSchema = Yup.object().shape({
@@ -124,7 +227,7 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
     clientLanguages: Yup.array()
       .min(1, "Select at least one language")
       .required("Languages are required"),
-      phoneNumbers: Yup.array()
+    phoneNumbers: Yup.array()
       .of(
         Yup.string()
           .required("Phone number is required")
@@ -158,56 +261,24 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
 
   return (
     <Formik
-      initialValues={{
-        clientID: "",
-        firstName: "",
-        lastName: "",
-        preferredName: "",
-        email: "",
-        gender: "Male",
-        birthday: dayjs().format("YYYY-MM-DD"),
-        clientLanguages: [] as string[],
-        phoneNumbers: ["", ""],
-        clientType: "",
-        clientStatus: "",
-        profilePhoto: "",
-        joinDate: dayjs().format("YYYY-MM-DD"),
-        aboutMe: "",
-        physicalAddress: {
-          id: 0,
-          address: "",
-          city: "",
-          state: "",
-          country: "",
-          postalCode: "",
-          longitude: "",
-          latitude: "",
-        },
-        postalAddress: {
-          id: 0,
-          address: "",
-          city: "",
-          state: "",
-          country: "",
-          postalCode: "",
-          longitude: "",
-          latitude: "",
-        },
-        interests: "",
-        dislikes: "",
-        clientClassifications: [] as string[],
-      }}
+      initialValues={initialValue}
       validationSchema={validationSchema}
       validateOnBlur={true}
       validateOnChange={true}
+      enableReinitialize={true}
       onSubmit={(values, { setSubmitting }) => {
-        dispatch(saveClient({clientData:values,profilePhoto:null}));
+        if(client?.selectedClient){
+          dispatch(updateClient({clientData:values}))
+        }else{
+          dispatch(saveClient({ clientData: values, profilePhoto: null }));
+        }
         console.log("Submitting values", values);
         setSubmitting(false);
       }}
     >
       {(formikProps: FormikProps<Client>) => {
-        const handleAddressSelect = (place: any) => {
+        const handleAddressSelect = (place: google.maps.places.PlaceResult,type:string) => {
+          if (!autocomplete) return;
           const addressComponents = place?.address_components;
           const address = place?.formatted_address;
 
@@ -227,15 +298,25 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
             }
           });
 
+          if(type==="physical"){
           setAddressDetails({
             address,
             city,
             state,
             postalCode,
           });
-        };
+        }else{
+          setAddressDetailsPostal({
+            address,
+            city,
+            state,
+            postalCode,
+          });
+        }};
 
         useEffect(() => {
+          console.log("Address Details", addressDetails);
+          
           if (addressDetails) {
             // Update the form values with the selected address details
             formikProps.setFieldValue(
@@ -258,24 +339,62 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
         }, [addressDetails]);
 
         useEffect(() => {
-          if (checked) {
-            formikProps.setFieldValue("postalAddress.address", formikProps.values.physicalAddress.address);
-            formikProps.setFieldValue("postalAddress.city", formikProps.values.physicalAddress.city);
-            formikProps.setFieldValue("postalAddress.state", formikProps.values.physicalAddress.state);
-            formikProps.setFieldValue("postalAddress.postalCode", formikProps.values.physicalAddress.postalCode);
-          }else{
-            formikProps.setFieldValue("postalAddress.address", "");
-            formikProps.setFieldValue("postalAddress.city", "");
-            formikProps.setFieldValue("postalAddress.state", "");
-            formikProps.setFieldValue("postalAddress.postalCode", "");
+          console.log("Address Details", addressDetails);
+          
+          if (addressDetailsPostal) {
+            // Update the form values with the selected address details
+            formikProps.setFieldValue(
+              "postalAddress.address",
+              addressDetailsPostal.address
+            );
+            formikProps.setFieldValue(
+              "postalAddress.city",
+              addressDetailsPostal.city
+            );
+            formikProps.setFieldValue(
+              "postalAddress.state",
+              addressDetailsPostal.state
+            );
+            formikProps.setFieldValue(
+              "postalAddress.postalCode",
+              addressDetailsPostal.postalCode
+            );
           }
-        },[checked])
+        }, [addressDetailsPostal]);
+
 
         useEffect(() => {
-          if(client.submitState === State.success){
+          if (checked) {
+            formikProps.setFieldValue(
+              "postalAddress.address",
+              formikProps.values.physicalAddress.address
+            );
+            formikProps.setFieldValue(
+              "postalAddress.city",
+              formikProps.values.physicalAddress.city
+            );
+            formikProps.setFieldValue(
+              "postalAddress.state",
+              formikProps.values.physicalAddress.state
+            );
+            formikProps.setFieldValue(
+              "postalAddress.postalCode",
+              formikProps.values.physicalAddress.postalCode
+            );
+          } else {
+
+            // formikProps.setFieldValue("postalAddress.address", "");
+            // formikProps.setFieldValue("postalAddress.city", "");
+            // formikProps.setFieldValue("postalAddress.state", "");
+            // formikProps.setFieldValue("postalAddress.postalCode", "");
+          }
+        }, [checked]);
+
+        useEffect(() => {
+          if (client.submitState === State.success) {
             formikProps.resetForm();
           }
-        },[client.submitState])
+        }, [client.submitState]);
         return (
           <Form onSubmit={formikProps.handleSubmit}>
             {activeStepper === 0 && (
@@ -447,7 +566,13 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
                         renderValue={(selected) => (
                           <div>
                             {selected.map((value: string) => (
-                              <Chip key={value} label={languages.find((lang)=>lang.value==value)?.label} />
+                              <Chip
+                                key={value}
+                                label={
+                                  languages.find((lang) => lang.value == value)
+                                    ?.label
+                                }
+                              />
                             ))}
                           </div>
                         )}
@@ -786,204 +911,242 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
             )}
             {activeStepper === 2 && (
               <Stack>
-                  <Stack>
-                <Typography>Physical Address</Typography>
-                <Grid container spacing={3}>
-                  {/* Address Search */}
-                  <Grid item xs={12} sm={6}>
-                    <LoadScript
-                      googleMapsApiKey="AIzaSyBaDVwvh1ksOKMAb_s2QBEadlGsbc4A43k"
-                      libraries={["places"]}
-                    >
-                      <Autocomplete
-                        onLoad={(autocomplete) => {
-                          const place = autocomplete.getPlace();
-                          handleAddressSelect(place);
+                <Stack>
+                  <Typography>Physical Address</Typography>
+                  <Grid container spacing={3}>
+                    {/* Address Search */}
+                    <Grid item xs={12} sm={6}>
+                        <Autocomplete
+                        options={{
+                          componentRestrictions: { country: 'au' }
                         }}
-                      >
-                        <TextField
-                          label="Search Address"
-                          variant="outlined"
-                          fullWidth
-                          name="search"
-                          value={searchInput}
-                          onChange={(e) => setSearchInput(e.target.value)}
-                        />
-                      </Autocomplete>
-                    </LoadScript>
-                  </Grid>
-
-                  {/* Address */}
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="Address"
-                      variant="outlined"
-                      fullWidth
-                      required
-                      onBlur={formikProps.handleBlur}
-                      name="physicalAddress.address"
-                      value={formikProps.values.physicalAddress.address}
-                      onChange={formikProps.handleChange}
-                      error={
-                        formikProps.touched.physicalAddress?.address &&
-                        Boolean(formikProps.errors.physicalAddress?.address)
-                      }
-                      helperText={
-                        formikProps.touched.physicalAddress?.address &&
-                        formikProps.errors.physicalAddress?.address
-                      }
-                    />
-                  </Grid>
-                </Grid>
-
-                {/* City, State, PostalCode */}
-                <Grid container spacing={3} mt={0.5}>
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      label="City"
-                      variant="outlined"
-                      fullWidth
-                      onBlur={formikProps.handleBlur}
-                      name="physicalAddress.city"
-                      value={formikProps.values.physicalAddress.city}
-                      onChange={formikProps.handleChange}
-                      error={formikProps.touched.physicalAddress?.city && Boolean(formikProps.errors.physicalAddress?.city)}
-                      helperText={formikProps.touched.physicalAddress?.city && formikProps.errors.physicalAddress?.city}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      label="State"
-                      variant="outlined"
-                      fullWidth
-                      name="physicalAddress.state"
-                      onBlur={formikProps.handleBlur}
-                      value={formikProps.values.physicalAddress.state}
-                      onChange={formikProps.handleChange}
-                      error={formikProps.touched.physicalAddress?.state && Boolean(formikProps.errors.physicalAddress?.state)}
-                      helperText={formikProps.touched.physicalAddress?.state && formikProps.errors.physicalAddress?.state}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      label="Postal Code"
-                      variant="outlined"
-                      fullWidth
-                      onBlur={formikProps.handleBlur}
-                      name="physicalAddress.postalCode"
-                      value={formikProps.values.physicalAddress.postalCode}
-                      onChange={formikProps.handleChange}
-                      error={formikProps.touched.physicalAddress?.postalCode && Boolean(formikProps.errors.physicalAddress?.postalCode)}
-                      helperText={formikProps.touched.physicalAddress?.postalCode && formikProps.errors.physicalAddress?.postalCode}
-                    />
-                  </Grid>
-                </Grid>
-              </Stack>
-              <Stack mt={1}>
-                <Typography variant="h6" color="primary">Postal Address</Typography>
-                <FormControlLabel control={<Checkbox onChange={checkBoxHandle} />} label="Same as physical address" />
-                
-                <Grid container columnSpacing={3}>
-                  {/* Address Search */}
-                  <Grid item xs={12} sm={6}>
-                    <LoadScript
-                      googleMapsApiKey="AIzaSyBaDVwvh1ksOKMAb_s2QBEadlGsbc4A43k"
-                      libraries={["places"]}
-                    >
-                      <Autocomplete
-                        onLoad={(autocomplete) => {
-                          const place = autocomplete.getPlace();
-                          handleAddressSelect(place);
+                        onLoad={(autocompleteInstance) => setAutocomplete(autocompleteInstance)}
+                        onPlaceChanged={() => {
+                          if (autocomplete) {
+                            const place = autocomplete.getPlace();
+                            console.log("Selected Place:", place); // Check the place object
+                            handleAddressSelect(place,"physical"); // Pass the place data to the handler
+                          }
                         }}
-                      >
-                        <TextField
-                          label="Search Address"
-                          variant="outlined"
-                          fullWidth
-                          name="search"
-                          value={searchInput}
-                          onChange={(e) => setSearchInput(e.target.value)}
-                        />
-                      </Autocomplete>
-                    </LoadScript>
+                        >
+                          <TextField
+                            label="Search Address"
+                            variant="outlined"
+                            fullWidth
+                            name="search"
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                          />
+                        </Autocomplete>
+                    </Grid>
+
+                    {/* Address */}
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        label="Address"
+                        variant="outlined"
+                        fullWidth
+                        required
+                        onBlur={formikProps.handleBlur}
+                        name="physicalAddress.address"
+                        value={formikProps.values.physicalAddress.address}
+                        onChange={formikProps.handleChange}
+                        error={
+                          formikProps.touched.physicalAddress?.address &&
+                          Boolean(formikProps.errors.physicalAddress?.address)
+                        }
+                        helperText={
+                          formikProps.touched.physicalAddress?.address &&
+                          formikProps.errors.physicalAddress?.address
+                        }
+                      />
+                    </Grid>
                   </Grid>
 
-                  {/* Address */}
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="Address"
-                      variant="outlined"
-                      fullWidth
-                      required
-                      name="postalAddress.address"
-                      onBlur={formikProps.handleBlur}
-                      value={formikProps.values.postalAddress.address}
-                      onChange={formikProps.handleChange}
-                      error={
-                        formikProps.touched.postalAddress?.address &&
-                        Boolean(formikProps.errors.postalAddress?.address)
-                      }
-                      helperText={
-                        formikProps.touched.postalAddress?.address &&
-                        formikProps.errors.postalAddress?.address
-                      }
-                    />
+                  {/* City, State, PostalCode */}
+                  <Grid container spacing={3} mt={0.5}>
+                    <Grid item xs={12} sm={4}>
+                      <TextField
+                        label="City"
+                        variant="outlined"
+                        fullWidth
+                        onBlur={formikProps.handleBlur}
+                        name="physicalAddress.city"
+                        value={formikProps.values.physicalAddress.city}
+                        onChange={formikProps.handleChange}
+                        error={
+                          formikProps.touched.physicalAddress?.city &&
+                          Boolean(formikProps.errors.physicalAddress?.city)
+                        }
+                        helperText={
+                          formikProps.touched.physicalAddress?.city &&
+                          formikProps.errors.physicalAddress?.city
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                      <TextField
+                        label="State"
+                        variant="outlined"
+                        fullWidth
+                        name="physicalAddress.state"
+                        onBlur={formikProps.handleBlur}
+                        value={formikProps.values.physicalAddress.state}
+                        onChange={formikProps.handleChange}
+                        error={
+                          formikProps.touched.physicalAddress?.state &&
+                          Boolean(formikProps.errors.physicalAddress?.state)
+                        }
+                        helperText={
+                          formikProps.touched.physicalAddress?.state &&
+                          formikProps.errors.physicalAddress?.state
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                      <TextField
+                        label="Postal Code"
+                        variant="outlined"
+                        fullWidth
+                        onBlur={formikProps.handleBlur}
+                        name="physicalAddress.postalCode"
+                        value={formikProps.values.physicalAddress.postalCode}
+                        onChange={formikProps.handleChange}
+                        error={
+                          formikProps.touched.physicalAddress?.postalCode &&
+                          Boolean(
+                            formikProps.errors.physicalAddress?.postalCode
+                          )
+                        }
+                        helperText={
+                          formikProps.touched.physicalAddress?.postalCode &&
+                          formikProps.errors.physicalAddress?.postalCode
+                        }
+                      />
+                    </Grid>
                   </Grid>
-                </Grid>
+                </Stack>
+                <Stack mt={1}>
+                  <Typography variant="h6" color="primary">
+                    Postal Address
+                  </Typography>
+                  <FormControlLabel
+                    control={<Checkbox onChange={checkBoxHandle} />}
+                    label="Same as physical address"
+                  />
 
-                {/* City, State, PostalCode */}
-                <Grid container columnSpacing={3} rowSpacing={3} mt={0.1}>
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      label="City"
-                      variant="outlined"
-                      fullWidth
-                      name="postalAddress.city"
-                      onBlur={formikProps.handleBlur}
-                      value={formikProps.values.postalAddress.city}
-                      onChange={formikProps.handleChange}
-                      error={formikProps.touched.postalAddress?.city && Boolean(formikProps.errors.postalAddress?.city)}
-                      helperText={formikProps.touched.postalAddress?.city && formikProps.errors.postalAddress?.city}
-                    />
+                  <Grid container columnSpacing={3}>
+                    {/* Address Search */}
+                    <Grid item xs={12} sm={6}>
+                        <Autocomplete
+                        options={{
+                          componentRestrictions: { country: 'au' }
+                        }}
+                          onLoad={(autocomplete) => {
+                            const place = autocomplete.getPlace();
+                            handleAddressSelect(place,"postal");
+                          }}
+                        >
+                          <TextField
+                            label="Search Address"
+                            variant="outlined"
+                            fullWidth
+                            name="search"
+                            value={searchInputPostal}
+                            onChange={(e) => setSearchInputPostal(e.target.value)}
+                          />
+                        </Autocomplete>
+                    </Grid>
+
+                    {/* Address */}
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        label="Address"
+                        variant="outlined"
+                        fullWidth
+                        required
+                        name="postalAddress.address"
+                        onBlur={formikProps.handleBlur}
+                        value={formikProps.values.postalAddress.address}
+                        onChange={formikProps.handleChange}
+                        error={
+                          formikProps.touched.postalAddress?.address &&
+                          Boolean(formikProps.errors.postalAddress?.address)
+                        }
+                        helperText={
+                          formikProps.touched.postalAddress?.address &&
+                          formikProps.errors.postalAddress?.address
+                        }
+                      />
+                    </Grid>
                   </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      label="State"
-                      variant="outlined"
-                      fullWidth
-                      name="postalAddress.state"
-                      onBlur={formikProps.handleBlur}
-                      value={formikProps.values.postalAddress.state}
-                      onChange={formikProps.handleChange}
-                      error={formikProps.touched.postalAddress?.state && Boolean(formikProps.errors.postalAddress?.state)}
-                      helperText={formikProps.touched.postalAddress?.state && formikProps.errors.postalAddress?.state}
-                    />
+
+                  {/* City, State, PostalCode */}
+                  <Grid container columnSpacing={3} rowSpacing={3} mt={0.1}>
+                    <Grid item xs={12} sm={4}>
+                      <TextField
+                        label="City"
+                        variant="outlined"
+                        fullWidth
+                        name="postalAddress.city"
+                        onBlur={formikProps.handleBlur}
+                        value={formikProps.values.postalAddress.city}
+                        onChange={formikProps.handleChange}
+                        error={
+                          formikProps.touched.postalAddress?.city &&
+                          Boolean(formikProps.errors.postalAddress?.city)
+                        }
+                        helperText={
+                          formikProps.touched.postalAddress?.city &&
+                          formikProps.errors.postalAddress?.city
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                      <TextField
+                        label="State"
+                        variant="outlined"
+                        fullWidth
+                        name="postalAddress.state"
+                        onBlur={formikProps.handleBlur}
+                        value={formikProps.values.postalAddress.state}
+                        onChange={formikProps.handleChange}
+                        error={
+                          formikProps.touched.postalAddress?.state &&
+                          Boolean(formikProps.errors.postalAddress?.state)
+                        }
+                        helperText={
+                          formikProps.touched.postalAddress?.state &&
+                          formikProps.errors.postalAddress?.state
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                      <TextField
+                        label="Postal Code"
+                        variant="outlined"
+                        fullWidth
+                        name="postalAddress.postalCode"
+                        onBlur={formikProps.handleBlur}
+                        value={formikProps.values.postalAddress.postalCode}
+                        onChange={formikProps.handleChange}
+                        error={
+                          formikProps.touched.postalAddress?.postalCode &&
+                          Boolean(formikProps.errors.postalAddress?.postalCode)
+                        }
+                        helperText={
+                          formikProps.touched.postalAddress?.postalCode &&
+                          formikProps.errors.postalAddress?.postalCode
+                        }
+                      />
+                    </Grid>
                   </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      label="Postal Code"
-                      variant="outlined"
-                      fullWidth
-                      name="postalAddress.postalCode"
-                      onBlur={formikProps.handleBlur}
-                      value={formikProps.values.postalAddress.postalCode}
-                      onChange={formikProps.handleChange}
-                      error={formikProps.touched.postalAddress?.postalCode && Boolean(formikProps.errors.postalAddress?.postalCode)}
-                      helperText={formikProps.touched.postalAddress?.postalCode && formikProps.errors.postalAddress?.postalCode}
-                    />
-                  </Grid>
-                </Grid>
+                </Stack>
               </Stack>
-              </Stack>
-              
             )}
 
             <Box mt={3} textAlign="center" display="none">
-              <button
-              style={{display:"none"}}
-                type="submit"
-                id="submit-btn"
-              >
+              <button style={{ display: "none" }} type="submit" id="submit-btn">
                 Submit
               </button>
             </Box>

@@ -12,10 +12,11 @@ type AddNewNotesModalProps = {
     setIsEditMode:React.Dispatch<React.SetStateAction<boolean>>;
     selectedShiftNote:{shiftNoteID: string | null };
     setSelectedShiftNote:React.Dispatch<React.SetStateAction<{shiftNoteID: string | null }>>;  
+    pureNew:boolean;
 
 };
 
-const ShiftNoteModal = ({selectedShiftNote,setSelectedShiftNote,isNoteModalVisible,setIsNoteModalVisible,isEditMode,setIsEditMode}:AddNewNotesModalProps) => {
+const ShiftNoteModal = ({selectedShiftNote,setSelectedShiftNote,isNoteModalVisible,setIsNoteModalVisible,isEditMode,setIsEditMode,pureNew}:AddNewNotesModalProps) => {
 
   const shiftNoteState = useAppSelector((state)=>state.shiftNotes);
 
@@ -62,6 +63,7 @@ const ShiftNoteModal = ({selectedShiftNote,setSelectedShiftNote,isNoteModalVisib
     >
       <Box sx={{ mt: 2 }}  width="100%">
         <ShiftNoteForm
+        pureNew = {pureNew}
         selectedShiftNote={selectedShiftNote} setSelectedShiftNote={setSelectedShiftNote}
         isEditMode={isEditMode} isNoteModalVisible={isNoteModalVisible} key="shiftNote-Add-form"/>
       </Box>

@@ -4,7 +4,7 @@ import EmployeeTable from "./components/EmployeeTable";
 import AdminModal from "./modal/AdminModal";
 import StaffModal from "./modal/StaffModal";
 import { useAppDispatch, useAppSelector } from "@slices/store";
-import {fetchPaymentTypes,fetchDocumentTypes, CareGiverDocuments, fetchCareGivers, fetchSingleCareGiverByEmployeeID } from '../../slices/CareGiverSlice/careGiver'
+import {fetchPaymentTypes,fetchDocumentTypes, CareGiverDocuments, fetchCareGivers, fetchSingleCareGiverByEmployeeID, resetSelectedCareGiver } from '../../slices/CareGiverSlice/careGiver'
 import { fetchEmployeesByRole, resetSelectedEmployee } from "@slices/EmployeeSlice/employee";
 
 const EmployeeView = () => {
@@ -51,6 +51,14 @@ const EmployeeView = () => {
       dispatch(fetchPaymentTypes());
       dispatch(fetchDocumentTypes());
   },[isStaffAddModalVisible])
+
+  useEffect(()=>{
+    
+    if (isEmployeeAddModalVisible){
+      dispatch(resetSelectedEmployee());
+      dispatch(resetSelectedCareGiver());
+    }
+  },[isEmployeeAddModalVisible])
 
   return (
     <Stack width="100%"

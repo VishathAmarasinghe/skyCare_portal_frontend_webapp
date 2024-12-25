@@ -100,9 +100,7 @@ const EmployeeTable = ({ }: ClientTableProps) => {
       headerName: "Email",
       flex: 1,
       renderCell: (params) => {
-        const employeeImage = employees?.find((emp)=>emp.employeeID===params?.row?.employeeID)?.profile_photo;
-        console.log("employee image is",employeeImage);
-        
+        const employeeImage = employees?.find((emp)=>emp.employeeID===params?.row?.employeeID)?.profile_photo;        
         return (
         <Chip
           avatar={

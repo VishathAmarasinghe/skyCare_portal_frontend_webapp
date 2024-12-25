@@ -6,9 +6,9 @@ import { State } from "../../../types/types";
 import EmployeeBasicInfoForm from '../components/EmployeeBasicInfoForm';
 import CareGiverFileUploader from '../components/CareGiverFileUploader';
 import CareGiverPaymentRatioAdder from '../components/CareGiverPaymentRatioAdder';
-import { CareGiver, CareGiverDocuments, CareGiverPayments, saveCareGiver } from '@slices/CareGiverSlice/careGiver';
+import { CareGiver, CareGiverDocuments, CareGiverPayments, saveCareGiver, updateCareGiver } from '@slices/CareGiverSlice/careGiver';
 import { useAppDispatch, useAppSelector } from '@slices/store';
-import { Employee } from '@slices/EmployeeSlice/employee';
+import { Employee, fetchEmployeesByRole } from '@slices/EmployeeSlice/employee';
 import { enqueueSnackbarMessage } from '@slices/commonSlice/common';
 import { APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN } from '@config/config';
 
@@ -59,6 +59,33 @@ const StaffModal = ({isEditMode,setIsEditMode,isCareGiverAddModalVisible: IsCare
     employeePhoneNo: ["", ""],
   });
 
+  const resetEmployeeBasicInformation = () => {
+    setEmployeeBasicInformation({
+      employeeID: "",
+      password: "",
+      status:"",
+      firstName: "",
+      lastName: "",
+      email: "",
+      accessRole: "",
+      joinDate: "",
+      profile_photo: "",
+      employeeAddresses: [
+        {
+          longitude: "",
+          latitude: "",
+          address: "",
+          city: "",
+          state: "",
+          country: "",
+          postal_code: "",
+        },
+      ],
+      employeeJobRoles: [],
+      employeePhoneNo: ["", ""],
+    });
+  }
+
   useEffect(()=>{
     if (employeeSlice?.selectedEmployee) {
       setEmployeeState(employeeSlice?.selectedEmployee?.status as "Pending" | "Activated" | "Deactivated");
@@ -66,7 +93,19 @@ const StaffModal = ({isEditMode,setIsEditMode,isCareGiverAddModalVisible: IsCare
   },[employeeSlice?.selectedEmployee])
 
   useEffect(()=>{
+      if(careGiverStatus?.submitState === State?.success || careGiverStatus?.updateState === State?.success){
+        setIsCareGiverAddModalVisible(false);
+        setIsEditMode(false);
+        dispatch(fetchEmployeesByRole("CareGiver"));
+      }
+  },[careGiverStatus?.submitState,careGiverStatus?.updateState])
+
+  useEffect(()=>{
     setActiveStep(0);
+    if (!IsCareGiverAddModalVisible) {
+      resetEmployeeBasicInformation();
+    }
+    
   },[IsCareGiverAddModalVisible])
 
   useEffect(()=>{
@@ -110,9 +149,7 @@ const StaffModal = ({isEditMode,setIsEditMode,isCareGiverAddModalVisible: IsCare
       }
       console.log("careGiverPayload",careGiverPayload);
       console.log("uploadFiles",uploadFiles);
-      
-      
-      
+      dispatch(updateCareGiver({careGiverData:careGiverPayload,profilePhoto:profilePic,uploadFiles:uploadFiles}));
     }else{
       console.log("errorState",errorState);
       console.log("uploadFiles",uploadFiles);

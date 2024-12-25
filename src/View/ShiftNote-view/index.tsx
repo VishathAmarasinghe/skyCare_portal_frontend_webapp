@@ -12,6 +12,7 @@ const ShiftNoteView = () => {
     const [shiftModalOpen, setShiftModalOpen] = useState<boolean>(false);
     const [shiftIsEditMode, setShiftIsEditMode] = useState<boolean>(false);
     const [selectedShiftNote, setSelectedShiftNote] = useState<{ shiftNoteID: string | null }>({ shiftNoteID: null });
+    const [pureNew, setPureNew] = useState<boolean>(false);
     const authRoles = useAppSelector((state)=>state?.auth?.roles);
     const authUser = useAppSelector((state)=>state?.auth?.userInfo);
     const shiftSlice = useAppSelector((state)=>state?.shiftNotes);
@@ -40,6 +41,7 @@ const ShiftNoteView = () => {
       sx={{backgroundColor: theme.palette.background.paper, boxShadow: 1, borderRadius: 2,padding:2}}
       height="100%">
         <ShiftNoteModal 
+        pureNew={pureNew}
         isEditMode={shiftIsEditMode} 
         setIsEditMode={setShiftIsEditMode} 
         setSelectedShiftNote={setSelectedShiftNote}
@@ -49,10 +51,10 @@ const ShiftNoteView = () => {
         />
         <Stack width="100%" flexDirection="row" alignItems="center" justifyContent="space-between">
           <Typography color={theme.palette.primary.main} fontWeight="600" variant="h6">Shift Notes</Typography>
-          {/* <Button variant='contained'>New Shift Note</Button> */}
+          <Button variant='contained' onClick={()=>{setSelectedShiftNote({ shiftNoteID: null }),setShiftIsEditMode(true),setShiftModalOpen(true),setPureNew(true)}}>New Shift Note</Button>
         </Stack>
         <Stack width="100%" height="480px">
-          <ShiftNoteTable isNoteModalVisible={shiftModalOpen} setIsNoteModalVisible={setShiftModalOpen}/>
+          <ShiftNoteTable setPureNew={setPureNew} isNoteModalVisible={shiftModalOpen} setIsNoteModalVisible={setShiftModalOpen}/>
         </Stack>
       </Stack>
     )

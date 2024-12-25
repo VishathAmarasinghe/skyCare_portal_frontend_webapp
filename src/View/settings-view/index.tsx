@@ -39,7 +39,21 @@ const SettingsView = () => {
         dispatch(fetchPaymentTypes());
         
     }
-  },[drawerOpen,selectorSlice?.submitState])
+  },[drawerOpen,selectorSlice?.submitState,
+    selectorSlice?.updateState,
+    carePlanSlice?.submitState,
+    carePlanSlice?.updateState,
+    appointmentSlice?.submitState,
+    appointmentSlice?.updateState,
+    incidentSlice?.submitState,
+    incidentSlice?.updateState,
+    careGiverSlice?.submitState,
+    careGiverSlice?.updateState,
+    appointmentSlice?.updateState,
+    appointmentSlice?.submitState,
+    incidentSlice?.submitState,
+    incidentSlice?.updateState,
+  ])
   return (
     <Stack
       width={"100%"}

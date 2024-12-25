@@ -42,8 +42,8 @@ function App() {
     if (localMode) {
       return localMode;
     } else {
-      localStorage.setItem("internal-app-theme", ThemeMode.Dark);
-      return ThemeMode.Dark;
+      localStorage.setItem("internal-app-theme", ThemeMode.Light);
+      return ThemeMode.Light;
     }
   };
 

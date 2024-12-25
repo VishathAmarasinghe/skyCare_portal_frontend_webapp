@@ -144,6 +144,46 @@ export const fetchSingleClients = createAsyncThunk(
   },
 )
 
+// fetch advisories
+export const updateClient = createAsyncThunk(
+  'client/updateClient',
+  async (
+    payload: { clientData: Client},
+    { dispatch, rejectWithValue },
+  ) => {
+    return new Promise<Client>((resolve, reject) => {
+
+      APIService.getInstance()
+        .put(AppConfig.serviceUrls.clients+`/${payload?.clientData?.clientID}`, payload?.clientData)
+        .then((response) => {
+          console.log('response', response);
+          dispatch(
+            enqueueSnackbarMessage({
+              message: SnackMessage.success.updateClient,
+              type: 'success',
+            })
+          );
+          resolve(response.data);
+        })
+        .catch((error) => {
+          if (axios.isCancel(error)) {
+            return rejectWithValue('Request canceled');
+          }
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.updateClient
+                  : String(error.response?.data?.message),
+              type: 'error',
+            }),
+          );
+          reject(error.response?.data?.message);
+        });
+    });
+  },
+);
+
 
 // fetch advisories
 export const saveClient = createAsyncThunk(
@@ -202,6 +242,9 @@ const ClientSlice = createSlice({
   reducers: {
     resetSubmitSate(state) {
       state.submitState = State.idle
+    },
+    resetSelectedClient(state) {
+      state.selectedClient = null
     }
   },
   extraReducers: (builder) => {
@@ -244,8 +287,20 @@ const ClientSlice = createSlice({
         state.State = State.failed
         state.stateMessage = 'Failed to fetch client!'
       })
+      .addCase(updateClient.pending, (state) => {
+        state.updateState = State.loading
+        state.stateMessage = 'Updating client...'
+      })
+      .addCase(updateClient.fulfilled, (state, action) => {
+        state.updateState = State.success
+        state.stateMessage = 'Successfully updated Client!'
+      })
+      .addCase(updateClient.rejected, (state) => {
+        state.updateState = State.failed
+        state.stateMessage = 'Failed to update client!'
+      })
   },
 })
 
-export const { resetSubmitSate} = ClientSlice.actions
+export const { resetSubmitSate,resetSelectedClient} = ClientSlice.actions
 export default ClientSlice.reducer

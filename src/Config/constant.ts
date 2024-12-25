@@ -1,8 +1,10 @@
 import { Note, OtherHouses } from "@mui/icons-material";
 import { updateRecurrentAppointment } from "@slices/AppointmentSlice/appointment";
-import { fetchGoalOutcomes, UpdateCarePlan } from "@slices/carePlanSlice/carePlan";
+import { saveCareGiver, updateCareGiver } from "@slices/CareGiverSlice/careGiver";
+import { fetchGoalOutcomes, saveCarePlanStatus, UpdateCarePlan, updateCarePlanStatus } from "@slices/carePlanSlice/carePlan";
 import { saveClient } from "@slices/clientSlice/client";
 import { updateEmployee } from "@slices/EmployeeSlice/employee";
+import { saveIncident } from "@slices/IncidentSlice/incident";
 import { updateNotes } from "@slices/NotesSlice/notes";
 import { fetchSingleResource } from "@slices/ResourceSlice/resource";
 
@@ -33,6 +35,17 @@ export const SnackMessage = {
     passwordReset:"Password reset successfully",
     languageUpdated:"Language updated successfully",
     classificationUpdated:"Classification updated successfully",
+    saveCarePlanStatus:"Care plan status saved successfully",
+    updateCarePlanStatus:"Care plan status updated successfully",
+    saveCareGiverDocumentType:"Care giver document type saved successfully",
+    updateCareGiverDocumentType:"Care giver document type updated successfully",
+    saveCareGiverPaymentType:"Care giver payment type saved successfully",
+    updateCareGiverPaymentType:"Care giver payment type updated successfully",
+    shiftNoteCreated:"Shift note created successfully",
+    updateCareGiver:"Care giver updated successfully",
+    updateClient:"Client updated successfully",
+    saveIncident:"Incident saved successfully",
+    updateIncident:"Incident updated successfully",
 
   },
   error: {
@@ -94,6 +107,20 @@ export const SnackMessage = {
     classificationUpdated:"Failed to update classification",
     clientTypeUpdated:"Failed to update client type",
     clientStatusUpdated:"Failed to update client status",
+    saveCarePlanStatus:"Failed to save care plan status",
+    updateCarePlanStatus:"Failed to update care plan status",
+    saveCareGiverDocumentType:"Failed to save care giver document type",
+    updateCareGiverDocumentType:"Failed to update care giver document type",
+    saveCareGiverPaymentType:"Failed to save care giver payment type",
+    updateCareGiverPaymentType:"Failed to update care giver payment type",
+    shiftNoteCreated:"Failed to create shift note",
+    updateCareGiver:"Failed to update care giver",
+    updateClient:"Fail to update Client",
+    pendingAppointments:"Failed to fetch pending appointments",
+    fetchAppointmentDetails:"Failed to fetch appointment details",
+    saveIncident:"Failed to save incident",
+    fetchIncidents:"Failed to fetch incidents",
+    incidentUpdate:"Failed to update incident", 
   },
   warning: {},
 }

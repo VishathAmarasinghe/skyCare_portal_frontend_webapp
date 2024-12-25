@@ -25,6 +25,7 @@ import { deleteResource, fetchSingleResource, Resource } from "@slices/ResourceS
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { useConfirmationModalContext } from "@context/DialogContext";
 import { ConfirmationType } from "../../../types/types";
+import { APPLICATION_CARE_GIVER } from "@config/config";
 
 function CustomToolbar() {
   return (
@@ -42,11 +43,17 @@ const ResourceTable = ({}: ResourceTableProps) => {
   const theme = useTheme();
   const resourceSlice = useAppSelector((state) => state.resource);
   const [resources, setResources] = useState<Resource[]>([]);
+  const authRole = useAppSelector((State)=>State?.auth?.roles);
   const dispatch = useAppDispatch();
   const { showConfirmation } = useConfirmationModalContext();
 
   useEffect(()=>{
-    setResources(resourceSlice.resources);
+    if(authRole?.includes(APPLICATION_CARE_GIVER)){
+      setResources(resourceSlice?.resources.filter((resource)=>resource.shareType==="Share With Care Givers"));
+    }else{
+      setResources(resourceSlice.resources);
+    }
+
   },[resourceSlice?.state])
 
   const handleDelete = (resourceId: string) => {

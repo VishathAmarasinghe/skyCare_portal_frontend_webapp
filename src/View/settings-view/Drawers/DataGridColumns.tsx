@@ -1,4 +1,11 @@
 import EditIcon from '@mui/icons-material/Edit';
+import { Chip } from '@mui/material';
+
+const handleEdit = (row: any) => {
+  console.log(row);
+}
+
+
 
 // Language columns
 export const languageColumns = [
@@ -9,10 +16,8 @@ export const languageColumns = [
     field: 'edit',
     headerName: 'Edit',
     flex: 1,
-    renderCell: (params: { row: any; }) => (
-      <button onClick={() => handleEdit(params.row)}>
-        <EditIcon />
-      </button>
+    renderCell: (params: { row: any }) => (
+      <EditIcon style={{ cursor: 'pointer' }} onClick={() => handleEdit(params.row)} />
     ),
   },
 ];
@@ -25,18 +30,20 @@ export const clientClassificationColumns = [
     field: 'state',
     headerName: 'State',
     flex: 2,
-    renderCell: (params: { row: any; }) => (
-      <button onClick={() => toggleState(params.row)}>Active/Inactive</button>
+    renderCell: (params: { row: any }) => (
+      <Chip
+        label={params.row.state === 'Active' ? 'Active' : 'Inactive'}
+        color={params.row.state === 'Active' ? 'success' : 'default'}
+        variant="outlined"
+      />
     ),
   },
   {
     field: 'edit',
     headerName: 'Edit',
     flex: 1,
-    renderCell: (params: { row: any; }) => (
-      <button onClick={() => handleEdit(params.row)}>
-        <EditIcon />
-      </button>
+    renderCell: (params: { row: any }) => (
+      <EditIcon style={{ cursor: 'pointer' }} onClick={() => handleEdit(params.row)} />
     ),
   },
 ];
@@ -49,18 +56,20 @@ export const clientTypeColumns = [
     field: 'status',
     headerName: 'Status',
     flex: 2,
-    renderCell: (params: { row: any; }) => (
-      <button onClick={() => toggleState(params.row)}>Active/Inactive</button>
+    renderCell: (params: { row: any }) => (
+      <Chip
+        label={params.row.status === 'Active' ? 'Active' : 'Inactive'}
+        color={params.row.status === 'Active' ? 'primary' : 'default'}
+        variant="outlined"
+      />
     ),
   },
   {
     field: 'edit',
     headerName: 'Edit',
     flex: 1,
-    renderCell: (params: { row: any; }) => (
-      <button onClick={() => handleEdit(params.row)}>
-        <EditIcon />
-      </button>
+    renderCell: (params: { row: any }) => (
+      <EditIcon style={{ cursor: 'pointer' }} onClick={() => handleEdit(params.row)} />
     ),
   },
 ];
@@ -73,10 +82,8 @@ export const clientStatusColumns = [
     field: 'edit',
     headerName: 'Edit',
     flex: 1,
-    renderCell: (params: { row: any; }) => (
-      <button onClick={() => handleEdit(params.row)}>
-        <EditIcon />
-      </button>
+    renderCell: (params: { row: any }) => (
+      <EditIcon style={{ cursor: 'pointer' }} onClick={() => handleEdit(params.row)} />
     ),
   },
 ];
@@ -89,10 +96,8 @@ export const carePlanStatusColumns = [
     field: 'edit',
     headerName: 'Edit',
     flex: 1,
-    renderCell: (params: { row: any; }) => (
-      <button onClick={() => handleEdit(params.row)}>
-        <EditIcon />
-      </button>
+    renderCell: (params: { row: any }) => (
+      <EditIcon style={{ cursor: 'pointer' }} onClick={() => handleEdit(params.row)} />
     ),
   },
 ];
@@ -105,44 +110,20 @@ export const documentTypeColumns = [
     field: 'expDateNeeded',
     headerName: 'Expiration Date Needed',
     flex: 2,
-    renderCell: (params: { row: { expDateNeeded: any; }; }) => (
-      <button onClick={() => toggleExpDateNeeded(params.row)}>
-        {params.row.expDateNeeded ? 'Yes' : 'No'}
-      </button>
+    renderCell: (params: { row: any }) => (
+      <Chip
+        label={params.row.expDateNeeded ? 'Yes' : 'No'}
+        color={params.row.expDateNeeded ? 'success' : 'default'}
+        variant="outlined"
+      />
     ),
   },
   {
     field: 'edit',
     headerName: 'Edit',
     flex: 1,
-    renderCell: (params: { row: any; }) => (
-      <button onClick={() => handleEdit(params.row)}>
-        <EditIcon />
-      </button>
-    ),
-  },
-];
-
-// Incident Status columns
-export const incidentStatusColumns = [
-  { field: 'incidentStatusID', headerName: 'Incident Status ID', flex: 2 },
-  { field: 'status', headerName: 'Status', flex: 3 },
-  {
-    field: 'activeStatus',
-    headerName: 'Active Status',
-    flex: 2,
-    renderCell: (params: { row: any; }) => (
-      <button onClick={() => toggleState(params.row)}>Active/Inactive</button>
-    ),
-  },
-  {
-    field: 'edit',
-    headerName: 'Edit',
-    flex: 1,
-    renderCell: (params: { row: any; }) => (
-      <button onClick={() => handleEdit(params.row)}>
-        <EditIcon />
-      </button>
+    renderCell: (params: { row: any }) => (
+      <EditIcon style={{ cursor: 'pointer' }} onClick={() => handleEdit(params.row)} />
     ),
   },
 ];
@@ -164,6 +145,58 @@ export const incidentTypeColumns = [
   },
 ];
 
+// Incident Status columns
+export const incidentStatusColumns = [
+  { field: 'incidentStatusID', headerName: 'Incident Status ID', flex: 2 },
+  { field: 'status', headerName: 'Status', flex: 3,
+  renderCell: (params: { row: any; }) => (
+    <Chip
+      label={params.row.status === 'Active' ? 'Active' : 'Inactive'}
+      color={params.row.status === 'Active' ? 'success' : 'default'}
+      variant="outlined"
+    />)
+   },
+  {
+    field: 'activeStatus',
+    headerName: 'Active Status',
+    flex: 2,
+},
+  {
+    field: 'edit',
+    headerName: 'Edit',
+    flex: 1,
+    renderCell: (params: { row: any }) => (
+      <EditIcon style={{ cursor: 'pointer' }} onClick={() => handleEdit(params.row)} />
+    ),
+  },
+];
+
+
+export const paymentType = [
+  { field: 'paymentTypeID', headerName: 'Payment Type ID', flex: 1 },
+  { field: 'state', headerName: 'Status', flex: 1,
+  renderCell: (params: { row: any; }) => (
+    <Chip
+      label={params.row.status === 'Active' ? 'Active' : 'Inactive'}
+      color={params.row.status === 'Active' ? 'success' : 'default'}
+      variant="outlined"
+    />)
+   },
+  {
+    field: 'paymentName',
+    headerName: 'Payment Name',
+    flex: 3,
+},
+  {
+    field: 'edit',
+    headerName: 'Edit',
+    flex: 1,
+    renderCell: (params: { row: any }) => (
+      <EditIcon style={{ cursor: 'pointer' }} onClick={() => handleEdit(params.row)} />
+    ),
+  },
+];
+
 // Appointment Type columns
 export const appointmentTypeColumns = [
   { field: 'appointmentTypeID', headerName: 'Appointment Type ID', flex: 2 },
@@ -172,42 +205,34 @@ export const appointmentTypeColumns = [
     field: 'status',
     headerName: 'Status',
     flex: 2,
-    renderCell: (params: { row: { status: string; }; }) => (
-      <button onClick={() => toggleState(params.row)}>
-        {params.row.status === 'Active' ? 'Active' : 'Inactive'}
-      </button>
+    renderCell: (params: { row: any }) => (
+      <Chip
+        label={params.row.status === 'Active' ? 'Active' : 'Inactive'}
+        color={params.row.status === 'Active' ? 'success' : 'default'}
+        variant="outlined"
+      />
     ),
   },
   {
     field: 'color',
     headerName: 'Color',
     flex: 2,
-    renderCell: (params: { row: { color: any; }; }) => (
-      <div style={{ backgroundColor: params.row.color, height: '20px', width: '50px' }}></div>
+    renderCell: (params: { row: any }) => (
+      <div
+        style={{
+          backgroundColor: params.row.color,
+          height: '20px',
+          width: '50px',
+        }}
+      ></div>
     ),
   },
   {
     field: 'edit',
     headerName: 'Edit',
     flex: 1,
-    renderCell: (params: { row: any; }) => (
-      <button onClick={() => handleEdit(params.row)}>
-        <EditIcon />
-      </button>
+    renderCell: (params: { row: any }) => (
+      <EditIcon style={{ cursor: 'pointer' }} onClick={() => handleEdit(params.row)} />
     ),
   },
 ];
-
-function handleEdit(row: any): void {
-    console.log('Editing row:', row);
-}
-
-function toggleState(row: any): void {
-    console.log('Toggling state for row:', row);
-    row.status = row.status === 'Active' ? 'Inactive' : 'Active'; // Toggle state between Active and Inactive
-}
-
-function toggleExpDateNeeded(row: any): void {
-    console.log('Toggling expiration date needed for row:', row);
-    row.expDateNeeded = !row.expDateNeeded;
-}

@@ -5,6 +5,7 @@ import { fetchAllIncidentActionTypeQuestions, fetchAllIncidentStatus, fetchAllIn
 import {CREATE_INCIDENT_STEPS} from '../../../constants/index'
 import { Modal } from 'antd';
 import IncidentForm from "../components/IncidentForm";
+import { State } from "../../../types/types";
 
 
 interface IncidentModalProps {
@@ -32,10 +33,17 @@ const IncidentModal = ({
       setActiveStep(0);
     } else {
         dispatch(fetchAllIncidentTypes());
-        dispatch(fetchAllIncidentStatus());
         dispatch(fetchAllIncidentActionTypeQuestions());
+        dispatch(fetchAllIncidentStatus());
     }
   }, [isIncidentModalVisible]);
+
+  useEffect(() => {
+    if(incidentSlice?.submitState === State?.success){
+      setIsIncidentModalVisible(false);
+      dispatch(resetSelectedIncident());
+    }
+  }, [incidentSlice?.submitState,incidentSlice?.updateState]);
 
   // Handle next step
   const handleNext = () => {
@@ -109,17 +117,13 @@ const IncidentModal = ({
             variant="outlined"
             onClick={handleBack}
             disabled={activeStep === 0}
-            sx={{ display: activeStep === 0 ? "none" : "block" }}
+            sx={{ display: activeStep === 0 ? "none" : "block",mr:1 }}
           >
             Back
           </Button>
 
           {/* Next or Save Button */}
           <Button
-            sx={{
-              mx: 1,
-              display: incidentSlice?.selectedIncident == null ? "block" : "none",
-            }}
             variant="contained"
             onClick={activeStep === CREATE_INCIDENT_STEPS.length - 1 ? handleSave : handleNext}
             disabled={loading}

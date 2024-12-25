@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import ClientTable from "../component/ClientTable";
 import AddNewClientModal from "../modal/AddNewClientModal";
 import { useAppDispatch, useAppSelector } from "@slices/store";
-import {fetchClients} from '../../../slices/clientSlice/client';
+import {fetchClients, resetSelectedClient} from '../../../slices/clientSlice/client';
 
 const ClientTablePanel = () => {
   const theme = useTheme();
@@ -23,9 +23,7 @@ const ClientTablePanel = () => {
 
 
 
-  const fetchAllClients = async () => {
-    console.log('fetching clients');
-    
+  const fetchAllClients = async () => {    
       dispatch(fetchClients());
   }
   
@@ -33,6 +31,7 @@ const ClientTablePanel = () => {
 
   const handleOpenModel = () => {
     setIsClientAddModalVisible(true);
+    dispatch(resetSelectedClient());
   }
   return( 
   <Stack width="100%" height="100%"

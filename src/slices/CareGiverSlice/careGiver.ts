@@ -100,6 +100,137 @@ export const fetchDocumentTypes = createAsyncThunk(
   }
 );
 
+// Fetch all caregivers
+export const saveDocumentTypes = createAsyncThunk(
+  "careGiver/saveCareGiverDocumentTypes",
+  async (payload:CareGiverDocumentTypes, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await APIService.getInstance().post(
+        AppConfig.serviceUrls.careGiverDocumentTypes,payload
+      );
+      dispatch(
+        enqueueSnackbarMessage({
+          message: SnackMessage.success.saveCareGiverDocumentType,
+          type: "success",
+        })
+      );
+      return response.data;
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
+      }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.saveCareGiverDocumentType
+              : String(error.response?.data?.message),
+          type: "error",
+        })
+      );
+      throw error.response?.data?.message;
+    }
+  }
+);
+
+
+export const updateDocumentTypes = createAsyncThunk(
+  "careGiver/updateCareGiverDocumentTypes",
+  async (payload:CareGiverDocumentTypes, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await APIService.getInstance().put(
+        AppConfig.serviceUrls.careGiverDocumentTypes+`/${payload?.documentTypeID}`,payload
+      );
+      dispatch(
+        enqueueSnackbarMessage({
+          message: SnackMessage.success.updateCareGiverDocumentType,
+          type: "success",
+        })
+      );
+      return response.data;
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
+      }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.updateCareGiverDocumentType
+              : String(error.response?.data?.message),
+          type: "error",
+        })
+      );
+      throw error.response?.data?.message;
+    }
+  }
+);
+
+export const updatePaymentTypes = createAsyncThunk(
+  "careGiver/updateCareGiverPaymentTypes",
+  async (payload:CareGiverPaymentTypes, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await APIService.getInstance().put(
+        AppConfig.serviceUrls.careGiverPaymentTypes+`/${payload?.paymentTypeID}`,payload
+      );
+      dispatch(
+        enqueueSnackbarMessage({
+          message: SnackMessage.success.updateCareGiverPaymentType,
+          type: "success",
+        })
+      );
+      return response.data;
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
+      }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.updateCareGiverPaymentType
+              : String(error.response?.data?.message),
+          type: "error",
+        })
+      );
+      throw error.response?.data?.message;
+    }
+  }
+);
+
+
+export const savePaymentTypes = createAsyncThunk(
+  "careGiver/saveCareGiverPaymentTypes",
+  async (payload:CareGiverPaymentTypes, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await APIService.getInstance().post(
+        AppConfig.serviceUrls.careGiverPaymentTypes,payload
+      );
+      dispatch(
+        enqueueSnackbarMessage({
+          message: SnackMessage.success.saveCareGiverPaymentType,
+          type: "success",
+        })
+      );
+      return response.data;
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
+      }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.saveCareGiverPaymentType
+              : String(error.response?.data?.message),
+          type: "error",
+        })
+      );
+      throw error.response?.data?.message;
+    }
+  }
+);
+
 export const fetchPaymentTypes = createAsyncThunk(
   "careGiver/fetchCareGiverPaymentTypes",
   async (_, { dispatch, rejectWithValue }) => {
@@ -208,6 +339,50 @@ export const fetchSingleCareGiver = createAsyncThunk(
 );
 
 // Save a caregiver
+export const updateCareGiver = createAsyncThunk(
+  "careGiver/updateCareGiver",
+  async (payload:{careGiverData:CareGiver,profilePhoto:File|null,uploadFiles:File[]}, { dispatch, rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      formData.append("careGiver", JSON.stringify(payload.careGiverData));
+      if(payload.profilePhoto){
+        formData.append("profile_photo", payload.profilePhoto);
+      }
+      payload.uploadFiles.forEach((file) => {
+        formData.append("documents", file);
+      });
+      const response = await APIService.getInstance().put(
+        AppConfig.serviceUrls.careGivers+`/${payload.careGiverData.careGiverID}`,
+        formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      dispatch(
+        enqueueSnackbarMessage({
+          message: SnackMessage.success.updateCareGiver,
+          type: "success",
+        })
+      );
+      return response.data;
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
+      }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.updateCareGiver
+              : String(error.response?.data?.message),
+          type: "error",
+        })
+      );
+      throw error.response?.data?.message;
+    }
+  }
+);
+
+// Save a caregiver
 export const saveCareGiver = createAsyncThunk(
   "careGiver/saveCareGiver",
   async (payload:{careGiverData:CareGiver,profilePhoto:File|null,uploadFiles:File[]}, { dispatch, rejectWithValue }) => {
@@ -260,6 +435,9 @@ const CareGiverSlice = createSlice({
       state.submitState = State.idle;
       state.updateState = State.idle;
     },
+    resetSelectedCareGiver(state) {
+      state.selectedCareGiver = null;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -339,9 +517,72 @@ const CareGiverSlice = createSlice({
       .addCase(fetchSingleCareGiverByEmployeeID.rejected, (state) => {
         state.state = State.failed;
         state.stateMessage = "Failed to fetch caregiver Payment types!";
+      })
+      .addCase(saveDocumentTypes.pending, (state) => {
+        state.submitState = State.loading;
+        state.stateMessage = "saving Caregiver document types...";
+      })
+      .addCase(saveDocumentTypes.fulfilled, (state, action) => {
+        state.submitState = State.success;
+        state.stateMessage = "Successfully saved caregiver document types!";
+        state.selectedCareGiver = action.payload;
+      })
+      .addCase(saveDocumentTypes.rejected, (state) => {
+        state.submitState = State.failed;
+        state.stateMessage = "Failed to save caregiver document types!";
+      })
+      .addCase(updatePaymentTypes.pending, (state) => {
+        state.updateState = State.loading;
+        state.stateMessage = "saving Caregiver Payment types...";
+      })
+      .addCase(updatePaymentTypes.fulfilled, (state, action) => {
+        state.updateState = State.success;
+        state.stateMessage = "Successfully saved caregiver Payment types!";
+        state.selectedCareGiver = action.payload;
+      })
+      .addCase(updatePaymentTypes.rejected, (state) => {
+        state.updateState = State.failed;
+        state.stateMessage = "Failed to save caregiver Payment types!";
+      })
+      .addCase(updateDocumentTypes.pending, (state) => {
+        state.updateState = State.loading;
+        state.stateMessage = "saving Caregiver document types...";
+      })
+      .addCase(updateDocumentTypes.fulfilled, (state, action) => {
+        state.updateState = State.success;
+        state.stateMessage = "Successfully saved caregiver document types!";
+        state.selectedCareGiver = action.payload;
+      })
+      .addCase(updateDocumentTypes.rejected, (state) => {
+        state.updateState = State.failed;
+        state.stateMessage = "Failed to save caregiver document types!";
+      })
+      .addCase(savePaymentTypes.pending, (state) => {
+        state.submitState = State.loading;
+        state.stateMessage = "saving Caregiver Payment types...";
+      })
+      .addCase(savePaymentTypes.fulfilled, (state, action) => {
+        state.submitState = State.success;
+        state.stateMessage = "Successfully saved caregiver Payment types!";
+      })
+      .addCase(savePaymentTypes.rejected, (state) => {
+        state.submitState = State.failed;
+        state.stateMessage = "Failed to save caregiver Payment types!";
+      })
+      .addCase(updateCareGiver.pending, (state) => {
+        state.updateState = State.loading;
+        state.stateMessage = "saving Caregiver Payment types...";
+      })
+      .addCase(updateCareGiver.fulfilled, (state, action) => {
+        state.updateState = State.success;
+        state.stateMessage = "Successfully saved caregiver Payment types!";
+      })
+      .addCase(updateCareGiver.rejected, (state) => {
+        state.updateState = State.failed;
+        state.stateMessage = "Failed to save caregiver Payment types!";
       });
   },
 });
 
-export const { resetSubmitState } = CareGiverSlice.actions;
+export const { resetSubmitState,resetSelectedCareGiver } = CareGiverSlice.actions;
 export default CareGiverSlice.reducer;

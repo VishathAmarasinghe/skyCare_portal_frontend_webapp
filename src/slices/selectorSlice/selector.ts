@@ -306,7 +306,7 @@ export const SaveLanguage = createAsyncThunk(
           )
           .then((response) => {
             console.log('response', response)
-            if(response.status === HttpStatusCode.Created){
+            if(response.status === HttpStatusCode.Ok){
                 dispatch(
                     enqueueSnackbarMessage({
                       message: SnackMessage.success.classificationUpdated,
@@ -388,12 +388,12 @@ export const SaveLanguage = createAsyncThunk(
     ) => {
       return new Promise<ClientType>((resolve, reject) => {
         APIService.getInstance()
-          .post(
+          .put(
             AppConfig.serviceUrls.clientTypes+`/${Payload?.clientTypeID}`, Payload
           )
           .then((response) => {
             console.log('response', response)
-            if(response.status === HttpStatusCode.Created){
+            if(response.status === HttpStatusCode.Ok){
               dispatch(
                 enqueueSnackbarMessage({
                   message: 'Client Type Updated successfully',
@@ -474,12 +474,12 @@ export const SaveLanguage = createAsyncThunk(
     ) => {
       return new Promise<ClientStatus>((resolve, reject) => {
         APIService.getInstance()
-          .post(
+          .put(
             AppConfig.serviceUrls.clientStatus+`/${Payload?.clientStatusID}`, Payload
           )
           .then((response) => {
             console.log('response', response)
-            if(response.status === HttpStatusCode.Created){
+            if(response.status === HttpStatusCode.Ok){
               dispatch(
                 enqueueSnackbarMessage({
                   message: 'Client Status updated successfully',

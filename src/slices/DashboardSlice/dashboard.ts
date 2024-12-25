@@ -15,13 +15,24 @@ export interface Dashboard {
   serviceCount: number;
   staffCount: number;
   adminCount: number;
+
+  todayTotalCount: number;
+  todayCompletedCount: number;
   todayAppointments: AppointmentCalenderType[];
+
+  twoWeekAppointmentCount: Record<string, number>;
+  appointmentCountByType: Record<string, number>;
+}
+
+export interface CareGiverDashboard {
+  twoWeekAppointmentCount: Record<string, number>;
 }
 
 interface DashboardState {
   state: State;
   submitState: State;
   adminDashboard: Dashboard | null;
+  careGiverDashboard: CareGiverDashboard | null;
   stateMessage: string | null;
   errorMessage: string | null;
   backgroundProcess: boolean;
@@ -33,6 +44,7 @@ const initialState: DashboardState = {
   state: State.idle,
   submitState: State.idle,
   adminDashboard: null,
+  careGiverDashboard: null,
   stateMessage: "",
   errorMessage: "",
   backgroundProcess: false,
@@ -46,6 +58,34 @@ export const fetchAdminDashboard = createAsyncThunk(
     try {
       const response = await APIService.getInstance().get(
         AppConfig.serviceUrls.dashboard + "/admin"
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
+      }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            axios.isAxiosError(error) &&
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.fetchDashboard
+              : String((error as any).response?.data?.message),
+          type: "error",
+        })
+      );
+      throw error;
+    }
+  }
+);
+
+// Fetch single resources
+export const fetchCareGiverDashboard = createAsyncThunk(
+  "incident/fetchCareGiverDashboard",
+  async (employeeID:string, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await APIService.getInstance().get(
+        AppConfig.serviceUrls.dashboard + `/careGiver/${employeeID}`
       );
       return response.data;
     } catch (error) {
@@ -86,6 +126,19 @@ const DashboardSlice = createSlice({
       .addCase(fetchAdminDashboard.rejected, (state) => {
         state.state = State.failed;
         state.stateMessage = "Failed to fetch AdminDashboard!";
+      })
+      .addCase(fetchCareGiverDashboard.pending, (state) => {
+        state.state = State.loading;
+        state.stateMessage = "Fetching caregiver dashboard..";
+      })
+      .addCase(fetchCareGiverDashboard.fulfilled, (state, action) => {
+        state.state = State.success;
+        state.stateMessage = "Successfully fetched careGiver dashboard!";
+        state.careGiverDashboard = action.payload;
+      })
+      .addCase(fetchCareGiverDashboard.rejected, (state) => {
+        state.state = State.failed;
+        state.stateMessage = "Failed to fetch care giver Dashboard!";
       });
   },
 });

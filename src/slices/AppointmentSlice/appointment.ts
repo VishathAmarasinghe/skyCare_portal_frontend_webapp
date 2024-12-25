@@ -75,6 +75,16 @@ export interface NextAppointmentDTO{
   recurrentTask:RecurrentAppointmentDTO;
 }
 
+export interface PendingAppointments{
+  recurrentAppointmentID:string;
+  careGiverStatus:string;
+  appointmentData:Appointment;
+  startDate:string;
+  endDate:string;
+  startTime:string;
+  endTime:string;
+}
+
 export interface JobAssigner {
   jobAssignData: JobAssignerDTO;
   recurrentAppointmentData: RecurrentAppointmentDTO;
@@ -94,6 +104,7 @@ export interface AppointmentCalenderType {
   startDateAndTime: string;
   endDateAndTime: string;
   eventColor: string;
+  recurrentAppointmentID: string;
 }
 
 export interface AppointmentAddress {
@@ -166,6 +177,8 @@ export interface AppointmentState {
   calenderEvents: AppointmentCalenderType[];
   appointmentTypes: AppointmentType[];
   selectedAppointment: Appointment | null;
+  pendingAppointments: PendingAppointments[];
+  selectedRecurrentAppointment:PendingAppointments | null;
   errorMessage: string | null;
   stateMessage: string | null;
   backgroundProcess: boolean;
@@ -185,12 +198,43 @@ const initialState: AppointmentState = {
   calenderEvents: [],
   appointmentTypes: [],
   careGvierAppointments: [],
+  pendingAppointments: [],
+  selectedRecurrentAppointment:null,
   selectedAppointment: null,
   errorMessage: null,
   stateMessage: null,
   backgroundProcess: false,
   backgroundProcessMessage: null,
 };
+
+export const fetchRecurrentAppointmentDetails = createAsyncThunk(
+  "appointments/fetchRecurrentAppointmentDetails",
+  async (
+    payload: { recurrentAppointmentID: string},
+    { dispatch, rejectWithValue }
+  ) => {
+    return new Promise<PendingAppointments>((resolve, reject) => {
+      APIService.getInstance()
+        .get(
+          AppConfig.serviceUrls.appointments +
+            `/recurrentAppointment/${payload.recurrentAppointmentID}`
+        )
+        .then((response) => resolve(response.data))
+        .catch((error) => {
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.fetchAppointmentDetails
+                  : String(error.response?.data?.message),
+              type: "error",
+            })
+          );
+          rejectWithValue(error.response?.data?.message);
+        });
+    });
+  }
+);
 
 export const fetchNextAppointmentbyCareGiver = createAsyncThunk(
   "appointments/fetchNextAppointmentbyCareGiver",
@@ -388,6 +432,64 @@ export const cancelAppointment = createAsyncThunk(
   }
 );
 
+export const fetchPendingAppointmentsWithUser = createAsyncThunk(
+  "appointments/fetchPendingAppointmentsWithUser",
+  async (
+    payload: { employeeID:string },
+    { dispatch, rejectWithValue }
+  ) => {
+    return new Promise<PendingAppointments[]>((resolve, reject) => {
+      APIService.getInstance()
+        .get(
+          AppConfig.serviceUrls.appointments +
+            `/pending/${payload.employeeID}`
+        )
+        .then((response) => resolve(response.data))
+        .catch((error) => {
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.pendingAppointments
+                  : String(error.response?.data?.message),
+              type: "error",
+            })
+          );
+          rejectWithValue(error.response?.data?.message);
+        });
+    });
+  }
+);
+
+export const fetchAppointmentbyCalenderWithUser = createAsyncThunk(
+  "appointments/fetchAppointmentsForCalenderWithUser",
+  async (
+    payload: { startDate: string; endDate: string,employeeID:string },
+    { dispatch, rejectWithValue }
+  ) => {
+    return new Promise<AppointmentCalenderType[]>((resolve, reject) => {
+      APIService.getInstance()
+        .get(
+          AppConfig.serviceUrls.appointments +
+            `/calender/user/${payload?.employeeID}?startDate=${payload.startDate}&endDate=${payload.endDate}`
+        )
+        .then((response) => resolve(response.data))
+        .catch((error) => {
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.fetchCalenderEvents
+                  : String(error.response?.data?.message),
+              type: "error",
+            })
+          );
+          rejectWithValue(error.response?.data?.message);
+        });
+    });
+  }
+);
+
 export const fetchAppointmentbyCalender = createAsyncThunk(
   "appointments/fetchAppointmentsForCalender",
   async (
@@ -462,6 +564,69 @@ export const fetchAppointmentTypes = createAsyncThunk(
     });
   }
 );
+
+
+export const saveAppointmentTypes = createAsyncThunk(
+  "appointments/saveAppointmentTypes",
+  async (payload:AppointmentType, { dispatch, rejectWithValue }) => {
+    return new Promise<AppointmentType>((resolve, reject) => {
+      APIService.getInstance()
+        .post(AppConfig.serviceUrls.appointmentTypes,payload)
+        .then((response) => {
+          dispatch(
+            enqueueSnackbarMessage({
+              message: "Appointment type saved successfully!",
+              type: "success",
+            })
+          );
+          resolve(response.data)})
+        .catch((error) => {
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? "Failed to save appointment types."
+                  : String(error.response?.data?.message),
+              type: "error",
+            })
+          );
+          rejectWithValue(error.response?.data?.message);
+        });
+    });
+  }
+);
+
+
+export const updateAppointmentTypes = createAsyncThunk(
+  "appointments/updateAppointmentTypes",
+  async (payload:AppointmentType, { dispatch, rejectWithValue }) => {
+    return new Promise<AppointmentType>((resolve, reject) => {
+      APIService.getInstance()
+        .put(AppConfig.serviceUrls.appointmentTypes+`/${payload?.appointmentTypeID}`,payload)
+        .then((response) => {
+          dispatch(
+            enqueueSnackbarMessage({
+              message: "Appointment type updated successfully!",
+              type: "success",
+            })
+          );
+          resolve(response.data)})
+        .catch((error) => {
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? "Failed to update appointment types."
+                  : String(error.response?.data?.message),
+              type: "error",
+            })
+          );
+          rejectWithValue(error.response?.data?.message);
+        });
+    });
+  }
+);
+
 
 export const updateNewAllocations = createAsyncThunk(
   "appointments/updateNewAllocations",
@@ -606,6 +771,7 @@ const appointmentSlice = createSlice({
     resetSelectedAppointment(state) {
       state.selectedAppointment = null;
       console.log("resetSelectedAppointment");
+      state.selectedRecurrentAppointment=null;
       
     },
     resetSubmitState(state) {
@@ -671,6 +837,16 @@ const appointmentSlice = createSlice({
         state.calenderEvents = action.payload;
       })
       .addCase(fetchAppointmentbyCalender.rejected, (state) => {
+        state.calenderState = State.failed;
+      })
+      .addCase(fetchAppointmentbyCalenderWithUser.pending, (state) => {
+        state.calenderState = State.loading;
+      })
+      .addCase(fetchAppointmentbyCalenderWithUser.fulfilled, (state, action) => {
+        state.calenderState = State.success;
+        state.calenderEvents = action.payload;
+      })
+      .addCase(fetchAppointmentbyCalenderWithUser.rejected, (state) => {
         state.calenderState = State.failed;
       })
       .addCase(fetchAppointmentsByCareGiverAndStatus.pending, (state) => {
@@ -740,6 +916,44 @@ const appointmentSlice = createSlice({
         state.nextAppointment = action.payload;
       })
       .addCase(fetchNextAppointmentbyCareGiver.rejected, (state) => {
+        state.state = State.failed;
+      })
+      .addCase(updateAppointmentTypes.pending, (state) => {
+        state.updateState = State.loading;
+      })
+      .addCase(updateAppointmentTypes.fulfilled, (state, action) => {
+        state.updateState = State.success;
+      })
+      .addCase(updateAppointmentTypes.rejected, (state) => {
+        state.updateState = State.failed;
+      })
+      .addCase(saveAppointmentTypes.pending, (state) => {
+        state.submitState = State.loading;
+      })
+      .addCase(saveAppointmentTypes.fulfilled, (state, action) => {
+        state.submitState = State.success;
+      })
+      .addCase(saveAppointmentTypes.rejected, (state) => {
+        state.submitState = State.failed;
+      })
+      .addCase(fetchPendingAppointmentsWithUser.pending, (state) => {
+        state.state= State.loading;
+      })
+      .addCase(fetchPendingAppointmentsWithUser.fulfilled, (state, action) => {
+        state.state= State.success;
+        state.pendingAppointments = action.payload;
+      })
+      .addCase(fetchPendingAppointmentsWithUser.rejected, (state) => {
+        state.state = State.failed;
+      })
+      .addCase(fetchRecurrentAppointmentDetails.pending, (state) => {
+        state.state= State.loading;
+      })
+      .addCase(fetchRecurrentAppointmentDetails.fulfilled, (state, action) => {
+        state.state= State.success;
+        state.selectedRecurrentAppointment = action.payload;
+      })
+      .addCase(fetchRecurrentAppointmentDetails.rejected, (state) => {
         state.state = State.failed;
       });
   },

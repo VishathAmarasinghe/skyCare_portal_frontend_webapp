@@ -24,6 +24,8 @@ import ProfileDrawer from "../../View/dashboard-view/panel/ProfileDrawer";
 import { APIService } from "@utils/apiService";
 import { logout } from "@slices/authSlice/Auth";
 import { Employee, fetchCurrnetEmployee } from "@slices/EmployeeSlice/employee";
+import { State } from "../../types/types";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -32,9 +34,11 @@ const Header = () => {
   const [open, setOpen] = useState<boolean>(false);
   const dispatch = useAppDispatch();
   const authUser = useAppSelector((state)=>state.auth.userInfo);
+  const auth = useAppSelector((state)=>state.auth);
   const roles  = useAppSelector((state)=>state.auth.roles);
   const employeeSlice = useAppSelector((state: RootState) => state.employees);
   const [currentUserInfo, setCurrentUserInfo] = useState<Employee | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (authUser?.userID) {
@@ -53,6 +57,17 @@ const Header = () => {
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
+
+  useEffect(() => {
+    if(auth?.status === State.success && auth?.mode === "active"){
+      if(auth?.roles.includes(APPLICATION_ADMIN) || auth?.roles.includes(APPLICATION_SUPER_ADMIN)){
+      navigate("/dashboard"); 
+      }else if (auth?.roles.includes(APPLICATION_CARE_GIVER) && auth?.roles.length === 1) {
+        navigate("/dashboard/cg"); 
+      }
+
+    }
+  }, [auth?.status, auth?.mode, auth?.roles]);
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
@@ -84,7 +99,7 @@ const Header = () => {
         <img
           alt="SkyCare Portal"
           style={{
-            height: "55px",
+            height: "50px",
             maxWidth: "260px",
           }}
           src={appLogo}

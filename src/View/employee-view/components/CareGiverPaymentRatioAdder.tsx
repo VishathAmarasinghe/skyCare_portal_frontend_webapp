@@ -42,8 +42,28 @@ const CareGiverPaymentRatioAdder = ({ modalOpenState,careGiverPayments,setCareGi
         paymentTypeID: payments.paymentTypeID,
         amount: 0,
       };
-    });    
-    
+    });
+    if (careGiverSlice?.selectedCareGiver?.careGiverPayments) {
+
+      careGiverPaymentArray.forEach((payment) => {
+        const matchingPayment = careGiverSlice?.selectedCareGiver?.careGiverPayments.find(
+          (careGiverPayment) => careGiverPayment.paymentTypeID === payment.paymentTypeID
+        );
+        if (matchingPayment) {
+          payment.amount = matchingPayment.amount; // Update amount if matching payment exists
+        }
+      });
+
+      // Update careGiverPaymentArray with corresponding values from selectedCareGiver.careGiverPayments
+      createdPaymentArray.forEach((payment) => {
+        const matchingPayment = careGiverSlice?.selectedCareGiver?.careGiverPayments.find(
+          (careGiverPayment) => careGiverPayment.paymentTypeID === payment.paymentTypeID
+        );
+        if (matchingPayment) {
+          payment.amount = matchingPayment.amount; // Update amount if matching payment exists
+        }
+      });
+    }
     setCareGiverPayments(careGiverPaymentArray);
     setPayments(createdPaymentArray);
   }, [careGiverSlice.supportWorkerState]);

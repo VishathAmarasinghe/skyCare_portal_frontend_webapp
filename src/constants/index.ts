@@ -25,6 +25,8 @@ export const  CREATE_CARE_GIVER_STEPS = ["Basic Info", "File Uploads", "Salary"]
 
 export const  CREATE_CARE_GIVER_OUTSIDE_REGISTRATION = ["Basic Info", "File Uploads", "Agreement"];
 
+export const CREATE_CARE_GIVER_INTERNAL_UPDATE = ["Basic Info", "File Uploads"];
+
 export const CREATE_INCIDENT_STEPS = ["Basic Info", "More Info", "Questions","Documents","Involved Parties"];
 
 export const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;

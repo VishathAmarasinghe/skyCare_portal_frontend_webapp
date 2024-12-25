@@ -12,6 +12,7 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import StickyNote2Icon from "@mui/icons-material/StickyNote2";
 import SpeakerNotesIcon from '@mui/icons-material/SpeakerNotes';
 import SettingsIcon from '@mui/icons-material/Settings';
+import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
 
 // APP imports
 import { View } from "./view/index";
@@ -44,7 +45,7 @@ interface RouteDetail {
 
 export const routes: RouteObjectWithRole[] = [
   {
-    path: "/Dashboard",
+    path: "/dashboard",
     text: "Dashboard",
     icon: React.createElement(DashboardIcon),
     element: React.createElement(View.dashboardView),
@@ -54,7 +55,7 @@ export const routes: RouteObjectWithRole[] = [
     ],
   },
   {
-    path: "/Dashboard/cg",
+    path: "/dashboard/cg",
     text: "Dashboard",
     icon: React.createElement(DashboardIcon),
     element: React.createElement(View.careGiverDashboardView),
@@ -139,7 +140,9 @@ export const routes: RouteObjectWithRole[] = [
     element: React.createElement(View.resourceView),
     allowRoles: [
       APPLICATION_ADMIN,
-      APPLICATION_SUPER_ADMIN],
+      APPLICATION_SUPER_ADMIN,
+      APPLICATION_CARE_GIVER
+    ],
   },
   {
     path: "/shift-notes",
@@ -159,6 +162,13 @@ export const routes: RouteObjectWithRole[] = [
     allowRoles: [
       APPLICATION_ADMIN,
       APPLICATION_SUPER_ADMIN],
+  },
+  {
+    path:"/userInfo",
+    text:"User Infomation",
+    icon:React.createElement(AdminPanelSettingsOutlinedIcon),
+    element : React.createElement(View.CareGiverInforView),
+    allowRoles:[APPLICATION_CARE_GIVER]
   }
 ];
 export const getActiveRoutesV2 = (

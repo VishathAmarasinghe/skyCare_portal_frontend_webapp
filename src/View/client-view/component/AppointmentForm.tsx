@@ -347,7 +347,7 @@ const validationSchema = Yup.object({
     setCarePlans(carePlanSlice.carePlans);
     setCareGivers(
       careGiverSlice.careGivers?.filter(
-        (careGiver) => careGiver?.status === "Active"
+        (careGiver) => careGiver?.status === "Activated"
       )
     );
   }, [careGiverSlice.state,carePlanSlice?.carePlans]);
@@ -355,7 +355,7 @@ const validationSchema = Yup.object({
   useEffect(() => {
     setCareGivers(
       careGiverSlice.careGivers?.filter(
-        (careGiver) => careGiver?.status === "Active"
+        (careGiver) => careGiver?.status === "Activated"
       )
     );
   }, [careGiverSlice.state]);

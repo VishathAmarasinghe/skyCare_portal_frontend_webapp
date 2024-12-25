@@ -7,34 +7,27 @@ import {
   Grid,
   TextField,
   MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
   Button,
-  FormHelperText,
-  SelectChangeEvent,
   Stack,
   Typography,
-  Avatar,
-  Chip,
   useTheme,
 } from "@mui/material";
 import AppointmentParticipantTable from "../../../component/common/AppointmentParticipantTable";
 
-import { State } from "../../../types/types";
 import { useSearchParams } from "react-router-dom";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import { Autocomplete, LoadScript } from "@react-google-maps/api";
 import { set } from "date-fns";
-import { IncidentActionTypeAllAnswers, IncidentDocuments, IncidentInvolvedParties, Incidents, IncidentStatus, IncidentType } from "../../../slices/IncidentSlice/incident";
-import { useAppSelector } from "../../../slices/store";
+import { IncidentActionTypeAllAnswers, IncidentDocuments, IncidentInvolvedParties, Incidents, IncidentStatus, IncidentType, saveIncident, updateIncident } from "../../../slices/IncidentSlice/incident";
+import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import DynamicQuestionsForm from "./DynamicQuestionsForm";
 import { UIShowingFile } from "@view/client-view/component/AddNoteForm";
 import { NoteFiles } from "@slices/NotesSlice/notes";
 import FileViewerWithModal from "@component/common/FileViewerWithModal";
 import FileListTable from "@component/common/FileListTable";
+import { State } from "../../../types/types";
 
 dayjs.extend(isSameOrAfter);
 
@@ -55,6 +48,8 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
   const [involvedPartiesRows, setInvolvedPartiesRows] = useState<IncidentInvolvedParties[]>([]);
   const [answers, setAnswers] = useState<IncidentActionTypeAllAnswers[]>([]);
   const [uploadedFils, setUploadedFiles] = useState<File[]>([]);
+  const authUserInfo = useAppSelector((state) => state.auth.userInfo);
+  const dispatch = useAppDispatch();
   const [previouslyUploadedFiles, setPreviouslyUploadedFiles] = useState<
     IncidentDocuments[]
   >([]);
@@ -94,18 +89,46 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
     followUp: "",
     notes: "",
     documents: [],
+    answers: [],
+    parties: [],
+    employeeID: authUserInfo?.userID || "",
   });
 
   // Validation schema using Yup
   const validationSchema = Yup.object({
-
+    title: Yup.string()
+      .required("Title is required")
+      .max(100, "Title must be 100 characters or less"),
+    reportDate: Yup.date()
+      .required("Reporting Date is required")
+      .max(new Date(), "Reporting Date cannot be in the future"),
+    incidentDate: Yup.date()
+      .required("Incident Date is required")
+      .max(new Date(), "Incident Date cannot be in the future"),
+    incidentTime: Yup.string().required("Incident Time is required"),
+    address: Yup.object({
+      address: Yup.string()
+        .required("Address is required")
+        .max(255, "Address must be 255 characters or less"),
+      city: Yup.string().required("City is required"),
+      state: Yup.string().required("State is required"),
+      postalCode: Yup.string()
+        .required("Postal Code is required")
+        .matches(/^\d{5}(-\d{4})?$/, "Enter a valid postal code"),
+    }),
+    issue: Yup.string()
+      .required("Issue is required")
+      .max(1000, "Issue description must be 1000 characters or less"),
+    description: Yup.string()
+      .required("Description is required")
+      .max(2000, "Description must be 2000 characters or less")
   });
 
   useEffect(()=>{
     if(incidentSlice?.incidentsTypes){
       setIncidentTypes(incidentSlice?.incidentsTypes?.filter((type:IncidentType)=>type.status === "Active"))
     }
-  },[incidentSlice?.subTypeState])
+  },[incidentSlice?.subTypeState,incidentSlice?.incidentTypeState])
 
   useEffect(()=>{
     if(incidentSlice?.incidentStatus){
@@ -129,7 +152,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
       setInitialValues({
         incidentID: "",
         title: "",
-        reportDate: dayjs().toISOString(),
+        reportDate: dayjs().format("YYYY-MM-DD"),
         incidentDate: dayjs().format("YYYY-MM-DD"),
         incidentTime: dayjs().format("HH:mm"),
         incidentTypeID: "",
@@ -151,7 +174,10 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
         taskID: "",
         followUp: "",
         notes: "",
-        documents:[]
+        documents:[],
+        answers:[],
+        parties:[],
+        employeeID: authUserInfo?.userID || "",
       });
     }
   }, [incidentSlice.selectedIncident]);
@@ -243,10 +269,15 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
     console.log("rows ",involvedPartiesRows);
     console.log("files ",uploadedFils);
     console.log("answers ",answers);
-    
-    
-    
-    
+    values.parties=involvedPartiesRows;
+    values.answers=answers;
+    if(incidentSlice?.selectedIncident){
+      dispatch(updateIncident({incident:values,files:uploadedFils}))
+    }else{
+      values.employeeID = authUserInfo?.userID || "";
+      dispatch(saveIncident({incident:values,files:uploadedFils}))
+    }
+
   };
 
   return (
@@ -264,6 +295,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
         touched,
         errors,
         setFieldValue,
+        resetForm
       }: FormikProps<Incidents>) => {
         const handleAddressSelect = (place: google.maps.places.PlaceResult) => {
           if (!autocomplete) return;
@@ -298,15 +330,21 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
         useEffect(() => {
           if (addressDetails) {
             // Update the form values with the selected address details
-            setFieldValue("appointmentAddress.address", addressDetails.address);
-            setFieldValue("appointmentAddress.city", addressDetails.city);
-            setFieldValue("appointmentAddress.state", addressDetails.state);
+            setFieldValue("address.address", addressDetails.address);
+            setFieldValue("address.city", addressDetails.city);
+            setFieldValue("address.state", addressDetails.state);
             setFieldValue(
-              "appointmentAddress.postalCode",
+              "address.postalCode",
               addressDetails.postalCode
             );
           }
         }, [addressDetails]);
+
+        useEffect(() => {
+            if(incidentSlice?.submitState === State.success){
+                resetForm();
+            }
+        }, [incidentSlice?.submitState]);
 
         return (
           <Form>
@@ -414,7 +452,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                         }
                         </TextField>
                     </Grid>
-                    <Grid item xs={12} sm={4} md={4}>
+                    {/* <Grid item xs={12} sm={4} md={4}>
                     <TextField
                         select
                         fullWidth
@@ -434,7 +472,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                         <MenuItem value="1">Status 1</MenuItem>
                         <MenuItem value="2">Status 2</MenuItem>
                         </TextField>
-                    </Grid>
+                    </Grid> */}
                     <Grid item xs={12} sm={6}>
                       <Autocomplete
                         onLoad={(autocompleteInstance) =>

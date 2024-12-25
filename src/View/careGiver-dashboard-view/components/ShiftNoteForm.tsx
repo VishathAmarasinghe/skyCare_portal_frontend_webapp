@@ -71,6 +71,7 @@ interface AddNoteFormProps {
   isNoteModalVisible: boolean;
   isEditMode: boolean;
   selectedShiftNote: { shiftNoteID: string | null };
+  pureNew: boolean;
   setSelectedShiftNote: React.Dispatch<
     React.SetStateAction<{ shiftNoteID: string | null }>
   >;
@@ -87,6 +88,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
   isEditMode,
   selectedShiftNote,
   setSelectedShiftNote,
+  pureNew
 }) => {
   const [jobType, setJobType] = useState<"appointment" | "task" | "none">(
     "none"
@@ -266,16 +268,22 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
       enableReinitialize={true}
       onSubmit={(values, { setSubmitting }) => {
         const notePayload: updateShiftNote = { ...values };
-
-        if (shiftNoteStates?.selectedShiftNote) {
-          notePayload.documents = previouslyUploadedFiles;
-          dispatch(
-            updatehiftNotes({ notes: notePayload, files: uploadedFils })
-          );
-        } else {
-          notePayload.noteID = selectedShiftNote?.shiftNoteID || "";
-          dispatch(saveShiftNotes({ notes: notePayload, files: uploadedFils }));
+        if(pureNew){
+            notePayload.employeeID = authUser?.userID || "";
+            dispatch(saveShiftNotes({notes:notePayload,files:uploadedFils}));
+        }else{
+          if (shiftNoteStates?.selectedShiftNote) {
+            notePayload.documents = previouslyUploadedFiles;
+            dispatch(
+              updatehiftNotes({ notes: notePayload, files: uploadedFils })
+            );
+          } else {
+            notePayload.noteID = selectedShiftNote?.shiftNoteID || "";
+            dispatch(saveShiftNotes({ notes: notePayload, files: uploadedFils }));
+          }
         }
+
+
       }}
     >
       {({

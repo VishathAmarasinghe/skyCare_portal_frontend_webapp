@@ -7,8 +7,10 @@ import NotesTab from '../component/tabs/Notes-tab';
 import AppointmentTab from '../component/tabs/Appointments-tab';
 import CarePlanTab from '../component/tabs/carePlans-tab';
 import { useSearchParams } from "react-router-dom";
-import { useAppDispatch } from "@slices/store";
+import { useAppDispatch, useAppSelector } from "@slices/store";
 import { fetchSingleClients } from "@slices/clientSlice/client";
+import AddNewClientModal from "../modal/AddNewClientModal";
+import { State } from "../../../types/types";
 
 const ClientInfoPanel = () => {
   const theme = useTheme();
@@ -16,6 +18,9 @@ const ClientInfoPanel = () => {
   const [searchParams] = useSearchParams();
   const clientID = searchParams.get("clientID");
   const dispatch = useAppDispatch();
+  const clientInfo = useAppSelector((state) => state.clients);
+  const client = clientInfo?.selectedClient;
+  const [isClientModalVisible, setIsClientModalVisible] = useState<boolean>(false);
 
   useEffect(()=>{
     fetchClientDetails();
@@ -26,6 +31,13 @@ const ClientInfoPanel = () => {
       dispatch(fetchSingleClients(clientID));
     }
   }
+
+  useEffect(()=>{
+    if (clientInfo?.submitState === State?.success || clientInfo?.updateState === State?.success) {
+      fetchClientDetails();
+      setIsClientModalVisible(false);
+    }
+  },[clientInfo.updateState,clientInfo?.submitState])
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
@@ -53,13 +65,14 @@ const ClientInfoPanel = () => {
           fontWeight={600}
           color={theme.palette.primary.main}
         >
-          Client Record: {"Pathum Fernando"}
+          Client Record: {client?.firstName} {client?.lastName}
         </Typography>
         <Stack flexDirection="row">
           <Button sx={{ mx: 2 }} variant="outlined">
             Deactivate
           </Button>
-          <Button variant="contained">Edit</Button>
+          <Button variant="contained" onClick={()=>{setIsClientModalVisible(true)}}>Edit</Button>
+          <AddNewClientModal isClientAddModalVisible={isClientModalVisible} setIsClientAddModalVisible={setIsClientModalVisible} key={"clientModal"}/>
         </Stack>
       </Stack>
       <Stack width="100%" height="80%">
@@ -71,8 +84,8 @@ const ClientInfoPanel = () => {
               <Tab label="Notes" value="3" />
               <Tab label="Care Plans" value="4" />
               <Tab label="Appointments" value="5" />
-              <Tab label="Tasks" value="6" />
-              <Tab label="Documents" value="7" />
+              {/* <Tab label="Tasks" value="6" /> */}
+              {/* <Tab label="Documents" value="7" /> */}
             </TabList>
           </Box>
           <TabPanel value="1">

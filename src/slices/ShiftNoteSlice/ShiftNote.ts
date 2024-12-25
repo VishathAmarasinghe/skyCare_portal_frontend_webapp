@@ -280,6 +280,53 @@ export const updatehiftNotes = createAsyncThunk(
     }
   );
 
+
+  // Save notes by clientID
+export const saveNewShiftNotes = createAsyncThunk(
+  "note/SaveNewShiftNotes",
+  async (
+    payload: { notes: updateShiftNote; files: File[] },
+    { dispatch, rejectWithValue }
+  ) => {
+    return new Promise<updateShiftNote>((resolve, reject) => {
+      const formData = new FormData();
+
+      formData.append("note", JSON.stringify(payload.notes));
+      payload.files.forEach((file) => {
+        formData.append("files", file);
+      });
+      APIService.getInstance()
+        .post(AppConfig.serviceUrls.shiftNotes+`/finish`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+        .then((response) => {
+          dispatch(
+            enqueueSnackbarMessage({
+              message: SnackMessage.success.shiftFinished,
+              type: "success",
+            })
+          );
+          resolve(response.data);
+        })
+        .catch((error) => {
+          if (axios.isCancel(error)) {
+            return rejectWithValue("Request canceled");
+          }
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.shiftFinished
+                  : String(error.response?.data?.error),
+              type: "error",
+            })
+          );
+          reject(error.response?.data?.message);
+        });
+    });
+  }
+);
+
 // Save notes by clientID
 export const saveShiftNotes = createAsyncThunk(
     "note/SaveShiftNotes",
@@ -295,13 +342,13 @@ export const saveShiftNotes = createAsyncThunk(
           formData.append("files", file);
         });
         APIService.getInstance()
-          .post(AppConfig.serviceUrls.shiftNotes+`/finish`, formData, {
+          .post(AppConfig.serviceUrls.shiftNotes+`/new`, formData, {
             headers: { "Content-Type": "multipart/form-data" },
           })
           .then((response) => {
             dispatch(
               enqueueSnackbarMessage({
-                message: SnackMessage.success.shiftFinished,
+                message: SnackMessage.success.shiftNoteCreated,
                 type: "success",
               })
             );
@@ -315,7 +362,7 @@ export const saveShiftNotes = createAsyncThunk(
               enqueueSnackbarMessage({
                 message:
                   error.response?.status === HttpStatusCode.InternalServerError
-                    ? SnackMessage.error.shiftFinished
+                    ? SnackMessage.error.shiftNoteCreated
                     : String(error.response?.data?.error),
                 type: "error",
               })

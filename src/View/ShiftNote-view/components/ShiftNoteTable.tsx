@@ -33,9 +33,10 @@ function CustomToolbar() {
 interface ClientTableProps {
   isNoteModalVisible: boolean;
   setIsNoteModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  setPureNew: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ShiftNoteTable = ({ isNoteModalVisible, setIsNoteModalVisible }: ClientTableProps) => {
+const ShiftNoteTable = ({ isNoteModalVisible, setIsNoteModalVisible,setPureNew }: ClientTableProps) => {
   const shiftNoteSlice = useAppSelector((state) => state.shiftNotes);
   const [shiftNotes, setShiftNotes] = useState<updateShiftNote[]>([]);
   const dispatch = useAppDispatch();
@@ -108,6 +109,7 @@ const ShiftNoteTable = ({ isNoteModalVisible, setIsNoteModalVisible }: ClientTab
             onClick={() => {
               dispatch(getSingleShiftNoteByShiftID(params.row?.noteID));
               setIsNoteModalVisible(true);
+              setPureNew(false);
             }}
           >
             <RemoveRedEyeOutlinedIcon />

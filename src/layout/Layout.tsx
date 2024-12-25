@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import { Box, alpha } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import Loader from "@component/common/Loader";
 
 import Header from "./header";
 import Sidebar from "./sidebar";
@@ -81,7 +82,7 @@ export default function Layout() {
             pb: 6,
           }}
         >
-          <Suspense fallback={<PreLoader isLoading={true} message={"Loading"} />}>
+          <Suspense fallback={<Loader/>}>
             <Outlet />
           </Suspense>
           <Box

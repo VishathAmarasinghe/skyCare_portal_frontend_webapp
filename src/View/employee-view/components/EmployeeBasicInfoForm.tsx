@@ -15,6 +15,7 @@ import { useAppSelector } from "@slices/store";
 import { State } from "../../../types/types";
 import { FILE_DOWNLOAD_BASE_URL } from "@config/config";
 import { Autocomplete } from "@react-google-maps/api";
+import { set } from "date-fns";
 
 // Validation schema using Yup
 const validationSchema = Yup.object({
@@ -101,6 +102,30 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({isEditMode
       if (employeeSlice.selectedEmployee.profile_photo) {
         setProfilePhotoPreview(`${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(employeeSlice.selectedEmployee.profile_photo)}`);
       }
+    }else{
+      setProfilePhotoPreview(null);
+      setInitialValues({
+        firstName: "",
+        lastName: "",
+        email: "",
+        accessRole: "",
+        joinDate: "",
+        profile_photo: "",
+        employeeAddresses: [
+          {
+            longitude: "",
+            latitude: "",
+            address: "",
+            city: "",
+            state: "",
+            country: "",
+            postal_code: "",
+          },
+        ],
+        status:"",
+        employeeJobRoles: [],
+        employeePhoneNo: ["", ""],
+      })
     }
   },[employeeSlice?.selectedEmployee])
 
@@ -152,6 +177,15 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({isEditMode
               setProfilePic(null);
             }
          },[employeeSlice.submitState])
+
+         useEffect(()=>{
+          if(!modalOpenState){
+            console.log("resetting form");
+            resetForm();
+            setProfilePhotoPreview(null);
+            setProfilePic(null);
+          }
+         },[modalOpenState])
 
          const handleAddressSelect = (place: google.maps.places.PlaceResult) => {
           if (!autocomplete) return;
@@ -239,7 +273,7 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({isEditMode
                 accept="image/*"
                 id="upload-photo"
                 type="file"
-                disabled={!isEditMode}
+                // disabled={!isEditMode}
                 onChange={(e) => handleFileUpload(e, setFieldValue)}
               />
               <Typography variant="h6" sx={{ my: 1 }} textAlign="center">

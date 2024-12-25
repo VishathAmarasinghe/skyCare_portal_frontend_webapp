@@ -32,6 +32,7 @@ interface AddCarePlanFormProps {
 const AddCarePlanForm = ({activeStepper,isEditMode,setIsEditMode}:AddCarePlanFormProps) => {
     const carePlanSlice = useAppSelector(state=>state.carePlans);
     const clientDetails = useAppSelector(state=>state.clients);
+    const [Clients,setClients] = useState<Client[]>([]);
     const [carePlanStatusList, setCarePlanStatusList] = useState<CarePlanStatus[]>([]);
     const [clientList,setSelectedClientList] = useState<{clientID:String,name:String}[]>([]);
     const [goalOutcomeList,setGoalOutcomeList] = useState<GoalOutcome[]>([]);
@@ -52,6 +53,10 @@ const AddCarePlanForm = ({activeStepper,isEditMode,setIsEditMode}:AddCarePlanFor
     const dispatch = useAppDispatch();
 
     useEffect(()=>{
+        setClients(clientDetails?.clients);
+    },[clientDetails?.State])
+
+    useEffect(()=>{
         setCarePlanStatusList(carePlanSlice.carePlanStatusList);
         setGoalOutcomeList(carePlanSlice.goalOutcomeList);
     },[carePlanSlice.state])
@@ -62,12 +67,12 @@ const AddCarePlanForm = ({activeStepper,isEditMode,setIsEditMode}:AddCarePlanFor
                 let client = clientDetails?.selectedClient;
                 setSelectedClientList([...clientList,{clientID:clientID,name:client.firstName+" "+client.lastName}]);
           }
+        }else{
+          setSelectedClientList([...Clients?.map((client)=>({clientID:client.clientID as string,name:client.firstName+" "+client.lastName}))]);
         }
     },[clientID])
 
-    useEffect(()=>{
-        console.log("Selected Care Plan",carePlanSlice.selectedCarePlan);
-        
+    useEffect(()=>{       
         if(carePlanSlice.selectedCarePlan){
             setInitialValues({
                 ...carePlanSlice.selectedCarePlan,

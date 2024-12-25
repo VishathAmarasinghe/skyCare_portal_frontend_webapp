@@ -21,6 +21,11 @@ import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useAppDispatch, useAppSelector } from "@slices/store";
+import { Employee } from "@slices/EmployeeSlice/employee";
+import { FILE_DOWNLOAD_BASE_URL } from "@config/config";
+import { fetchSingleIncident, Incidents } from "@slices/IncidentSlice/incident";
+import { State } from "../../../types/types";
 
 function CustomToolbar() {
   return (
@@ -32,160 +37,139 @@ function CustomToolbar() {
   );
 }
 
-const initialColumns: GridColDef[] = [
-  { field: "incidentID", headerName: "Incident ID", width: 100, align: "center" },
-  { field: "title", headerName: "title", width: 130 },
-  { field: "type", headerName: "type", width: 130 },
-  {
-    field: "client",
-    headerName: "client",
-    flex: 1,
-    renderCell: (params) => (
-      <Chip
-        avatar={<Avatar>{params.row.clientName.charAt(0).toUpperCase()}</Avatar>}
-        label={params.value}
-        variant="outlined"
-      />
-    ),
-  },
-  {
-    field: "incidentDate",
-    headerName: "Incident Date",
-    width: 100,
-    headerAlign: "center",
-    align: "center",
-  },
-  {
-    field: "reportingDate",
-    headerName: "Reporting Date",
-    width: 150,
-    headerAlign: "center",
-    align: "center",
-  },
-  {
-    field: "createdBy",
-    headerName: "Created By",
-    flex: 1,
-    renderCell: (params) => (
-      <Chip
-        avatar={<Avatar>{params.row.createdBy.charAt(0).toUpperCase()}</Avatar>}
-        label={params.value}
-        variant="outlined"
-      />
-    ),
-  },
-  {
-    field: "action",
-    headerName: "Action",
-    width: 150,
-    renderCell: (params) => {
-      const navigate = useNavigate();
-      return (
-        <Stack flexDirection="row">
-          <IconButton>
-            <EditIcon />
-          </IconButton>
-
-          <IconButton>
-            <DeleteIcon />
-          </IconButton>
-
-          <IconButton
-            aria-label="view"
-            onClick={() => {
-              navigate(`/Clients/clientInfo?clientID=${params.row.clientID}`);
-            }}
-          >
-            <RemoveRedEyeOutlinedIcon />
-          </IconButton>
-        </Stack>
-      );
-    },
-  },
-];
-
-const sampleRows = [
-    {
-      incidentID: "INC001",
-      title: "Data Breach",
-      type: "Security",
-      client: "Alice Johnson",
-      clientName: "Alice Johnson",
-      incidentDate: "2023-10-01",
-      reportingDate: "2023-10-02",
-      createdBy: "Sam Adams",
-      clientID: "C001",
-    },
-    {
-      incidentID: "INC002",
-      title: "System Outage",
-      type: "Operational",
-      client: "Bob Smith",
-      clientName: "Bob Smith",
-      incidentDate: "2023-10-05",
-      reportingDate: "2023-10-06",
-      createdBy: "Laura Brown",
-      clientID: "C002",
-    },
-    {
-      incidentID: "INC003",
-      title: "Phishing Attack",
-      type: "Cybersecurity",
-      client: "Charlie Davis",
-      clientName: "Charlie Davis",
-      incidentDate: "2023-10-07",
-      reportingDate: "2023-10-08",
-      createdBy: "Alex Johnson",
-      clientID: "C003",
-    },
-    {
-      incidentID: "INC004",
-      title: "Server Maintenance",
-      type: "IT",
-      client: "Dana White",
-      clientName: "Dana White",
-      incidentDate: "2023-10-10",
-      reportingDate: "2023-10-11",
-      createdBy: "Chris Lee",
-      clientID: "C004",
-    },
-    {
-      incidentID: "INC005",
-      title: "Software Update Issue",
-      type: "Technical",
-      client: "Evan Parker",
-      clientName: "Evan Parker",
-      incidentDate: "2023-10-12",
-      reportingDate: "2023-10-13",
-      createdBy: "Jamie Lin",
-      clientID: "C005",
-    },
-  ];
   
 
 interface ClientTableProps {
-  
+  isIncidentModalVisible: boolean;
+  setIsIncidentModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const IncidentTable = ({ }: ClientTableProps) => {
+const IncidentTable = ({isIncidentModalVisible,setIsIncidentModalOpen }: ClientTableProps) => {
   const theme = useTheme();
+  const incidentSlice = useAppSelector((state)=>state?.incident);
+  const employeeSlice = useAppSelector((state)=>state?.employees);
+  const [incidents, setIncidents] = useState<Incidents[]>([]);
+  const dispatch = useAppDispatch();
+
+  const findEmployee =(employeeID:string):Employee|null=>{
+    const employee = employeeSlice.metaAllEmployees.find((employee)=>employee.employeeID===employeeID);
+    return employee?employee:null;
+  }
+
+  const findIncidentType = (incidentTypeID:string):string=>{
+    const incidentType = incidentSlice.incidentsTypes.find((incidentType)=>incidentType.incidentTypeID===incidentTypeID);
+    return incidentType?.title || "";
+  }
+
+  const findIncidentState = (incidentStateID:string):string=>{
+    const incidentState = incidentSlice.incidentStatus.find((incidentState)=>incidentState.incidentStatusID===incidentStateID);
+    return incidentState?.activeStatus || "";
+  }
+
+  useEffect(()=>{
+    setIncidents(incidentSlice.incidents);
+  },[incidentSlice.state])
 
   const handlePageChange = (newPage: number) => {
     
   };
 
+  const initialColumns: GridColDef[] = [
+    { field: "incidentID", headerName: "Incident ID", width: 50, align: "center" },
+    { field: "title", headerName: "title", flex: 1 },
+    { field: "incidentTypeID", headerName: "Incident type", width: 130,
+      renderCell: (params) => {
+        return(
+          <Chip
+          size="small"
+            label={findIncidentType(params.row.incidentTypeID) || params.row.incidentTypeID}
+            variant="outlined"
+          />
+        )}
+     },
+    { field: "incidentStatusID", headerName: "Status", width: 130,
+      renderCell: (params) => {
+        return(
+          <Chip
+          size="small"
+            label={findIncidentState(params.row.incidentStatusID) || params.row.incidentStatusID}
+            variant="outlined"
+          />
+        )}
+     },
+    {
+      field: "employeeID",
+      headerName: "Creator",
+      flex: 1,
+      renderCell: (params) => {
+          const employee = findEmployee(params?.row?.employeeID);
+        return(
+        <Chip
+          avatar={
+            <Avatar
+              src={employee?.profile_photo ? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(employee?.profile_photo || "")}` : ""} // Replace with your avatar URL logic
+              alt={employee?.firstName || params.row?.employeeID || ""}
+            >
+              {params?.row?.employeeID}
+            </Avatar>
+          }
+          label={employee?.firstName+" "+employee?.lastName}
+          variant="outlined"
+        />
+        )}
+    },
+    {
+      field: "incidentDate",
+      headerName: "Incident Date",
+      width: 100,
+      headerAlign: "center",
+      align: "center",
+    },
+    {
+      field: "reportDate",
+      headerName: "Reporting Date",
+      width: 150,
+      headerAlign: "center",
+      align: "center",
+    },
+    {
+      field: "action",
+      headerName: "Action",
+      width: 150,
+      renderCell: (params) => {
+        return (
+          <Stack flexDirection="row">
+            <IconButton
+              aria-label="view"
+              onClick={() => {
+                dispatch(fetchSingleIncident(params.row?.incidentID))
+                setIsIncidentModalOpen(true);
+              }}
+            >
+              <RemoveRedEyeOutlinedIcon />
+            </IconButton>
+          </Stack>
+        );
+      },
+    },
+  ];
+
   return (
     <Box sx={{ height: "100%", width: "100%" }}>
       <DataGrid
-        rows={sampleRows}
+        rows={incidents as Incidents[]}
         columns={initialColumns}
         getRowId={(row) => row.incidentID}
         density="compact"
+        loading={incidentSlice.state === State?.loading}
         pagination
-        pageSize={5}
-        onPageChange={handlePageChange}
-        components={{
-          Toolbar: CustomToolbar,
+        initialState={{
+          pagination: {
+            paginationModel: { pageSize: 5 },
+          },
+        }}
+        slots={{
+          toolbar: CustomToolbar,
         }}
         sx={{
           

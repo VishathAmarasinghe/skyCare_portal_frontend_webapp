@@ -19,6 +19,7 @@ import { checkAuthToken } from "@slices/authSlice/Auth";
 import { State } from "../types/types";
 import CareGiverRegistrationPage from "../layout/pages/CareGiverRegistrationPage";
 import ForgetPassword from "../layout/pages/ForgetPassword";
+import Loader from "@component/common/Loader";
 
 const AppHandler = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -81,6 +82,7 @@ const AppHandler = () => {
       )}
       {auth.status === State.success && auth.mode === "active" && (
         <RouterProvider router={router} />
+        // <Loader/>
       )}
       {auth.status === State.success && auth.mode === "maintenance" && (
         <MaintenancePage />
