@@ -13,16 +13,16 @@ pipeline {
                 script {
                     // Checkout both repositories
                     dir('frontend') {
-                        git url: "${FRONTEND_REPO}", branch: 'main'
+                        git url: "${FRONTEND_REPO}", branch: 'main', credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
                     }
                     dir('backend') {
-                        git url: "${BACKEND_REPO}", branch: 'main'
+                        git url: "${BACKEND_REPO}", branch: 'main', credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
                     }
                     dir('frontend') {
-                        git url: "${FRONTEND_REPO}", branch: 'dev'
+                        git url: "${FRONTEND_REPO}", branch: 'dev' , credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
                     }
                     dir('backend') {
-                        git url: "${BACKEND_REPO}", branch: 'dev'
+                        git url: "${BACKEND_REPO}", branch: 'dev' , credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
                     }
                 }
             }
