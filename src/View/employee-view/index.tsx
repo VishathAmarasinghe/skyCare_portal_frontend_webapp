@@ -1,42 +1,68 @@
-import { Button, ButtonGroup, Stack, Typography, useTheme } from "@mui/material";
+import {
+  Button,
+  ButtonGroup,
+  Stack,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import EmployeeTable from "./components/EmployeeTable";
 import AdminModal from "./modal/AdminModal";
 import StaffModal from "./modal/StaffModal";
 import { useAppDispatch, useAppSelector } from "@slices/store";
-import {fetchPaymentTypes,fetchDocumentTypes, CareGiverDocuments, fetchCareGivers, fetchSingleCareGiverByEmployeeID, resetSelectedCareGiver } from '../../slices/CareGiverSlice/careGiver'
-import { fetchEmployeesByRole, resetSelectedEmployee } from "@slices/EmployeeSlice/employee";
+import {
+  fetchPaymentTypes,
+  fetchDocumentTypes,
+  CareGiverDocuments,
+  fetchCareGivers,
+  fetchSingleCareGiverByEmployeeID,
+  resetSelectedCareGiver,
+} from "../../slices/careGiverSlice/careGiver";
+import {
+  fetchEmployeesByRole,
+  resetSelectedEmployee,
+} from "@slices/employeeSlice/employee";
 
 const EmployeeView = () => {
   const theme = useTheme();
-  const [selectedUser, setSelectedUser] = useState<"Admin"| "Staff">("Staff");
-  const [isEmployeeAddModalVisible, setIsEmployeeAddModalVisible] = useState<boolean>(false);
-  const [isStaffAddModalVisible, setIsStaffAddModalVisible] = useState<boolean>(false);
-  const [isEditMode,setIsEditMode]=useState<boolean>(false);
-  const employeeSlice = useAppSelector((state)=>state?.employees);
-  const careGiverSlice = useAppSelector((state)=>state?.careGivers);
-  const [ ] = useState<boolean>(false);
-  
+  const [selectedUser, setSelectedUser] = useState<"Admin" | "Staff">("Staff");
+  const [isEmployeeAddModalVisible, setIsEmployeeAddModalVisible] =
+    useState<boolean>(false);
+  const [isStaffAddModalVisible, setIsStaffAddModalVisible] =
+    useState<boolean>(false);
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
+  const employeeSlice = useAppSelector((state) => state?.employees);
+  const careGiverSlice = useAppSelector((state) => state?.careGivers);
+  const [] = useState<boolean>(false);
+
   const dispatch = useAppDispatch();
 
-  useEffect(()=>{
+  useEffect(() => {
     const selectedEmployee = employeeSlice?.selectedEmployee;
     if (employeeSlice?.selectedEmployee) {
-      if (selectedEmployee?.accessRole ==="Admin") {
+      if (selectedEmployee?.accessRole === "Admin") {
         setIsEmployeeAddModalVisible(true);
-      }else if(selectedEmployee?.accessRole ==="CareGiver"){
-        dispatch(fetchSingleCareGiverByEmployeeID(selectedEmployee?.employeeID));
+      } else if (selectedEmployee?.accessRole === "CareGiver") {
+        dispatch(
+          fetchSingleCareGiverByEmployeeID(selectedEmployee?.employeeID)
+        );
         setIsStaffAddModalVisible(true);
-    }}
-  },[employeeSlice?.selectedEmployee])
+      }
+    }
+  }, [employeeSlice?.selectedEmployee]);
 
   useEffect(() => {
     handleUserTypeChange("Staff");
   }, []);
 
-  useEffect(()=>{
-      handleUserTypeChange("Staff");
-  },[employeeSlice?.submitState,employeeSlice?.updateState,careGiverSlice?.submitState,careGiverSlice?.updateState])
+  useEffect(() => {
+    handleUserTypeChange("Staff");
+  }, [
+    employeeSlice?.submitState,
+    employeeSlice?.updateState,
+    careGiverSlice?.submitState,
+    careGiverSlice?.updateState,
+  ]);
 
   const handleUserTypeChange = (userType: "Admin" | "Staff") => {
     setSelectedUser(userType);
@@ -45,27 +71,33 @@ const EmployeeView = () => {
     }
     if (userType === "Staff") {
       dispatch(fetchEmployeesByRole("CareGiver"));
-  };}
+    }
+  };
 
-  useEffect(()=>{
-      dispatch(fetchPaymentTypes());
-      dispatch(fetchDocumentTypes());
-  },[isStaffAddModalVisible])
+  useEffect(() => {
+    dispatch(fetchPaymentTypes());
+    dispatch(fetchDocumentTypes());
+  }, [isStaffAddModalVisible]);
 
-  useEffect(()=>{
-    
-    if (isEmployeeAddModalVisible){
+  useEffect(() => {
+    if (isEmployeeAddModalVisible) {
       dispatch(resetSelectedEmployee());
       dispatch(resetSelectedCareGiver());
     }
-  },[isEmployeeAddModalVisible])
+  }, [isEmployeeAddModalVisible]);
 
   return (
-    <Stack width="100%"
-    data-aos="fade-right"
-    data-aos-duration="200"
-    sx={{backgroundColor: theme.palette.background.paper, boxShadow: 1, borderRadius: 2}}
-    height="100%">
+    <Stack
+      width="100%"
+      data-aos="fade-right"
+      data-aos-duration="200"
+      sx={{
+        backgroundColor: theme.palette.background.paper,
+        boxShadow: 1,
+        borderRadius: 2,
+      }}
+      height="100%"
+    >
       {/* Header Section */}
       <Stack
         width="100%"
@@ -82,8 +114,23 @@ const EmployeeView = () => {
           Employees
         </Typography>
         <Stack flexDirection="row">
-          <Button variant="contained" sx={{mx:1}} onClick={()=>{setIsEmployeeAddModalVisible(true),setIsEditMode(true)}}>New Admin</Button>
-          <Button variant="contained" onClick={()=>{setIsStaffAddModalVisible(true),setIsEditMode(true)}}>New Staff</Button>
+          <Button
+            variant="contained"
+            sx={{ mx: 1 }}
+            onClick={() => {
+              setIsEmployeeAddModalVisible(true), setIsEditMode(true);
+            }}
+          >
+            New Admin
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setIsStaffAddModalVisible(true), setIsEditMode(true);
+            }}
+          >
+            New Staff
+          </Button>
         </Stack>
       </Stack>
 
@@ -96,7 +143,8 @@ const EmployeeView = () => {
                 selectedUser === "Staff"
                   ? theme.palette.primary.main
                   : theme.palette.grey[300],
-              color: selectedUser === "Staff" ? "#fff" : theme.palette.text.primary,
+              color:
+                selectedUser === "Staff" ? "#fff" : theme.palette.text.primary,
             }}
             onClick={() => handleUserTypeChange("Staff")}
           >
@@ -108,7 +156,8 @@ const EmployeeView = () => {
                 selectedUser === "Admin"
                   ? theme.palette.primary.main
                   : theme.palette.grey[300],
-              color: selectedUser === "Admin" ? "#fff" : theme.palette.text.primary,
+              color:
+                selectedUser === "Admin" ? "#fff" : theme.palette.text.primary,
             }}
             onClick={() => handleUserTypeChange("Admin")}
           >
@@ -119,9 +168,19 @@ const EmployeeView = () => {
 
       {/* Table Section */}
       <Stack width="100%" height="480px">
-        <AdminModal isEditMode={isEditMode} setIsEditMode={setIsEditMode} isEmployeeAddModalVisible={isEmployeeAddModalVisible} setIsEmployeeAddModalVisible={setIsEmployeeAddModalVisible}/>
-        <StaffModal isEditMode={isEditMode} setIsEditMode={setIsEditMode} isCareGiverAddModalVisible={isStaffAddModalVisible} setIsCareGiverAddModalVisible={setIsStaffAddModalVisible}/>
-        <EmployeeTable  />
+        <AdminModal
+          isEditMode={isEditMode}
+          setIsEditMode={setIsEditMode}
+          isEmployeeAddModalVisible={isEmployeeAddModalVisible}
+          setIsEmployeeAddModalVisible={setIsEmployeeAddModalVisible}
+        />
+        <StaffModal
+          isEditMode={isEditMode}
+          setIsEditMode={setIsEditMode}
+          isCareGiverAddModalVisible={isStaffAddModalVisible}
+          setIsCareGiverAddModalVisible={setIsStaffAddModalVisible}
+        />
+        <EmployeeTable />
       </Stack>
     </Stack>
   );

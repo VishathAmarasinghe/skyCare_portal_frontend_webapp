@@ -7,7 +7,7 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 // APP imports
 import { store } from "./slices/store";
 import { ThemeMode } from "./utils/types";
-import { APP_NAME, AppConfig } from "./config/config";
+import { APP_NAME, AppConfig } from "@config/config";
 import AppHandler from "./app/AppHandler";
 import { themeSettings } from "./theme";
 import "./App.css";
@@ -17,18 +17,17 @@ import { SnackbarProvider } from "notistack";
 import { APIService } from "@utils/apiService";
 import ConfirmationDialogContextProvider from "@context/DialogContext";
 import { LoadScript } from "@react-google-maps/api";
-import AOS from 'aos';
-import 'aos/dist/aos.css';
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 export const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
 function App() {
-
   useEffect(() => {
     AOS.init({
       duration: 1000, // Animation duration in milliseconds
-      easing:"ease-in",
-      once:false,
+      easing: "ease-in",
+      once: false,
     });
   }, []);
 

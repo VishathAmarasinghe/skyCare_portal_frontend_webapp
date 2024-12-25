@@ -3,12 +3,12 @@ import { APIService } from "../../utils/apiService";
 import { State } from "../../types/types";
 import { AppConfig } from "../../config/config";
 import { enqueueSnackbarMessage } from "../commonSlice/common";
-import { SnackMessage } from "../../Config/constant";
+import { SnackMessage } from "../../config/constant";
 import axios, { HttpStatusCode } from "axios";
 import {
   AppointmentAddress,
   AppointmentCalenderType,
-} from "../AppointmentSlice/appointment";
+} from "../appointmentSlice/appointment";
 
 export interface Dashboard {
   clientCount: number;
@@ -82,7 +82,7 @@ export const fetchAdminDashboard = createAsyncThunk(
 // Fetch single resources
 export const fetchCareGiverDashboard = createAsyncThunk(
   "incident/fetchCareGiverDashboard",
-  async (employeeID:string, { dispatch, rejectWithValue }) => {
+  async (employeeID: string, { dispatch, rejectWithValue }) => {
     try {
       const response = await APIService.getInstance().get(
         AppConfig.serviceUrls.dashboard + `/careGiver/${employeeID}`

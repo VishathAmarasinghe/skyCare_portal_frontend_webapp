@@ -3,9 +3,9 @@ import { APIService } from "../../utils/apiService";
 import { State } from "../../types/types";
 import { AppConfig } from "../../config/config";
 import { enqueueSnackbarMessage } from "../commonSlice/common";
-import { SnackMessage } from "../../Config/constant";
+import { SnackMessage } from "../../config/constant";
 import axios, { HttpStatusCode } from "axios";
-import { AppointmentAddress } from "../AppointmentSlice/appointment";
+import { AppointmentAddress } from "../appointmentSlice/appointment";
 
 export interface Incidents {
   incidentID: string;
@@ -39,49 +39,49 @@ export interface IncidentStatus {
   activeStatus: string;
 }
 
-export interface IncidentActionTypesQuestions{
-    incidentActionID: string;
-    question: string;
-    yesNoAnswer: boolean;
-    status: string,
-    incidentSubActionList:IncidentSubActionTypeQuestions[];
+export interface IncidentActionTypesQuestions {
+  incidentActionID: string;
+  question: string;
+  yesNoAnswer: boolean;
+  status: string;
+  incidentSubActionList: IncidentSubActionTypeQuestions[];
 }
 
 export interface IncidentDocuments {
-    documentID: string;
-    documentName: string;
-    documentLocation: string;
-    incidentID: string;
+  documentID: string;
+  documentName: string;
+  documentLocation: string;
+  incidentID: string;
 }
 
-export interface IncidentInvolvedParties  {
-    partyID: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    workPhoneNo: string;
-    type: string;
-  };
+export interface IncidentInvolvedParties {
+  partyID: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  workPhoneNo: string;
+  type: string;
+}
 
-export interface IncidentSubActionTypeQuestions{
-    id:string;
-    question: string;
-    incidentActionTypesID: string;
-    state:string;
+export interface IncidentSubActionTypeQuestions {
+  id: string;
+  question: string;
+  incidentActionTypesID: string;
+  state: string;
 }
 
 export interface IncidentActionTypeAllAnswers {
-    id: number | null; // Nullable for newly created answers
-    incidentActionID: string;
-    incidentSubActionID: string | null; // Nullable for main questions
-    incidentID: string;
-    answer: string;
-  }
+  id: number | null; // Nullable for newly created answers
+  incidentActionID: string;
+  incidentSubActionID: string | null; // Nullable for main questions
+  incidentID: string;
+  answer: string;
+}
 
-export interface saveQuestion{
-  mainQuestion: string,
-  yesNoType: boolean,
-  subQuestions:string[]
+export interface saveQuestion {
+  mainQuestion: string;
+  yesNoType: boolean;
+  subQuestions: string[];
 }
 
 export interface IncidentType {
@@ -97,7 +97,6 @@ export interface IncidentActionTypes {
   answer: boolean;
 }
 
-
 interface IncidentState {
   state: State;
   submitState: State;
@@ -109,7 +108,7 @@ interface IncidentState {
   errorMessage: string | null;
   incidentsTypes: IncidentType[];
   incidentStatus: IncidentStatus[];
-  incidentActionTypesQuestions:IncidentActionTypesQuestions[];
+  incidentActionTypesQuestions: IncidentActionTypesQuestions[];
   selectedIncident: Incidents | null;
   incidents: Incidents[];
   backgroundProcess: boolean;
@@ -129,7 +128,7 @@ const initialState: IncidentState = {
   incidents: [],
   incidentStatus: [],
   incidentsTypes: [],
-    incidentActionTypesQuestions:[],
+  incidentActionTypesQuestions: [],
   selectedIncident: null,
   backgroundProcess: false,
   backgroundProcessMessage: null,
@@ -138,10 +137,10 @@ const initialState: IncidentState = {
 // Fetch single resources
 export const fetchAllIncidentsByEmployeeId = createAsyncThunk(
   "incident/fetchAllIncidentsByEmployeeId",
-  async (employeeID:string, { dispatch, rejectWithValue }) => {
+  async (employeeID: string, { dispatch, rejectWithValue }) => {
     try {
       const response = await APIService.getInstance().get(
-        AppConfig.serviceUrls.incident+`/employee/${employeeID}`
+        AppConfig.serviceUrls.incident + `/employee/${employeeID}`
       );
       return response.data;
     } catch (error) {
@@ -221,14 +220,15 @@ export const fetchAllIncidentTypes = createAsyncThunk(
 
 export const saveIncidentQuestion = createAsyncThunk(
   "incident/saveIncidnetQuestion",
-  async (payload:saveQuestion[], { dispatch, rejectWithValue }) => {
+  async (payload: saveQuestion[], { dispatch, rejectWithValue }) => {
     try {
       const response = await APIService.getInstance().post(
-        AppConfig.serviceUrls.incidentQuestions+`/with-sub-questions`,payload
+        AppConfig.serviceUrls.incidentQuestions + `/with-sub-questions`,
+        payload
       );
       dispatch(
         enqueueSnackbarMessage({
-          message:"Incident Question saved successfully",
+          message: "Incident Question saved successfully",
           type: "success",
         })
       );
@@ -252,17 +252,20 @@ export const saveIncidentQuestion = createAsyncThunk(
   }
 );
 
-
 export const updateIncidentQuestion = createAsyncThunk(
   "incident/updateIncidnetQuestion",
-  async (payload:IncidentActionTypesQuestions, { dispatch, rejectWithValue }) => {
+  async (
+    payload: IncidentActionTypesQuestions,
+    { dispatch, rejectWithValue }
+  ) => {
     try {
       const response = await APIService.getInstance().put(
-        AppConfig.serviceUrls.incidentQuestions+`/update`,payload
+        AppConfig.serviceUrls.incidentQuestions + `/update`,
+        payload
       );
       dispatch(
         enqueueSnackbarMessage({
-          message:"Incident Question updated successfully",
+          message: "Incident Question updated successfully",
           type: "success",
         })
       );
@@ -288,14 +291,15 @@ export const updateIncidentQuestion = createAsyncThunk(
 
 export const saveIncidentTypes = createAsyncThunk(
   "incident/saveIncidentTypes",
-  async (payload:IncidentType, { dispatch, rejectWithValue }) => {
+  async (payload: IncidentType, { dispatch, rejectWithValue }) => {
     try {
       const response = await APIService.getInstance().post(
-        AppConfig.serviceUrls.incidentTypes,payload
+        AppConfig.serviceUrls.incidentTypes,
+        payload
       );
       dispatch(
         enqueueSnackbarMessage({
-          message:"Incident Type saved successfully",
+          message: "Incident Type saved successfully",
           type: "success",
         })
       );
@@ -321,14 +325,15 @@ export const saveIncidentTypes = createAsyncThunk(
 
 export const updateIncidentTypes = createAsyncThunk(
   "incident/updateIncidentTypes",
-  async (payload:IncidentType, { dispatch, rejectWithValue }) => {
+  async (payload: IncidentType, { dispatch, rejectWithValue }) => {
     try {
       const response = await APIService.getInstance().put(
-        AppConfig.serviceUrls.incidentTypes+`/${payload?.incidentTypeID}`,payload
+        AppConfig.serviceUrls.incidentTypes + `/${payload?.incidentTypeID}`,
+        payload
       );
       dispatch(
         enqueueSnackbarMessage({
-          message:"Incident Type updated successfully",
+          message: "Incident Type updated successfully",
           type: "success",
         })
       );
@@ -354,10 +359,10 @@ export const updateIncidentTypes = createAsyncThunk(
 
 export const fetchSingleIncident = createAsyncThunk(
   "incident/fetchSingleIncident",
-  async (incidentID:string, { dispatch, rejectWithValue }) => {
+  async (incidentID: string, { dispatch, rejectWithValue }) => {
     try {
       const response = await APIService.getInstance().get(
-        AppConfig.serviceUrls.incident+`/${incidentID}`
+        AppConfig.serviceUrls.incident + `/${incidentID}`
       );
       return response.data;
     } catch (error) {
@@ -380,172 +385,177 @@ export const fetchSingleIncident = createAsyncThunk(
 );
 
 export const fetchAllIncidentActionTypeQuestions = createAsyncThunk(
-    "incident/fetchAllIncidentActionTypeQuestions",
-    async (_, { dispatch, rejectWithValue }) => {
-      try {
-        const response = await APIService.getInstance().get(
-          AppConfig.serviceUrls.incidentQuestions
-        );
-        return response.data;
-      } catch (error) {
-        if (axios.isCancel(error)) {
-          return rejectWithValue("Request canceled");
-        }
-        dispatch(
-          enqueueSnackbarMessage({
-            message:
-              axios.isAxiosError(error) &&
-              error.response?.status === HttpStatusCode.InternalServerError
-                ? SnackMessage.error.fetchIncidentQuestions
-                : String((error as any).response?.data?.message),
-            type: "error",
-          })
-        );
-        throw error;
+  "incident/fetchAllIncidentActionTypeQuestions",
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await APIService.getInstance().get(
+        AppConfig.serviceUrls.incidentQuestions
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
       }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            axios.isAxiosError(error) &&
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.fetchIncidentQuestions
+              : String((error as any).response?.data?.message),
+          type: "error",
+        })
+      );
+      throw error;
     }
-  );
+  }
+);
 
 export const fetchAllIncidentStatus = createAsyncThunk(
-    "incident/fetchAllIncidentStatus",
-    async (_, { dispatch, rejectWithValue }) => {
-      try {
-        const response = await APIService.getInstance().get(
-          AppConfig.serviceUrls.incidentStatus
-        );
-        return response.data;
-      } catch (error) {
-        if (axios.isCancel(error)) {
-          return rejectWithValue("Request canceled");
-        }
-        dispatch(
-          enqueueSnackbarMessage({
-            message:
-              axios.isAxiosError(error) &&
-              error.response?.status === HttpStatusCode.InternalServerError
-                ? SnackMessage.error.fetchIncidentStatus
-                : String((error as any).response?.data?.message),
-            type: "error",
-          })
-        );
-        throw error;
+  "incident/fetchAllIncidentStatus",
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await APIService.getInstance().get(
+        AppConfig.serviceUrls.incidentStatus
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
       }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            axios.isAxiosError(error) &&
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.fetchIncidentStatus
+              : String((error as any).response?.data?.message),
+          type: "error",
+        })
+      );
+      throw error;
     }
-  );
+  }
+);
 
-  export const saveIncidentStatus = createAsyncThunk(
-    "incident/saveIncidentStatus",
-    async (payload:IncidentStatus, { dispatch, rejectWithValue }) => {
-      try {
-        const response = await APIService.getInstance().post(
-          AppConfig.serviceUrls.incidentStatus,payload
-        );
-        dispatch(
-          enqueueSnackbarMessage({
-            message:"Incident Status saved successfully",
-            type: "success",
-          })
-        );
-        return response.data;
-      } catch (error) {
-        if (axios.isCancel(error)) {
-          return rejectWithValue("Request canceled");
-        }
-        dispatch(
-          enqueueSnackbarMessage({
-            message:
-              axios.isAxiosError(error) &&
-              error.response?.status === HttpStatusCode.InternalServerError
-                ? "Failed to save incident status"
-                : String((error as any).response?.data?.message),
-            type: "error",
-          })
-        );
-        throw error;
+export const saveIncidentStatus = createAsyncThunk(
+  "incident/saveIncidentStatus",
+  async (payload: IncidentStatus, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await APIService.getInstance().post(
+        AppConfig.serviceUrls.incidentStatus,
+        payload
+      );
+      dispatch(
+        enqueueSnackbarMessage({
+          message: "Incident Status saved successfully",
+          type: "success",
+        })
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
       }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            axios.isAxiosError(error) &&
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? "Failed to save incident status"
+              : String((error as any).response?.data?.message),
+          type: "error",
+        })
+      );
+      throw error;
     }
-  );
+  }
+);
 
-
-  export const updateIncidentStatus = createAsyncThunk(
-    "incident/updateIncidentStatus",
-    async (payload:IncidentStatus, { dispatch, rejectWithValue }) => {
-      try {
-        const response = await APIService.getInstance().put(
-          AppConfig.serviceUrls.incidentStatus+`/${payload?.incidentStatusID}`,payload
-        );
-        dispatch(
-          enqueueSnackbarMessage({
-            message:"Incident Status updated successfully",
-            type: "success",
-          })
-        );
-        return response.data;
-      } catch (error) {
-        if (axios.isCancel(error)) {
-          return rejectWithValue("Request canceled");
-        }
-        dispatch(
-          enqueueSnackbarMessage({
-            message:
-              axios.isAxiosError(error) &&
-              error.response?.status === HttpStatusCode.InternalServerError
-                ? "Failed to update incident status"
-                : String((error as any).response?.data?.message),
-            type: "error",
-          })
-        );
-        throw error;
+export const updateIncidentStatus = createAsyncThunk(
+  "incident/updateIncidentStatus",
+  async (payload: IncidentStatus, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await APIService.getInstance().put(
+        AppConfig.serviceUrls.incidentStatus + `/${payload?.incidentStatusID}`,
+        payload
+      );
+      dispatch(
+        enqueueSnackbarMessage({
+          message: "Incident Status updated successfully",
+          type: "success",
+        })
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
       }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            axios.isAxiosError(error) &&
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? "Failed to update incident status"
+              : String((error as any).response?.data?.message),
+          type: "error",
+        })
+      );
+      throw error;
     }
-  );
+  }
+);
 
-  export const updateIncident = createAsyncThunk(
-    "incident/updateIncident",
-    async (
-      payload: { incident: Incidents; files: File[] },
-      { dispatch, rejectWithValue }
-    ) => {
-      return new Promise<Incidents>((resolve, reject) => {
-        const formData = new FormData();
-  
-        formData.append("incident", JSON.stringify(payload.incident));
-        payload.files.forEach((file) => {
-          formData.append("files", file);
-        });
-        APIService.getInstance()
-          .put(AppConfig.serviceUrls.incident+`/${payload?.incident?.incidentID}`, formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          })
-          .then((response) => {
-            dispatch(
-              enqueueSnackbarMessage({
-                message: SnackMessage.success.updateIncident,
-                type: "success",
-              })
-            );
-            resolve(response.data);
-          })
-          .catch((error) => {
-            if (axios.isCancel(error)) {
-              return rejectWithValue("Request canceled");
-            }
-            dispatch(
-              enqueueSnackbarMessage({
-                message:
-                  error.response?.status === HttpStatusCode.InternalServerError
-                    ? SnackMessage.error.incidentUpdate
-                    : String(error.response?.data?.error),
-                type: "error",
-              })
-            );
-            reject(error.response?.data?.message);
-          });
+export const updateIncident = createAsyncThunk(
+  "incident/updateIncident",
+  async (
+    payload: { incident: Incidents; files: File[] },
+    { dispatch, rejectWithValue }
+  ) => {
+    return new Promise<Incidents>((resolve, reject) => {
+      const formData = new FormData();
+
+      formData.append("incident", JSON.stringify(payload.incident));
+      payload.files.forEach((file) => {
+        formData.append("files", file);
       });
-    }
-  );
+      APIService.getInstance()
+        .put(
+          AppConfig.serviceUrls.incident + `/${payload?.incident?.incidentID}`,
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        )
+        .then((response) => {
+          dispatch(
+            enqueueSnackbarMessage({
+              message: SnackMessage.success.updateIncident,
+              type: "success",
+            })
+          );
+          resolve(response.data);
+        })
+        .catch((error) => {
+          if (axios.isCancel(error)) {
+            return rejectWithValue("Request canceled");
+          }
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.incidentUpdate
+                  : String(error.response?.data?.error),
+              type: "error",
+            })
+          );
+          reject(error.response?.data?.message);
+        });
+    });
+  }
+);
 
-  // Save notes by clientID
+// Save notes by clientID
 export const saveIncident = createAsyncThunk(
   "incident/saveIncident",
   async (
@@ -640,11 +650,14 @@ const IncidentSlice = createSlice({
         state.subTypeState = State.loading;
         state.stateMessage = "Fetching incident Questions...";
       })
-      .addCase(fetchAllIncidentActionTypeQuestions.fulfilled, (state, action) => {
-        state.subTypeState = State.success;
-        state.stateMessage = "Successfully fetched incident questions!";
-        state.incidentActionTypesQuestions = action.payload;
-      })
+      .addCase(
+        fetchAllIncidentActionTypeQuestions.fulfilled,
+        (state, action) => {
+          state.subTypeState = State.success;
+          state.stateMessage = "Successfully fetched incident questions!";
+          state.incidentActionTypesQuestions = action.payload;
+        }
+      )
       .addCase(fetchAllIncidentActionTypeQuestions.rejected, (state) => {
         state.subTypeState = State.failed;
         state.stateMessage = "Failed to fetch incident questions!";
@@ -784,8 +797,7 @@ const IncidentSlice = createSlice({
       .addCase(fetchAllIncidentsByEmployeeId.rejected, (state) => {
         state.state = State.failed;
         state.stateMessage = "Failed to fetch incidents!";
-      })
-      
+      });
   },
 });
 

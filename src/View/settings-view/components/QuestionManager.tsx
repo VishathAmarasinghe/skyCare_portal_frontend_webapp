@@ -13,39 +13,50 @@ import {
   useTheme,
 } from "@mui/material";
 import { useAppSelector, useAppDispatch } from "@slices/store";
-import { IncidentActionTypesQuestions, saveIncidentQuestion, saveQuestion, updateIncidentQuestion } from "@slices/IncidentSlice/incident";
+import {
+  IncidentActionTypesQuestions,
+  saveIncidentQuestion,
+  saveQuestion,
+  updateIncidentQuestion,
+} from "@slices/incidentSlice/incident";
 
-
-export interface IncidentSubActionTypeQuestionsState{
-    id:string;
-    question: string;
-    incidentActionTypesID: string;
-    state:string;
-    newlyAdded:boolean;
+export interface IncidentSubActionTypeQuestionsState {
+  id: string;
+  question: string;
+  incidentActionTypesID: string;
+  state: string;
+  newlyAdded: boolean;
 }
 
-export interface IncidentActionTypesQuestionsState{
-    incidentActionID: string;
-    question: string;
-    yesNoAnswer: boolean;
-    status: string,
-    newlyAdded:boolean;
-    incidentSubActionList:IncidentSubActionTypeQuestionsState[];
+export interface IncidentActionTypesQuestionsState {
+  incidentActionID: string;
+  question: string;
+  yesNoAnswer: boolean;
+  status: string;
+  newlyAdded: boolean;
+  incidentSubActionList: IncidentSubActionTypeQuestionsState[];
 }
 
 const QuestionManager: React.FC = () => {
   const dispatch = useAppDispatch();
   const questionSlice = useAppSelector((state) => state?.incident);
-  const [questions, setQuestions] = useState<IncidentActionTypesQuestionsState[]>([]);
+  const [questions, setQuestions] = useState<
+    IncidentActionTypesQuestionsState[]
+  >([]);
   const [editMode, setEditMode] = useState<boolean[]>([]); // Edit mode for main questions
   const theme = useTheme();
 
   useEffect(() => {
-    setQuestions(questionSlice?.incidentActionTypesQuestions?.map((q)=>({
+    setQuestions(
+      questionSlice?.incidentActionTypesQuestions?.map((q) => ({
         ...q,
-        newlyAdded:false,
-        incidentSubActionList:q.incidentSubActionList.map((sub)=>({...sub,newlyAdded:false}))
-    })));
+        newlyAdded: false,
+        incidentSubActionList: q.incidentSubActionList.map((sub) => ({
+          ...sub,
+          newlyAdded: false,
+        })),
+      }))
+    );
     setEditMode(
       new Array(questionSlice?.incidentActionTypesQuestions?.length || 0).fill(
         false
@@ -65,7 +76,7 @@ const QuestionManager: React.FC = () => {
         question: "",
         yesNoAnswer: false,
         status: "Active",
-        newlyAdded:true,
+        newlyAdded: true,
         incidentSubActionList: [],
       },
     ]);
@@ -97,11 +108,13 @@ const QuestionManager: React.FC = () => {
             incidentSubActionList: [
               ...q.incidentSubActionList,
               {
-                id: `${q.incidentActionID}-SUB${q.incidentSubActionList.length + 1}`,
+                id: `${q.incidentActionID}-SUB${
+                  q.incidentSubActionList.length + 1
+                }`,
                 question: "",
                 incidentActionTypesID: q.incidentActionID,
                 state: "Active",
-                newlyAdded:true,
+                newlyAdded: true,
               },
             ],
           }
@@ -132,32 +145,36 @@ const QuestionManager: React.FC = () => {
   const handleSaveQuestionSet = (index: number) => {
     const questionToSave = questions[index];
     console.log("Save question set", questionToSave);
-    const payload:saveQuestion = {
-        mainQuestion:questionToSave.question,
-        subQuestions:questionToSave.incidentSubActionList.map((sub)=>sub.question),
-        yesNoType: questionToSave.yesNoAnswer,
-    }
+    const payload: saveQuestion = {
+      mainQuestion: questionToSave.question,
+      subQuestions: questionToSave.incidentSubActionList.map(
+        (sub) => sub.question
+      ),
+      yesNoType: questionToSave.yesNoAnswer,
+    };
     dispatch(saveIncidentQuestion([payload]));
-    handleToggleEdit(index); 
+    handleToggleEdit(index);
   };
 
   const handleUpdateQuestionSet = (index: number) => {
     const questionToUpdate = questions[index];
     console.log("Update question set", questionToUpdate);
-    const payload:IncidentActionTypesQuestions = {
-        incidentActionID: questionToUpdate.incidentActionID,
-        question: questionToUpdate.question,
-        yesNoAnswer: questionToUpdate.yesNoAnswer,
-        status: questionToUpdate.status,
-        incidentSubActionList: questionToUpdate.incidentSubActionList.map((sub)=>({
-            id:sub.id,
-            question:sub.question,
-            incidentActionTypesID:sub.incidentActionTypesID,
-            state:sub.state,
-        })),
-    }
-    dispatch(updateIncidentQuestion(payload))
-    
+    const payload: IncidentActionTypesQuestions = {
+      incidentActionID: questionToUpdate.incidentActionID,
+      question: questionToUpdate.question,
+      yesNoAnswer: questionToUpdate.yesNoAnswer,
+      status: questionToUpdate.status,
+      incidentSubActionList: questionToUpdate.incidentSubActionList.map(
+        (sub) => ({
+          id: sub.id,
+          question: sub.question,
+          incidentActionTypesID: sub.incidentActionTypesID,
+          state: sub.state,
+        })
+      ),
+    };
+    dispatch(updateIncidentQuestion(payload));
+
     // dispatch(updateQuestionSet(questionToUpdate)); // Action to update question set
     handleToggleEdit(index); // Exit edit mode
   };
@@ -178,9 +195,17 @@ const QuestionManager: React.FC = () => {
       </Stack>
       <List>
         {questions.map((question, mainIndex) => (
-          <Box key={mainIndex} sx={{ mt: 2, p: 2, border: "1px solid #ccc",backgroundColor: theme?.palette?.background?.default,
-            borderRadius: 2, boxShadow: 1
-          }}>
+          <Box
+            key={mainIndex}
+            sx={{
+              mt: 2,
+              p: 2,
+              border: "1px solid #ccc",
+              backgroundColor: theme?.palette?.background?.default,
+              borderRadius: 2,
+              boxShadow: 1,
+            }}
+          >
             <Stack
               width={"100%"}
               flexDirection="row"
@@ -190,44 +215,49 @@ const QuestionManager: React.FC = () => {
             >
               {editMode[mainIndex] ? (
                 <>
-                {
-                    question.newlyAdded?
+                  {question.newlyAdded ? (
                     <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleSaveQuestionSet(mainIndex)}
+                      variant="contained"
+                      color="primary"
+                      onClick={() => handleSaveQuestionSet(mainIndex)}
                     >
-                        Save
-                    </Button>: <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleUpdateQuestionSet(mainIndex)}
-                  >
-                    Update
-                  </Button>
-                }
-                {
-                    question.newlyAdded?
+                      Save
+                    </Button>
+                  ) : (
                     <Button
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => {
-                        const updatedQuestions = questions.filter((q, i) => i !== mainIndex);
+                      variant="contained"
+                      color="primary"
+                      onClick={() => handleUpdateQuestionSet(mainIndex)}
+                    >
+                      Update
+                    </Button>
+                  )}
+                  {question.newlyAdded ? (
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => {
+                        const updatedQuestions = questions.filter(
+                          (q, i) => i !== mainIndex
+                        );
                         setQuestions(updatedQuestions);
-                        const updatedEditMode = editMode.filter((e, i) => i !== mainIndex);
+                        const updatedEditMode = editMode.filter(
+                          (e, i) => i !== mainIndex
+                        );
                         setEditMode(updatedEditMode);
-                    }}
+                      }}
                     >
-                        delete
-                    </Button>:<Button
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => handleToggleEdit(mainIndex)}
-                  >
-                    Cancel
-                  </Button>
-                }
-                  
+                      delete
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => handleToggleEdit(mainIndex)}
+                    >
+                      Cancel
+                    </Button>
+                  )}
                 </>
               ) : (
                 <Button
@@ -286,8 +316,8 @@ const QuestionManager: React.FC = () => {
                   <TextField
                     fullWidth
                     InputProps={{
-                        readOnly: !editMode[mainIndex],
-                      }}
+                      readOnly: !editMode[mainIndex],
+                    }}
                     label={`Sub-Question ${subIndex + 1}`}
                     value={subQuestion.question}
                     onChange={(e) =>

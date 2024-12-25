@@ -27,10 +27,10 @@ import {
   fetchJobAssignmentTable,
   RecurrentAppointmentValues,
   resetSelectedAppointment,
-} from "@slices/AppointmentSlice/appointment";
+} from "@slices/appointmentSlice/appointment";
 import { fetchClients } from "@slices/clientSlice/client";
 import { fetchAllCarePlans } from "@slices/carePlanSlice/carePlan";
-import { fetchCareGivers } from "@slices/CareGiverSlice/careGiver";
+import { fetchCareGivers } from "@slices/careGiverSlice/careGiver";
 import JobAssignerTable from "../component/JobAssignerTable";
 import InfoIcon from "@mui/icons-material/Info";
 import InfoCard from "../component/InfoCard";
@@ -58,7 +58,7 @@ const AddNewAppointmentModal = ({
 
   useEffect(() => {
     if (!isAddAppointmentModalVisible) {
-        dispatch(resetSelectedAppointment());
+      dispatch(resetSelectedAppointment());
       setActiveStep(0);
     } else {
       dispatch(fetchAppointmentTypes());
@@ -152,46 +152,52 @@ const AddNewAppointmentModal = ({
             Cancel
           </Button>
           <Button
-                variant="outlined"
-                onClick={handleBack}
-                disabled={
-                  activeStep === 0 || selectedRecurrentAppointment !== null
-                }
-                sx={{ display: activeStep === 0  || appointmentSlice?.selectedAppointment!=null ? "none" : "block" }}
-              >
-                Back
-              </Button>
+            variant="outlined"
+            onClick={handleBack}
+            disabled={activeStep === 0 || selectedRecurrentAppointment !== null}
+            sx={{
+              display:
+                activeStep === 0 ||
+                appointmentSlice?.selectedAppointment != null
+                  ? "none"
+                  : "block",
+            }}
+          >
+            Back
+          </Button>
 
-              {/* Next or Save Button */}
-              <Button
-                sx={{
-                  mx: 1,
-                  display:
-                   appointmentSlice?.selectedAppointment==null ? "block" : "none",
-                }}
-                variant="contained"
-                onClick={
-                  activeStep === CREATE_APPOINTMENT_STEPS.length - 1
-                    ? handleSave
-                    : handleNext
-                }
-                disabled={
-                  loading ||
-                  selectedRecurrentAppointment !== null ||
-                  (activeStep === CREATE_APPOINTMENT_STEPS.length - 1 &&
-                    !isEditMode)
-                    ? true
-                    : false
-                }
-              >
-                {loading ? (
-                  <CircularProgress size={24} />
-                ) : activeStep === CREATE_APPOINTMENT_STEPS.length - 1 ? (
-                  "Save"
-                ) : (
-                  "Next"
-                )}
-              </Button>
+          {/* Next or Save Button */}
+          <Button
+            sx={{
+              mx: 1,
+              display:
+                appointmentSlice?.selectedAppointment == null
+                  ? "block"
+                  : "none",
+            }}
+            variant="contained"
+            onClick={
+              activeStep === CREATE_APPOINTMENT_STEPS.length - 1
+                ? handleSave
+                : handleNext
+            }
+            disabled={
+              loading ||
+              selectedRecurrentAppointment !== null ||
+              (activeStep === CREATE_APPOINTMENT_STEPS.length - 1 &&
+                !isEditMode)
+                ? true
+                : false
+            }
+          >
+            {loading ? (
+              <CircularProgress size={24} />
+            ) : activeStep === CREATE_APPOINTMENT_STEPS.length - 1 ? (
+              "Save"
+            ) : (
+              "Next"
+            )}
+          </Button>
         </Box>
       }
     >
@@ -225,7 +231,13 @@ const AddNewAppointmentModal = ({
                 disabled={
                   activeStep === 0 || selectedRecurrentAppointment !== null
                 }
-                sx={{ display: activeStep === 0 || appointmentSlice?.selectedAppointment==null ? "none" : "block" }}
+                sx={{
+                  display:
+                    activeStep === 0 ||
+                    appointmentSlice?.selectedAppointment == null
+                      ? "none"
+                      : "block",
+                }}
               >
                 Back
               </Button>
@@ -235,7 +247,10 @@ const AddNewAppointmentModal = ({
                 sx={{
                   mx: 1,
                   display:
-                    selectedRecurrentAppointment == null && appointmentSlice?.selectedAppointment!=null ? "block" : "none",
+                    selectedRecurrentAppointment == null &&
+                    appointmentSlice?.selectedAppointment != null
+                      ? "block"
+                      : "none",
                 }}
                 variant="contained"
                 onClick={
@@ -272,11 +287,7 @@ const AddNewAppointmentModal = ({
               </Button>
             </Stack>
             <Stack>
-              {
-                appointmentSlice?.selectedAppointment && (
-                  <InfoCard />
-                )
-              }
+              {appointmentSlice?.selectedAppointment && <InfoCard />}
             </Stack>
           </Stack>
         </Grid>

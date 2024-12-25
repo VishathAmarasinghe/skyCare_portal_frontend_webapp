@@ -18,7 +18,7 @@ import { useAppDispatch } from "../../../slices/store";
 import {
   JobAssigner,
   updateCareGiverAcceptanceState,
-} from "../../../slices/AppointmentSlice/appointment";
+} from "../../../slices/appointmentSlice/appointment";
 
 const RecurrentCard = ({
   jobAssignData,
@@ -96,31 +96,47 @@ const RecurrentCard = ({
             color="textSecondary"
             sx={{ fontSize: { xs: "0.9rem", sm: "1rem", md: "13px" } }}
           >
-            Start: {`${dayjs(recurrentAppointmentData?.startDate).format("MMM D, YYYY")} at ${dayjs(
-              recurrentAppointmentData?.startTime,
-              "HH:mm"
-            ).format("h:mm A")}`}
+            Start:{" "}
+            {`${dayjs(recurrentAppointmentData?.startDate).format(
+              "MMM D, YYYY"
+            )} at ${dayjs(recurrentAppointmentData?.startTime, "HH:mm").format(
+              "h:mm A"
+            )}`}
           </Typography>
           <Typography
             variant="body2"
             color="textSecondary"
             sx={{ fontSize: { xs: "0.9rem", sm: "1rem", md: "13px" } }}
           >
-            End: {`${dayjs(recurrentAppointmentData?.endDate).format("MMM D, YYYY")} at ${dayjs(
-              recurrentAppointmentData?.endTime,
-              "HH:mm"
-            ).format("h:mm A")}`}
+            End:{" "}
+            {`${dayjs(recurrentAppointmentData?.endDate).format(
+              "MMM D, YYYY"
+            )} at ${dayjs(recurrentAppointmentData?.endTime, "HH:mm").format(
+              "h:mm A"
+            )}`}
           </Typography>
 
           {/* Status and Chips */}
           <Stack direction="row" spacing={1} marginTop={1}>
             <Chip
-            size="small"
+              size="small"
               label={`Status: ${recurrentAppointmentData?.status}`}
-              color={recurrentAppointmentData?.status === "cancelled" ? "error" : "success"}
+              color={
+                recurrentAppointmentData?.status === "cancelled"
+                  ? "error"
+                  : "success"
+              }
             />
-            <Chip size="small" label={`Total Required: ${totalRequired}`} color="primary" />
-            <Chip size="small" label={`Pending: ${pendingRequired}`} color="secondary" />
+            <Chip
+              size="small"
+              label={`Total Required: ${totalRequired}`}
+              color="primary"
+            />
+            <Chip
+              size="small"
+              label={`Pending: ${pendingRequired}`}
+              color="secondary"
+            />
           </Stack>
         </Stack>
       </Stack>

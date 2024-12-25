@@ -8,21 +8,18 @@ import {
   GridToolbarFilterButton,
   GridToolbarQuickFilter,
 } from "@mui/x-data-grid";
-import {
-  Avatar,
-  Box,
-  Chip,
-  IconButton,
-  Stack,
-  useTheme,
-} from "@mui/material";
+import { Avatar, Box, Chip, IconButton, Stack, useTheme } from "@mui/material";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useAppDispatch, useAppSelector } from "@slices/store";
-import { deleteResource, fetchSingleResource, Resource } from "@slices/ResourceSlice/resource";
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import {
+  deleteResource,
+  fetchSingleResource,
+  Resource,
+} from "@slices/resourceSlice/resource";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import { useConfirmationModalContext } from "@context/DialogContext";
 import { ConfirmationType } from "../../../types/types";
 import { APPLICATION_CARE_GIVER } from "@config/config";
@@ -43,28 +40,46 @@ const ResourceTable = ({}: ResourceTableProps) => {
   const theme = useTheme();
   const resourceSlice = useAppSelector((state) => state.resource);
   const [resources, setResources] = useState<Resource[]>([]);
-  const authRole = useAppSelector((State)=>State?.auth?.roles);
+  const authRole = useAppSelector((State) => State?.auth?.roles);
   const dispatch = useAppDispatch();
   const { showConfirmation } = useConfirmationModalContext();
 
-  useEffect(()=>{
-    if(authRole?.includes(APPLICATION_CARE_GIVER)){
-      setResources(resourceSlice?.resources.filter((resource)=>resource.shareType==="Share With Care Givers"));
-    }else{
+  useEffect(() => {
+    if (authRole?.includes(APPLICATION_CARE_GIVER)) {
+      setResources(
+        resourceSlice?.resources.filter(
+          (resource) => resource.shareType === "Share With Care Givers"
+        )
+      );
+    } else {
       setResources(resourceSlice.resources);
     }
-
-  },[resourceSlice?.state])
+  }, [resourceSlice?.state]);
 
   const handleDelete = (resourceId: string) => {
-    dispatch(deleteResource({resourceID:resourceId}));
+    dispatch(deleteResource({ resourceID: resourceId }));
   };
 
   const initialColumns: GridColDef[] = [
-    { field: "resourceId", headerName: "Resource ID", width: 100, align: "center" },
+    {
+      field: "resourceId",
+      headerName: "Resource ID",
+      width: 100,
+      align: "center",
+    },
     { field: "resourceName", headerName: "Resource Name", flex: 1 },
-    { field: "validFrom", headerName: "Valid From", width: 130,renderCell:(params)=>new Date(params.value).toLocaleDateString()},
-    { field: "validTo", headerName: "Valid To", width: 130,renderCell:(params)=>new Date(params.value).toLocaleDateString()},
+    {
+      field: "validFrom",
+      headerName: "Valid From",
+      width: 130,
+      renderCell: (params) => new Date(params.value).toLocaleDateString(),
+    },
+    {
+      field: "validTo",
+      headerName: "Valid To",
+      width: 130,
+      renderCell: (params) => new Date(params.value).toLocaleDateString(),
+    },
     {
       field: "shareType",
       headerName: "Share Type",
@@ -73,7 +88,7 @@ const ResourceTable = ({}: ResourceTableProps) => {
       align: "center",
       renderCell: (params) => (
         <Chip
-        size="small"
+          size="small"
           label={params.value}
           style={{
             backgroundColor:
@@ -89,8 +104,10 @@ const ResourceTable = ({}: ResourceTableProps) => {
       flex: 1,
       renderCell: (params) => (
         <Chip
-        size="small"
-          avatar={<Avatar>{params.row.creatorId.charAt(0).toUpperCase()}</Avatar>}
+          size="small"
+          avatar={
+            <Avatar>{params.row.creatorId.charAt(0).toUpperCase()}</Avatar>
+          }
           label={params.value}
           variant="outlined"
         />
@@ -103,29 +120,31 @@ const ResourceTable = ({}: ResourceTableProps) => {
       renderCell: (params) => {
         return (
           <Stack width={"100%"} flexDirection={"row"}>
-          <IconButton
-            aria-label="view"
-            onClick={() => {
-              dispatch(fetchSingleResource({resourceID:params.row.resourceId}));
-            }}
-          >
-            <RemoveRedEyeOutlinedIcon />
-          </IconButton>
-          <IconButton
-            aria-label="delete"
-            onClick={() => {
-              showConfirmation(
-                "Delete Resource",
-                `Are you sure you want to delete resource "${params.row.resourceName}"?`,
-                ConfirmationType.update,
-                () => handleDelete(params.row.resourceId),
-                "Delete",
-                "Cancel"
-              );
-            }}
-          >
-            <DeleteOutlineOutlinedIcon />
-          </IconButton>
+            <IconButton
+              aria-label="view"
+              onClick={() => {
+                dispatch(
+                  fetchSingleResource({ resourceID: params.row.resourceId })
+                );
+              }}
+            >
+              <RemoveRedEyeOutlinedIcon />
+            </IconButton>
+            <IconButton
+              aria-label="delete"
+              onClick={() => {
+                showConfirmation(
+                  "Delete Resource",
+                  `Are you sure you want to delete resource "${params.row.resourceName}"?`,
+                  ConfirmationType.update,
+                  () => handleDelete(params.row.resourceId),
+                  "Delete",
+                  "Cancel"
+                );
+              }}
+            >
+              <DeleteOutlineOutlinedIcon />
+            </IconButton>
           </Stack>
         );
       },
@@ -155,7 +174,6 @@ const ResourceTable = ({}: ResourceTableProps) => {
           toolbar: CustomToolbar,
         }}
         sx={{
-          
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: "white",
           },

@@ -23,7 +23,12 @@ import { Card, Upload } from "antd";
 import FileListTable from "../../../component/common/FileListTable";
 import FileViewerWithModal from "../../../component/common/FileViewerWithModal";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
-import { Resource, ResourceDocument, saveResource, updateResource } from "../../../slices/ResourceSlice/resource";
+import {
+  Resource,
+  ResourceDocument,
+  saveResource,
+  updateResource,
+} from "../../../slices/resourceSlice/resource";
 
 // Validation schema using Yup
 const validationSchema = Yup.object({
@@ -53,18 +58,18 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
   const [searchParams] = useSearchParams();
   const theme = useTheme();
   const dispatch = useAppDispatch();
-  const authInfo = useAppSelector((state)=>state.auth.userInfo);
+  const authInfo = useAppSelector((state) => state.auth.userInfo);
   const [psdImageShowerModalOpen, setPsdImageShowerModalOpen] =
     useState<boolean>(false);
   const [imageViewerImageURl, setImageViewerImageURl] = useState<File | string>(
     ""
   );
-  const resourceSlice = useAppSelector((state)=>state.resource);
+  const resourceSlice = useAppSelector((state) => state.resource);
   const [initialValues, setInitialValues] = useState<Resource>({
     resourceId: "",
     resourceName: "",
-    validFrom: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
-    validTo: dayjs().add(1, 'day').format('YYYY-MM-DDTHH:mm:ss'),
+    validFrom: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
+    validTo: dayjs().add(1, "day").format("YYYY-MM-DDTHH:mm:ss"),
     notes: "",
     shareType: "Internal Only",
     creatorId: authInfo?.userID || "",
@@ -87,8 +92,12 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
       console.log("initial valies  ", resourceSlice.selectedResource);
       setInitialValues({
         ...resourceSlice.selectedResource,
-        validFrom: dayjs(resourceSlice.selectedResource.validFrom).format('YYYY-MM-DD'),
-        validTo: dayjs(resourceSlice.selectedResource.validTo).format('YYYY-MM-DD'),
+        validFrom: dayjs(resourceSlice.selectedResource.validFrom).format(
+          "YYYY-MM-DD"
+        ),
+        validTo: dayjs(resourceSlice.selectedResource.validTo).format(
+          "YYYY-MM-DD"
+        ),
       });
       setUIShowingFile([
         ...(resourceSlice.selectedResource?.resourceDocuments?.map((doc) => ({
@@ -101,8 +110,8 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
       setInitialValues({
         resourceId: "",
         resourceName: "",
-        validFrom: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
-        validTo: dayjs().add(1, 'day').format('YYYY-MM-DDTHH:mm:ss'),
+        validFrom: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
+        validTo: dayjs().add(1, "day").format("YYYY-MM-DDTHH:mm:ss"),
         notes: "",
         shareType: "Internal Only",
         creatorId: authInfo?.userID || "",
@@ -121,7 +130,6 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
     setImageViewerImageURl("");
   };
 
-
   const handleUploadChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
@@ -130,7 +138,9 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
       const previousUploadedFiles = UIShowingFile.filter(
         (file) => file.status === "Old"
       );
-      const newUploadedFiles = UIShowingFile?.filter((file) => file.status === "New");
+      const newUploadedFiles = UIShowingFile?.filter(
+        (file) => file.status === "New"
+      );
       setUIShowingFile([
         ...filesArray.map((file: File) => ({
           name: file.name,
@@ -138,7 +148,7 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
           status: "New" as "New",
         })),
         ...previousUploadedFiles,
-        ...newUploadedFiles
+        ...newUploadedFiles,
       ]);
     }
   };
@@ -146,22 +156,22 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
   const handleView = (file: UIShowingFile) => {
     console.log("Viewing file", file);
     if (file.status === "Old") {
-      const viewingFile = resourceSlice?.selectedResource?.resourceDocuments?.find(
-        (f) => f.documentId == file.docID
-      );
+      const viewingFile =
+        resourceSlice?.selectedResource?.resourceDocuments?.find(
+          (f) => f.documentId == file.docID
+        );
       if (viewingFile?.documentId) {
         setImageViewerImageURl(viewingFile?.documentLocation || "");
         setPsdImageShowerModalOpen(true);
       }
     } else if (file.status === "New") {
-      console.log("file kos ",file);
-      
+      console.log("file kos ", file);
+
       const viewingFile = uploadedFils.find((f) => f.name == file.docID);
       if (viewingFile) {
         console.log("Viewing file", viewingFile);
-        setImageViewerImageURl(new File([viewingFile], viewingFile.name)); 
+        setImageViewerImageURl(new File([viewingFile], viewingFile.name));
         setPsdImageShowerModalOpen(true);
-      
       }
     }
   };
@@ -195,19 +205,26 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
       enableReinitialize={true}
       onSubmit={(values, { setSubmitting }) => {
         if (values.validFrom) {
-          values.validFrom = dayjs(values.validFrom).format('YYYY-MM-DDTHH:mm:ss');
+          values.validFrom = dayjs(values.validFrom).format(
+            "YYYY-MM-DDTHH:mm:ss"
+          );
         }
-        if (values.validTo){
-            values.validTo=dayjs(values.validTo).format('YYYY-MM-DDTHH:mm:ss');
+        if (values.validTo) {
+          values.validTo = dayjs(values.validTo).format("YYYY-MM-DDTHH:mm:ss");
         }
         console.log("values", values);
         if (resourceSlice.selectedResource) {
-          dispatch(updateResource({ resource: values, files: uploadedFils,resourceId:values.resourceId}));
-        } else{
-            dispatch(saveResource({ resource: values, files: uploadedFils }));
+          dispatch(
+            updateResource({
+              resource: values,
+              files: uploadedFils,
+              resourceId: values.resourceId,
+            })
+          );
+        } else {
+          dispatch(saveResource({ resource: values, files: uploadedFils }));
         }
         setSubmitting(false);
-         
       }}
     >
       {({
@@ -220,7 +237,10 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
         resetForm,
       }: FormikProps<Resource>) => {
         useEffect(() => {
-          if (resourceSlice.submitState == State.success || resourceSlice?.updateState == State.success) {
+          if (
+            resourceSlice.submitState == State.success ||
+            resourceSlice?.updateState == State.success
+          ) {
             resetForm();
             setUploadedFiles([]);
             setUIShowingFile([]);
@@ -230,7 +250,6 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
 
         useEffect(() => {
           console.log("errors", errors);
-          
         }, [errors]);
         return (
           <Form>
@@ -261,8 +280,10 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
                     onChange={handleChange}
                     onBlur={handleBlur}
                     label="Share Type"
-                  > 
-                    <MenuItem value="Share With Care Givers">Share With Care Givers</MenuItem>
+                  >
+                    <MenuItem value="Share With Care Givers">
+                      Share With Care Givers
+                    </MenuItem>
                     <MenuItem value="Internal Only">Internal Only</MenuItem>
                   </Select>
                   {touched.shareType && errors.shareType && (
@@ -326,7 +347,13 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
                 Submit
               </button>
             </Grid>
-            <Stack width="100%" border="1px solid #ccc" bgcolor={theme.palette.background.default} borderRadius={1}  sx={{p:1,my:1}}>
+            <Stack
+              width="100%"
+              border="1px solid #ccc"
+              bgcolor={theme.palette.background.default}
+              borderRadius={1}
+              sx={{ p: 1, my: 1 }}
+            >
               <Typography variant="h6" my={1}>
                 Upload Resources
               </Typography>
@@ -367,4 +394,4 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
     </Formik>
   );
 };
-export default ResourceForm
+export default ResourceForm;

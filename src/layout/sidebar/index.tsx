@@ -16,11 +16,14 @@ import ListLinkItem from "../../component/layout/LinkItem";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 import { getActiveRouteDetails } from "./../../route";
-import { SIDEBAR_WIDTH } from "../../Config/ui";
+import { SIDEBAR_WIDTH } from "../../config/ui";
 import { useLocation, matchPath, useMatches } from "react-router-dom";
 import { ColorModeContext } from "../../App";
 import { Stack, Typography } from "@mui/material";
-import { fetchMetaEmployees, fetchMetaEmployeesMapping } from "@slices/EmployeeSlice/employee";
+import {
+  fetchMetaEmployees,
+  fetchMetaEmployeesMapping,
+} from "@slices/employeeSlice/employee";
 import { useAppDispatch } from "@slices/store";
 
 interface SidebarProps {
@@ -59,10 +62,10 @@ const Sidebar = (props: SidebarProps) => {
   ]);
   const theme = useTheme();
 
-  useEffect(()=>{
+  useEffect(() => {
     dispatch(fetchMetaEmployees());
     dispatch(fetchMetaEmployeesMapping());
-  },[])
+  }, []);
 
   return (
     <ColorModeContext.Consumer>

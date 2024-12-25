@@ -1,27 +1,24 @@
 import React, { useEffect, useState } from "react";
-import {
-  Stack,
-  Typography,
-  Button,
-  useTheme,
-} from "@mui/material";
+import { Stack, Typography, Button, useTheme } from "@mui/material";
 import EventIcon from "@mui/icons-material/Event";
 import { useAppDispatch } from "@slices/store";
 import {
   AppointmentCareGiver,
   fetchSingleAppointment,
   updateCareGiverAcceptanceState,
-} from "@slices/AppointmentSlice/appointment";
+} from "@slices/appointmentSlice/appointment";
 import dayjs from "dayjs";
 
 interface BroadcastAppointmentCardProps {
   jobDetails: AppointmentCareGiver;
-  setIsAppointmentAddModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsAppointmentAddModalVisible: React.Dispatch<
+    React.SetStateAction<boolean>
+  >;
 }
 
 const BroadcastAppointmentCard = ({
   jobDetails,
-  setIsAppointmentAddModalVisible
+  setIsAppointmentAddModalVisible,
 }: BroadcastAppointmentCardProps) => {
   const [selectedAction, setSelectedAction] = useState("");
   const theme = useTheme();
@@ -49,7 +46,10 @@ const BroadcastAppointmentCard = ({
     >
       {/* Left Section: Icon and Appointment Details */}
       <Stack direction="row" alignItems="center" spacing={2} width="100%">
-        <EventIcon color="primary" sx={{ fontSize: { xs: 30, sm: 30,md:20 } }} />
+        <EventIcon
+          color="primary"
+          sx={{ fontSize: { xs: 30, sm: 30, md: 20 } }}
+        />
         <Stack width={"90%"}>
           <Typography
             variant="body1"
@@ -91,7 +91,14 @@ const BroadcastAppointmentCard = ({
         <Button
           variant="outlined"
           color="primary"
-          onClick={() => {setIsAppointmentAddModalVisible(true),dispatch(fetchSingleAppointment(jobDetails?.appointmentData?.appointmentID))}}
+          onClick={() => {
+            setIsAppointmentAddModalVisible(true),
+              dispatch(
+                fetchSingleAppointment(
+                  jobDetails?.appointmentData?.appointmentID
+                )
+              );
+          }}
           sx={{
             width: { xs: "100%", sm: "auto" },
             height: { xs: "40px", sm: "50px", md: "30px" },
@@ -102,8 +109,6 @@ const BroadcastAppointmentCard = ({
           View
         </Button>
       </Stack>
-
-      
     </Stack>
   );
 };

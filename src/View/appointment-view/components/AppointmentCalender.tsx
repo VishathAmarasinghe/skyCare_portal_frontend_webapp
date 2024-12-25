@@ -11,9 +11,13 @@ import {
   fetchAppointmentbyCalenderWithUser,
   fetchRecurrentAppointmentDetails,
   fetchSingleAppointment,
-} from "@slices/AppointmentSlice/appointment";
+} from "@slices/appointmentSlice/appointment";
 import AddNewAppointmentModal from "@view/client-view/modal/AddNewAppointmentModal";
-import { APPLICATION_ADMIN, APPLICATION_CARE_GIVER, APPLICATION_SUPER_ADMIN } from "@config/config";
+import {
+  APPLICATION_ADMIN,
+  APPLICATION_CARE_GIVER,
+  APPLICATION_SUPER_ADMIN,
+} from "@config/config";
 
 dayjs.extend(timezone);
 const localizer = dayjsLocalizer(dayjs);
@@ -46,7 +50,7 @@ interface AppointmentCalendarProps {
 const AppointmentCalendar = ({
   setIsAppointmentAddModalVisible,
   setIsEditing,
-  setRecurrentAppointmentVisible
+  setRecurrentAppointmentVisible,
 }: AppointmentCalendarProps) => {
   const dispatch = useAppDispatch();
   const appointmentSlice = useAppSelector((state) => state.appointments);
@@ -106,7 +110,7 @@ const AppointmentCalendar = ({
       start: new Date(appointment.startDateAndTime),
       end: new Date(appointment.endDateAndTime),
       color: appointment.eventColor,
-      recurrentAppID: appointment.recurrentAppointmentID
+      recurrentAppID: appointment.recurrentAppointmentID,
     }));
   };
 
@@ -115,14 +119,17 @@ const AppointmentCalendar = ({
     view?: View
   ) => {
     if (Array.isArray(range)) {
-      if (authRole?.includes(APPLICATION_ADMIN) || authRole?.includes(APPLICATION_SUPER_ADMIN)) {
+      if (
+        authRole?.includes(APPLICATION_ADMIN) ||
+        authRole?.includes(APPLICATION_SUPER_ADMIN)
+      ) {
         dispatch(
           fetchAppointmentbyCalender({
             startDate: dayjs(range[0]).format("YYYY-MM-DD"),
             endDate: dayjs(range[1]).format("YYYY-MM-DD"),
           })
         );
-      }else{
+      } else {
         dispatch(
           fetchAppointmentbyCalenderWithUser({
             startDate: dayjs(range[0]).format("YYYY-MM-DD"),
@@ -131,16 +138,18 @@ const AppointmentCalendar = ({
           })
         );
       }
-      
     } else {
-      if (authRole?.includes(APPLICATION_ADMIN) || authRole?.includes(APPLICATION_SUPER_ADMIN)) {
+      if (
+        authRole?.includes(APPLICATION_ADMIN) ||
+        authRole?.includes(APPLICATION_SUPER_ADMIN)
+      ) {
         dispatch(
           fetchAppointmentbyCalender({
             startDate: dayjs(range.start).format("YYYY-MM-DD"),
             endDate: dayjs(range.end).format("YYYY-MM-DD"),
           })
         );
-      }else{
+      } else {
         dispatch(
           fetchAppointmentbyCalenderWithUser({
             startDate: dayjs(range.start).format("YYYY-MM-DD"),
@@ -169,15 +178,18 @@ const AppointmentCalendar = ({
     e: React.SyntheticEvent<HTMLElement, Event>
   ) => {
     console.log("Selected event:", event);
-    if(authRole?.includes(APPLICATION_CARE_GIVER)){
-        dispatch(fetchRecurrentAppointmentDetails({recurrentAppointmentID:event?.recurrentAppID?.toString()}));
-        setRecurrentAppointmentVisible(true);
-    }else{
+    if (authRole?.includes(APPLICATION_CARE_GIVER)) {
+      dispatch(
+        fetchRecurrentAppointmentDetails({
+          recurrentAppointmentID: event?.recurrentAppID?.toString(),
+        })
+      );
+      setRecurrentAppointmentVisible(true);
+    } else {
       dispatch(fetchSingleAppointment(event?.id.toString()));
       setIsAppointmentAddModalVisible(true);
       setIsEditing(false);
     }
-    
   };
 
   return (

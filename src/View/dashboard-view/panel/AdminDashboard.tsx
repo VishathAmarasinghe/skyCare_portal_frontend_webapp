@@ -4,7 +4,7 @@ import HelloCard from "../Components/HelloCard";
 import { DASHBOARD_CARDS } from "../../../constants/index";
 import DashboardCard from "../Components/DashboardCard";
 import { useAppDispatch, useAppSelector } from "@slices/store";
-import { fetchAdminDashboard } from "@slices/DashboardSlice/dashboard";
+import { fetchAdminDashboard } from "@slices/dashboardSlice/dashboard";
 import { DashboardCardProps } from "../../../types/types";
 import AppointmentCard from "../Components/AppointmentCard";
 import AppointmentBarChart from "../Components/AppointmentBarChart";
@@ -24,8 +24,12 @@ const AdminDashboard = () => {
       return {
         ...card,
         value:
-          typeof dashboardSlice.adminDashboard?.[card.name as keyof typeof dashboardSlice.adminDashboard] === "number"
-            ? (dashboardSlice.adminDashboard[card.name as keyof typeof dashboardSlice.adminDashboard] as number)
+          typeof dashboardSlice.adminDashboard?.[
+            card.name as keyof typeof dashboardSlice.adminDashboard
+          ] === "number"
+            ? (dashboardSlice.adminDashboard[
+                card.name as keyof typeof dashboardSlice.adminDashboard
+              ] as number)
             : 0,
       };
     }
@@ -68,15 +72,22 @@ const AdminDashboard = () => {
               <Grid item xs={12} sm={6}>
                 <Paper elevation={3} style={{ padding: "10px" }}>
                   <AppointmentProgressChart
-                    todayCompletedCount={dashboardSlice?.adminDashboard?.todayCompletedCount ?? 0}
-                    todayTotalCount={dashboardSlice?.adminDashboard?.todayTotalCount ?? 0}
+                    todayCompletedCount={
+                      dashboardSlice?.adminDashboard?.todayCompletedCount ?? 0
+                    }
+                    todayTotalCount={
+                      dashboardSlice?.adminDashboard?.todayTotalCount ?? 0
+                    }
                   />
                 </Paper>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Paper elevation={3} style={{ padding: "16px" }}>
                   <AppointmentTypePieChart
-                    appointmentCountByType={dashboardSlice?.adminDashboard?.appointmentCountByType || {}}
+                    appointmentCountByType={
+                      dashboardSlice?.adminDashboard?.appointmentCountByType ||
+                      {}
+                    }
                   />
                 </Paper>
               </Grid>
@@ -84,7 +95,10 @@ const AdminDashboard = () => {
               <Grid item xs={12}>
                 <Paper elevation={3} style={{ padding: "10px" }}>
                   <AppointmentBarChart
-                    twoWeekAppointmentCount={dashboardSlice?.adminDashboard?.twoWeekAppointmentCount || {}}
+                    twoWeekAppointmentCount={
+                      dashboardSlice?.adminDashboard?.twoWeekAppointmentCount ||
+                      {}
+                    }
                   />
                 </Paper>
               </Grid>
@@ -93,8 +107,12 @@ const AdminDashboard = () => {
 
           {/* Second item */}
           <Grid item xs={12} md={4} height={"100%"}>
-          <Paper elevation={3}  style={{ padding: "10px",flexGrow:1 }}>
-              <Typography variant="h6" align="center" style={{ fontSize: "12px" }}>
+            <Paper elevation={3} style={{ padding: "10px", flexGrow: 1 }}>
+              <Typography
+                variant="h6"
+                align="center"
+                style={{ fontSize: "12px" }}
+              >
                 Today Appointments
               </Typography>
               <Stack
@@ -106,7 +124,9 @@ const AdminDashboard = () => {
                 sx={{ overflow: "auto", maxHeight: "500px" }}
               >
                 <AppointmentCard
-                  todayAppointments={dashboardSlice.adminDashboard?.todayAppointments || []}
+                  todayAppointments={
+                    dashboardSlice.adminDashboard?.todayAppointments || []
+                  }
                 />
               </Stack>
             </Paper>

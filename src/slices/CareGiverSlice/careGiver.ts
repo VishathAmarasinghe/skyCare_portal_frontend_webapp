@@ -3,9 +3,9 @@ import { APIService } from "../../utils/apiService";
 import { State } from "../../types/types";
 import { AppConfig } from "../../config/config";
 import { enqueueSnackbarMessage } from "../commonSlice/common";
-import { SnackMessage } from "../../Config/constant";
+import { SnackMessage } from "../../config/constant";
 import axios, { HttpStatusCode } from "axios";
-import { Employee } from "../EmployeeSlice/employee";
+import { Employee } from "../employeeSlice/employee";
 
 // Define types for CareGiver and related entities
 export interface CareGiverPayments {
@@ -103,10 +103,11 @@ export const fetchDocumentTypes = createAsyncThunk(
 // Fetch all caregivers
 export const saveDocumentTypes = createAsyncThunk(
   "careGiver/saveCareGiverDocumentTypes",
-  async (payload:CareGiverDocumentTypes, { dispatch, rejectWithValue }) => {
+  async (payload: CareGiverDocumentTypes, { dispatch, rejectWithValue }) => {
     try {
       const response = await APIService.getInstance().post(
-        AppConfig.serviceUrls.careGiverDocumentTypes,payload
+        AppConfig.serviceUrls.careGiverDocumentTypes,
+        payload
       );
       dispatch(
         enqueueSnackbarMessage({
@@ -133,13 +134,14 @@ export const saveDocumentTypes = createAsyncThunk(
   }
 );
 
-
 export const updateDocumentTypes = createAsyncThunk(
   "careGiver/updateCareGiverDocumentTypes",
-  async (payload:CareGiverDocumentTypes, { dispatch, rejectWithValue }) => {
+  async (payload: CareGiverDocumentTypes, { dispatch, rejectWithValue }) => {
     try {
       const response = await APIService.getInstance().put(
-        AppConfig.serviceUrls.careGiverDocumentTypes+`/${payload?.documentTypeID}`,payload
+        AppConfig.serviceUrls.careGiverDocumentTypes +
+          `/${payload?.documentTypeID}`,
+        payload
       );
       dispatch(
         enqueueSnackbarMessage({
@@ -168,10 +170,12 @@ export const updateDocumentTypes = createAsyncThunk(
 
 export const updatePaymentTypes = createAsyncThunk(
   "careGiver/updateCareGiverPaymentTypes",
-  async (payload:CareGiverPaymentTypes, { dispatch, rejectWithValue }) => {
+  async (payload: CareGiverPaymentTypes, { dispatch, rejectWithValue }) => {
     try {
       const response = await APIService.getInstance().put(
-        AppConfig.serviceUrls.careGiverPaymentTypes+`/${payload?.paymentTypeID}`,payload
+        AppConfig.serviceUrls.careGiverPaymentTypes +
+          `/${payload?.paymentTypeID}`,
+        payload
       );
       dispatch(
         enqueueSnackbarMessage({
@@ -198,13 +202,13 @@ export const updatePaymentTypes = createAsyncThunk(
   }
 );
 
-
 export const savePaymentTypes = createAsyncThunk(
   "careGiver/saveCareGiverPaymentTypes",
-  async (payload:CareGiverPaymentTypes, { dispatch, rejectWithValue }) => {
+  async (payload: CareGiverPaymentTypes, { dispatch, rejectWithValue }) => {
     try {
       const response = await APIService.getInstance().post(
-        AppConfig.serviceUrls.careGiverPaymentTypes,payload
+        AppConfig.serviceUrls.careGiverPaymentTypes,
+        payload
       );
       dispatch(
         enqueueSnackbarMessage({
@@ -341,19 +345,28 @@ export const fetchSingleCareGiver = createAsyncThunk(
 // Save a caregiver
 export const updateCareGiver = createAsyncThunk(
   "careGiver/updateCareGiver",
-  async (payload:{careGiverData:CareGiver,profilePhoto:File|null,uploadFiles:File[]}, { dispatch, rejectWithValue }) => {
+  async (
+    payload: {
+      careGiverData: CareGiver;
+      profilePhoto: File | null;
+      uploadFiles: File[];
+    },
+    { dispatch, rejectWithValue }
+  ) => {
     try {
       const formData = new FormData();
       formData.append("careGiver", JSON.stringify(payload.careGiverData));
-      if(payload.profilePhoto){
+      if (payload.profilePhoto) {
         formData.append("profile_photo", payload.profilePhoto);
       }
       payload.uploadFiles.forEach((file) => {
         formData.append("documents", file);
       });
       const response = await APIService.getInstance().put(
-        AppConfig.serviceUrls.careGivers+`/${payload.careGiverData.careGiverID}`,
-        formData, {
+        AppConfig.serviceUrls.careGivers +
+          `/${payload.careGiverData.careGiverID}`,
+        formData,
+        {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
@@ -385,11 +398,18 @@ export const updateCareGiver = createAsyncThunk(
 // Save a caregiver
 export const saveCareGiver = createAsyncThunk(
   "careGiver/saveCareGiver",
-  async (payload:{careGiverData:CareGiver,profilePhoto:File|null,uploadFiles:File[]}, { dispatch, rejectWithValue }) => {
+  async (
+    payload: {
+      careGiverData: CareGiver;
+      profilePhoto: File | null;
+      uploadFiles: File[];
+    },
+    { dispatch, rejectWithValue }
+  ) => {
     try {
       const formData = new FormData();
       formData.append("careGiver", JSON.stringify(payload.careGiverData));
-      if(payload.profilePhoto){
+      if (payload.profilePhoto) {
         formData.append("profile_photo", payload.profilePhoto);
       }
       payload.uploadFiles.forEach((file) => {
@@ -397,7 +417,8 @@ export const saveCareGiver = createAsyncThunk(
       });
       const response = await APIService.getInstance().post(
         AppConfig.serviceUrls.careGivers,
-        formData, {
+        formData,
+        {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
@@ -437,7 +458,7 @@ const CareGiverSlice = createSlice({
     },
     resetSelectedCareGiver(state) {
       state.selectedCareGiver = null;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -584,5 +605,6 @@ const CareGiverSlice = createSlice({
   },
 });
 
-export const { resetSubmitState,resetSelectedCareGiver } = CareGiverSlice.actions;
+export const { resetSubmitState, resetSelectedCareGiver } =
+  CareGiverSlice.actions;
 export default CareGiverSlice.reducer;

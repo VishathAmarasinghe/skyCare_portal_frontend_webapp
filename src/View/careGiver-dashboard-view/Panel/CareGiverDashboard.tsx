@@ -12,13 +12,13 @@ import {
   fetchPendingAppointmentsWithUser,
   PendingAppointments,
   resetSelectedAppointment,
-} from "@slices/AppointmentSlice/appointment";
-import { selectUserInfo } from "@slices/authSlice/Auth";
+} from "@slices/appointmentSlice/appointment";
+import { selectUserInfo } from "@slices/authSlice/auth";
 import AppointmentDetailsModal from "../Modal/AppointmentDetailsModal";
 import { State } from "../../../types/types";
 import NextAppointmentCard from "../components/NextAppointmentCard";
 import ShiftNoteModal from "../Modal/ShiftNoteModal";
-import { fetchCareGiverDashboard } from "@slices/DashboardSlice/dashboard";
+import { fetchCareGiverDashboard } from "@slices/dashboardSlice/dashboard";
 import AppointmentBarChart from "@view/dashboard-view/Components/AppointmentBarChart";
 import RecurrentAppointmentDetailsModal from "../Modal/RecurrentAppointmentDetailsModal";
 

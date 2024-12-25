@@ -1,16 +1,35 @@
-import { Box, Button, CircularProgress, Stack, Step, StepLabel, Stepper, useTheme } from '@mui/material';
-import React, { useEffect, useState } from 'react'
-import { CareGiver, CareGiverDocuments, fetchDocumentTypes, fetchSingleCareGiverByEmployeeID, saveCareGiver, updateCareGiver } from '@slices/CareGiverSlice/careGiver';
-import { useAppDispatch, useAppSelector } from '@slices/store';
-import { Employee, fetchSingleEmployee } from '@slices/EmployeeSlice/employee';
-import { enqueueSnackbarMessage } from '@slices/commonSlice/common';
-import { CREATE_CARE_GIVER_INTERNAL_UPDATE, CREATE_CARE_GIVER_OUTSIDE_REGISTRATION } from '../../constants/index';
-import EmployeeBasicInfoForm from '@view/employee-view/components/EmployeeBasicInfoForm';
-import CareGiverFileUploader from '@view/employee-view/components/CareGiverFileUploader';
-import AgreementComponent from '@component/common/AgreementComponent';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Stack,
+  Step,
+  StepLabel,
+  Stepper,
+  useTheme,
+} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import {
+  CareGiver,
+  CareGiverDocuments,
+  fetchDocumentTypes,
+  fetchSingleCareGiverByEmployeeID,
+  saveCareGiver,
+  updateCareGiver,
+} from "@slices/careGiverSlice/careGiver";
+import { useAppDispatch, useAppSelector } from "@slices/store";
+import { Employee, fetchSingleEmployee } from "@slices/employeeSlice/employee";
+import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
+import {
+  CREATE_CARE_GIVER_INTERNAL_UPDATE,
+  CREATE_CARE_GIVER_OUTSIDE_REGISTRATION,
+} from "../../constants/index";
+import EmployeeBasicInfoForm from "@view/employee-view/components/EmployeeBasicInfoForm";
+import CareGiverFileUploader from "@view/employee-view/components/CareGiverFileUploader";
+import AgreementComponent from "@component/common/AgreementComponent";
 
 const CareGiverInfoView = () => {
-      const theme = useTheme();
+  const theme = useTheme();
   const [activeStep, setActiveStep] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [careGiverDocuments, setCareGiverDocuments] = useState<
@@ -26,8 +45,8 @@ const CareGiverInfoView = () => {
     useState<boolean>(false);
   const [isEditMode, setIsEditMode] = useState<boolean>(true);
   const dispatch = useAppDispatch();
-  const authUserInfo = useAppSelector((state)=>state?.auth?.userInfo);
-  const employeeSlice = useAppSelector((state)=>state?.employees);
+  const authUserInfo = useAppSelector((state) => state?.auth?.userInfo);
+  const employeeSlice = useAppSelector((state) => state?.employees);
   const [isAgreed, setIsAgreed] = useState<boolean>(false);
   const [employeeBasicInformation, setEmployeeBasicInformation] =
     useState<Employee>({
@@ -81,19 +100,32 @@ const CareGiverInfoView = () => {
 
   useEffect(() => {
     if (errorState === "Validated") {
-      if(careGiverStatus?.selectedCareGiver!=null && careGiverStatus?.careGiverDocumentTypes?.length===careGiverDocuments?.length){
-        const careGiverPayload:CareGiver ={
-          careGiverDocuments:careGiverDocuments,
-          careGiverPayments:[],
-          employee:{...employeeBasicInformation,status:employeeSlice?.selectedEmployee?.status || ''},
-          careGiverID:careGiverStatus.selectedCareGiver.careGiverID,
-          status:employeeSlice?.selectedEmployee?.status || ''
-        }
-        console.log("careGiverPayload",careGiverPayload);
-        console.log("uploadFiles",uploadFiles);
-        dispatch(updateCareGiver({careGiverData:careGiverPayload,profilePhoto:profilePic,uploadFiles:uploadFiles}));
-    }}
-
+      if (
+        careGiverStatus?.selectedCareGiver != null &&
+        careGiverStatus?.careGiverDocumentTypes?.length ===
+          careGiverDocuments?.length
+      ) {
+        const careGiverPayload: CareGiver = {
+          careGiverDocuments: careGiverDocuments,
+          careGiverPayments: [],
+          employee: {
+            ...employeeBasicInformation,
+            status: employeeSlice?.selectedEmployee?.status || "",
+          },
+          careGiverID: careGiverStatus.selectedCareGiver.careGiverID,
+          status: employeeSlice?.selectedEmployee?.status || "",
+        };
+        console.log("careGiverPayload", careGiverPayload);
+        console.log("uploadFiles", uploadFiles);
+        dispatch(
+          updateCareGiver({
+            careGiverData: careGiverPayload,
+            profilePhoto: profilePic,
+            uploadFiles: uploadFiles,
+          })
+        );
+      }
+    }
   }, [errorState]);
 
   const handleSave = async () => {
@@ -182,10 +214,7 @@ const CareGiverInfoView = () => {
             sx={{ mx: 1 }}
             variant="contained"
             onClick={() => {
-              if (
-                activeStep ===
-                CREATE_CARE_GIVER_INTERNAL_UPDATE.length - 1
-              ) {
+              if (activeStep === CREATE_CARE_GIVER_INTERNAL_UPDATE.length - 1) {
                 handleSave();
               } else {
                 handleNext();
@@ -193,14 +222,12 @@ const CareGiverInfoView = () => {
             }}
             disabled={
               loading ||
-              (activeStep ===
-                CREATE_CARE_GIVER_INTERNAL_UPDATE.length - 1 ) // Disable if on the last step and not agreed
+              activeStep === CREATE_CARE_GIVER_INTERNAL_UPDATE.length - 1 // Disable if on the last step and not agreed
             }
           >
             {loading ? (
               <CircularProgress size={24} />
-            ) : activeStep ===
-              CREATE_CARE_GIVER_INTERNAL_UPDATE.length - 1 ? (
+            ) : activeStep === CREATE_CARE_GIVER_INTERNAL_UPDATE.length - 1 ? (
               "Save"
             ) : (
               "Next"
@@ -209,7 +236,7 @@ const CareGiverInfoView = () => {
         </Box>
       </Stack>
     </Stack>
-  )
-}
+  );
+};
 
 export default CareGiverInfoView;

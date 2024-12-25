@@ -16,10 +16,10 @@ import {
 import companyLogo from "../../assets/images/app_logo.png";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "@slices/store";
-import { resetSubmitState, sendOTP, validateOTP } from "@slices/OTPSlice/OTP";
+import { resetSubmitState, sendOTP, validateOTP } from "@slices/oTPSlice/oTP";
 import { emailRegex } from "../../constants/index";
 import { State } from "../../types/types";
-import { resetPassword } from "@slices/authSlice/Auth";
+import { resetPassword } from "@slices/authSlice/auth";
 import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
 import { useNavigate } from "react-router-dom";
 
@@ -54,11 +54,11 @@ const ForgetPassword = () => {
     }
   }, [otpSlice?.validateState]);
 
-  useEffect(()=>{
-    if(authSlice?.passwordResetState === State.success){
-      navigate('/');
+  useEffect(() => {
+    if (authSlice?.passwordResetState === State.success) {
+      navigate("/");
     }
-  },[authSlice?.passwordResetState])
+  }, [authSlice?.passwordResetState]);
 
   const handlePreviousStep = () => {
     if (step > 1) setStep(step - 1);
@@ -79,10 +79,17 @@ const ForgetPassword = () => {
   const handleSubmit = () => {
     if (password === confirmPassword) {
       if (password.length >= 6) {
-        dispatch(resetPassword({email:email,password:password,employeeID:""}));
+        dispatch(
+          resetPassword({ email: email, password: password, employeeID: "" })
+        );
       }
     } else {
-      dispatch(enqueueSnackbarMessage({ message: "Passwords do not match", type: "error" }));
+      dispatch(
+        enqueueSnackbarMessage({
+          message: "Passwords do not match",
+          type: "error",
+        })
+      );
     }
   };
 

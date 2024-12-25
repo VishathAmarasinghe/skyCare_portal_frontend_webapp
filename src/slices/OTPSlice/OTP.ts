@@ -3,7 +3,7 @@ import { APIService } from "../../utils/apiService";
 import { State } from "../../types/types";
 import { AppConfig } from "../../config/config";
 import { enqueueSnackbarMessage } from "../commonSlice/common";
-import { SnackMessage } from "../../Config/constant";
+import { SnackMessage } from "../../config/constant";
 import axios, { HttpStatusCode } from "axios";
 
 interface OTPState {
@@ -26,38 +26,42 @@ const initialState: OTPState = {
 };
 
 export const validateOTP = createAsyncThunk(
-    "OPT/validateOTP",
-    async (payload: { email: string,OTP:string }, { dispatch, rejectWithValue }) => {
-      try {
-        const response = await APIService.getInstance().post(
-          AppConfig.serviceUrls.otp + `/validate?email=${payload.email}&otp=${payload.OTP}`
-        );
-        dispatch(
-          enqueueSnackbarMessage({
-            message: response.data.message,
-            type: "success",
-          })
-        );
-        return response.data;
-      } catch (error) {
-        if (axios.isCancel(error)) {
-          return rejectWithValue("Request canceled");
-        }
-        console.log("error", error);
-        dispatch(
-          enqueueSnackbarMessage({
-            message:
-              (error as any).response?.status ===
-              HttpStatusCode.InternalServerError
-                ? SnackMessage.error.otpValidate
-                : String((error as any).response?.data?.message),
-            type: "error",
-          })
-        );
-        throw error;
+  "OPT/validateOTP",
+  async (
+    payload: { email: string; OTP: string },
+    { dispatch, rejectWithValue }
+  ) => {
+    try {
+      const response = await APIService.getInstance().post(
+        AppConfig.serviceUrls.otp +
+          `/validate?email=${payload.email}&otp=${payload.OTP}`
+      );
+      dispatch(
+        enqueueSnackbarMessage({
+          message: response.data.message,
+          type: "success",
+        })
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
       }
+      console.log("error", error);
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            (error as any).response?.status ===
+            HttpStatusCode.InternalServerError
+              ? SnackMessage.error.otpValidate
+              : String((error as any).response?.data?.message),
+          type: "error",
+        })
+      );
+      throw error;
     }
-  );
+  }
+);
 
 // Save a new resource
 export const sendOTP = createAsyncThunk(

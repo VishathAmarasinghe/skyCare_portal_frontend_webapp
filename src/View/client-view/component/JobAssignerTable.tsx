@@ -28,18 +28,22 @@ import {
   JobAssignShowerDTO,
   RecurrentAppointmentValues,
   updateNewAllocations,
-} from "@slices/AppointmentSlice/appointment";
+} from "@slices/appointmentSlice/appointment";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { ConfirmationType, State } from "../../../types/types";
-import { CareGiver } from "@slices/CareGiverSlice/careGiver";
+import { CareGiver } from "@slices/careGiverSlice/careGiver";
 import { FILE_DOWNLOAD_BASE_URL } from "@config/config";
 import { useConfirmationModalContext } from "@context/DialogContext";
 
 interface JobAssignerTableProps {
-  setSelectedRecurrentAppointment: React.Dispatch<React.SetStateAction<RecurrentAppointmentValues | null>>;
+  setSelectedRecurrentAppointment: React.Dispatch<
+    React.SetStateAction<RecurrentAppointmentValues | null>
+  >;
 }
 
-const JobAssignerTable = ({setSelectedRecurrentAppointment}:JobAssignerTableProps) => {
+const JobAssignerTable = ({
+  setSelectedRecurrentAppointment,
+}: JobAssignerTableProps) => {
   const [data, setData] = useState<JobAssignShowerDTO[]>([]);
   const [openModal, setOpenModal] = useState(false);
   const [currentRow, setCurrentRow] = useState<JobAssignShowerDTO | null>(null);
@@ -53,23 +57,27 @@ const JobAssignerTable = ({setSelectedRecurrentAppointment}:JobAssignerTableProp
     added: string[];
     deleted: string[];
     recurrentAppointmentID: string;
-    assignerID:string;
+    assignerID: string;
   }>({
     added: [],
     deleted: [],
     recurrentAppointmentID: "",
-    assignerID:authInfo?.userID || ""
+    assignerID: authInfo?.userID || "",
   });
 
   useEffect(() => {
     if (!openModal && appointmentSlice.selectedAppointment) {
-      dispatch(fetchJobAssignmentTable({appointmentID:appointmentSlice.selectedAppointment.appointmentID}))
+      dispatch(
+        fetchJobAssignmentTable({
+          appointmentID: appointmentSlice.selectedAppointment.appointmentID,
+        })
+      );
       setAssignerChanges({
         added: [],
         deleted: [],
         recurrentAppointmentID: "",
-        assignerID:authInfo?.userID || ""
-      })
+        assignerID: authInfo?.userID || "",
+      });
     }
   }, [openModal]);
 
@@ -113,7 +121,7 @@ const JobAssignerTable = ({setSelectedRecurrentAppointment}:JobAssignerTableProp
       ...prevState,
       deleted: [...prevState.deleted, caregiverId],
       recurrentAppointmentID: rowId,
-      assignerID:authInfo?.userID || ""
+      assignerID: authInfo?.userID || "",
     }));
   };
 
@@ -134,20 +142,23 @@ const JobAssignerTable = ({setSelectedRecurrentAppointment}:JobAssignerTableProp
         ...prevState,
         added: [...prevState.added, caregiver.careGiverID],
         recurrentAppointmentID: currentRow.recurrentAppointmentID,
-        assignerID:authInfo?.userID || ""
+        assignerID: authInfo?.userID || "",
       }));
     }
   };
 
   const handleSave = () => {
     console.log("Save changes:", assignerChanges);
-    if (assignerChanges.added.length > 0 || assignerChanges.deleted.length > 0) {
+    if (
+      assignerChanges.added.length > 0 ||
+      assignerChanges.deleted.length > 0
+    ) {
       dispatch(updateNewAllocations(assignerChanges));
     }
     setOpenModal(false);
   };
 
-  const handleRowSelection = (selection:GridRowSelectionModel)=>{
+  const handleRowSelection = (selection: GridRowSelectionModel) => {
     setSelectedRecurrentAppointment(null);
     const selectedRow = data.find(
       (row) => row.recurrentAppointmentID === selection[0]
@@ -156,27 +167,28 @@ const JobAssignerTable = ({setSelectedRecurrentAppointment}:JobAssignerTableProp
       setCurrentRow(selectedRow);
       console.log("Selected Row:", selectedRow);
       setSelectedRecurrentAppointment({
-        recurrentAppointmentID:selectedRow.recurrentAppointmentID,
-        startDate:selectedRow.startDate,
-        startTime:selectedRow.startTime,
-        endDate:selectedRow.endDate,
-        endTime:selectedRow.endTime,
-        comment:selectedRow.comment,
+        recurrentAppointmentID: selectedRow.recurrentAppointmentID,
+        startDate: selectedRow.startDate,
+        startTime: selectedRow.startTime,
+        endDate: selectedRow.endDate,
+        endTime: selectedRow.endTime,
+        comment: selectedRow.comment,
       });
       // Perform any additional logic with the selected row
     }
-
-  }
+  };
 
   const handleCancel = () => {
     setOpenModal(false);
   };
 
-  const handleCancelAppointment=(recurrentAppointmentID: string)=> {
-    if(recurrentAppointmentID){
-      dispatch(cancelAppointment({recurrentAppointmentID:recurrentAppointmentID}))
+  const handleCancelAppointment = (recurrentAppointmentID: string) => {
+    if (recurrentAppointmentID) {
+      dispatch(
+        cancelAppointment({ recurrentAppointmentID: recurrentAppointmentID })
+      );
     }
-  }
+  };
 
   const columns: GridColDef[] = [
     { field: "recurrentAppointmentID", headerName: "ID", width: 100 },
@@ -188,19 +200,19 @@ const JobAssignerTable = ({setSelectedRecurrentAppointment}:JobAssignerTableProp
     {
       field: "assigners",
       headerName: "Assigners",
-      width:100,
-      
+      width: 100,
+
       renderCell: (params) => (
-          <Button
-            variant="outlined"
-            disabled={params.row.jobState === "cancelled"}
-            onClick={() => {
-              setCurrentRow(params.row);
-              setOpenModal(true);
-            }}
-          >
-            Manage
-          </Button>
+        <Button
+          variant="outlined"
+          disabled={params.row.jobState === "cancelled"}
+          onClick={() => {
+            setCurrentRow(params.row);
+            setOpenModal(true);
+          }}
+        >
+          Manage
+        </Button>
       ),
     },
     {
@@ -222,7 +234,7 @@ const JobAssignerTable = ({setSelectedRecurrentAppointment}:JobAssignerTableProp
       ),
     },
     {
-      field:"Action",
+      field: "Action",
       headerName: "Action",
       width: 100,
       renderCell: (params) => (
@@ -243,8 +255,8 @@ const JobAssignerTable = ({setSelectedRecurrentAppointment}:JobAssignerTableProp
         >
           Cancel
         </Button>
-      )
-    }
+      ),
+    },
   ];
 
   const modalColumns: GridColDef[] = [
@@ -311,9 +323,12 @@ const JobAssignerTable = ({setSelectedRecurrentAppointment}:JobAssignerTableProp
         columns={columns}
         checkboxSelection
         disableMultipleRowSelection
-        onRowSelectionModelChange={(selection)=>handleRowSelection(selection)}
+        onRowSelectionModelChange={(selection) => handleRowSelection(selection)}
         loading={appointmentSlice.jobAssignerState === State.loading}
-        isRowSelectable={(params) => params.row.jobState !== "cancelled" && params.row.jobState !== "completed"}
+        isRowSelectable={(params) =>
+          params.row.jobState !== "cancelled" &&
+          params.row.jobState !== "completed"
+        }
         getRowId={(row) => row.recurrentAppointmentID}
         slots={{
           toolbar: () => (

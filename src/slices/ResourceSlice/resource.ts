@@ -3,7 +3,7 @@ import { APIService } from "../../utils/apiService";
 import { State } from "../../types/types";
 import { AppConfig } from "../../config/config";
 import { enqueueSnackbarMessage } from "../commonSlice/common";
-import { SnackMessage } from "../../Config/constant";
+import { SnackMessage } from "../../config/constant";
 import axios, { HttpStatusCode } from "axios";
 
 // Define the type for Resource model
@@ -55,9 +55,11 @@ const initialState: ResourceState = {
 // Fetch single resources
 export const fetchSingleResource = createAsyncThunk(
   "resource/fetchSingleResources",
-  async (payload:{resourceID:string}, { dispatch, rejectWithValue }) => {
+  async (payload: { resourceID: string }, { dispatch, rejectWithValue }) => {
     try {
-      const response = await APIService.getInstance().get(AppConfig.serviceUrls.resources+`/${payload.resourceID}`);
+      const response = await APIService.getInstance().get(
+        AppConfig.serviceUrls.resources + `/${payload.resourceID}`
+      );
       return response.data;
     } catch (error) {
       if (axios.isCancel(error)) {
@@ -66,7 +68,8 @@ export const fetchSingleResource = createAsyncThunk(
       dispatch(
         enqueueSnackbarMessage({
           message:
-            (axios.isAxiosError(error) && error.response?.status === HttpStatusCode.InternalServerError)
+            axios.isAxiosError(error) &&
+            error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchSingleResource
               : String((error as any).response?.data?.message),
           type: "error",
@@ -80,12 +83,14 @@ export const fetchSingleResource = createAsyncThunk(
 // Fetch all resources
 export const deleteResource = createAsyncThunk(
   "resource/deleteResource",
-  async (payload:{resourceID:string}, { dispatch, rejectWithValue }) => {
+  async (payload: { resourceID: string }, { dispatch, rejectWithValue }) => {
     try {
-      const response = await APIService.getInstance().delete(AppConfig.serviceUrls.resources+`/${payload.resourceID}`);
+      const response = await APIService.getInstance().delete(
+        AppConfig.serviceUrls.resources + `/${payload.resourceID}`
+      );
       dispatch(
         enqueueSnackbarMessage({
-          message: SnackMessage.success.deleteResource,              
+          message: SnackMessage.success.deleteResource,
           type: "success",
         })
       );
@@ -97,7 +102,8 @@ export const deleteResource = createAsyncThunk(
       dispatch(
         enqueueSnackbarMessage({
           message:
-            (axios.isAxiosError(error) && error.response?.status === HttpStatusCode.InternalServerError)
+            axios.isAxiosError(error) &&
+            error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.deleteResource
               : String((error as any).response?.data?.message),
           type: "error",
@@ -113,7 +119,9 @@ export const fetchAllResources = createAsyncThunk(
   "resource/fetchResources",
   async (_, { dispatch, rejectWithValue }) => {
     try {
-      const response = await APIService.getInstance().get(AppConfig.serviceUrls.resources);
+      const response = await APIService.getInstance().get(
+        AppConfig.serviceUrls.resources
+      );
       return response.data;
     } catch (error) {
       if (axios.isCancel(error)) {
@@ -122,7 +130,8 @@ export const fetchAllResources = createAsyncThunk(
       dispatch(
         enqueueSnackbarMessage({
           message:
-            (axios.isAxiosError(error) && error.response?.status === HttpStatusCode.InternalServerError)
+            axios.isAxiosError(error) &&
+            error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchResources
               : String((error as any).response?.data?.message),
           type: "error",
@@ -137,7 +146,7 @@ export const fetchAllResources = createAsyncThunk(
 export const updateResource = createAsyncThunk(
   "resource/updateResource",
   async (
-    payload: { resource: Resource; files: File[], resourceId: string },
+    payload: { resource: Resource; files: File[]; resourceId: string },
     { dispatch, rejectWithValue }
   ) => {
     try {
@@ -148,9 +157,13 @@ export const updateResource = createAsyncThunk(
         formData.append("files", file);
       });
 
-      const response = await APIService.getInstance().patch(AppConfig.serviceUrls.resources+`/${payload.resourceId}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await APIService.getInstance().patch(
+        AppConfig.serviceUrls.resources + `/${payload.resourceId}`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
 
       dispatch(
         enqueueSnackbarMessage({
@@ -167,7 +180,8 @@ export const updateResource = createAsyncThunk(
       dispatch(
         enqueueSnackbarMessage({
           message:
-            (error as any).response?.status === HttpStatusCode.InternalServerError
+            (error as any).response?.status ===
+            HttpStatusCode.InternalServerError
               ? SnackMessage.error.updateResource
               : String((error as any).response?.data?.message),
           type: "error",
@@ -193,9 +207,13 @@ export const saveResource = createAsyncThunk(
         formData.append("files", file);
       });
 
-      const response = await APIService.getInstance().post(AppConfig.serviceUrls.resources, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await APIService.getInstance().post(
+        AppConfig.serviceUrls.resources,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
 
       dispatch(
         enqueueSnackbarMessage({
@@ -213,7 +231,8 @@ export const saveResource = createAsyncThunk(
       dispatch(
         enqueueSnackbarMessage({
           message:
-            (error as any).response?.status === HttpStatusCode.InternalServerError
+            (error as any).response?.status ===
+            HttpStatusCode.InternalServerError
               ? SnackMessage.error.saveResources
               : String((error as any).response?.data?.message),
           type: "error",
@@ -302,9 +321,9 @@ const ResourceSlice = createSlice({
         state.deleteState = State.failed;
         state.stateMessage = "Failed to delete single Resource!";
       });
-
   },
 });
 
-export const { resetSubmitState, resetSelectedResource } = ResourceSlice.actions;
+export const { resetSubmitState, resetSelectedResource } =
+  ResourceSlice.actions;
 export default ResourceSlice.reducer;

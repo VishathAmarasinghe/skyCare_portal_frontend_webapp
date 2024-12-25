@@ -33,7 +33,7 @@ import {
   APPLICATION_SUPER_ADMIN,
 } from "@config/config";
 import PreLoader from "@component/common/PreLoader";
-import { selectRoles } from "@slices/authSlice/Auth";
+import { selectRoles } from "@slices/authSlice/auth";
 
 export default function Layout() {
   //snackbar configuration
@@ -56,10 +56,7 @@ export default function Layout() {
 
   return (
     <ConfirmationModalContextProvider>
-      <Box sx={{ display: "flex" }}
-      data-aos="fade-up"
-      data-aos-duration="200"
-      >
+      <Box sx={{ display: "flex" }} data-aos="fade-up" data-aos-duration="200">
         <CssBaseline />
 
         <Sidebar
@@ -82,7 +79,7 @@ export default function Layout() {
             pb: 6,
           }}
         >
-          <Suspense fallback={<Loader/>}>
+          <Suspense fallback={<Loader />}>
             <Outlet />
           </Suspense>
           <Box

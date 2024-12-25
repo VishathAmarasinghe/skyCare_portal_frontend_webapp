@@ -3,7 +3,7 @@ import { APIService } from "../../utils/apiService";
 import { State } from "../../types/types";
 import { AppConfig } from "../../config/config";
 import { enqueueSnackbarMessage } from "../commonSlice/common";
-import { SnackMessage } from "../../Config/constant";
+import { SnackMessage } from "../../config/constant";
 import axios, { HttpStatusCode } from "axios";
 
 // Define the type for Notes model
@@ -22,7 +22,7 @@ export interface Notes {
   description: string;
   sharedGroup: "All" | "Internal";
   createdBy: string | null;
-  documents:NoteFiles[] | null
+  documents: NoteFiles[] | null;
 }
 
 export interface NoteFiles {
@@ -92,10 +92,10 @@ export const fetchNotes = createAsyncThunk(
 // Fetch all notes
 export const fetchSingleNote = createAsyncThunk(
   "note/fetchSingleNote",
-  async (noteID:String, { dispatch, rejectWithValue }) => {
+  async (noteID: String, { dispatch, rejectWithValue }) => {
     return new Promise<Notes>((resolve, reject) => {
       APIService.getInstance()
-        .get(AppConfig.serviceUrls.notes+`/${noteID}`)
+        .get(AppConfig.serviceUrls.notes + `/${noteID}`)
         .then((response) => {
           resolve(response.data);
         })
@@ -118,14 +118,13 @@ export const fetchSingleNote = createAsyncThunk(
   }
 );
 
-
 // Fetch all notes by client id
 export const fetchNotesByClientID = createAsyncThunk(
   "note/fetchNotesByClientID",
   async (clientID: String, { dispatch, rejectWithValue }) => {
     return new Promise<Notes[]>((resolve, reject) => {
       APIService.getInstance()
-        .get(AppConfig.serviceUrls.notes+`/client/${clientID}`)
+        .get(AppConfig.serviceUrls.notes + `/client/${clientID}`)
         .then((response) => {
           resolve(response.data);
         })
@@ -209,9 +208,13 @@ export const updateNotes = createAsyncThunk(
         formData.append("files", file);
       });
       APIService.getInstance()
-        .put(AppConfig.serviceUrls.notes+`/${payload.notes.noteID}`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        })
+        .put(
+          AppConfig.serviceUrls.notes + `/${payload.notes.noteID}`,
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        )
         .then((response) => {
           dispatch(
             enqueueSnackbarMessage({
@@ -243,13 +246,10 @@ export const updateNotes = createAsyncThunk(
 // delete note
 export const deleteNotes = createAsyncThunk(
   "note/deleteNotes",
-  async (
-    payload: { noteID: string },
-    { dispatch, rejectWithValue }
-  ) => {
+  async (payload: { noteID: string }, { dispatch, rejectWithValue }) => {
     return new Promise<Notes>((resolve, reject) => {
       APIService.getInstance()
-        .delete(AppConfig.serviceUrls.notes+`/${payload.noteID}`)
+        .delete(AppConfig.serviceUrls.notes + `/${payload.noteID}`)
         .then((response) => {
           dispatch(
             enqueueSnackbarMessage({
@@ -288,9 +288,9 @@ const NoteSlice = createSlice({
       state.updateState = State.idle;
       state.deleteState = State.idle;
     },
-    resetSelectedNote(state){
-      state.selectedNote=null;
-    }
+    resetSelectedNote(state) {
+      state.selectedNote = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -368,9 +368,9 @@ const NoteSlice = createSlice({
       .addCase(deleteNotes.rejected, (state) => {
         state.deleteState = State.failed;
         state.stateMessage = "Failed to delete notes!";
-      })
+      });
   },
 });
 
-export const { resetSubmitState,resetSelectedNote } = NoteSlice.actions;
+export const { resetSubmitState, resetSelectedNote } = NoteSlice.actions;
 export default NoteSlice.reducer;
