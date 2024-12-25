@@ -15,7 +15,7 @@ import {
 import { useSnackbar } from "notistack";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { checkAuthToken } from "@slices/authSlice/Auth";
+import { checkAuthToken } from "@slices/authSlice/auth";
 import { State } from "../types/types";
 import CareGiverRegistrationPage from "../layout/pages/CareGiverRegistrationPage";
 import ForgetPassword from "../layout/pages/ForgetPassword";
@@ -23,14 +23,16 @@ import Loader from "@component/common/Loader";
 
 const AppHandler = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const { message, type, timestamp } = useAppSelector((state) => state.common);
-  const auth = useAppSelector((state) => state.auth);
+  const { message, type, timestamp } = useAppSelector((state) => state?.common);
+  const auth = useAppSelector((state) => state?.auth);
 
   useEffect(() => {
     console.log("auth toles", auth.roles);
-    console.log("system roles ", [APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN, APPLICATION_CARE_GIVER]);
-    
-    
+    console.log("system roles ", [
+      APPLICATION_ADMIN,
+      APPLICATION_SUPER_ADMIN,
+      APPLICATION_CARE_GIVER,
+    ]);
   }, [auth]);
 
   const dispatch = useDispatch();
@@ -61,21 +63,21 @@ const AppHandler = () => {
     {
       path: "/",
       element: <LoginPage />,
-      errorElement: <Error />
+      errorElement: <Error />,
     },
     {
       path: "/registration-caregiver",
       element: <CareGiverRegistrationPage />,
     },
     {
-      path:"/reset-password",
-      element: <ForgetPassword/>,
-    }
+      path: "/reset-password",
+      element: <ForgetPassword />,
+    },
   ]);
 
   return (
     <>
-    {/* <RouterProvider router={registrationRoute} /> */}
+      {/* <RouterProvider router={registrationRoute} /> */}
       {auth.status === State.idle && <RouterProvider router={preAuthRoutes} />}
       {auth.status === State.loading && (
         <PreLoader isLoading={true} message={auth.statusMessage}></PreLoader>

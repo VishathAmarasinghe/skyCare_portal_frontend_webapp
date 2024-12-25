@@ -1,40 +1,55 @@
-import React, { useEffect, useState } from 'react';
-import { Modal, Button, TextField, Select, MenuItem, InputLabel, FormControl, Box, IconButton, SelectChangeEvent, Stack } from '@mui/material';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { Delete, Visibility } from '@mui/icons-material';
-import {IncidentInvolvedParties} from '../../../slices/IncidentSlice/incident';
-import { useAppSelector } from '@slices/store';
+import React, { useEffect, useState } from "react";
+import {
+  Modal,
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Box,
+  IconButton,
+  SelectChangeEvent,
+  Stack,
+} from "@mui/material";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { Delete, Visibility } from "@mui/icons-material";
+import { IncidentInvolvedParties } from "../../../slices/incidentSlice/incident";
+import { useAppSelector } from "@slices/store";
 
 interface IncidentInvolvedPartiesComponentProps {
-    rows: IncidentInvolvedParties[];
-    setRows: React.Dispatch<React.SetStateAction<IncidentInvolvedParties[]>>;
+  rows: IncidentInvolvedParties[];
+  setRows: React.Dispatch<React.SetStateAction<IncidentInvolvedParties[]>>;
 }
 
-const IncidentInvolvedPartiesComponent: React.FC<IncidentInvolvedPartiesComponentProps> = ({ rows, setRows }) => {
-  
+const IncidentInvolvedPartiesComponent: React.FC<
+  IncidentInvolvedPartiesComponentProps
+> = ({ rows, setRows }) => {
   const [openModal, setOpenModal] = useState(false);
   const [openViewModal, setOpenViewModal] = useState(false);
-  const incidentSlice = useAppSelector((state)=>state.incident);
+  const incidentSlice = useAppSelector((state) => state.incident);
   const [formData, setFormData] = useState<IncidentInvolvedParties>({
-    partyID: '',
-    firstName: '',
-    lastName: '',
-    email: '',
-    workPhoneNo: '',
-    type: 'Witness',
+    partyID: "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    workPhoneNo: "",
+    type: "Witness",
   });
 
-  const [viewData, setViewData] = useState<IncidentInvolvedParties | null>(null);
+  const [viewData, setViewData] = useState<IncidentInvolvedParties | null>(
+    null
+  );
 
   const handleModalClose = () => {
     setOpenModal(false);
     setFormData({
-      partyID: '',
-      firstName: '',
-      lastName: '',
-      email: '',
-      workPhoneNo: '',
-      type: 'Witness',
+      partyID: "",
+      firstName: "",
+      lastName: "",
+      email: "",
+      workPhoneNo: "",
+      type: "Witness",
     });
   };
 
@@ -84,14 +99,14 @@ const IncidentInvolvedPartiesComponent: React.FC<IncidentInvolvedPartiesComponen
   };
 
   const columns: GridColDef[] = [
-    { field: 'firstName', headerName: 'First Name', flex: 1 },
-    { field: 'lastName', headerName: 'Last Name', flex: 1 },
-    { field: 'email', headerName: 'Email', flex: 1 },
-    { field: 'workPhoneNo', headerName: 'Work Phone No', flex: 1 },
-    { field: 'type', headerName: 'Type', flex: 1 },
+    { field: "firstName", headerName: "First Name", flex: 1 },
+    { field: "lastName", headerName: "Last Name", flex: 1 },
+    { field: "email", headerName: "Email", flex: 1 },
+    { field: "workPhoneNo", headerName: "Work Phone No", flex: 1 },
+    { field: "type", headerName: "Type", flex: 1 },
     {
-      field: 'actions',
-      headerName: 'Actions',
+      field: "actions",
+      headerName: "Actions",
       renderCell: (params) => (
         <div>
           <IconButton onClick={() => handleView(params.row)}>
@@ -108,26 +123,31 @@ const IncidentInvolvedPartiesComponent: React.FC<IncidentInvolvedPartiesComponen
 
   return (
     <Stack width="100%">
-        <Stack flexDirection="column" alignItems="flex-end" mt={2}>
-      <Button variant="contained"  color="primary" onClick={handleAdd}>
-        Add Party
-      </Button>
+      <Stack flexDirection="column" alignItems="flex-end" mt={2}>
+        <Button variant="contained" color="primary" onClick={handleAdd}>
+          Add Party
+        </Button>
       </Stack>
 
-      <div style={{ height: 400, width: '100%', marginTop: 20 }}>
-        <DataGrid 
-        columns={columns} 
-        rows={rows.map((row, index) => ({ ...row, id: index }))}  />
+      <div style={{ height: 400, width: "100%", marginTop: 20 }}>
+        <DataGrid
+          columns={columns}
+          rows={rows.map((row, index) => ({ ...row, id: index }))}
+        />
       </div>
 
       {/* Add/Edit Party Modal */}
-      <Modal open={openModal} onClose={handleModalClose} aria-labelledby="add-party-modal">
+      <Modal
+        open={openModal}
+        onClose={handleModalClose}
+        aria-labelledby="add-party-modal"
+      >
         <Box
           sx={{
             width: 400,
-            margin: 'auto',
+            margin: "auto",
             padding: 3,
-            backgroundColor: 'white',
+            backgroundColor: "white",
             borderRadius: 1,
             boxShadow: 24,
             mt: 5,
@@ -177,20 +197,29 @@ const IncidentInvolvedPartiesComponent: React.FC<IncidentInvolvedPartiesComponen
               <MenuItem value="Involved Party">Involved Party</MenuItem>
             </Select>
           </FormControl>
-          <Button variant="contained" color="primary" onClick={handleSave} fullWidth>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSave}
+            fullWidth
+          >
             Save
           </Button>
         </Box>
       </Modal>
 
       {/* View Party Modal */}
-      <Modal open={openViewModal} onClose={handleViewModalClose} aria-labelledby="view-party-modal">
+      <Modal
+        open={openViewModal}
+        onClose={handleViewModalClose}
+        aria-labelledby="view-party-modal"
+      >
         <Box
           sx={{
             width: 400,
-            margin: 'auto',
+            margin: "auto",
             padding: 3,
-            backgroundColor: 'white',
+            backgroundColor: "white",
             borderRadius: 1,
             boxShadow: 24,
             mt: 5,
@@ -236,7 +265,12 @@ const IncidentInvolvedPartiesComponent: React.FC<IncidentInvolvedPartiesComponen
               />
             </>
           )}
-          <Button variant="contained" color="primary" onClick={handleViewModalClose} fullWidth>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleViewModalClose}
+            fullWidth
+          >
             Close
           </Button>
         </Box>

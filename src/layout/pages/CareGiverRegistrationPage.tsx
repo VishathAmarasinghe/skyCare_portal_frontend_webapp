@@ -13,9 +13,9 @@ import {
   CareGiverDocuments,
   fetchDocumentTypes,
   saveCareGiver,
-} from "@slices/CareGiverSlice/careGiver";
+} from "@slices/careGiverSlice/careGiver";
 import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
-import { Employee } from "@slices/EmployeeSlice/employee";
+import { Employee } from "@slices/employeeSlice/employee";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import CareGiverFileUploader from "@view/employee-view/components/CareGiverFileUploader";
 import EmployeeBasicInfoForm from "@view/employee-view/components/EmployeeBasicInfoForm";

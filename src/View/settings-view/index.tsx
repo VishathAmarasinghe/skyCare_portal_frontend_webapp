@@ -1,20 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Stack, Typography, useTheme } from "@mui/material";
 import { SETTINGS_CARD_ARRAY } from "../../constants/index";
-import SettingsCard from './components/SettingsCard';
-import SettingsDrawer from './Drawers/SettingsDrawer';
+import SettingsCard from "./components/SettingsCard";
+import SettingsDrawer from "./Drawers/SettingsDrawer";
 import { SettingsCardTitle } from "../../types/types";
 import { useAppDispatch, useAppSelector } from "@slices/store";
-import { fetchClassifications, fetchClientStatus, fetchClientTypes, fetchLanguages } from "@slices/selectorSlice/selector";
+import {
+  fetchClassifications,
+  fetchClientStatus,
+  fetchClientTypes,
+  fetchLanguages,
+} from "@slices/selectorSlice/selector";
 import { fetchCarePlanStatusList } from "@slices/carePlanSlice/carePlan";
-import { fetchAppointmentTypes } from "@slices/AppointmentSlice/appointment";
-import { fetchAllIncidentActionTypeQuestions, fetchAllIncidentStatus, fetchAllIncidentTypes } from "@slices/IncidentSlice/incident";
-import { fetchDocumentTypes, fetchPaymentTypes } from "@slices/CareGiverSlice/careGiver";
+import { fetchAppointmentTypes } from "@slices/appointmentSlice/appointment";
+import {
+  fetchAllIncidentActionTypeQuestions,
+  fetchAllIncidentStatus,
+  fetchAllIncidentTypes,
+} from "@slices/incidentSlice/incident";
+import {
+  fetchDocumentTypes,
+  fetchPaymentTypes,
+} from "@slices/careGiverSlice/careGiver";
 
 const SettingsView = () => {
   const theme = useTheme();
-  const [drawerType,setDrawerType] = useState<SettingsCardTitle | null>(null);
-  const [drawerOpen,setDrawerOpen] = useState<boolean>(false);
+  const [drawerType, setDrawerType] = useState<SettingsCardTitle | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
   const selectorSlice = useAppSelector((state) => state?.selector);
   const carePlanSlice = useAppSelector((state) => state?.carePlans);
@@ -24,22 +36,23 @@ const SettingsView = () => {
 
   const dispatch = useAppDispatch();
 
-  useEffect(()=>{
-    if (drawerOpen){
-        dispatch(fetchLanguages())
-        dispatch(fetchClientTypes());
-        dispatch(fetchClientStatus());
-        dispatch(fetchClassifications());
-        dispatch(fetchCarePlanStatusList());
-        dispatch(fetchAppointmentTypes());
-        dispatch(fetchAllIncidentStatus());
-        dispatch(fetchAllIncidentTypes());
-        dispatch(fetchAllIncidentActionTypeQuestions());
-        dispatch(fetchDocumentTypes());
-        dispatch(fetchPaymentTypes());
-        
+  useEffect(() => {
+    if (drawerOpen) {
+      dispatch(fetchLanguages());
+      dispatch(fetchClientTypes());
+      dispatch(fetchClientStatus());
+      dispatch(fetchClassifications());
+      dispatch(fetchCarePlanStatusList());
+      dispatch(fetchAppointmentTypes());
+      dispatch(fetchAllIncidentStatus());
+      dispatch(fetchAllIncidentTypes());
+      dispatch(fetchAllIncidentActionTypeQuestions());
+      dispatch(fetchDocumentTypes());
+      dispatch(fetchPaymentTypes());
     }
-  },[drawerOpen,selectorSlice?.submitState,
+  }, [
+    drawerOpen,
+    selectorSlice?.submitState,
     selectorSlice?.updateState,
     carePlanSlice?.submitState,
     carePlanSlice?.updateState,
@@ -53,12 +66,12 @@ const SettingsView = () => {
     appointmentSlice?.submitState,
     incidentSlice?.submitState,
     incidentSlice?.updateState,
-  ])
+  ]);
   return (
     <Stack
       width={"100%"}
       height={"100%"}
-    //   border={"2px solid red"}
+      //   border={"2px solid red"}
       sx={{
         // backgroundColor: "white",
         // boxShadow: 1,
@@ -81,27 +94,26 @@ const SettingsView = () => {
         </Typography>
       </Stack>
       <Grid container spacing={2}>
-      {SETTINGS_CARD_ARRAY.map((item, index) => (
-        <Grid item xs={12} mt={2} sm={6} md={4} key={index}>
-          <SettingsCard
-          drawerOpen={drawerOpen}
-            setDrawerOpen={setDrawerOpen}
-            setDrawerType={setDrawerType}
-            title={item.title}
-            icon={item.icon}
-            subText={item.subText}
-          />
-        </Grid>
-      ))}
-    </Grid>
-    <SettingsDrawer
-    onClose={()=>setDrawerOpen(false)}
-    open={drawerOpen}
-    title={drawerType}
-    settingType={drawerType}
-    setSettingType={setDrawerType}
-    />
-
+        {SETTINGS_CARD_ARRAY.map((item, index) => (
+          <Grid item xs={12} mt={2} sm={6} md={4} key={index}>
+            <SettingsCard
+              drawerOpen={drawerOpen}
+              setDrawerOpen={setDrawerOpen}
+              setDrawerType={setDrawerType}
+              title={item.title}
+              icon={item.icon}
+              subText={item.subText}
+            />
+          </Grid>
+        ))}
+      </Grid>
+      <SettingsDrawer
+        onClose={() => setDrawerOpen(false)}
+        open={drawerOpen}
+        title={drawerType}
+        settingType={drawerType}
+        setSettingType={setDrawerType}
+      />
     </Stack>
   );
 };

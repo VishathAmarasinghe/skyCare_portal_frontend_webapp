@@ -7,15 +7,13 @@ import {
   GridToolbarFilterButton,
   GridToolbarQuickFilter,
 } from "@mui/x-data-grid";
-import {
-  Box,
-  IconButton,
-  Stack,
-  useTheme,
-} from "@mui/material";
+import { Box, IconButton, Stack, useTheme } from "@mui/material";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import {getSingleShiftNoteByShiftID, updateShiftNote } from "@slices/ShiftNoteSlice/ShiftNote";
+import {
+  getSingleShiftNoteByShiftID,
+  updateShiftNote,
+} from "@slices/shiftNoteSlice/shiftNote";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { ConfirmationType, State } from "../../../types/types";
 import { useConfirmationModalContext } from "@context/DialogContext";
@@ -36,7 +34,11 @@ interface ClientTableProps {
   setPureNew: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ShiftNoteTable = ({ isNoteModalVisible, setIsNoteModalVisible,setPureNew }: ClientTableProps) => {
+const ShiftNoteTable = ({
+  isNoteModalVisible,
+  setIsNoteModalVisible,
+  setPureNew,
+}: ClientTableProps) => {
   const shiftNoteSlice = useAppSelector((state) => state.shiftNotes);
   const [shiftNotes, setShiftNotes] = useState<updateShiftNote[]>([]);
   const dispatch = useAppDispatch();
@@ -103,7 +105,11 @@ const ShiftNoteTable = ({ isNoteModalVisible, setIsNoteModalVisible,setPureNew }
       flex: 1,
       headerAlign: "left",
       renderCell: (params) => (
-        <Stack width={"100%"} flexDirection={"row"} justifyContent="space-between">
+        <Stack
+          width={"100%"}
+          flexDirection={"row"}
+          justifyContent="space-between"
+        >
           <IconButton
             aria-label="view"
             onClick={() => {
@@ -126,7 +132,14 @@ const ShiftNoteTable = ({ isNoteModalVisible, setIsNoteModalVisible,setPureNew }
   ];
 
   return (
-    <Box sx={{ height: "100%", width: "100%", display: "flex", flexDirection: "column" }}>
+    <Box
+      sx={{
+        height: "100%",
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <DataGrid
         rows={shiftNotes}
         columns={initialColumns}

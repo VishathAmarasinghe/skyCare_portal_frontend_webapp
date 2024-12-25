@@ -18,7 +18,7 @@ import RepeatIcon from "@mui/icons-material/Repeat";
 import {
   fetchRecurrentAppointmentDetails,
   PendingAppointments,
-} from "../../../slices/AppointmentSlice/appointment";
+} from "../../../slices/appointmentSlice/appointment";
 import { useAppSelector } from "../../../slices/store";
 import FileViewerWithModal from "../../../component/common/FileViewerWithModal";
 import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
@@ -52,7 +52,6 @@ const RecurrentAppointmentDetailsModal = ({
     setFileViewerOpen(true);
   };
 
-
   const handleDownloadFile = (file: string) => {
     const encodedFilePath = encodeURIComponent(file);
     const fileUrl = `${FILE_DOWNLOAD_BASE_URL}${encodedFilePath}`;
@@ -63,7 +62,6 @@ const RecurrentAppointmentDetailsModal = ({
     setFileViewerOpen(false);
     setCurrentFile(null);
   };
-
 
   return (
     <>

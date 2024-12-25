@@ -4,7 +4,7 @@ import { APIService } from "../../utils/apiService";
 import { AppConfig } from "../../config/config";
 import { enqueueSnackbarMessage } from "../commonSlice/common";
 import axios, { HttpStatusCode } from "axios";
-import { SnackMessage } from "../../Config/constant";
+import { SnackMessage } from "../../config/constant";
 
 export interface CareGiverAssignedDTO {
   firstName: string;
@@ -21,7 +21,7 @@ export interface RecurrentAppointmentValues {
   endDate: string;
   startTime: string;
   endTime: string;
-  comment:string;
+  comment: string;
 }
 
 export interface JobAssignShowerDTO {
@@ -70,19 +70,19 @@ interface RecurrentAppointmentDTO {
   comment: string;
 }
 
-export interface NextAppointmentDTO{
-  appointment:Appointment;
-  recurrentTask:RecurrentAppointmentDTO;
+export interface NextAppointmentDTO {
+  appointment: Appointment;
+  recurrentTask: RecurrentAppointmentDTO;
 }
 
-export interface PendingAppointments{
-  recurrentAppointmentID:string;
-  careGiverStatus:string;
-  appointmentData:Appointment;
-  startDate:string;
-  endDate:string;
-  startTime:string;
-  endTime:string;
+export interface PendingAppointments {
+  recurrentAppointmentID: string;
+  careGiverStatus: string;
+  appointmentData: Appointment;
+  startDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
 }
 
 export interface JobAssigner {
@@ -178,7 +178,7 @@ export interface AppointmentState {
   appointmentTypes: AppointmentType[];
   selectedAppointment: Appointment | null;
   pendingAppointments: PendingAppointments[];
-  selectedRecurrentAppointment:PendingAppointments | null;
+  selectedRecurrentAppointment: PendingAppointments | null;
   errorMessage: string | null;
   stateMessage: string | null;
   backgroundProcess: boolean;
@@ -199,7 +199,7 @@ const initialState: AppointmentState = {
   appointmentTypes: [],
   careGvierAppointments: [],
   pendingAppointments: [],
-  selectedRecurrentAppointment:null,
+  selectedRecurrentAppointment: null,
   selectedAppointment: null,
   errorMessage: null,
   stateMessage: null,
@@ -210,7 +210,7 @@ const initialState: AppointmentState = {
 export const fetchRecurrentAppointmentDetails = createAsyncThunk(
   "appointments/fetchRecurrentAppointmentDetails",
   async (
-    payload: { recurrentAppointmentID: string},
+    payload: { recurrentAppointmentID: string },
     { dispatch, rejectWithValue }
   ) => {
     return new Promise<PendingAppointments>((resolve, reject) => {
@@ -238,10 +238,7 @@ export const fetchRecurrentAppointmentDetails = createAsyncThunk(
 
 export const fetchNextAppointmentbyCareGiver = createAsyncThunk(
   "appointments/fetchNextAppointmentbyCareGiver",
-  async (
-    payload: { employeeID: string},
-    { dispatch, rejectWithValue }
-  ) => {
+  async (payload: { employeeID: string }, { dispatch, rejectWithValue }) => {
     return new Promise<NextAppointmentDTO>((resolve, reject) => {
       APIService.getInstance()
         .get(
@@ -434,15 +431,11 @@ export const cancelAppointment = createAsyncThunk(
 
 export const fetchPendingAppointmentsWithUser = createAsyncThunk(
   "appointments/fetchPendingAppointmentsWithUser",
-  async (
-    payload: { employeeID:string },
-    { dispatch, rejectWithValue }
-  ) => {
+  async (payload: { employeeID: string }, { dispatch, rejectWithValue }) => {
     return new Promise<PendingAppointments[]>((resolve, reject) => {
       APIService.getInstance()
         .get(
-          AppConfig.serviceUrls.appointments +
-            `/pending/${payload.employeeID}`
+          AppConfig.serviceUrls.appointments + `/pending/${payload.employeeID}`
         )
         .then((response) => resolve(response.data))
         .catch((error) => {
@@ -464,7 +457,7 @@ export const fetchPendingAppointmentsWithUser = createAsyncThunk(
 export const fetchAppointmentbyCalenderWithUser = createAsyncThunk(
   "appointments/fetchAppointmentsForCalenderWithUser",
   async (
-    payload: { startDate: string; endDate: string,employeeID:string },
+    payload: { startDate: string; endDate: string; employeeID: string },
     { dispatch, rejectWithValue }
   ) => {
     return new Promise<AppointmentCalenderType[]>((resolve, reject) => {
@@ -565,13 +558,12 @@ export const fetchAppointmentTypes = createAsyncThunk(
   }
 );
 
-
 export const saveAppointmentTypes = createAsyncThunk(
   "appointments/saveAppointmentTypes",
-  async (payload:AppointmentType, { dispatch, rejectWithValue }) => {
+  async (payload: AppointmentType, { dispatch, rejectWithValue }) => {
     return new Promise<AppointmentType>((resolve, reject) => {
       APIService.getInstance()
-        .post(AppConfig.serviceUrls.appointmentTypes,payload)
+        .post(AppConfig.serviceUrls.appointmentTypes, payload)
         .then((response) => {
           dispatch(
             enqueueSnackbarMessage({
@@ -579,7 +571,8 @@ export const saveAppointmentTypes = createAsyncThunk(
               type: "success",
             })
           );
-          resolve(response.data)})
+          resolve(response.data);
+        })
         .catch((error) => {
           dispatch(
             enqueueSnackbarMessage({
@@ -596,13 +589,16 @@ export const saveAppointmentTypes = createAsyncThunk(
   }
 );
 
-
 export const updateAppointmentTypes = createAsyncThunk(
   "appointments/updateAppointmentTypes",
-  async (payload:AppointmentType, { dispatch, rejectWithValue }) => {
+  async (payload: AppointmentType, { dispatch, rejectWithValue }) => {
     return new Promise<AppointmentType>((resolve, reject) => {
       APIService.getInstance()
-        .put(AppConfig.serviceUrls.appointmentTypes+`/${payload?.appointmentTypeID}`,payload)
+        .put(
+          AppConfig.serviceUrls.appointmentTypes +
+            `/${payload?.appointmentTypeID}`,
+          payload
+        )
         .then((response) => {
           dispatch(
             enqueueSnackbarMessage({
@@ -610,7 +606,8 @@ export const updateAppointmentTypes = createAsyncThunk(
               type: "success",
             })
           );
-          resolve(response.data)})
+          resolve(response.data);
+        })
         .catch((error) => {
           dispatch(
             enqueueSnackbarMessage({
@@ -626,7 +623,6 @@ export const updateAppointmentTypes = createAsyncThunk(
     });
   }
 );
-
 
 export const updateNewAllocations = createAsyncThunk(
   "appointments/updateNewAllocations",
@@ -771,8 +767,7 @@ const appointmentSlice = createSlice({
     resetSelectedAppointment(state) {
       state.selectedAppointment = null;
       console.log("resetSelectedAppointment");
-      state.selectedRecurrentAppointment=null;
-      
+      state.selectedRecurrentAppointment = null;
     },
     resetSubmitState(state) {
       state.submitState = State.idle;
@@ -842,10 +837,13 @@ const appointmentSlice = createSlice({
       .addCase(fetchAppointmentbyCalenderWithUser.pending, (state) => {
         state.calenderState = State.loading;
       })
-      .addCase(fetchAppointmentbyCalenderWithUser.fulfilled, (state, action) => {
-        state.calenderState = State.success;
-        state.calenderEvents = action.payload;
-      })
+      .addCase(
+        fetchAppointmentbyCalenderWithUser.fulfilled,
+        (state, action) => {
+          state.calenderState = State.success;
+          state.calenderEvents = action.payload;
+        }
+      )
       .addCase(fetchAppointmentbyCalenderWithUser.rejected, (state) => {
         state.calenderState = State.failed;
       })
@@ -937,20 +935,20 @@ const appointmentSlice = createSlice({
         state.submitState = State.failed;
       })
       .addCase(fetchPendingAppointmentsWithUser.pending, (state) => {
-        state.state= State.loading;
+        state.state = State.loading;
       })
       .addCase(fetchPendingAppointmentsWithUser.fulfilled, (state, action) => {
-        state.state= State.success;
+        state.state = State.success;
         state.pendingAppointments = action.payload;
       })
       .addCase(fetchPendingAppointmentsWithUser.rejected, (state) => {
         state.state = State.failed;
       })
       .addCase(fetchRecurrentAppointmentDetails.pending, (state) => {
-        state.state= State.loading;
+        state.state = State.loading;
       })
       .addCase(fetchRecurrentAppointmentDetails.fulfilled, (state, action) => {
-        state.state= State.success;
+        state.state = State.success;
         state.selectedRecurrentAppointment = action.payload;
       })
       .addCase(fetchRecurrentAppointmentDetails.rejected, (state) => {

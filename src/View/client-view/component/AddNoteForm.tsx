@@ -22,7 +22,7 @@ import {
   resetSubmitState,
   saveNotes,
   updateNotes,
-} from "@slices/NotesSlice/notes";
+} from "@slices/notesSlice/notes";
 import { useSearchParams } from "react-router-dom";
 import dayjs from "dayjs";
 import { useAppDispatch, useAppSelector } from "@slices/store";
@@ -129,7 +129,9 @@ const AddNoteForm: React.FC<AddNoteFormProps> = ({
 
       setInitialValues({
         ...noteStates.selectedNote,
-        effectiveDate: dayjs(noteStates.selectedNote.effectiveDate).format("YYYY-MM-DD").toString(),
+        effectiveDate: dayjs(noteStates.selectedNote.effectiveDate)
+          .format("YYYY-MM-DD")
+          .toString(),
         careplanID: noteStates.selectedNote.careplanID || "",
         taskID: noteStates.selectedNote.taskID || "",
         appointmentID: noteStates.selectedNote.appointmentID || "",
@@ -186,7 +188,9 @@ const AddNoteForm: React.FC<AddNoteFormProps> = ({
       const previousUploadedFiles = UIShowingFile.filter(
         (file) => file.status === "Old"
       );
-      const newUploadedFiles = UIShowingFile?.filter((file) => file.status === "New");
+      const newUploadedFiles = UIShowingFile?.filter(
+        (file) => file.status === "New"
+      );
       setUIShowingFile([
         ...filesArray.map((file: File) => ({
           name: file.name,
@@ -194,7 +198,7 @@ const AddNoteForm: React.FC<AddNoteFormProps> = ({
           status: "New" as "New",
         })),
         ...previousUploadedFiles,
-        ...newUploadedFiles
+        ...newUploadedFiles,
       ]);
     }
   };
@@ -210,14 +214,13 @@ const AddNoteForm: React.FC<AddNoteFormProps> = ({
         setPsdImageShowerModalOpen(true);
       }
     } else if (file.status === "New") {
-      console.log("file kos ",file);
-      
+      console.log("file kos ", file);
+
       const viewingFile = uploadedFils.find((f) => f.name == file.docID);
       if (viewingFile) {
         console.log("Viewing file", viewingFile);
-        setImageViewerImageURl(new File([viewingFile], viewingFile.name)); 
+        setImageViewerImageURl(new File([viewingFile], viewingFile.name));
         setPsdImageShowerModalOpen(true);
-      
       }
     }
   };
@@ -250,7 +253,6 @@ const AddNoteForm: React.FC<AddNoteFormProps> = ({
       validationSchema={validationSchema}
       enableReinitialize={true}
       onSubmit={(values, { setSubmitting }) => {
-        
         const notePayload: Notes = { ...values };
         if (notePayload.careplanID === "") notePayload.careplanID = null;
         if (notePayload.taskID === "") notePayload.taskID = null;
@@ -258,7 +260,7 @@ const AddNoteForm: React.FC<AddNoteFormProps> = ({
         console.log(values);
         console.log("Uploading files ", uploadedFils);
         if (noteStates.selectedNote) {
-          notePayload.documents=previouslyUploadedFiles;
+          notePayload.documents = previouslyUploadedFiles;
           dispatch(updateNotes({ notes: notePayload, files: uploadedFils }));
         } else {
           dispatch(saveNotes({ notes: notePayload, files: uploadedFils }));
@@ -275,7 +277,10 @@ const AddNoteForm: React.FC<AddNoteFormProps> = ({
         resetForm,
       }: FormikProps<Notes>) => {
         useEffect(() => {
-          if (noteStates.submitState == State.success || noteStates.updateState == State.success) {
+          if (
+            noteStates.submitState == State.success ||
+            noteStates.updateState == State.success
+          ) {
             resetForm();
             setUploadedFiles([]);
             setUIShowingFile([]);
@@ -285,7 +290,6 @@ const AddNoteForm: React.FC<AddNoteFormProps> = ({
 
         useEffect(() => {
           console.log("errors", errors);
-          
         }, [errors]);
         return (
           <Form>
@@ -500,7 +504,13 @@ const AddNoteForm: React.FC<AddNoteFormProps> = ({
                 Submit
               </button>
             </Grid>
-            <Stack width="100%" border="1px solid #ccc" bgcolor={theme.palette.background.default} borderRadius={1}  sx={{p:1,my:1}}>
+            <Stack
+              width="100%"
+              border="1px solid #ccc"
+              bgcolor={theme.palette.background.default}
+              borderRadius={1}
+              sx={{ p: 1, my: 1 }}
+            >
               <Typography variant="h6" my={1}>
                 Upload Notes
               </Typography>

@@ -15,69 +15,77 @@ import {
 import { CREATE_CLIENT_STEPS } from "../../../constants/index";
 import { State } from "../../../types/types";
 import EmployeeBasicInfoForm from "../components/EmployeeBasicInfoForm";
-import { Employee, resetSelectedEmployee, resetSubmitState, saveEmployee, updateEmployee } from "@slices/EmployeeSlice/employee";
+import {
+  Employee,
+  resetSelectedEmployee,
+  resetSubmitState,
+  saveEmployee,
+  updateEmployee,
+} from "@slices/employeeSlice/employee";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { set } from "date-fns";
 
 interface AddNewClientModalProps {
   isEmployeeAddModalVisible: boolean;
   setIsEmployeeAddModalVisible: (value: boolean) => void;
-  isEditMode:boolean;
-  setIsEditMode:React.Dispatch<React.SetStateAction<boolean>>;
-
+  isEditMode: boolean;
+  setIsEditMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const AdminModal = ({
   isEmployeeAddModalVisible: isEmployeeAddModalVisible,
   setIsEmployeeAddModalVisible: setIsEmployeeAddModalVisible,
   isEditMode,
-  setIsEditMode
+  setIsEditMode,
 }: AddNewClientModalProps) => {
   const [activeStep, setActiveStep] = useState<number>(0);
-  const employeeSlice = useAppSelector((state)=>state?.employees);
+  const employeeSlice = useAppSelector((state) => state?.employees);
   const [loading, setLoading] = useState<boolean>(false);
   const [profilePic, setProfilePic] = useState<File | null>(null);
-  const [errorState,setErrorState] = useState<"Pending"|"Validated">("Pending");
+  const [errorState, setErrorState] = useState<"Pending" | "Validated">(
+    "Pending"
+  );
   const dispatch = useAppDispatch();
-  const [employeeBasicInformation, setEmployeeBasicInformation] = useState<
-    Employee
-  >({
-    employeeID: "",
-    password: "",
-    status:"",
-    firstName: "",
-    lastName: "",
-    email: "",
-    accessRole: "",
-    joinDate: "",
-    profile_photo: "",
-    employeeAddresses: [
-      {
-        longitude: "",
-        latitude: "",
-        address: "",
-        city: "",
-        state: "",
-        country: "",
-        postal_code: "",
-      },
-    ],
-    employeeJobRoles: [],
-    employeePhoneNo: ["", ""],
-  });
+  const [employeeBasicInformation, setEmployeeBasicInformation] =
+    useState<Employee>({
+      employeeID: "",
+      password: "",
+      status: "",
+      firstName: "",
+      lastName: "",
+      email: "",
+      accessRole: "",
+      joinDate: "",
+      profile_photo: "",
+      employeeAddresses: [
+        {
+          longitude: "",
+          latitude: "",
+          address: "",
+          city: "",
+          state: "",
+          country: "",
+          postal_code: "",
+        },
+      ],
+      employeeJobRoles: [],
+      employeePhoneNo: ["", ""],
+    });
 
-  useEffect(()=>{
-    if (employeeSlice?.submitState==State.success || employeeSlice?.updateState==State.success) {
+  useEffect(() => {
+    if (
+      employeeSlice?.submitState == State.success ||
+      employeeSlice?.updateState == State.success
+    ) {
       setIsEmployeeAddModalVisible(false);
       dispatch(resetSubmitState());
       dispatch(resetSelectedEmployee());
     }
-  },[employeeSlice])
+  }, [employeeSlice]);
 
-  useEffect(()=>{
-      console.log("selected eom   ployee is",employeeSlice?.selectedEmployee);
-      
-  },[employeeSlice?.selectedEmployee,employeeSlice?.state])
+  useEffect(() => {
+    console.log("selected eom   ployee is", employeeSlice?.selectedEmployee);
+  }, [employeeSlice?.selectedEmployee, employeeSlice?.state]);
 
   // Handle next step
   const handleNext = () => {
@@ -89,26 +97,36 @@ const AdminModal = ({
     setActiveStep((prevStep) => prevStep - 1);
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     employeeBasicInformation.accessRole = "Admin";
     console.log("employeeBasicInformation is", employeeBasicInformation);
-    employeeBasicInformation.profile_photo = "";    
-    if(errorState=="Validated"){
-      if(employeeSlice?.selectedEmployee){
-        dispatch(updateEmployee({employeeData:employeeBasicInformation,profilePhoto:profilePic}));
-      }else{
-        dispatch(saveEmployee({ employeeData: employeeBasicInformation, profilePhoto: profilePic }));
+    employeeBasicInformation.profile_photo = "";
+    if (errorState == "Validated") {
+      if (employeeSlice?.selectedEmployee) {
+        dispatch(
+          updateEmployee({
+            employeeData: employeeBasicInformation,
+            profilePhoto: profilePic,
+          })
+        );
+      } else {
+        dispatch(
+          saveEmployee({
+            employeeData: employeeBasicInformation,
+            profilePhoto: profilePic,
+          })
+        );
       }
       setErrorState("Pending");
     }
-  },[errorState])
+  }, [errorState]);
 
   // Handle save (final step)
   const handleSave = async () => {
     document.getElementById("employeeMainData")?.click();
     employeeBasicInformation.accessRole = "Admin";
     console.log("employeeBasicInformation is", employeeBasicInformation);
-    employeeBasicInformation.profile_photo = "";    
+    employeeBasicInformation.profile_photo = "";
   };
 
   const handleToggleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,37 +137,41 @@ const AdminModal = ({
     <Modal
       title={
         <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Typography variant="h6">{employeeSlice?.selectedEmployee?"Update":"Add"} Employee</Typography>
-        {
-          employeeSlice?.selectedEmployee!=null &&
-          
-          <FormControlLabel
-            control={
-              <Switch
-                checked={isEditMode}
-                onChange={handleToggleChange}
-                color="primary"
-              />
-            }
-            label={isEditMode ? 'Edit Mode On' : 'Edit Mode Off'}
-            labelPlacement="start"
-          />
-        }
-      </Box>
+          <Typography variant="h6">
+            {employeeSlice?.selectedEmployee ? "Update" : "Add"} Employee
+          </Typography>
+          {employeeSlice?.selectedEmployee != null && (
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={isEditMode}
+                  onChange={handleToggleChange}
+                  color="primary"
+                />
+              }
+              label={isEditMode ? "Edit Mode On" : "Edit Mode Off"}
+              labelPlacement="start"
+            />
+          )}
+        </Box>
       }
       width="80%"
       centered
       maskClosable={false}
       closeIcon={false}
       open={isEmployeeAddModalVisible}
-      onOk={() => {setIsEmployeeAddModalVisible(false),dispatch(resetSelectedEmployee())}}
-      onCancel={() => {setIsEmployeeAddModalVisible(false),dispatch(resetSelectedEmployee())}}  
+      onOk={() => {
+        setIsEmployeeAddModalVisible(false), dispatch(resetSelectedEmployee());
+      }}
+      onCancel={() => {
+        setIsEmployeeAddModalVisible(false), dispatch(resetSelectedEmployee());
+      }}
       footer={
         <Box display="flex" justifyContent="end" width="100%">
           {/* Back Button */}
           <Button
             variant="outlined"
-            onClick={()=>setIsEmployeeAddModalVisible(false)}
+            onClick={() => setIsEmployeeAddModalVisible(false)}
           >
             Cancel
           </Button>
@@ -176,16 +198,16 @@ const AdminModal = ({
       </Stack> */}
 
       <Box sx={{ mt: 2 }} width="100%">
-        <EmployeeBasicInfoForm 
-        profilePic={profilePic} 
-        setProfilePic={setProfilePic}  
-        employeeBasicInformation={employeeBasicInformation} 
-        setEmployeeBasicInformation={setEmployeeBasicInformation} 
-        errorState={errorState}
-        setErrorState={setErrorState}
-        modalOpenState={isEmployeeAddModalVisible}
-        isEditMode={isEditMode}
-        setIsEditMode={setIsEditMode}
+        <EmployeeBasicInfoForm
+          profilePic={profilePic}
+          setProfilePic={setProfilePic}
+          employeeBasicInformation={employeeBasicInformation}
+          setEmployeeBasicInformation={setEmployeeBasicInformation}
+          errorState={errorState}
+          setErrorState={setErrorState}
+          modalOpenState={isEmployeeAddModalVisible}
+          isEditMode={isEditMode}
+          setIsEditMode={setIsEditMode}
         />
       </Box>
     </Modal>

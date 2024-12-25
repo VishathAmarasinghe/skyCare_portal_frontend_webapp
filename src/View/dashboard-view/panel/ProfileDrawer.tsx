@@ -8,7 +8,11 @@ import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
 import { Divider } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "@slices/store";
-import { Employee, EmployeeBasicInfoUpdater, updateEmployeeBasicInfo } from "@slices/EmployeeSlice/employee";
+import {
+  Employee,
+  EmployeeBasicInfoUpdater,
+  updateEmployeeBasicInfo,
+} from "@slices/employeeSlice/employee";
 import { FILE_DOWNLOAD_BASE_URL } from "@config/config";
 
 interface ProfileDrawerProps {
@@ -25,18 +29,23 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ open, setOpen }) => {
   const [showPasswordFields, setShowPasswordFields] = useState(false);
   const employeeSlice = useAppSelector((state) => state.employees);
   const [currentUserInfo, setCurrentUserInfo] = useState<Employee | null>(null);
-  const [profilePhotoPreview, setProfilePhotoPreview] = useState<string | null>(null);
+  const [profilePhotoPreview, setProfilePhotoPreview] = useState<string | null>(
+    null
+  );
   const [updatedUserInfo, setUpdatedUserInfo] = useState<Partial<Employee>>({});
-  const [uploadedProfilePhoto, setUploadedProfilePhoto] = useState<File | null>(null);
+  const [uploadedProfilePhoto, setUploadedProfilePhoto] = useState<File | null>(
+    null
+  );
   const dispatch = useAppDispatch();
-  const [passwordUpdater, setPasswordUpdater] = useState<EmployeeBasicInfoUpdater>({
-    employeeID: "",
-    email: "",
-    firstName: "",
-    lastName: "",
-    currentPassword: "",
-    newPassword: "",
-  });
+  const [passwordUpdater, setPasswordUpdater] =
+    useState<EmployeeBasicInfoUpdater>({
+      employeeID: "",
+      email: "",
+      firstName: "",
+      lastName: "",
+      currentPassword: "",
+      newPassword: "",
+    });
   const [confirmPassword, setConfirmPassword] = useState<string>(""); // Separate state for confirm password
   const [passwordErrors, setPasswordErrors] = useState({
     currentPassword: "",
@@ -65,7 +74,10 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ open, setOpen }) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfilePhotoPreview(reader.result as string);
-        setUpdatedUserInfo({ ...updatedUserInfo, profile_photo: reader.result as string });
+        setUpdatedUserInfo({
+          ...updatedUserInfo,
+          profile_photo: reader.result as string,
+        });
       };
       reader.readAsDataURL(file);
     }
@@ -86,12 +98,19 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ open, setOpen }) => {
     setUpdatedUserInfo({ ...updatedUserInfo, [field]: value });
   };
 
-  const handlePasswordChange = (field: keyof EmployeeBasicInfoUpdater, value: string) => {
+  const handlePasswordChange = (
+    field: keyof EmployeeBasicInfoUpdater,
+    value: string
+  ) => {
     setPasswordUpdater((prev) => ({ ...prev, [field]: value }));
   };
 
   const validatePasswords = () => {
-    const errors = { currentPassword: "", newPassword: "", confirmPassword: "" };
+    const errors = {
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    };
 
     if (!passwordUpdater.currentPassword) {
       errors.currentPassword = "Current password is required.";
@@ -122,12 +141,15 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ open, setOpen }) => {
       // Log password payload without confirmPassword
       const { currentPassword, newPassword } = passwordUpdater;
       console.log("Password update payload:", { currentPassword, newPassword });
-
     }
 
     console.log("passwordUpdater", passwordUpdater);
-    dispatch(updateEmployeeBasicInfo({employeeData:passwordUpdater, profilePhoto:uploadedProfilePhoto}));
-    
+    dispatch(
+      updateEmployeeBasicInfo({
+        employeeData: passwordUpdater,
+        profilePhoto: uploadedProfilePhoto,
+      })
+    );
 
     // Update the current user info state
     setCurrentUserInfo({ ...currentUserInfo, ...updatedUserInfo } as Employee);
@@ -173,7 +195,9 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ open, setOpen }) => {
               src={
                 profilePhotoPreview ||
                 (currentUserInfo?.profile_photo
-                  ? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(currentUserInfo.profile_photo)}`
+                  ? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(
+                      currentUserInfo.profile_photo
+                    )}`
                   : undefined)
               }
             />
@@ -237,7 +261,9 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ open, setOpen }) => {
                 error={!!passwordErrors.currentPassword}
                 helperText={passwordErrors.currentPassword}
                 value={passwordUpdater.currentPassword}
-                onChange={(e) => handlePasswordChange("currentPassword", e.target.value)}
+                onChange={(e) =>
+                  handlePasswordChange("currentPassword", e.target.value)
+                }
               />
               <TextField
                 label="New Password"
@@ -247,7 +273,9 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ open, setOpen }) => {
                 error={!!passwordErrors.newPassword}
                 helperText={passwordErrors.newPassword}
                 value={passwordUpdater.newPassword}
-                onChange={(e) => handlePasswordChange("newPassword", e.target.value)}
+                onChange={(e) =>
+                  handlePasswordChange("newPassword", e.target.value)
+                }
               />
               <TextField
                 label="Confirm Password"

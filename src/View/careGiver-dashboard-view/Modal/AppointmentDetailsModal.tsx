@@ -16,7 +16,10 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import RepeatIcon from "@mui/icons-material/Repeat";
 import { Modal } from "antd"; // Ant Design Modal
 import { useAppSelector } from "@slices/store";
-import { Appointment, AppointmentCareGiver } from "@slices/AppointmentSlice/appointment";
+import {
+  Appointment,
+  AppointmentCareGiver,
+} from "@slices/appointmentSlice/appointment";
 import FileViewerWithModal from "../../../component/common/FileViewerWithModal";
 import { FILE_DOWNLOAD_BASE_URL } from "@config/config";
 import RecurrenceCard from "../components/RecurrentCard";
@@ -32,7 +35,10 @@ const AppointmentDetailsModal: React.FC<AppointmentDetailsModalProps> = ({
 }) => {
   const theme = useTheme();
   const appointmentSlice = useAppSelector((state) => state.appointments);
-  const [selectedCareGiverRecurrentDetails,setSelectedCareGiverRecurrentDetails] = useState<AppointmentCareGiver | null>(null);
+  const [
+    selectedCareGiverRecurrentDetails,
+    setSelectedCareGiverRecurrentDetails,
+  ] = useState<AppointmentCareGiver | null>(null);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment>({
     appointmentID: "",
     title: "",
@@ -82,7 +88,11 @@ const AppointmentDetailsModal: React.FC<AppointmentDetailsModalProps> = ({
   useEffect(() => {
     if (appointmentSlice.selectedAppointment !== null) {
       setSelectedAppointment(appointmentSlice.selectedAppointment);
-      const data = appointmentSlice?.careGvierAppointments?.find((item) => item.appointmentData?.appointmentID === appointmentSlice.selectedAppointment?.appointmentID);
+      const data = appointmentSlice?.careGvierAppointments?.find(
+        (item) =>
+          item.appointmentData?.appointmentID ===
+          appointmentSlice.selectedAppointment?.appointmentID
+      );
       if (data) {
         setSelectedCareGiverRecurrentDetails(data);
       }
@@ -93,7 +103,6 @@ const AppointmentDetailsModal: React.FC<AppointmentDetailsModalProps> = ({
     setCurrentFile(file);
     setFileViewerOpen(true);
   };
-
 
   const handleDownloadFile = (file: string) => {
     const encodedFilePath = encodeURIComponent(file);
@@ -142,10 +151,13 @@ const AppointmentDetailsModal: React.FC<AppointmentDetailsModalProps> = ({
             </Typography>
             <Typography variant="body1" color="textSecondary">
               Type:{" "}
-              {appointmentSlice?.appointmentTypes?.find(
-                (type) =>
-                  type.appointmentTypeID === selectedAppointment.appointmentTypeID
-              )?.name}
+              {
+                appointmentSlice?.appointmentTypes?.find(
+                  (type) =>
+                    type.appointmentTypeID ===
+                    selectedAppointment.appointmentTypeID
+                )?.name
+              }
             </Typography>
 
             {/* Time Details */}
@@ -260,11 +272,11 @@ const AppointmentDetailsModal: React.FC<AppointmentDetailsModalProps> = ({
             </Grid>
           </Stack>
           <Stack width="100%">
-            {
-              selectedCareGiverRecurrentDetails?.allocations?.map((allocation) =>
-              <RecurrenceCard {...allocation} />
+            {selectedCareGiverRecurrentDetails?.allocations?.map(
+              (allocation) => (
+                <RecurrenceCard {...allocation} />
               )
-            }
+            )}
           </Stack>
         </Stack>
       </Modal>

@@ -22,50 +22,61 @@ import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { State } from "../../../types/types";
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
-import { Appointment, fetchAppointmentTypes, fetchSingleAppointment } from "../../../slices/AppointmentSlice/appointment";
+import {
+  Appointment,
+  fetchAppointmentTypes,
+  fetchSingleAppointment,
+} from "../../../slices/appointmentSlice/appointment";
 
 function CustomToolbar() {
   return (
     <GridToolbarContainer>
-      <GridToolbarColumnsButton/>
-      <GridToolbarFilterButton/>
+      <GridToolbarColumnsButton />
+      <GridToolbarFilterButton />
       <GridToolbarQuickFilter placeholder="Search" />
     </GridToolbarContainer>
   );
 }
- 
 
 interface ClientTableProps {
-  isCarePlanModalVisible: boolean; 
+  isCarePlanModalVisible: boolean;
   setIsCarePlanModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const AppointmentTable = ({isCarePlanModalVisible,setIsCarePlanModalVisible}: ClientTableProps) => {
-  const appointmentSlice  = useAppSelector((state)=>state.appointments);
+const AppointmentTable = ({
+  isCarePlanModalVisible,
+  setIsCarePlanModalVisible,
+}: ClientTableProps) => {
+  const appointmentSlice = useAppSelector((state) => state.appointments);
   const [Appointments, setAppointments] = useState<Appointment[]>([]);
   const theme = useTheme();
   const dispatch = useAppDispatch();
 
-  useEffect(()=>{    
+  useEffect(() => {
     setAppointments(appointmentSlice.appointments);
-  },[appointmentSlice.state,appointmentSlice?.appointments])
+  }, [appointmentSlice.state, appointmentSlice?.appointments]);
 
   const initialColumns: GridColDef[] = [
-    { field: "appointmentID", headerName: "Appointment ID", width: 100, align: "left" },
-    { field: "title", headerName: "Title",flex:1 },
-    { 
-      field: "appointmentTypeID", 
+    {
+      field: "appointmentID",
+      headerName: "Appointment ID",
+      width: 100,
+      align: "left",
+    },
+    { field: "title", headerName: "Title", flex: 1 },
+    {
+      field: "appointmentTypeID",
       headerName: "Appointment Type",
       renderCell: (params) => {
         const appointmentType = appointmentSlice.appointmentTypes.find(
           (type) => type.appointmentTypeID === params.value
         );
-    
+
         return (
           <Chip
-          size="small"
+            size="small"
             label={appointmentType?.name || "Unknown"}
             style={{
               backgroundColor: appointmentType?.color || "#ccc", // Set chip color from the type
@@ -73,8 +84,8 @@ const AppointmentTable = ({isCarePlanModalVisible,setIsCarePlanModalVisible}: Cl
             }}
           />
         );
-      }
-    }, 
+      },
+    },
     {
       field: "startDate",
       headerName: "Start Date",
@@ -97,10 +108,11 @@ const AppointmentTable = ({isCarePlanModalVisible,setIsCarePlanModalVisible}: Cl
         const navigate = useNavigate();
         return (
           <Stack flexDirection="row">
-  
             <IconButton
               aria-label="view"
-              onClick={() => {dispatch(fetchSingleAppointment(params?.row?.appointmentID))}}
+              onClick={() => {
+                dispatch(fetchSingleAppointment(params?.row?.appointmentID));
+              }}
             >
               <RemoveRedEyeOutlinedIcon />
             </IconButton>
@@ -109,7 +121,6 @@ const AppointmentTable = ({isCarePlanModalVisible,setIsCarePlanModalVisible}: Cl
       },
     },
   ];
-
 
   return (
     <Box sx={{ height: "100%", width: "100%" }}>
@@ -130,7 +141,6 @@ const AppointmentTable = ({isCarePlanModalVisible,setIsCarePlanModalVisible}: Cl
           toolbar: CustomToolbar,
         }}
         sx={{
-          
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: "white",
           },
@@ -146,4 +156,4 @@ const AppointmentTable = ({isCarePlanModalVisible,setIsCarePlanModalVisible}: Cl
   );
 };
 
-export default AppointmentTable
+export default AppointmentTable;

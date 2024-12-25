@@ -27,7 +27,7 @@ import {
   saveAppointment,
   updateAppointment,
   updateRecurrentAppointment,
-} from "@slices/AppointmentSlice/appointment";
+} from "@slices/appointmentSlice/appointment";
 import AppointmentParticipantTable from "../../../component/common/AppointmentParticipantTable";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { State } from "../../../types/types";
@@ -42,7 +42,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import { Autocomplete, LoadScript } from "@react-google-maps/api";
-import { CareGiver } from "@slices/CareGiverSlice/careGiver";
+import { CareGiver } from "@slices/careGiverSlice/careGiver";
 import { set } from "date-fns";
 import { UIShowingFile } from "./AddNoteForm";
 import FileViewerWithModal from "@component/common/FileViewerWithModal";
@@ -59,18 +59,16 @@ interface CaregiverInfo {
   status: string;
 }
 
-
 interface AppointmentFormProps {
   isEditMode: boolean;
   activeStep: number;
-  selectedRecurrentAppointment: RecurrentAppointmentValues| null;
-
+  selectedRecurrentAppointment: RecurrentAppointmentValues | null;
 }
 
 const AppointmentForm: React.FC<AppointmentFormProps> = ({
   isEditMode,
   activeStep,
-  selectedRecurrentAppointment
+  selectedRecurrentAppointment,
 }) => {
   const [appointmentParticipants, setAppointmentsParticipants] = useState<
     CaregiverInfo[]
@@ -149,125 +147,144 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
     },
   });
 
-
   // Validation schema using Yup
-const validationSchema = Yup.object({
-  title: Yup.string().required("Title is required"),
-  appointmentTypeID: Yup.string().required("Appointment Type is required"),
-  // clientID: Yup.string().required("Client ID is required"),
-  caregiverCount: Yup.number()
-    .required("Caregiver Count is required")
-    .positive()
-    .integer(),
+  const validationSchema = Yup.object({
+    title: Yup.string().required("Title is required"),
+    appointmentTypeID: Yup.string().required("Appointment Type is required"),
+    // clientID: Yup.string().required("Client ID is required"),
+    caregiverCount: Yup.number()
+      .required("Caregiver Count is required")
+      .positive()
+      .integer(),
     startDate: Yup.date()
-    .required("Start Date is required")
-    .test("is-valid-start-date", "Start Date cannot be in the past.", (value) => {
-      if (!value) return false;
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // Start of today's date
-      const selectedDate = new Date(value);
-      return selectedDate >= today; // Check if the selected date is today or later
-    }),
+      .required("Start Date is required")
+      .test(
+        "is-valid-start-date",
+        "Start Date cannot be in the past.",
+        (value) => {
+          if (!value) return false;
+          const today = new Date();
+          today.setHours(0, 0, 0, 0); // Start of today's date
+          const selectedDate = new Date(value);
+          return selectedDate >= today; // Check if the selected date is today or later
+        }
+      ),
 
-  startTime: Yup.string()
-    .required("Start Time is required")
-    .test("is-valid-start-time", "Start Time cannot be in the past.", function (value) {
-      const { startDate } = this.parent;
-      if (!startDate || !value) return true; // Skip validation if date or time is missing      
-      const selectedDateTime = parseDateTime(startDate, value);   
-      return selectedDateTime ? selectedDateTime >= new Date() : true; // Ensure date-time is now or later
-    }),
+    startTime: Yup.string()
+      .required("Start Time is required")
+      .test(
+        "is-valid-start-time",
+        "Start Time cannot be in the past.",
+        function (value) {
+          const { startDate } = this.parent;
+          if (!startDate || !value) return true; // Skip validation if date or time is missing
+          const selectedDateTime = parseDateTime(startDate, value);
+          return selectedDateTime ? selectedDateTime >= new Date() : true; // Ensure date-time is now or later
+        }
+      ),
 
-  endDate: Yup.date()
-    .required("End Date is required")
-    .test("is-valid-end-date", "End Date cannot be before Start Date.", function (value) {
-      const { startDate } = this.parent;
-      if (!startDate || !value) return true; // Skip validation if date is missing
-      const startDateTime = new Date(startDate);
-      const endDateTime = new Date(value);
-      return endDateTime >= startDateTime; // Ensure end date is same or after start date
-    }),
+    endDate: Yup.date()
+      .required("End Date is required")
+      .test(
+        "is-valid-end-date",
+        "End Date cannot be before Start Date.",
+        function (value) {
+          const { startDate } = this.parent;
+          if (!startDate || !value) return true; // Skip validation if date is missing
+          const startDateTime = new Date(startDate);
+          const endDateTime = new Date(value);
+          return endDateTime >= startDateTime; // Ensure end date is same or after start date
+        }
+      ),
 
-  endTime: Yup.string()
-    .required("End Time is required")
-    .test("is-valid-end-time", "End Time cannot be before Start Time.", function (value) {
-      const { startDate, startTime, endDate } = this.parent;
-      if (!startDate || !startTime || !endDate || !value) return true; // Skip validation if any field is missing
-      const startDateTime = parseDateTime(startDate, startTime);
-      const endDateTime = parseDateTime(endDate, value);
-      return startDateTime && endDateTime ? endDateTime >= startDateTime : true; // Ensure end time is same or after start time
+    endTime: Yup.string()
+      .required("End Time is required")
+      .test(
+        "is-valid-end-time",
+        "End Time cannot be before Start Time.",
+        function (value) {
+          const { startDate, startTime, endDate } = this.parent;
+          if (!startDate || !startTime || !endDate || !value) return true; // Skip validation if any field is missing
+          const startDateTime = parseDateTime(startDate, startTime);
+          const endDateTime = parseDateTime(endDate, value);
+          return startDateTime && endDateTime
+            ? endDateTime >= startDateTime
+            : true; // Ensure end time is same or after start time
+        }
+      ),
+    // duration: Yup.number().required("Duration is required").positive(),
+    // comment: Yup.string().required("Comment is required"),
+    // carePlanID: Yup.string().required("Care Plan ID is required"),
+    // taskID: Yup.string().required("Task ID is required"),
+    broadcastType: Yup.string().required("Broadcast Type is required"),
+    appointmentAddress: Yup.object({
+      // Add validation for nested appointment address if necessary
+      // e.g. street, city, zip code
     }),
-  // duration: Yup.number().required("Duration is required").positive(),
-  // comment: Yup.string().required("Comment is required"),
-  // carePlanID: Yup.string().required("Care Plan ID is required"),
-  // taskID: Yup.string().required("Task ID is required"),
-  broadcastType: Yup.string().required("Broadcast Type is required"),
-  appointmentAddress: Yup.object({
-    // Add validation for nested appointment address if necessary
-    // e.g. street, city, zip code
-  }),
-  recurrenceState: Yup.boolean().required("Recurrence State is required"),
-  recurrentWork: Yup.object().shape({
-    recurrenceType: Yup.string().when("recurrenceState", {
-      is: true,
-      then: Yup.string().required("Recurrence Type is required"),
+    recurrenceState: Yup.boolean().required("Recurrence State is required"),
+    recurrentWork: Yup.object().shape({
+      recurrenceType: Yup.string().when("recurrenceState", {
+        is: true,
+        then: Yup.string().required("Recurrence Type is required"),
+      }),
+      startDate: Yup.string().when("recurrenceState", {
+        is: true,
+        then: Yup.string().required("Recurrence Start Date is required"),
+      }),
+      endDate: Yup.string().when("recurrenceState", {
+        is: true,
+        then: Yup.string().required("Recurrence End Date is required"),
+      }),
+      frequencyCount: Yup.number().when("recurrenceState", {
+        is: true,
+        then: Yup.number()
+          .required("Frequency Count is required")
+          .positive()
+          .integer(),
+      }),
+      day: Yup.string().when("recurrenceState", {
+        is: true,
+        then: Yup.string().required("Day is required"),
+      }),
+      occurrenceLimit: Yup.number().when("recurrenceState", {
+        is: true,
+        then: Yup.number()
+          .required("Occurrence Limit is required")
+          .positive()
+          .integer(),
+      }),
     }),
-    startDate: Yup.string().when("recurrenceState", {
-      is: true,
-      then: Yup.string().required("Recurrence Start Date is required"),
-    }),
-    endDate: Yup.string().when("recurrenceState", {
-      is: true,
-      then: Yup.string().required("Recurrence End Date is required"),
-    }),
-    frequencyCount: Yup.number().when("recurrenceState", {
-      is: true,
-      then: Yup.number()
-        .required("Frequency Count is required")
-        .positive()
-        .integer(),
-    }),
-    day: Yup.string().when("recurrenceState", {
-      is: true,
-      then: Yup.string().required("Day is required"),
-    }),
-    occurrenceLimit: Yup.number().when("recurrenceState", {
-      is: true,
-      then: Yup.number()
-        .required("Occurrence Limit is required")
-        .positive()
-        .integer(),
-    }),
-  }),
-});
-
-
-
+  });
 
   useEffect(() => {
     if (appointmentSlice?.selectedAppointment) {
       setInitialValues({
         ...appointmentSlice.selectedAppointment,
         jobAssigns: {
-          assigner: appointmentSlice?.selectedAppointment?.jobAssigns?.assigner ?? "EM00001",
-          careGiverIDs: appointmentSlice?.selectedAppointment?.jobAssigns?.careGiverIDs ?? [],
-          appointmentID: appointmentSlice?.selectedAppointment?.appointmentID ?? "",
-          taskID: appointmentSlice?.selectedAppointment?.jobAssigns?.taskID ?? "",
-          assignType: appointmentSlice?.selectedAppointment?.jobAssigns?.assignType ?? ""
-        }
-        
+          assigner:
+            appointmentSlice?.selectedAppointment?.jobAssigns?.assigner ??
+            "EM00001",
+          careGiverIDs:
+            appointmentSlice?.selectedAppointment?.jobAssigns?.careGiverIDs ??
+            [],
+          appointmentID:
+            appointmentSlice?.selectedAppointment?.appointmentID ?? "",
+          taskID:
+            appointmentSlice?.selectedAppointment?.jobAssigns?.taskID ?? "",
+          assignType:
+            appointmentSlice?.selectedAppointment?.jobAssigns?.assignType ?? "",
+        },
       });
-      if(selectedRecurrentAppointment!=null){
+      if (selectedRecurrentAppointment != null) {
         setInitialValues({
           ...appointmentSlice.selectedAppointment,
-          startDate:selectedRecurrentAppointment.startDate,
-          endDate:selectedRecurrentAppointment.endDate,
-          startTime:selectedRecurrentAppointment.startTime,
-          endTime:selectedRecurrentAppointment.endTime,
-          comment:selectedRecurrentAppointment.comment
-        })
+          startDate: selectedRecurrentAppointment.startDate,
+          endDate: selectedRecurrentAppointment.endDate,
+          startTime: selectedRecurrentAppointment.startTime,
+          endTime: selectedRecurrentAppointment.endTime,
+          comment: selectedRecurrentAppointment.comment,
+        });
       }
-      
 
       if (appointmentSlice.selectedAppointment?.attachments) {
         setUIShowingFile(
@@ -278,7 +295,7 @@ const validationSchema = Yup.object({
           }))
         );
       }
-    }else{
+    } else {
       setAppointmentsParticipants([]);
       setInitialValues({
         appointmentID: "",
@@ -322,9 +339,9 @@ const validationSchema = Yup.object({
           assignType: "",
           assigner: "EM00001",
         },
-      })
+      });
     }
-  }, [appointmentSlice?.selectedAppointment,selectedRecurrentAppointment]);
+  }, [appointmentSlice?.selectedAppointment, selectedRecurrentAppointment]);
 
   useEffect(() => {
     if (appointmentSlice.state === State.success) {
@@ -334,7 +351,7 @@ const validationSchema = Yup.object({
 
   useEffect(() => {
     console.log("Client Slice", clientSlice.clients);
-    
+
     setClientList(clientSlice.clients);
     if (clientID) {
       setClientList(
@@ -350,7 +367,7 @@ const validationSchema = Yup.object({
         (careGiver) => careGiver?.status === "Activated"
       )
     );
-  }, [careGiverSlice.state,carePlanSlice?.carePlans]);
+  }, [careGiverSlice.state, carePlanSlice?.carePlans]);
 
   useEffect(() => {
     setCareGivers(
@@ -450,38 +467,48 @@ const validationSchema = Yup.object({
     }
   };
 
-  const handleSubmit = async (values: Appointment, formikHelpers: FormikHelpers<Appointment>) => {
+  const handleSubmit = async (
+    values: Appointment,
+    formikHelpers: FormikHelpers<Appointment>
+  ) => {
     const errors = await formikHelpers.validateForm();
 
-    if (selectedRecurrentAppointment!=null) {
+    if (selectedRecurrentAppointment != null) {
       const recurrentWorkValues: RecurrentAppointmentValues = {
-        recurrentAppointmentID:selectedRecurrentAppointment.recurrentAppointmentID,
-        startDate:values.startDate,
-        endDate:values.endDate,
-        startTime:values.startTime,
-        endTime:values.endTime,
-        comment:values.comment
-      }
-      console.log("updating recurrnet task ",recurrentWorkValues);
+        recurrentAppointmentID:
+          selectedRecurrentAppointment.recurrentAppointmentID,
+        startDate: values.startDate,
+        endDate: values.endDate,
+        startTime: values.startTime,
+        endTime: values.endTime,
+        comment: values.comment,
+      };
+      console.log("updating recurrnet task ", recurrentWorkValues);
       dispatch(updateRecurrentAppointment(recurrentWorkValues));
-      
-    }else{
+    } else {
       if (Object.keys(errors).length > 0) {
         console.log("Validation Errors:", errors); // Log errors for debugging
         alert("Please fix the validation errors before submitting."); // Optional: Alert user
         return; // Prevent submission
       }
-        // Handle form submission (save or update)
-        console.log("Form Submitted", values);
-        values.recurrentWork.startDate = values.startDate;
-        if (values.jobAssigns.careGiverIDs?.length>0 || values?.broadcastType=="All Caregivers") {
-          if (appointmentSlice.selectedAppointment) {
-            console.log("value is of ",values.appointmentID);
-            dispatch(updateAppointment({appointmentData:values,files:uploadedFils}));
-          }else{
-            dispatch(saveAppointment({appointmentData:values,files:uploadedFils}));
-          }
+      // Handle form submission (save or update)
+      console.log("Form Submitted", values);
+      values.recurrentWork.startDate = values.startDate;
+      if (
+        values.jobAssigns.careGiverIDs?.length > 0 ||
+        values?.broadcastType == "All Caregivers"
+      ) {
+        if (appointmentSlice.selectedAppointment) {
+          console.log("value is of ", values.appointmentID);
+          dispatch(
+            updateAppointment({ appointmentData: values, files: uploadedFils })
+          );
+        } else {
+          dispatch(
+            saveAppointment({ appointmentData: values, files: uploadedFils })
+          );
         }
+      }
     }
   };
 
@@ -569,19 +596,21 @@ const validationSchema = Yup.object({
             );
           }
         }, [addressDetails]);
-        
 
-        useEffect(()=>{
+        useEffect(() => {
           if (appointmentSlice.selectedAppointment) {
-            validationSchema.validate(appointmentSlice.selectedAppointment).then((valid)=>{
-              console.log("Validation is ",valid);
-            }).catch((err)=>{
-              console.log("Error is ",err);
-              
-              // enqueueSnackbar({message:err.message,variant:"error",anchorOrigin:{horizontal:"right",vertical:"bottom"}});
-            });
+            validationSchema
+              .validate(appointmentSlice.selectedAppointment)
+              .then((valid) => {
+                console.log("Validation is ", valid);
+              })
+              .catch((err) => {
+                console.log("Error is ", err);
+
+                // enqueueSnackbar({message:err.message,variant:"error",anchorOrigin:{horizontal:"right",vertical:"bottom"}});
+              });
           }
-        },[appointmentSlice.selectedAppointment])
+        }, [appointmentSlice.selectedAppointment]);
 
         return (
           <Form>
@@ -758,8 +787,7 @@ const validationSchema = Yup.object({
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={12} sm={3}
-                  >
+                  <Grid item xs={12} sm={3}>
                     <TextField
                       fullWidth
                       label="Start Date"
@@ -768,10 +796,19 @@ const validationSchema = Yup.object({
                       value={values.startDate}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      sx={{backgroundColor:selectedRecurrentAppointment?theme.palette.background.default:""}}
+                      sx={{
+                        backgroundColor: selectedRecurrentAppointment
+                          ? theme.palette.background.default
+                          : "",
+                      }}
                       error={touched.startDate && Boolean(errors.startDate)}
                       helperText={touched.startDate && errors.startDate}
-                      InputProps={{ readOnly: selectedRecurrentAppointment && isEditMode===true?false:!isEditMode }}
+                      InputProps={{
+                        readOnly:
+                          selectedRecurrentAppointment && isEditMode === true
+                            ? false
+                            : !isEditMode,
+                      }}
                       InputLabelProps={{ shrink: true }}
                     />
                   </Grid>
@@ -783,13 +820,22 @@ const validationSchema = Yup.object({
                       label="Start Time"
                       type="time"
                       name="startTime"
-                      sx={{backgroundColor:selectedRecurrentAppointment?theme.palette.background.default:""}}
+                      sx={{
+                        backgroundColor: selectedRecurrentAppointment
+                          ? theme.palette.background.default
+                          : "",
+                      }}
                       value={values.startTime}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       error={touched.startTime && Boolean(errors.startTime)}
                       helperText={touched.startTime && errors.startTime}
-                      InputProps={{ readOnly: selectedRecurrentAppointment && isEditMode===true?false:!isEditMode }}
+                      InputProps={{
+                        readOnly:
+                          selectedRecurrentAppointment && isEditMode === true
+                            ? false
+                            : !isEditMode,
+                      }}
                       InputLabelProps={{ shrink: true }}
                     />
                   </Grid>
@@ -801,13 +847,22 @@ const validationSchema = Yup.object({
                       label="End Date"
                       type="date"
                       name="endDate"
-                      sx={{backgroundColor:selectedRecurrentAppointment?theme.palette.background.default:""}}
+                      sx={{
+                        backgroundColor: selectedRecurrentAppointment
+                          ? theme.palette.background.default
+                          : "",
+                      }}
                       value={values.endDate}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       error={touched.endDate && Boolean(errors.endDate)}
                       helperText={touched.endDate && errors.endDate}
-                      InputProps={{ readOnly: selectedRecurrentAppointment && isEditMode===true?false:!isEditMode }}
+                      InputProps={{
+                        readOnly:
+                          selectedRecurrentAppointment && isEditMode === true
+                            ? false
+                            : !isEditMode,
+                      }}
                       InputLabelProps={{ shrink: true }}
                     />
                   </Grid>
@@ -819,13 +874,22 @@ const validationSchema = Yup.object({
                       label="End Time"
                       type="time"
                       name="endTime"
-                      sx={{backgroundColor:selectedRecurrentAppointment?theme.palette.background.default:""}}
+                      sx={{
+                        backgroundColor: selectedRecurrentAppointment
+                          ? theme.palette.background.default
+                          : "",
+                      }}
                       value={values.endTime}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       error={touched.endTime && Boolean(errors.endTime)}
                       helperText={touched.endTime && errors.endTime}
-                      InputProps={{ readOnly: selectedRecurrentAppointment && isEditMode===true?false:!isEditMode }}
+                      InputProps={{
+                        readOnly:
+                          selectedRecurrentAppointment && isEditMode === true
+                            ? false
+                            : !isEditMode,
+                      }}
                       InputLabelProps={{ shrink: true }}
                     />
                   </Grid>
@@ -1054,12 +1118,21 @@ const validationSchema = Yup.object({
                       value={values.comment}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      sx={{backgroundColor:selectedRecurrentAppointment?theme.palette.background.default:""}}
+                      sx={{
+                        backgroundColor: selectedRecurrentAppointment
+                          ? theme.palette.background.default
+                          : "",
+                      }}
                       error={touched.comment && Boolean(errors.comment)}
                       helperText={touched.comment && errors.comment}
                       multiline
                       rows={2}
-                      InputProps={{ readOnly: selectedRecurrentAppointment && isEditMode===true?false:!isEditMode }}
+                      InputProps={{
+                        readOnly:
+                          selectedRecurrentAppointment && isEditMode === true
+                            ? false
+                            : !isEditMode,
+                      }}
                     />
                   </Grid>
                 </>
@@ -1070,26 +1143,28 @@ const validationSchema = Yup.object({
                   <Grid container spacing={2}>
                     {/* Address Search */}
                     <Grid item xs={12} sm={6}>
-                        <Autocomplete
-                          onLoad={(autocompleteInstance) => setAutocomplete(autocompleteInstance)}
-                          onPlaceChanged={() => {
-                            if (autocomplete) {
-                              const place = autocomplete.getPlace();
-                              console.log("Selected Place:", place); // Check the place object
-                              handleAddressSelect(place); // Pass the place data to the handler
-                            }
-                          }}
-                        >
-                          <TextField
-                            label="Search Address"
-                            variant="outlined"
-                            fullWidth
-                            InputProps={{ readOnly: !isEditMode }}
-                            name="search"
-                            value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
-                          />
-                        </Autocomplete>
+                      <Autocomplete
+                        onLoad={(autocompleteInstance) =>
+                          setAutocomplete(autocompleteInstance)
+                        }
+                        onPlaceChanged={() => {
+                          if (autocomplete) {
+                            const place = autocomplete.getPlace();
+                            console.log("Selected Place:", place); // Check the place object
+                            handleAddressSelect(place); // Pass the place data to the handler
+                          }
+                        }}
+                      >
+                        <TextField
+                          label="Search Address"
+                          variant="outlined"
+                          fullWidth
+                          InputProps={{ readOnly: !isEditMode }}
+                          name="search"
+                          value={searchInput}
+                          onChange={(e) => setSearchInput(e.target.value)}
+                        />
+                      </Autocomplete>
                     </Grid>
 
                     {/* Address */}
@@ -1101,7 +1176,7 @@ const validationSchema = Yup.object({
                         required
                         onBlur={handleBlur}
                         name="appointmentAddress.address"
-                        InputProps={{ readOnly: !isEditMode }}                        
+                        InputProps={{ readOnly: !isEditMode }}
                         value={values.appointmentAddress.address}
                         onChange={handleChange}
                         error={
@@ -1180,9 +1255,8 @@ const validationSchema = Yup.object({
                     </Grid>
                   </Grid>
                   {/* Broadcast Type */}
-                  {
-                    appointmentSlice.selectedAppointment==null && (
-                      <Grid container spacing={2}>
+                  {appointmentSlice.selectedAppointment == null && (
+                    <Grid container spacing={2}>
                       <Grid item xs={12} sm={12}>
                         <FormControl fullWidth>
                           <InputLabel>Broadcast Type</InputLabel>
@@ -1224,33 +1298,35 @@ const validationSchema = Yup.object({
                                 }
                                 renderValue={(selected) => (
                                   <div>
-                                    {(selected as string[]).map((id:string) => {
-                                      const caregiver = careGivers.find(
-                                        (c) => c.careGiverID === id
-                                      );
-                                      return (
-                                        caregiver && (
-                                          <Chip
-                                            key={caregiver?.careGiverID}
-                                            label={`${caregiver.employee?.firstName} ${caregiver?.employee?.lastName}`}
-                                            avatar={
-                                              <Avatar
-                                                src={
-                                                  caregiver.employee
-                                                    ?.profile_photo
-                                                    ? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(
-                                                        caregiver.employee
-                                                          ?.profile_photo
-                                                      )}`
-                                                    : ""
-                                                }
-                                                alt={`${caregiver.employee?.firstName} ${caregiver.employee?.lastName}`}
-                                              />
-                                            }
-                                          />
-                                        )
-                                      );
-                                    })}
+                                    {(selected as string[]).map(
+                                      (id: string) => {
+                                        const caregiver = careGivers.find(
+                                          (c) => c.careGiverID === id
+                                        );
+                                        return (
+                                          caregiver && (
+                                            <Chip
+                                              key={caregiver?.careGiverID}
+                                              label={`${caregiver.employee?.firstName} ${caregiver?.employee?.lastName}`}
+                                              avatar={
+                                                <Avatar
+                                                  src={
+                                                    caregiver.employee
+                                                      ?.profile_photo
+                                                      ? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(
+                                                          caregiver.employee
+                                                            ?.profile_photo
+                                                        )}`
+                                                      : ""
+                                                  }
+                                                  alt={`${caregiver.employee?.firstName} ${caregiver.employee?.lastName}`}
+                                                />
+                                              }
+                                            />
+                                          )
+                                        );
+                                      }
+                                    )}
                                   </div>
                                 )}
                               >
@@ -1291,15 +1367,12 @@ const validationSchema = Yup.object({
                               caregivers={appointmentParticipants}
                               key={"participants"}
                               onDelete={handleDeleteOfParticipant}
-                              
                             />
                           </Grid>
                         </>
                       )}
                     </Grid>
-                    )
-                  }
-                  
+                  )}
                 </>
               )}
               {activeStep === 2 && (
@@ -1351,10 +1424,10 @@ const validationSchema = Yup.object({
               <Grid item xs={12}>
                 <Stack direction="row" spacing={2}>
                   <button
-                  id="carePlan-submit-btn"
+                    id="carePlan-submit-btn"
                     type="submit"
                     disabled={!isEditMode}
-                    style={{display:"none"}}
+                    style={{ display: "none" }}
                   >
                     {isEditMode ? "Save Changes" : "View Appointment"}
                   </button>

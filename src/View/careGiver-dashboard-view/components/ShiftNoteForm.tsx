@@ -28,7 +28,7 @@ import {
   ShiftNoteDocuments,
   updatehiftNotes,
   updateShiftNote,
-} from "../../../slices/ShiftNoteSlice/ShiftNote";
+} from "../../../slices/shiftNoteSlice/shiftNote";
 import { APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN } from "@config/config";
 
 // Validation schema using Yup
@@ -88,7 +88,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
   isEditMode,
   selectedShiftNote,
   setSelectedShiftNote,
-  pureNew
+  pureNew,
 }) => {
   const [jobType, setJobType] = useState<"appointment" | "task" | "none">(
     "none"
@@ -268,10 +268,10 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
       enableReinitialize={true}
       onSubmit={(values, { setSubmitting }) => {
         const notePayload: updateShiftNote = { ...values };
-        if(pureNew){
-            notePayload.employeeID = authUser?.userID || "";
-            dispatch(saveShiftNotes({notes:notePayload,files:uploadedFils}));
-        }else{
+        if (pureNew) {
+          notePayload.employeeID = authUser?.userID || "";
+          dispatch(saveShiftNotes({ notes: notePayload, files: uploadedFils }));
+        } else {
           if (shiftNoteStates?.selectedShiftNote) {
             notePayload.documents = previouslyUploadedFiles;
             dispatch(
@@ -279,11 +279,11 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
             );
           } else {
             notePayload.noteID = selectedShiftNote?.shiftNoteID || "";
-            dispatch(saveShiftNotes({ notes: notePayload, files: uploadedFils }));
+            dispatch(
+              saveShiftNotes({ notes: notePayload, files: uploadedFils })
+            );
           }
         }
-
-
       }}
     >
       {({

@@ -3,7 +3,7 @@ import { APIService } from "../../utils/apiService";
 import { State } from "../../types/types";
 import { AppConfig } from "../../config/config";
 import { enqueueSnackbarMessage } from "../commonSlice/common";
-import { SnackMessage } from "../../Config/constant";
+import { SnackMessage } from "../../config/constant";
 import axios, { HttpStatusCode } from "axios";
 
 export interface ShortTermGoal {
@@ -173,176 +173,178 @@ export const fetchAllCarePlans = createAsyncThunk(
 
 // Fetch care plans by clientID
 export const fetchSingleCarePlan = createAsyncThunk(
-    "carePlans/fetchSingleCarePlan",
-    async (carePlanID: String, { dispatch, rejectWithValue }) => {
-      return new Promise<CarePlan>((resolve, reject) => {
-        APIService.getInstance()
-          .get(AppConfig.serviceUrls.carePlans + `/${carePlanID}`)
-          .then((response) => {
-            console.log("care plan response", response.data);
-            resolve(response.data);
-          })
-          .catch((error) => {
-            if (axios.isCancel(error)) {
-              return rejectWithValue("Request canceled");
-            }
-            dispatch(
-              enqueueSnackbarMessage({
-                message:
-                  error.response?.status === HttpStatusCode.InternalServerError
-                    ? SnackMessage.error.fetchCarePlans
-                    : String(error.response?.data?.message),
-                type: "error",
-              })
-            );
-            reject(error.response?.data?.message);
-          });
-      });
-    }
-  );
-
+  "carePlans/fetchSingleCarePlan",
+  async (carePlanID: String, { dispatch, rejectWithValue }) => {
+    return new Promise<CarePlan>((resolve, reject) => {
+      APIService.getInstance()
+        .get(AppConfig.serviceUrls.carePlans + `/${carePlanID}`)
+        .then((response) => {
+          console.log("care plan response", response.data);
+          resolve(response.data);
+        })
+        .catch((error) => {
+          if (axios.isCancel(error)) {
+            return rejectWithValue("Request canceled");
+          }
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.fetchCarePlans
+                  : String(error.response?.data?.message),
+              type: "error",
+            })
+          );
+          reject(error.response?.data?.message);
+        });
+    });
+  }
+);
 
 // Fetch careplans by clientID
 export const saveCarePlan = createAsyncThunk(
-    "carePlans/saveCarePlan",
-    async (payload:CarePlan, { dispatch, rejectWithValue }) => {
-      return new Promise<CarePlan>((resolve, reject) => {
-        APIService.getInstance()
-          .post(AppConfig.serviceUrls.carePlans,payload)
-          .then((response) => {
-            dispatch(
-                enqueueSnackbarMessage({
-                  message: SnackMessage.success.saveCarePlans,
-                  type: 'success',
-                })
-              );
-            resolve(response.data);
-          })
-          .catch((error) => {
-            if (axios.isCancel(error)) {
-              return rejectWithValue("Request canceled");
-            }
-            dispatch(
-              enqueueSnackbarMessage({
-                message:
-                  error.response?.status === HttpStatusCode.InternalServerError
-                    ? SnackMessage.error.saveCarePlans
-                    : String(error.response?.data?.message),
-                type: "error",
-              })
-            );
-            reject(error.response?.data?.message);
-          });
-      });
-    }
-  );
+  "carePlans/saveCarePlan",
+  async (payload: CarePlan, { dispatch, rejectWithValue }) => {
+    return new Promise<CarePlan>((resolve, reject) => {
+      APIService.getInstance()
+        .post(AppConfig.serviceUrls.carePlans, payload)
+        .then((response) => {
+          dispatch(
+            enqueueSnackbarMessage({
+              message: SnackMessage.success.saveCarePlans,
+              type: "success",
+            })
+          );
+          resolve(response.data);
+        })
+        .catch((error) => {
+          if (axios.isCancel(error)) {
+            return rejectWithValue("Request canceled");
+          }
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.saveCarePlans
+                  : String(error.response?.data?.message),
+              type: "error",
+            })
+          );
+          reject(error.response?.data?.message);
+        });
+    });
+  }
+);
 
-
-  // Fetch care plans by clientID
+// Fetch care plans by clientID
 export const UpdateCarePlan = createAsyncThunk(
-    "carePlans/UpdateCarePlan",
-    async (payload:CarePlan, { dispatch, rejectWithValue }) => {
-      return new Promise<CarePlan>((resolve, reject) => {
-        APIService.getInstance()
-          .put(AppConfig.serviceUrls.carePlans+`/${payload.careplanID}`,payload)
-          .then((response) => {
-            dispatch(
-                enqueueSnackbarMessage({
-                  message: SnackMessage.success.updateCarePlan,
-                  type: 'success',
-                })
-              );
-            resolve(response.data);
-          })
-          .catch((error) => {
-            if (axios.isCancel(error)) {
-              return rejectWithValue("Request canceled");
-            }
-            dispatch(
-              enqueueSnackbarMessage({
-                message:
-                  error.response?.status === HttpStatusCode.InternalServerError
-                    ? SnackMessage.error.updateCarePlan
-                    : String(error.response?.data?.message),
-                type: "error",
-              })
-            );
-            reject(error.response?.data?.message);
-          });
-      });
-    }
-  );
+  "carePlans/UpdateCarePlan",
+  async (payload: CarePlan, { dispatch, rejectWithValue }) => {
+    return new Promise<CarePlan>((resolve, reject) => {
+      APIService.getInstance()
+        .put(
+          AppConfig.serviceUrls.carePlans + `/${payload.careplanID}`,
+          payload
+        )
+        .then((response) => {
+          dispatch(
+            enqueueSnackbarMessage({
+              message: SnackMessage.success.updateCarePlan,
+              type: "success",
+            })
+          );
+          resolve(response.data);
+        })
+        .catch((error) => {
+          if (axios.isCancel(error)) {
+            return rejectWithValue("Request canceled");
+          }
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.updateCarePlan
+                  : String(error.response?.data?.message),
+              type: "error",
+            })
+          );
+          reject(error.response?.data?.message);
+        });
+    });
+  }
+);
 
+export const saveCarePlanStatus = createAsyncThunk(
+  "carePlans/saveCarePlanStatus",
+  async (payload: CarePlanStatus, { dispatch, rejectWithValue }) => {
+    return new Promise<CarePlanStatus>((resolve, reject) => {
+      APIService.getInstance()
+        .post(AppConfig.serviceUrls.carePlanStatus, payload)
+        .then((response) => {
+          dispatch(
+            enqueueSnackbarMessage({
+              message: SnackMessage.success.saveCarePlanStatus,
+              type: "success",
+            })
+          );
+          resolve(response.data);
+        })
+        .catch((error) => {
+          if (axios.isCancel(error)) {
+            return rejectWithValue("Request canceled");
+          }
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.saveCarePlanStatus
+                  : String(error.response?.data?.message),
+              type: "error",
+            })
+          );
+          reject(error.response?.data?.message);
+        });
+    });
+  }
+);
 
-  export const saveCarePlanStatus = createAsyncThunk(
-    "carePlans/saveCarePlanStatus",
-    async (payload:CarePlanStatus, { dispatch, rejectWithValue }) => {
-      return new Promise<CarePlanStatus>((resolve, reject) => {
-        APIService.getInstance()
-          .post(AppConfig.serviceUrls.carePlanStatus,payload)
-          .then((response) => {
-            dispatch(
-              enqueueSnackbarMessage({
-                message: SnackMessage.success.saveCarePlanStatus,
-                type: "success",
-              })
-            );
-            resolve(response.data);
-          })
-          .catch((error) => {
-            if (axios.isCancel(error)) {
-              return rejectWithValue("Request canceled");
-            }
-            dispatch(
-              enqueueSnackbarMessage({
-                message:
-                  error.response?.status === HttpStatusCode.InternalServerError
-                    ? SnackMessage.error.saveCarePlanStatus
-                    : String(error.response?.data?.message),
-                type: "error",
-              })
-            );
-            reject(error.response?.data?.message);
-          });
-      });
-    }
-  );
-
-  export const updateCarePlanStatus = createAsyncThunk(
-    "carePlans/updateCarePlanStatus",
-    async (payload:CarePlanStatus, { dispatch, rejectWithValue }) => {
-      return new Promise<CarePlanStatus>((resolve, reject) => {
-        APIService.getInstance()
-          .put(AppConfig.serviceUrls.carePlanStatus+`/${payload?.careplanStatusID}`,payload)
-          .then((response) => {
-            dispatch(
-              enqueueSnackbarMessage({
-                message: SnackMessage.success.updateCarePlanStatus,
-                type: "success",
-              })
-            );
-            resolve(response.data);
-          })
-          .catch((error) => {
-            if (axios.isCancel(error)) {
-              return rejectWithValue("Request canceled");
-            }
-            dispatch(
-              enqueueSnackbarMessage({
-                message:
-                  error.response?.status === HttpStatusCode.InternalServerError
-                    ? SnackMessage.error.updateCarePlanStatus
-                    : String(error.response?.data?.message),
-                type: "error",
-              })
-            );
-            reject(error.response?.data?.message);
-          });
-      });
-    }
-  );
-
-
+export const updateCarePlanStatus = createAsyncThunk(
+  "carePlans/updateCarePlanStatus",
+  async (payload: CarePlanStatus, { dispatch, rejectWithValue }) => {
+    return new Promise<CarePlanStatus>((resolve, reject) => {
+      APIService.getInstance()
+        .put(
+          AppConfig.serviceUrls.carePlanStatus +
+            `/${payload?.careplanStatusID}`,
+          payload
+        )
+        .then((response) => {
+          dispatch(
+            enqueueSnackbarMessage({
+              message: SnackMessage.success.updateCarePlanStatus,
+              type: "success",
+            })
+          );
+          resolve(response.data);
+        })
+        .catch((error) => {
+          if (axios.isCancel(error)) {
+            return rejectWithValue("Request canceled");
+          }
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.updateCarePlanStatus
+                  : String(error.response?.data?.message),
+              type: "error",
+            })
+          );
+          reject(error.response?.data?.message);
+        });
+    });
+  }
+);
 
 // Fetch careplans by clientID
 export const fetchCarePlanStatusList = createAsyncThunk(
@@ -381,11 +383,11 @@ const CarePlanSlice = createSlice({
   reducers: {
     resetSubmitState(state) {
       state.submitState = State.idle;
-        state.updateState = State.idle;
+      state.updateState = State.idle;
     },
-    resetSelectedCarePlan(state){
-        state.selectedCarePlan=null;
-      }
+    resetSelectedCarePlan(state) {
+      state.selectedCarePlan = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -506,5 +508,6 @@ const CarePlanSlice = createSlice({
   },
 });
 
-export const { resetSubmitState,resetSelectedCarePlan } = CarePlanSlice.actions;
+export const { resetSubmitState, resetSelectedCarePlan } =
+  CarePlanSlice.actions;
 export default CarePlanSlice.reducer;

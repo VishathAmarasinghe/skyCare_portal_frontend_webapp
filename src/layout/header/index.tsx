@@ -19,11 +19,18 @@ import {
   Tooltip,
 } from "@mui/material";
 import { RootState, useAppDispatch, useAppSelector } from "../../slices/store";
-import { APP_NAME, AppConfig, APPLICATION_ADMIN, APPLICATION_CARE_GIVER, APPLICATION_SUPER_ADMIN, FILE_DOWNLOAD_BASE_URL } from "@config/config";
+import {
+  APP_NAME,
+  AppConfig,
+  APPLICATION_ADMIN,
+  APPLICATION_CARE_GIVER,
+  APPLICATION_SUPER_ADMIN,
+  FILE_DOWNLOAD_BASE_URL,
+} from "@config/config";
 import ProfileDrawer from "../../View/dashboard-view/panel/ProfileDrawer";
 import { APIService } from "@utils/apiService";
-import { logout } from "@slices/authSlice/Auth";
-import { Employee, fetchCurrnetEmployee } from "@slices/EmployeeSlice/employee";
+import { logout } from "@slices/authSlice/auth";
+import { Employee, fetchCurrnetEmployee } from "@slices/employeeSlice/employee";
 import { State } from "../../types/types";
 import { useNavigate } from "react-router-dom";
 
@@ -33,9 +40,9 @@ const Header = () => {
   //drawer open state
   const [open, setOpen] = useState<boolean>(false);
   const dispatch = useAppDispatch();
-  const authUser = useAppSelector((state)=>state.auth.userInfo);
-  const auth = useAppSelector((state)=>state.auth);
-  const roles  = useAppSelector((state)=>state.auth.roles);
+  const authUser = useAppSelector((state) => state.auth.userInfo);
+  const auth = useAppSelector((state) => state.auth);
+  const roles = useAppSelector((state) => state.auth.roles);
   const employeeSlice = useAppSelector((state: RootState) => state.employees);
   const [currentUserInfo, setCurrentUserInfo] = useState<Employee | null>(null);
   const navigate = useNavigate();
@@ -59,13 +66,18 @@ const Header = () => {
   };
 
   useEffect(() => {
-    if(auth?.status === State.success && auth?.mode === "active"){
-      if(auth?.roles.includes(APPLICATION_ADMIN) || auth?.roles.includes(APPLICATION_SUPER_ADMIN)){
-      navigate("/dashboard"); 
-      }else if (auth?.roles.includes(APPLICATION_CARE_GIVER) && auth?.roles.length === 1) {
-        navigate("/dashboard/cg"); 
+    if (auth?.status === State.success && auth?.mode === "active") {
+      if (
+        auth?.roles.includes(APPLICATION_ADMIN) ||
+        auth?.roles.includes(APPLICATION_SUPER_ADMIN)
+      ) {
+        navigate("/dashboard");
+      } else if (
+        auth?.roles.includes(APPLICATION_CARE_GIVER) &&
+        auth?.roles.length === 1
+      ) {
+        navigate("/dashboard/cg");
       }
-
     }
   }, [auth?.status, auth?.mode, auth?.roles]);
 
@@ -116,24 +128,35 @@ const Header = () => {
         <Box sx={{ flexGrow: 0 }}>
           <>
             <Stack flexDirection={"row"} alignItems={"center"} gap={2}>
-            <Box
-                  display="flex"
-                  flexDirection="column"
-                  justifyContent="flex-end"
-                  alignItems="end"
-                >
+              <Box
+                display="flex"
+                flexDirection="column"
+                justifyContent="flex-end"
+                alignItems="end"
+              >
                 <Typography variant="body1" sx={{ fontWeight: 600 }}>
                   {currentUserInfo?.firstName} {currentUserInfo?.lastName}
                 </Typography>
-                <Typography variant="body2">{
-                  roles.includes(APPLICATION_ADMIN) || roles.includes(APPLICATION_SUPER_ADMIN) ? "Admin" : roles?.includes(APPLICATION_CARE_GIVER)? "Care Giver" : "Unknown User"
-                  }</Typography>
+                <Typography variant="body2">
+                  {roles.includes(APPLICATION_ADMIN) ||
+                  roles.includes(APPLICATION_SUPER_ADMIN)
+                    ? "Admin"
+                    : roles?.includes(APPLICATION_CARE_GIVER)
+                    ? "Care Giver"
+                    : "Unknown User"}
+                </Typography>
               </Box>
               <Tooltip title="Open settings">
                 <Avatar
                   onClick={handleOpenUserMenu}
                   sx={{ border: 2, borderColor: "primary.main" }}
-                  src={currentUserInfo?.profile_photo? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(currentUserInfo?.profile_photo)}` : ""}
+                  src={
+                    currentUserInfo?.profile_photo
+                      ? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(
+                          currentUserInfo?.profile_photo
+                        )}`
+                      : ""
+                  }
                   alt={"Avatar"}
                 >
                   {currentUserInfo?.firstName?.charAt(0).toUpperCase()}

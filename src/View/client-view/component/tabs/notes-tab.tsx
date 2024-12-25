@@ -1,81 +1,104 @@
-import React, { useEffect, useState } from 'react'
-import { Button, Stack } from '@mui/material'
-import NotesTable from '../NotesTable';
-import { useSearchParams } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '@slices/store';
-import { fetchNotes, fetchNotesByClientID, resetSubmitState,resetSelectedNote } from '@slices/NotesSlice/notes';
-import AddNewNotesModal from '../../modal/AddNewNotesModal';
-import { State } from '../../../../types/types';
-import { set } from 'date-fns';
+import React, { useEffect, useState } from "react";
+import { Button, Stack } from "@mui/material";
+import NotesTable from "../NotesTable";
+import { useSearchParams } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "@slices/store";
+import {
+  fetchNotes,
+  fetchNotesByClientID,
+  resetSubmitState,
+  resetSelectedNote,
+} from "@slices/notesSlice/notes";
+import AddNewNotesModal from "../../modal/AddNewNotesModal";
+import { State } from "../../../../types/types";
+import { set } from "date-fns";
 
 const NotesTab = () => {
   const [isNoteModalVisible, setIsNoteModalVisible] = useState<boolean>(false);
   const [searchParams] = useSearchParams();
-  const clientID = searchParams.get('clientID');
+  const clientID = searchParams.get("clientID");
   const dispatch = useAppDispatch();
-  const noteState = useAppSelector((state)=>state.notes);
-  const [isEditMode,setIsEditMode]=useState<boolean>(false);
+  const noteState = useAppSelector((state) => state.notes);
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
 
-  useEffect(()=>{
-    if (!isNoteModalVisible) {      
+  useEffect(() => {
+    if (!isNoteModalVisible) {
       dispatch(resetSelectedNote());
     }
-  },[isNoteModalVisible])
+  }, [isNoteModalVisible]);
 
-  useEffect(()=>{
-    if(!isNoteModalVisible){
+  useEffect(() => {
+    if (!isNoteModalVisible) {
       setIsEditMode(false);
     }
-  },[isNoteModalVisible])
+  }, [isNoteModalVisible]);
 
-
-  useEffect(()=>{
-    if(noteState.submitState === State.success){
+  useEffect(() => {
+    if (noteState.submitState === State.success) {
       dispatch(resetSubmitState());
       setIsNoteModalVisible(false);
       fetchNotesRelatedToClient();
       setIsEditMode(false);
     }
-  },[noteState.submitState])
+  }, [noteState.submitState]);
 
-  useEffect(()=>{
-    if(noteState.updateState === State.success){
+  useEffect(() => {
+    if (noteState.updateState === State.success) {
       dispatch(resetSubmitState());
       setIsNoteModalVisible(false);
       fetchNotesRelatedToClient();
       setIsEditMode(false);
     }
-  },[noteState.updateState])
+  }, [noteState.updateState]);
 
-  useEffect(()=>{ 
-    if(noteState.deleteState === State.success){
+  useEffect(() => {
+    if (noteState.deleteState === State.success) {
       dispatch(resetSubmitState());
       fetchNotesRelatedToClient();
     }
-  },[noteState.deleteState])
+  }, [noteState.deleteState]);
 
-
-  useEffect(()=>{
+  useEffect(() => {
     fetchNotesRelatedToClient();
-  },[clientID])
-
+  }, [clientID]);
 
   const fetchNotesRelatedToClient = async () => {
-    if (clientID!==null && clientID!==undefined && clientID!=='') {
-      dispatch(fetchNotesByClientID(clientID)); 
+    if (clientID !== null && clientID !== undefined && clientID !== "") {
+      dispatch(fetchNotesByClientID(clientID));
     }
-  }
+  };
   return (
     <Stack width="100%" height="80%">
-        <Stack width="100%" flexDirection="row" alignItems="end" justifyContent="flex-end">
-            <Button variant='contained' onClick={()=>{setIsNoteModalVisible(true);setIsEditMode(true)}}>Add Notes</Button>
-        </Stack>
-        <Stack width="100%" height="480px">
-          <AddNewNotesModal isEditMode={isEditMode} setIsEditMode={setIsEditMode} isNoteModalVisible={isNoteModalVisible} setIsNoteModalVisible={setIsNoteModalVisible}/>
-            <NotesTable isNoteModalVisible={isNoteModalVisible} setIsNoteModalVisible={setIsNoteModalVisible}/>
-        </Stack>
+      <Stack
+        width="100%"
+        flexDirection="row"
+        alignItems="end"
+        justifyContent="flex-end"
+      >
+        <Button
+          variant="contained"
+          onClick={() => {
+            setIsNoteModalVisible(true);
+            setIsEditMode(true);
+          }}
+        >
+          Add Notes
+        </Button>
+      </Stack>
+      <Stack width="100%" height="480px">
+        <AddNewNotesModal
+          isEditMode={isEditMode}
+          setIsEditMode={setIsEditMode}
+          isNoteModalVisible={isNoteModalVisible}
+          setIsNoteModalVisible={setIsNoteModalVisible}
+        />
+        <NotesTable
+          isNoteModalVisible={isNoteModalVisible}
+          setIsNoteModalVisible={setIsNoteModalVisible}
+        />
+      </Stack>
     </Stack>
-  )
-}
+  );
+};
 
 export default NotesTab;

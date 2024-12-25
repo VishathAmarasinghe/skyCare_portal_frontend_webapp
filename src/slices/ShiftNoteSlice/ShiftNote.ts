@@ -3,7 +3,7 @@ import { APIService } from "../../utils/apiService";
 import { State } from "../../types/types";
 import { AppConfig } from "../../config/config";
 import { enqueueSnackbarMessage } from "../commonSlice/common";
-import { SnackMessage } from "../../Config/constant";
+import { SnackMessage } from "../../config/constant";
 import axios, { HttpStatusCode } from "axios";
 
 // Define the type for Resource model
@@ -12,10 +12,10 @@ export interface StartShiftNote {
   employeeID: string;
 }
 
-export interface ShiftNoteDocuments{
-    documentId:string;
-    documentName:string;
-    documentLocation:string;
+export interface ShiftNoteDocuments {
+  documentId: string;
+  documentName: string;
+  documentLocation: string;
 }
 
 export interface updateShiftNote {
@@ -35,7 +35,7 @@ export interface updateShiftNote {
   employeeID: string;
   careGiverID: string | null;
   state: string;
-  documents:ShiftNoteDocuments[];
+  documents: ShiftNoteDocuments[];
 }
 
 export interface currentShiftNoteState {
@@ -117,90 +117,86 @@ export const submitStartShiftNote = createAsyncThunk(
 );
 
 export const getSingleShiftNoteByShiftID = createAsyncThunk(
-    "shiftNote/getSingleShiftNotes",
-    async (
-      shiftNoteID:string,
-      { dispatch, rejectWithValue }
-    ) => {
-      try {
-        const response = await APIService.getInstance().get(AppConfig.serviceUrls.shiftNotes+`/${shiftNoteID}`);
-        return response.data;
-      } catch (error) {
-        if (axios.isCancel(error)) {
-          return rejectWithValue("Request canceled");
-        }
-        dispatch(
-          enqueueSnackbarMessage({
-            message:
-              axios.isAxiosError(error) &&
-              error.response?.status === HttpStatusCode.InternalServerError
-                ? SnackMessage.error.fetchShiftNotes
-                : String((error as any).response?.data?.message),
-            type: "error",
-          })
-        );
-        throw error;
+  "shiftNote/getSingleShiftNotes",
+  async (shiftNoteID: string, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await APIService.getInstance().get(
+        AppConfig.serviceUrls.shiftNotes + `/${shiftNoteID}`
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
       }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            axios.isAxiosError(error) &&
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.fetchShiftNotes
+              : String((error as any).response?.data?.message),
+          type: "error",
+        })
+      );
+      throw error;
     }
-  );
+  }
+);
 
 // Fetch single resources
 export const getAllShiftNotes = createAsyncThunk(
-    "shiftNote/getAllShiftNotes",
-    async (
-      _,
-      { dispatch, rejectWithValue }
-    ) => {
-      try {
-        const response = await APIService.getInstance().get(AppConfig.serviceUrls.shiftNotes);
-        return response.data;
-      } catch (error) {
-        if (axios.isCancel(error)) {
-          return rejectWithValue("Request canceled");
-        }
-        dispatch(
-          enqueueSnackbarMessage({
-            message:
-              axios.isAxiosError(error) &&
-              error.response?.status === HttpStatusCode.InternalServerError
-                ? SnackMessage.error.fetchShiftNotes
-                : String((error as any).response?.data?.message),
-            type: "error",
-          })
-        );
-        throw error;
+  "shiftNote/getAllShiftNotes",
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await APIService.getInstance().get(
+        AppConfig.serviceUrls.shiftNotes
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
       }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            axios.isAxiosError(error) &&
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.fetchShiftNotes
+              : String((error as any).response?.data?.message),
+          type: "error",
+        })
+      );
+      throw error;
     }
-  );
+  }
+);
 
-
-  export const getAllShiftNotesByEmployeeID = createAsyncThunk(
-    "shiftNote/getAllShiftNotesByEmployee",
-    async (
-      employeeID:string,
-      { dispatch, rejectWithValue }
-    ) => {
-      try {
-        const response = await APIService.getInstance().get(AppConfig.serviceUrls.shiftNotes+`/careGiver/${employeeID}`);
-        return response.data;
-      } catch (error) {
-        if (axios.isCancel(error)) {
-          return rejectWithValue("Request canceled");
-        }
-        dispatch(
-          enqueueSnackbarMessage({
-            message:
-              axios.isAxiosError(error) &&
-              error.response?.status === HttpStatusCode.InternalServerError
-                ? SnackMessage.error.fetchShiftNotes
-                : String((error as any).response?.data?.message),
-            type: "error",
-          })
-        );
-        throw error;
+export const getAllShiftNotesByEmployeeID = createAsyncThunk(
+  "shiftNote/getAllShiftNotesByEmployee",
+  async (employeeID: string, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await APIService.getInstance().get(
+        AppConfig.serviceUrls.shiftNotes + `/careGiver/${employeeID}`
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
       }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            axios.isAxiosError(error) &&
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.fetchShiftNotes
+              : String((error as any).response?.data?.message),
+          type: "error",
+        })
+      );
+      throw error;
     }
-  );
+  }
+);
 
 // Fetch single resources
 export const getCurrnetShiftNoteState = createAsyncThunk(
@@ -236,52 +232,55 @@ export const getCurrnetShiftNoteState = createAsyncThunk(
 
 // Save notes by clientID
 export const updatehiftNotes = createAsyncThunk(
-    "note/updateShiftNotes",
-    async (
-      payload: { notes: updateShiftNote; files: File[] },
-      { dispatch, rejectWithValue }
-    ) => {
-      return new Promise<updateShiftNote>((resolve, reject) => {
-        const formData = new FormData();
-  
-        formData.append("note", JSON.stringify(payload.notes));
-        payload.files.forEach((file) => {
-          formData.append("files", file);
-        });
-        APIService.getInstance()
-          .put(AppConfig.serviceUrls.shiftNotes+`/${payload?.notes?.noteID}`, formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          })
-          .then((response) => {
-            dispatch(
-              enqueueSnackbarMessage({
-                message: SnackMessage.success.shiftUpdate,
-                type: "success",
-              })
-            );
-            resolve(response.data);
-          })
-          .catch((error) => {
-            if (axios.isCancel(error)) {
-              return rejectWithValue("Request canceled");
-            }
-            dispatch(
-              enqueueSnackbarMessage({
-                message:
-                  error.response?.status === HttpStatusCode.InternalServerError
-                    ? SnackMessage.error.shiftUpdate
-                    : String(error.response?.data?.error),
-                type: "error",
-              })
-            );
-            reject(error.response?.data?.message);
-          });
+  "note/updateShiftNotes",
+  async (
+    payload: { notes: updateShiftNote; files: File[] },
+    { dispatch, rejectWithValue }
+  ) => {
+    return new Promise<updateShiftNote>((resolve, reject) => {
+      const formData = new FormData();
+
+      formData.append("note", JSON.stringify(payload.notes));
+      payload.files.forEach((file) => {
+        formData.append("files", file);
       });
-    }
-  );
+      APIService.getInstance()
+        .put(
+          AppConfig.serviceUrls.shiftNotes + `/${payload?.notes?.noteID}`,
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        )
+        .then((response) => {
+          dispatch(
+            enqueueSnackbarMessage({
+              message: SnackMessage.success.shiftUpdate,
+              type: "success",
+            })
+          );
+          resolve(response.data);
+        })
+        .catch((error) => {
+          if (axios.isCancel(error)) {
+            return rejectWithValue("Request canceled");
+          }
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.shiftUpdate
+                  : String(error.response?.data?.error),
+              type: "error",
+            })
+          );
+          reject(error.response?.data?.message);
+        });
+    });
+  }
+);
 
-
-  // Save notes by clientID
+// Save notes by clientID
 export const saveNewShiftNotes = createAsyncThunk(
   "note/SaveNewShiftNotes",
   async (
@@ -296,7 +295,7 @@ export const saveNewShiftNotes = createAsyncThunk(
         formData.append("files", file);
       });
       APIService.getInstance()
-        .post(AppConfig.serviceUrls.shiftNotes+`/finish`, formData, {
+        .post(AppConfig.serviceUrls.shiftNotes + `/finish`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         })
         .then((response) => {
@@ -329,50 +328,49 @@ export const saveNewShiftNotes = createAsyncThunk(
 
 // Save notes by clientID
 export const saveShiftNotes = createAsyncThunk(
-    "note/SaveShiftNotes",
-    async (
-      payload: { notes: updateShiftNote; files: File[] },
-      { dispatch, rejectWithValue }
-    ) => {
-      return new Promise<updateShiftNote>((resolve, reject) => {
-        const formData = new FormData();
-  
-        formData.append("note", JSON.stringify(payload.notes));
-        payload.files.forEach((file) => {
-          formData.append("files", file);
-        });
-        APIService.getInstance()
-          .post(AppConfig.serviceUrls.shiftNotes+`/new`, formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          })
-          .then((response) => {
-            dispatch(
-              enqueueSnackbarMessage({
-                message: SnackMessage.success.shiftNoteCreated,
-                type: "success",
-              })
-            );
-            resolve(response.data);
-          })
-          .catch((error) => {
-            if (axios.isCancel(error)) {
-              return rejectWithValue("Request canceled");
-            }
-            dispatch(
-              enqueueSnackbarMessage({
-                message:
-                  error.response?.status === HttpStatusCode.InternalServerError
-                    ? SnackMessage.error.shiftNoteCreated
-                    : String(error.response?.data?.error),
-                type: "error",
-              })
-            );
-            reject(error.response?.data?.message);
-          });
-      });
-    }
-  );
+  "note/SaveShiftNotes",
+  async (
+    payload: { notes: updateShiftNote; files: File[] },
+    { dispatch, rejectWithValue }
+  ) => {
+    return new Promise<updateShiftNote>((resolve, reject) => {
+      const formData = new FormData();
 
+      formData.append("note", JSON.stringify(payload.notes));
+      payload.files.forEach((file) => {
+        formData.append("files", file);
+      });
+      APIService.getInstance()
+        .post(AppConfig.serviceUrls.shiftNotes + `/new`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+        .then((response) => {
+          dispatch(
+            enqueueSnackbarMessage({
+              message: SnackMessage.success.shiftNoteCreated,
+              type: "success",
+            })
+          );
+          resolve(response.data);
+        })
+        .catch((error) => {
+          if (axios.isCancel(error)) {
+            return rejectWithValue("Request canceled");
+          }
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.shiftNoteCreated
+                  : String(error.response?.data?.error),
+              type: "error",
+            })
+          );
+          reject(error.response?.data?.message);
+        });
+    });
+  }
+);
 
 // Define the slice with reducers and extraReducers
 const ShiftNoteSlice = createSlice({
@@ -444,9 +442,8 @@ const ShiftNoteSlice = createSlice({
       })
       .addCase(getAllShiftNotesByEmployeeID.fulfilled, (state, action) => {
         state.state = State.success;
-        state.stateMessage ="feching all shiftNotes by employee Successfully!";
+        state.stateMessage = "feching all shiftNotes by employee Successfully!";
         state.shiftNotes = action.payload;
-        
       })
       .addCase(getAllShiftNotesByEmployeeID.rejected, (state) => {
         state.state = State.failed;
@@ -458,9 +455,8 @@ const ShiftNoteSlice = createSlice({
       })
       .addCase(getSingleShiftNoteByShiftID.fulfilled, (state, action) => {
         state.state = State.success;
-        state.stateMessage ="feching  shiftNotes by employee Successfully!";
+        state.stateMessage = "feching  shiftNotes by employee Successfully!";
         state.selectedShiftNote = action.payload;
-        
       })
       .addCase(getSingleShiftNoteByShiftID.rejected, (state) => {
         state.state = State.failed;
@@ -472,13 +468,12 @@ const ShiftNoteSlice = createSlice({
       })
       .addCase(updatehiftNotes.fulfilled, (state, action) => {
         state.updateState = State.success;
-        state.stateMessage ="Shift note Updated Successfully!";      
+        state.stateMessage = "Shift note Updated Successfully!";
       })
       .addCase(updatehiftNotes.rejected, (state) => {
         state.updateState = State.failed;
         state.stateMessage = "fail to update shiftNote!";
-      })
-      
+      });
   },
 });
 

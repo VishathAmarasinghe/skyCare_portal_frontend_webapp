@@ -10,18 +10,18 @@ import ListAltIcon from "@mui/icons-material/ListAlt";
 import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import StickyNote2Icon from "@mui/icons-material/StickyNote2";
-import SpeakerNotesIcon from '@mui/icons-material/SpeakerNotes';
-import SettingsIcon from '@mui/icons-material/Settings';
-import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
+import SpeakerNotesIcon from "@mui/icons-material/SpeakerNotes";
+import SettingsIcon from "@mui/icons-material/Settings";
+import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 
 // APP imports
-import { View } from "./view/index";
+import { View } from "@view/index";
 import { isIncludedRole } from "./utils/utils";
 import {
   APPLICATION_ADMIN,
   APPLICATION_CARE_GIVER,
   APPLICATION_SUPER_ADMIN,
-} from "./config/config";
+} from "@config/config";
 
 export interface RouteObjectWithRole extends NonIndexRouteObject {
   allowRoles: string[];
@@ -49,19 +49,14 @@ export const routes: RouteObjectWithRole[] = [
     text: "Dashboard",
     icon: React.createElement(DashboardIcon),
     element: React.createElement(View.dashboardView),
-    allowRoles: [
-      APPLICATION_ADMIN,
-      APPLICATION_SUPER_ADMIN,
-    ],
+    allowRoles: [APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN],
   },
   {
     path: "/dashboard/cg",
     text: "Dashboard",
     icon: React.createElement(DashboardIcon),
     element: React.createElement(View.careGiverDashboardView),
-    allowRoles: [
-      APPLICATION_CARE_GIVER
-    ],
+    allowRoles: [APPLICATION_CARE_GIVER],
   },
 
   {
@@ -69,19 +64,16 @@ export const routes: RouteObjectWithRole[] = [
     text: "Clients",
     icon: React.createElement(PeopleAltIcon),
     element: React.createElement(View.clientView),
-    allowRoles: [
-      APPLICATION_ADMIN,
-      APPLICATION_SUPER_ADMIN,
-    ],
+    allowRoles: [APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN],
     children: [
       {
-        path:"clientInfo",
-        text:"Client Information",
-        icon:undefined,
-        element:React.createElement(View.clientView),
-        allowRoles:[APPLICATION_ADMIN,APPLICATION_SUPER_ADMIN]
-      }
-    ]
+        path: "clientInfo",
+        text: "Client Information",
+        icon: undefined,
+        element: React.createElement(View.clientView),
+        allowRoles: [APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN],
+      },
+    ],
   },
   {
     path: "/Appointments",
@@ -99,10 +91,7 @@ export const routes: RouteObjectWithRole[] = [
     text: "Care Plans",
     icon: React.createElement(AssignmentIcon),
     element: React.createElement(View.carePlanView),
-    allowRoles: [
-      APPLICATION_ADMIN,
-      APPLICATION_SUPER_ADMIN
-    ],
+    allowRoles: [APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN],
   },
   {
     path: "/Incidents",
@@ -120,18 +109,14 @@ export const routes: RouteObjectWithRole[] = [
     text: "Employees",
     icon: React.createElement(EmojiPeopleIcon),
     element: React.createElement(View.EmployeeView),
-    allowRoles: [
-      APPLICATION_ADMIN,
-      APPLICATION_SUPER_ADMIN],
+    allowRoles: [APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN],
   },
   {
     path: "/Reports",
     text: "Reports",
     icon: React.createElement(AssessmentIcon),
     element: React.createElement(View.reportView),
-    allowRoles: [
-      APPLICATION_ADMIN,
-      APPLICATION_SUPER_ADMIN],
+    allowRoles: [APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN],
   },
   {
     path: "/Resources",
@@ -141,7 +126,7 @@ export const routes: RouteObjectWithRole[] = [
     allowRoles: [
       APPLICATION_ADMIN,
       APPLICATION_SUPER_ADMIN,
-      APPLICATION_CARE_GIVER
+      APPLICATION_CARE_GIVER,
     ],
   },
   {
@@ -152,24 +137,23 @@ export const routes: RouteObjectWithRole[] = [
     allowRoles: [
       APPLICATION_ADMIN,
       APPLICATION_CARE_GIVER,
-      APPLICATION_SUPER_ADMIN],
+      APPLICATION_SUPER_ADMIN,
+    ],
   },
   {
     path: "/settings",
     text: "Settings",
     icon: React.createElement(SettingsIcon),
     element: React.createElement(View.SettingsView),
-    allowRoles: [
-      APPLICATION_ADMIN,
-      APPLICATION_SUPER_ADMIN],
+    allowRoles: [APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN],
   },
   {
-    path:"/userInfo",
-    text:"User Infomation",
-    icon:React.createElement(AdminPanelSettingsOutlinedIcon),
-    element : React.createElement(View.CareGiverInforView),
-    allowRoles:[APPLICATION_CARE_GIVER]
-  }
+    path: "/userInfo",
+    text: "User Infomation",
+    icon: React.createElement(AdminPanelSettingsOutlinedIcon),
+    element: React.createElement(View.CareGiverInforView),
+    allowRoles: [APPLICATION_CARE_GIVER],
+  },
 ];
 export const getActiveRoutesV2 = (
   routes: RouteObjectWithRole[] | undefined,

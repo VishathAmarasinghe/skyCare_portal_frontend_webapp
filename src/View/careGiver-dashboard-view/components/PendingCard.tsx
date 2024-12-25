@@ -1,28 +1,34 @@
-import React from 'react'
+import React from "react";
 import EventIcon from "@mui/icons-material/Event";
-import {fetchRecurrentAppointmentDetails, PendingAppointments} from '../../../slices/AppointmentSlice/appointment'
 import {
-    Stack,
-    Typography,
-    Button,
-    useTheme,
-  } from "@mui/material";
+  fetchRecurrentAppointmentDetails,
+  PendingAppointments,
+} from "../../../slices/appointmentSlice/appointment";
+import { Stack, Typography, Button, useTheme } from "@mui/material";
 import dayjs from "dayjs";
-import { useAppDispatch } from '@slices/store';
+import { useAppDispatch } from "@slices/store";
 
 interface pendingCardProps {
-    jobDetails:PendingAppointments,
-    isModalVisible: boolean,
-    setIsModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  jobDetails: PendingAppointments;
+  isModalVisible: boolean;
+  setIsModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const PendingCard = ({jobDetails,isModalVisible,setIsModalVisible}: pendingCardProps) => {
-    const theme = useTheme();
-    const dispatch = useAppDispatch();
-    
+const PendingCard = ({
+  jobDetails,
+  isModalVisible,
+  setIsModalVisible,
+}: pendingCardProps) => {
+  const theme = useTheme();
+  const dispatch = useAppDispatch();
+
   return (
     <Stack
       onClick={() => {
-        dispatch(fetchRecurrentAppointmentDetails({ recurrentAppointmentID: jobDetails?.recurrentAppointmentID }));
+        dispatch(
+          fetchRecurrentAppointmentDetails({
+            recurrentAppointmentID: jobDetails?.recurrentAppointmentID,
+          })
+        );
         setIsModalVisible(true);
       }}
       direction={{ xs: "column", sm: "row" }}
@@ -42,7 +48,10 @@ const PendingCard = ({jobDetails,isModalVisible,setIsModalVisible}: pendingCardP
     >
       {/* Left Section: Icon and Appointment Details */}
       <Stack direction="row" alignItems="center" spacing={2} width="100%">
-        <EventIcon color="primary" sx={{ fontSize: { xs: 30, sm: 30,md:20 } }} />
+        <EventIcon
+          color="primary"
+          sx={{ fontSize: { xs: 30, sm: 30, md: 20 } }}
+        />
         <Stack width={"90%"}>
           <Typography
             variant="body1"
@@ -56,24 +65,20 @@ const PendingCard = ({jobDetails,isModalVisible,setIsModalVisible}: pendingCardP
             color="textSecondary"
             sx={{ fontSize: { xs: "0.9rem", sm: "1rem", md: "11px" } }}
           >
-            {`${dayjs(jobDetails?.startDate).format(
-              "MMM D, YYYY"
-            )} at ${dayjs(
+            {`${dayjs(jobDetails?.startDate).format("MMM D, YYYY")} at ${dayjs(
               jobDetails?.startTime,
               "HH:mm"
             ).format("h:mm A")}`}
             -
-            {`${dayjs(jobDetails?.endDate).format(
-              "MMM D, YYYY"
-            )} at ${dayjs(jobDetails?.endTime, "HH:mm").format(
-              "h:mm A"
-            )}`}
+            {`${dayjs(jobDetails?.endDate).format("MMM D, YYYY")} at ${dayjs(
+              jobDetails?.endTime,
+              "HH:mm"
+            ).format("h:mm A")}`}
           </Typography>
         </Stack>
       </Stack>
-      
     </Stack>
-  )
-}
+  );
+};
 
-export default PendingCard
+export default PendingCard;

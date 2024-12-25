@@ -1,12 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, CircularProgress, Grid, Stepper, Step, StepLabel, Typography, FormControlLabel, Switch, Stack } from "@mui/material";
-import { useAppDispatch, useAppSelector } from "../../../slices/store"; 
-import { fetchAllIncidentActionTypeQuestions, fetchAllIncidentStatus, fetchAllIncidentTypes, resetSelectedIncident } from "../../../slices/IncidentSlice/incident";
-import {CREATE_INCIDENT_STEPS} from '../../../constants/index'
-import { Modal } from 'antd';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Grid,
+  Stepper,
+  Step,
+  StepLabel,
+  Typography,
+  FormControlLabel,
+  Switch,
+  Stack,
+} from "@mui/material";
+import { useAppDispatch, useAppSelector } from "../../../slices/store";
+import {
+  fetchAllIncidentActionTypeQuestions,
+  fetchAllIncidentStatus,
+  fetchAllIncidentTypes,
+  resetSelectedIncident,
+} from "../../../slices/incidentSlice/incident";
+import { CREATE_INCIDENT_STEPS } from "../../../constants/index";
+import { Modal } from "antd";
 import IncidentForm from "../components/IncidentForm";
 import { State } from "../../../types/types";
-
 
 interface IncidentModalProps {
   isIncidentModalVisible: boolean;
@@ -24,7 +40,9 @@ const IncidentModal = ({
   const [activeStep, setActiveStep] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const incidentSlice = useAppSelector((state) => state.incident);
-  const [selectedIncidentDetails, setSelectedIncidentDetails] = useState<any | null>(null);
+  const [selectedIncidentDetails, setSelectedIncidentDetails] = useState<
+    any | null
+  >(null);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -32,18 +50,18 @@ const IncidentModal = ({
       dispatch(resetSelectedIncident());
       setActiveStep(0);
     } else {
-        dispatch(fetchAllIncidentTypes());
-        dispatch(fetchAllIncidentActionTypeQuestions());
-        dispatch(fetchAllIncidentStatus());
+      dispatch(fetchAllIncidentTypes());
+      dispatch(fetchAllIncidentActionTypeQuestions());
+      dispatch(fetchAllIncidentStatus());
     }
   }, [isIncidentModalVisible]);
 
   useEffect(() => {
-    if(incidentSlice?.submitState === State?.success){
+    if (incidentSlice?.submitState === State?.success) {
       setIsIncidentModalVisible(false);
       dispatch(resetSelectedIncident());
     }
-  }, [incidentSlice?.submitState,incidentSlice?.updateState]);
+  }, [incidentSlice?.submitState, incidentSlice?.updateState]);
 
   // Handle next step
   const handleNext = () => {
@@ -117,7 +135,7 @@ const IncidentModal = ({
             variant="outlined"
             onClick={handleBack}
             disabled={activeStep === 0}
-            sx={{ display: activeStep === 0 ? "none" : "block",mr:1 }}
+            sx={{ display: activeStep === 0 ? "none" : "block", mr: 1 }}
           >
             Back
           </Button>
@@ -125,29 +143,43 @@ const IncidentModal = ({
           {/* Next or Save Button */}
           <Button
             variant="contained"
-            onClick={activeStep === CREATE_INCIDENT_STEPS.length - 1 ? handleSave : handleNext}
+            onClick={
+              activeStep === CREATE_INCIDENT_STEPS.length - 1
+                ? handleSave
+                : handleNext
+            }
             disabled={loading}
           >
-            {loading ? <CircularProgress size={24} /> : activeStep === CREATE_INCIDENT_STEPS.length - 1 ? "Save" : "Next"}
+            {loading ? (
+              <CircularProgress size={24} />
+            ) : activeStep === CREATE_INCIDENT_STEPS.length - 1 ? (
+              "Save"
+            ) : (
+              "Next"
+            )}
           </Button>
         </Box>
       }
     >
-        <Stack>
-       <Stack width="100%">
-        {/* Stepper */}
-        <Stepper activeStep={activeStep}>
-          {CREATE_INCIDENT_STEPS.map((label, index) => (
-            <Step key={index}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-      </Stack>
+      <Stack>
+        <Stack width="100%">
+          {/* Stepper */}
+          <Stepper activeStep={activeStep}>
+            {CREATE_INCIDENT_STEPS.map((label, index) => (
+              <Step key={index}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+        </Stack>
 
-      <Box sx={{ mt: 2 }}  width="100%">
-        <IncidentForm activeStep={activeStep} isEditMode={isEditMode} key={"incident form"}/>
-      </Box>
+        <Box sx={{ mt: 2 }} width="100%">
+          <IncidentForm
+            activeStep={activeStep}
+            isEditMode={isEditMode}
+            key={"incident form"}
+          />
+        </Box>
       </Stack>
     </Modal>
   );

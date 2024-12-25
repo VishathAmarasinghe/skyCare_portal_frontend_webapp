@@ -22,77 +22,77 @@ import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useAppDispatch, useAppSelector } from "@slices/store";
-import { Employee, fetchSingleEmployee } from "@slices/EmployeeSlice/employee";
+import { Employee, fetchSingleEmployee } from "@slices/employeeSlice/employee";
 import { FILE_DOWNLOAD_BASE_URL } from "@config/config";
 
 function CustomToolbar() {
   return (
     <GridToolbarContainer>
-      <GridToolbarColumnsButton   />
-      <GridToolbarFilterButton  />
+      <GridToolbarColumnsButton />
+      <GridToolbarFilterButton />
       <GridToolbarQuickFilter placeholder="Search" />
     </GridToolbarContainer>
   );
 }
 
 const sampleEmployees = [
-    {
-      employeeID: "EMP001",
-      firstName: "John",
-      lastName: "Doe",
-      email: "john.doe@company.com",
-      occupation: "admin",
-    },
-    {
-      employeeID: "EMP002",
-      firstName: "Jane",
-      lastName: "Smith",
-      email: "jane.smith@company.com",
-      occupation: "staff",
-    },
-    {
-      employeeID: "EMP003",
-      firstName: "Michael",
-      lastName: "Chen",
-      email: "michael.chen@company.com",
-      occupation: "admin",
-    },
-    {
-      employeeID: "EMP004",
-      lastName: "Garcia",
-      email: "olivia.garcia@company.com",
-      occupation: "staff",
-    },
-    {
-      employeeID: "EMP005",
-      firstName: "David",
-      lastName: "Miller",
-      email: "david.miller@company.com",
-      occupation: "staff",
-    },
-  ];
-  
+  {
+    employeeID: "EMP001",
+    firstName: "John",
+    lastName: "Doe",
+    email: "john.doe@company.com",
+    occupation: "admin",
+  },
+  {
+    employeeID: "EMP002",
+    firstName: "Jane",
+    lastName: "Smith",
+    email: "jane.smith@company.com",
+    occupation: "staff",
+  },
+  {
+    employeeID: "EMP003",
+    firstName: "Michael",
+    lastName: "Chen",
+    email: "michael.chen@company.com",
+    occupation: "admin",
+  },
+  {
+    employeeID: "EMP004",
+    lastName: "Garcia",
+    email: "olivia.garcia@company.com",
+    occupation: "staff",
+  },
+  {
+    employeeID: "EMP005",
+    firstName: "David",
+    lastName: "Miller",
+    email: "david.miller@company.com",
+    occupation: "staff",
+  },
+];
 
-interface ClientTableProps {
-  
-}
+interface ClientTableProps {}
 
-const EmployeeTable = ({ }: ClientTableProps) => {
+const EmployeeTable = ({}: ClientTableProps) => {
   const theme = useTheme();
-  const employeeSlice = useAppSelector((state)=>state.employees);
-  const [employees,setEmployees]=useState<Employee[]>([])
+  const employeeSlice = useAppSelector((state) => state.employees);
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const dispatch = useAppDispatch();
 
-  useEffect(()=>{
-    setEmployees(employeeSlice.employees)
-  },[employeeSlice.state])
+  useEffect(() => {
+    setEmployees(employeeSlice.employees);
+  }, [employeeSlice.state]);
 
-  const handlePageChange = (newPage: number) => {
-    
-  };
+  const handlePageChange = (newPage: number) => {};
 
   const initialColumns: GridColDef[] = [
-    { field: "employeeID", headerName: "Employee ID", width: 100, align: "center" },
+    {
+      field: "employeeID",
+      headerName: "Employee ID",
+      width: 100,
+      align: "center",
+    },
     { field: "firstName", headerName: "First Name", width: 130 },
     { field: "lastName", headerName: "Last Name", width: 130 },
     {
@@ -100,22 +100,34 @@ const EmployeeTable = ({ }: ClientTableProps) => {
       headerName: "Email",
       flex: 1,
       renderCell: (params) => {
-        const employeeImage = employees?.find((emp)=>emp.employeeID===params?.row?.employeeID)?.profile_photo;        
+        const employeeImage = employees?.find(
+          (emp) => emp.employeeID === params?.row?.employeeID
+        )?.profile_photo;
         return (
-        <Chip
-          avatar={
-            <Avatar
-              src={employeeImage?`${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(employeeImage)}`:""} // Replace with your avatar URL logic
-              alt={params.row.firstName || params.row.lastName || params.row.email}
-            >
-              {params.row?.email?.charAt(0).toUpperCase()}
-            </Avatar>
-          }
-          label={params.value}
-          variant="outlined"
-        />
-        )
-      }
+          <Chip
+            avatar={
+              <Avatar
+                src={
+                  employeeImage
+                    ? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(
+                        employeeImage
+                      )}`
+                    : ""
+                } // Replace with your avatar URL logic
+                alt={
+                  params.row.firstName ||
+                  params.row.lastName ||
+                  params.row.email
+                }
+              >
+                {params.row?.email?.charAt(0).toUpperCase()}
+              </Avatar>
+            }
+            label={params.value}
+            variant="outlined"
+          />
+        );
+      },
     },
     {
       field: "accessRole",
@@ -126,7 +138,7 @@ const EmployeeTable = ({ }: ClientTableProps) => {
       renderCell: (params) => {
         const role = params.value; // Role value (e.g., "Admin" or "CareGiver")
         let color: "default" | "success" | "primary" = "default";
-    
+
         // Assign colors based on the role
         switch (role) {
           case "Admin":
@@ -138,10 +150,13 @@ const EmployeeTable = ({ }: ClientTableProps) => {
           default:
             color = "default"; // Default grey
         }
-    
-        return <Chip size="small" label={role} color={color} variant="outlined" />;
+
+        return (
+          <Chip size="small" label={role} color={color} variant="outlined" />
+        );
       },
-    },{
+    },
+    {
       field: "status",
       headerName: "Status",
       width: 100,
@@ -150,7 +165,7 @@ const EmployeeTable = ({ }: ClientTableProps) => {
       renderCell: (params) => {
         const status = params.value;
         let chipStyle = {}; // Default style
-    
+
         // Assign background and text colors based on the status
         switch (status) {
           case "Activated":
@@ -165,7 +180,7 @@ const EmployeeTable = ({ }: ClientTableProps) => {
           default:
             chipStyle = { backgroundColor: "#9e9e9e", color: "white" }; // Grey
         }
-    
+
         return (
           <Chip
             size="small"
@@ -175,8 +190,7 @@ const EmployeeTable = ({ }: ClientTableProps) => {
           />
         );
       },
-    }
-       ,
+    },
     {
       field: "action",
       headerName: "Action",
@@ -187,7 +201,9 @@ const EmployeeTable = ({ }: ClientTableProps) => {
           <Stack flexDirection="row">
             <IconButton
               aria-label="view"
-              onClick={() =>dispatch(fetchSingleEmployee(params.row.employeeID))}
+              onClick={() =>
+                dispatch(fetchSingleEmployee(params.row.employeeID))
+              }
             >
               <RemoveRedEyeOutlinedIcon />
             </IconButton>
@@ -198,7 +214,6 @@ const EmployeeTable = ({ }: ClientTableProps) => {
   ];
 
   return (
-    
     <Box sx={{ height: "100%", width: "100%" }}>
       <DataGrid
         rows={employees}
@@ -216,7 +231,6 @@ const EmployeeTable = ({ }: ClientTableProps) => {
           toolbar: CustomToolbar,
         }}
         sx={{
-          
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: "white",
           },
@@ -232,4 +246,4 @@ const EmployeeTable = ({ }: ClientTableProps) => {
   );
 };
 
-export default EmployeeTable
+export default EmployeeTable;
