@@ -25,8 +25,8 @@ import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import {
   Employee,
   fetchSingleEmployee,
-} from "../../../slices/employeeSlice/employee";
-import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
+} from "../../../slices/employeeSliceName/employee";
+import { FILE_DOWNLOAD_BASE_URL } from "../../../configName/config";
 
 function CustomToolbar() {
   return (

@@ -26,14 +26,14 @@ import {
   APPLICATION_CARE_GIVER,
   APPLICATION_SUPER_ADMIN,
   FILE_DOWNLOAD_BASE_URL,
-} from "../../config/config";
+} from "../../configName/config";
 import ProfileDrawer from "../../View/dashboard-view/panel/ProfileDrawer";
 import { APIService } from "../../utils/apiService";
-import { logout } from "../../slices/authSlice/auth";
+import { logout } from "../../slices/authSliceName/authName";
 import {
   Employee,
   fetchCurrnetEmployee,
-} from "../../slices/employeeSlice/employee";
+} from "../../slices/employeeSliceName/employee";
 import { State } from "../../types/types";
 import { useNavigate } from "react-router-dom";
 

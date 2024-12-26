@@ -6,12 +6,12 @@ import {
   APPLICATION_ADMIN,
   APPLICATION_CARE_GIVER,
   APPLICATION_SUPER_ADMIN,
-} from "../../config/config";
+} from "../../configName/config";
 import {
   getAllShiftNotes,
   getAllShiftNotesByEmployeeID,
-} from "../../slices/shiftNoteSlice/shiftNote";
-import ShiftNoteModal from "../careGiver-dashboard-view/modal/ShiftNoteModal";
+} from "../../slices/shiftNoteSliceName/shiftNote";
+import ShiftNoteModal from "../careGiver-dashboard-view/modalName/ShiftNoteModal";
 import { State } from "../../types/types";
 
 const ShiftNoteView = () => {

@@ -13,7 +13,7 @@ import LoginImage from "../../assets/images/loginImage.png";
 import CompanyLogo from "../../assets/images/app_logo.png";
 import { emailRegex } from "../../constants/index";
 import { useAppDispatch } from "../../slices/store";
-import { login } from "../../slices/authSlice/auth";
+import { login } from "../../slices/authSliceName/authName";
 import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {

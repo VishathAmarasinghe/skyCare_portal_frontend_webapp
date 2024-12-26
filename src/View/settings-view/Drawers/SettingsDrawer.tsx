@@ -50,19 +50,19 @@ import {
 import {
   saveAppointmentTypes,
   updateAppointmentTypes,
-} from "../../../slices/appointmentSlice/appointment";
+} from "../../../slices/appointmentSliceName/appointment";
 import {
   saveIncidentStatus,
   saveIncidentTypes,
   updateIncidentStatus,
   updateIncidentTypes,
-} from "../../../slices/incidentSlice/incident";
+} from "../../../slices/incidentSliceName/incident";
 import {
   saveDocumentTypes,
   savePaymentTypes,
   updateDocumentTypes,
   updatePaymentTypes,
-} from "../../../slices/careGiverSlice/careGiver";
+} from "../../../slices/careGiverSliceName/careGiver";
 
 interface SettingsDrawerProps {
   open: boolean;

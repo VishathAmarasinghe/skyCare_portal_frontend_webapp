@@ -23,17 +23,17 @@ import {
   CareGiverPayments,
   saveCareGiver,
   updateCareGiver,
-} from "../../../slices/careGiverSlice/careGiver";
+} from "../../../slices/careGiverSliceName/careGiver";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import {
   Employee,
   fetchEmployeesByRole,
-} from "../../../slices/employeeSlice/employee";
+} from "../../../slices/employeeSliceName/employee";
 import { enqueueSnackbarMessage } from "../../../slices/commonSlice/common";
 import {
   APPLICATION_ADMIN,
   APPLICATION_SUPER_ADMIN,
-} from "../../../config/config";
+} from "../../../configName/config";
 
 interface AddNewClientModalProps {
   isCareGiverAddModalVisible: boolean;

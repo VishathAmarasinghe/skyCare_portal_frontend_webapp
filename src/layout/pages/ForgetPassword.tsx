@@ -20,10 +20,10 @@ import {
   resetSubmitState,
   sendOTP,
   validateOTP,
-} from "../../slices/oTPSlice/oTP";
+} from "../../slices/oTPSliceName/oTPName";
 import { emailRegex } from "../../constants/index";
 import { State } from "../../types/types";
-import { resetPassword } from "../../slices/authSlice/auth";
+import { resetPassword } from "../../slices/authSliceName/authName";
 import { enqueueSnackbarMessage } from "../../slices/commonSlice/common";
 import { useNavigate } from "react-router-dom";
 

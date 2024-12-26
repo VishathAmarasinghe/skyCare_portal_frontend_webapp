@@ -9,7 +9,7 @@ import {
   Box,
 } from "@mui/material";
 import dayjs from "dayjs"; // Import dayjs
-import { AppointmentCalenderType } from "../../../slices/appointmentSlice/appointment";
+import { AppointmentCalenderType } from "../../../slices/appointmentSliceName/appointment";
 
 const AppointmentCard = ({
   todayAppointments,

@@ -10,10 +10,10 @@ import {
   TextField,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { Employee } from "../../../slices/employeeSlice/employee";
+import { Employee } from "../../../slices/employeeSliceName/employee";
 import { useAppSelector } from "../../../slices/store";
 import { State } from "../../../types/types";
-import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
+import { FILE_DOWNLOAD_BASE_URL } from "../../../configName/config";
 import { Autocomplete } from "@react-google-maps/api";
 import { set } from "date-fns";
 

@@ -22,12 +22,12 @@ import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
-import { Employee } from "../../../slices/employeeSlice/employee";
-import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
+import { Employee } from "../../../slices/employeeSliceName/employee";
+import { FILE_DOWNLOAD_BASE_URL } from "../../../configName/config";
 import {
   fetchSingleIncident,
   Incidents,
-} from "../../../slices/incidentSlice/incident";
+} from "../../../slices/incidentSliceName/incident";
 import { State } from "../../../types/types";
 
 function CustomToolbar() {

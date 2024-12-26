@@ -28,7 +28,7 @@ import {
 } from "../../../slices/carePlanSlice/carePlan";
 import { State } from "../../../types/types";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { Employee } from "../../../slices/employeeSlice/employee";
+import { Employee } from "../../../slices/employeeSliceName/employee";
 import { Client } from "../../../slices/clientSlice/client";
 
 function CustomToolbar() {

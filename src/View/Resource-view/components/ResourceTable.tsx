@@ -18,11 +18,11 @@ import {
   deleteResource,
   fetchSingleResource,
   Resource,
-} from "../../../slices/resourceSlice/resource";
+} from "../../../slices/resourceSliceName/resource";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import { useConfirmationModalContext } from "../../../context/DialogContext";
 import { ConfirmationType } from "../../../types/types";
-import { APPLICATION_CARE_GIVER } from "../../../config/config";
+import { APPLICATION_CARE_GIVER } from "../../../configName/config";
 
 function CustomToolbar() {
   return (

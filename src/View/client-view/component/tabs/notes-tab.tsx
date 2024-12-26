@@ -8,7 +8,7 @@ import {
   fetchNotesByClientID,
   resetSubmitState,
   resetSelectedNote,
-} from "../../../../slices/notesSlice/notes";
+} from "../../../../slices/notesSliceName/notes";
 import AddNewNotesModal from "../../modal/AddNewNotesModal";
 import { State } from "../../../../types/types";
 import { set } from "date-fns";

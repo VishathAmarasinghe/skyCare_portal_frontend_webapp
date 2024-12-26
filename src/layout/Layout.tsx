@@ -27,7 +27,7 @@ import { useSnackbar } from "notistack";
 import pJson from "../../package.json";
 import { RootState, useAppSelector } from "../slices/store";
 import { Typography } from "@mui/material";
-import { selectRoles } from "../slices/authSlice/auth";
+import { selectRoles } from "../slices/authSliceName/authName";
 
 export default function Layout() {
   //snackbar configuration
