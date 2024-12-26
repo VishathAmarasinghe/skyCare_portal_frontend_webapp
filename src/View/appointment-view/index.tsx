@@ -1,11 +1,11 @@
 import { Button, Stack, Typography, useTheme } from "@mui/material";
 import React, { useState } from "react";
 import AppointmentCalender from "./components/AppointmentCalender";
-import AddNewAppointmentModal from "@view/client-view/modal/AddNewAppointmentModal";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { resetSelectedAppointment } from "@slices/appointmentSlice/appointment";
 import { APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN } from "@config/config";
-import RecurrentAppointmentDetailsModal from "@view/careGiver-dashboard-view/Modal/RecurrentAppointmentDetailsModal";
+import RecurrentAppointmentDetailsModal from "../careGiver-dashboard-view/modal/RecurrentAppointmentDetailsModal";
+import AddNewAppointmentModal from "../client-view/modal/AddNewAppointmentModal";
 
 const AppointmentView = () => {
   const theme = useTheme();

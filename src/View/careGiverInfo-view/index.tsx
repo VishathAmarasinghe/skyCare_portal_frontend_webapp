@@ -24,9 +24,8 @@ import {
   CREATE_CARE_GIVER_INTERNAL_UPDATE,
   CREATE_CARE_GIVER_OUTSIDE_REGISTRATION,
 } from "../../constants/index";
-import EmployeeBasicInfoForm from "@view/employee-view/components/EmployeeBasicInfoForm";
-import CareGiverFileUploader from "@view/employee-view/components/CareGiverFileUploader";
-import AgreementComponent from "@component/common/AgreementComponent";
+import EmployeeBasicInfoForm from "../employee-view/components/EmployeeBasicInfoForm";
+import CareGiverFileUploader from "../employee-view/components/CareGiverFileUploader";
 
 const CareGiverInfoView = () => {
   const theme = useTheme();
