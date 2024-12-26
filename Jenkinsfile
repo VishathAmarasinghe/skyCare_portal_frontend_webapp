@@ -27,98 +27,40 @@ pipeline {
                 }
             }
         }
-        stage('Build Frontend') {
+        stage('Deploy to Staging') {
+            when {
+                branch 'dev'
+            }
             steps {
                 dir('frontend') {
-                    script {
-                        sh 'npm install'
-                        sh 'npm run build'
-                    }
-                }
-            }
-        }
-        stage('Build Backend') {
-            steps {
-                dir('backend') {
-                    script {
-                        sh './mvnw clean package -DskipTests' // Maven build for backend
-                    }
-                }
-            }
-        }
-        stage('Build Docker Images') {
-            parallel {
-                stage('Build Frontend Image') {
-                    steps {
-                        dir('frontend') {
                             script {
                                 sh """
-                                docker build -t ${REGISTRY}/${FRONTEND_IMAGE} --build-arg VITE_BACKEND_BASE_URL=http://backend:5000 \
+                                docker build -t ${FRONTEND_IMAGE} --build-arg VITE_BACKEND_BASE_URL=http://backend:5000 \
                                     --build-arg VITE_APPLICATION_ADMIN=admin.skyCarePortal \
                                     --build-arg VITE_APPLICATION_SUPER_ADMIN=superadmin.skyCarePortal \
                                     --build-arg VITE_APPLICATION_CARE_GIVER=caregiver.skyCarePortal \
                                     --build-arg VITE_FILE_DOWNLOAD_PATH=/file/download .
                                 """
                             }
-                        }
-                    }
                 }
-                stage('Build Backend Image') {
-                    steps {
-                        dir('backend') {
+                dir('backend') {
                             script {
                                 sh """
-                                docker build -t ${REGISTRY}/${BACKEND_IMAGE} --build-arg SPRING_PROFILES_ACTIVE=prod \
-                                    --build-arg SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/skycareportal \
-                                    --build-arg SPRING_DATASOURCE_USERNAME=root \
-                                    --build-arg SPRING_DATASOURCE_PASSWORD=root .
-                                """
+                        docker build -t ${BACKEND_IMAGE} \
+                            --build-arg SPRING_PROFILES_ACTIVE=dev \
+                            --build-arg SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/skycareportal_dev \
+                            --build-arg SPRING_DATASOURCE_USERNAME=root \
+                            --build-arg SPRING_DATASOURCE_PASSWORD=root \
+                            --build-arg SPRING_MAIL_USERNAME=projectvishath@gmail.com \
+                            --build-arg SPRING_MAIL_PASSWORD=ovdi uiox jqvd avai \
+                            --build-arg FRONTEND_URL=http://frontend:80 \
+                            --build-arg SERVER_PORT=5000 .
+                        """
                             }
-                        }
-                    }
                 }
-            }
-        }
-        stage('Push Docker Images') {
-            parallel {
-                stage('Push Frontend Image') {
-                    steps {
-                        withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
-                            sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USER} --password-stdin"
-                            sh "docker push ${REGISTRY}/${FRONTEND_IMAGE}"
-                        }
-                    }
-                }
-                stage('Push Backend Image') {
-                    steps {
-                        withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
-                            sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USER} --password-stdin"
-                            sh "docker push ${REGISTRY}/${BACKEND_IMAGE}"
-                        }
-                    }
-                }
-            }
-        }
-        stage('Deploy to Staging') {
-            when {
-                branch 'dev'
-            }
-            steps {
                 dir('backend') {
                     script {
                         sh 'docker-compose -f docker-compose.dev.yml up -d'
-                    }
-                }
-            }
-        }
-        stage('Deploy to Production') {
-            when {
-                branch 'main'
-            }
-            steps {
-                dir('backend') {
-                    script {
-                        sh 'docker-compose -f docker-compose.prod.yml up -d'
                     }
                 }
             }
