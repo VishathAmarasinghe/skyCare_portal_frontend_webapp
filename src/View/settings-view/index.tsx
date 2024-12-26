@@ -4,24 +4,24 @@ import { SETTINGS_CARD_ARRAY } from "../../constants/index";
 import SettingsCard from "./components/SettingsCard";
 import SettingsDrawer from "./Drawers/SettingsDrawer";
 import { SettingsCardTitle } from "../../types/types";
-import { useAppDispatch, useAppSelector } from "@slices/store";
+import { useAppDispatch, useAppSelector } from "../../slices/store";
 import {
   fetchClassifications,
   fetchClientStatus,
   fetchClientTypes,
   fetchLanguages,
-} from "@slices/selectorSlice/selector";
-import { fetchCarePlanStatusList } from "@slices/carePlanSlice/carePlan";
-import { fetchAppointmentTypes } from "@slices/appointmentSlice/appointment";
+} from "../../slices/selectorSlice/selector";
+import { fetchCarePlanStatusList } from "../../slices/carePlanSlice/carePlan";
+import { fetchAppointmentTypes } from "../../slices/appointmentSlice/appointment";
 import {
   fetchAllIncidentActionTypeQuestions,
   fetchAllIncidentStatus,
   fetchAllIncidentTypes,
-} from "@slices/incidentSlice/incident";
+} from "../../slices/incidentSlice/incident";
 import {
   fetchDocumentTypes,
   fetchPaymentTypes,
-} from "@slices/careGiverSlice/careGiver";
+} from "../../slices/careGiverSlice/careGiver";
 
 const SettingsView = () => {
   const theme = useTheme();

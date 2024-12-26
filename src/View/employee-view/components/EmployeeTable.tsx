@@ -21,9 +21,12 @@ import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useAppDispatch, useAppSelector } from "@slices/store";
-import { Employee, fetchSingleEmployee } from "@slices/employeeSlice/employee";
-import { FILE_DOWNLOAD_BASE_URL } from "@config/config";
+import { useAppDispatch, useAppSelector } from "../../../slices/store";
+import {
+  Employee,
+  fetchSingleEmployee,
+} from "../../../slices/employeeSlice/employee";
+import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
 
 function CustomToolbar() {
   return (

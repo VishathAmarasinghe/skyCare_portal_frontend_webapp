@@ -8,17 +8,11 @@ import {
   GridToolbarFilterButton,
   GridToolbarQuickFilter,
 } from "@mui/x-data-grid";
-import {
-  Avatar,
-  Box,
-  Chip,
-  IconButton,
-  useTheme,
-} from "@mui/material";
+import { Avatar, Box, Chip, IconButton, useTheme } from "@mui/material";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "@slices/store";
-import { Client } from "@slices/clientSlice/client";
+import { useAppSelector } from "../../../slices/store";
+import { Client } from "../../../slices/clientSlice/client";
 import { State } from "../../../types/types";
 
 function CustomToolbar() {
@@ -91,7 +85,14 @@ const ClientTable = () => {
   }, [clientInfo.State]);
 
   return (
-    <Box sx={{ height: "100%", width: "100%", display: "flex", flexDirection: "column" }}>
+    <Box
+      sx={{
+        height: "100%",
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <DataGrid
         rows={clients}
         columns={initialColumns}

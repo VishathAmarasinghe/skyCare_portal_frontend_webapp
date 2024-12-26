@@ -1,21 +1,3 @@
-import { Note, OtherHouses } from "@mui/icons-material";
-import { updateRecurrentAppointment } from "@slices/appointmentSlice/appointment";
-import {
-  saveCareGiver,
-  updateCareGiver,
-} from "@slices/careGiverSlice/careGiver";
-import {
-  fetchGoalOutcomes,
-  saveCarePlanStatus,
-  UpdateCarePlan,
-  updateCarePlanStatus,
-} from "@slices/carePlanSlice/carePlan";
-import { saveClient } from "@slices/clientSlice/client";
-import { updateEmployee } from "@slices/employeeSlice/employee";
-import { saveIncident } from "@slices/incidentSlice/incident";
-import { updateNotes } from "@slices/notesSlice/notes";
-import { fetchSingleResource } from "@slices/resourceSlice/resource";
-
 // snack messages
 export const SnackMessage = {
   success: {

@@ -15,13 +15,13 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import RepeatIcon from "@mui/icons-material/Repeat";
 import { Modal } from "antd"; // Ant Design Modal
-import { useAppSelector } from "@slices/store";
+import { useAppSelector } from "../../../slices/store";
 import {
   Appointment,
   AppointmentCareGiver,
-} from "@slices/appointmentSlice/appointment";
+} from "../../../slices/appointmentSlice/appointment";
 import FileViewerWithModal from "../../../component/common/FileViewerWithModal";
-import { FILE_DOWNLOAD_BASE_URL } from "@config/config";
+import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
 import RecurrenceCard from "../components/RecurrentCard";
 
 export interface AppointmentDetailsModalProps {

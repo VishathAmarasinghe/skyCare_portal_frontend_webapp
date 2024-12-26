@@ -9,7 +9,7 @@ import React, { useEffect, useState } from "react";
 import EmployeeTable from "./components/EmployeeTable";
 import AdminModal from "./modal/AdminModal";
 import StaffModal from "./modal/StaffModal";
-import { useAppDispatch, useAppSelector } from "@slices/store";
+import { useAppDispatch, useAppSelector } from "../../slices/store";
 import {
   fetchPaymentTypes,
   fetchDocumentTypes,
@@ -21,7 +21,7 @@ import {
 import {
   fetchEmployeesByRole,
   resetSelectedEmployee,
-} from "@slices/employeeSlice/employee";
+} from "../../slices/employeeSlice/employee";
 
 const EmployeeView = () => {
   const theme = useTheme();

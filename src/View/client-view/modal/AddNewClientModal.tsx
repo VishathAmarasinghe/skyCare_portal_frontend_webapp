@@ -1,23 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import { Modal } from 'antd';
-import { Box, Button, Stack, Step, StepLabel, Stepper, CircularProgress } from "@mui/material";
-import { CREATE_CLIENT_STEPS } from '../../../constants/index';
-import AddClientForm from '../component/AddClientForm';
-import { useAppSelector } from '@slices/store';
+import React, { useEffect, useState } from "react";
+import { Modal } from "antd";
+import {
+  Box,
+  Button,
+  Stack,
+  Step,
+  StepLabel,
+  Stepper,
+  CircularProgress,
+} from "@mui/material";
+import { CREATE_CLIENT_STEPS } from "../../../constants/index";
+import AddClientForm from "../component/AddClientForm";
+import { useAppSelector } from "../../../slices/store";
 import { State } from "../../../types/types";
-import { resetSubmitSate } from '@slices/clientSlice/client';
+import { resetSubmitSate } from "../../../slices/clientSlice/client";
 
 interface AddNewClientModalProps {
   isClientAddModalVisible: boolean;
   setIsClientAddModalVisible: (value: boolean) => void;
 }
 
-const AddNewClientModal = ({ isClientAddModalVisible, setIsClientAddModalVisible }: AddNewClientModalProps) => {
+const AddNewClientModal = ({
+  isClientAddModalVisible,
+  setIsClientAddModalVisible,
+}: AddNewClientModalProps) => {
   const [activeStep, setActiveStep] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
-  const client = useAppSelector(state => state.clients);
+  const client = useAppSelector((state) => state.clients);
 
-  useEffect(()=>{
+  useEffect(() => {
     if (client.submitState === State.success) {
       setIsClientAddModalVisible(false);
       resetSubmitSate();
@@ -25,11 +36,10 @@ const AddNewClientModal = ({ isClientAddModalVisible, setIsClientAddModalVisible
     }
     if (client.submitState === State.loading) {
       setLoading(true);
-    }else{
+    } else {
       setLoading(false);
     }
-    
-  },[client.submitState])
+  }, [client.submitState]);
 
   // Handle next step
   const handleNext = () => {
@@ -44,7 +54,6 @@ const AddNewClientModal = ({ isClientAddModalVisible, setIsClientAddModalVisible
   // Handle save (final step)
   const handleSave = async () => {
     document.getElementById("submit-btn")?.click();
-    
   };
 
   return (
@@ -56,7 +65,7 @@ const AddNewClientModal = ({ isClientAddModalVisible, setIsClientAddModalVisible
       open={isClientAddModalVisible}
       onOk={() => setIsClientAddModalVisible(false)}
       onCancel={() => setIsClientAddModalVisible(false)}
-      footer={(
+      footer={
         <Box display="flex" justifyContent="end" width="100%">
           {/* Back Button */}
           <Button
@@ -69,15 +78,25 @@ const AddNewClientModal = ({ isClientAddModalVisible, setIsClientAddModalVisible
 
           {/* Next or Save Button */}
           <Button
-          sx={{mx: 1}}
+            sx={{ mx: 1 }}
             variant="contained"
-            onClick={activeStep === CREATE_CLIENT_STEPS.length - 1 ? handleSave : handleNext}
+            onClick={
+              activeStep === CREATE_CLIENT_STEPS.length - 1
+                ? handleSave
+                : handleNext
+            }
             disabled={loading} // Disable buttons during loading
           >
-            {loading ? <CircularProgress size={24} /> : activeStep === CREATE_CLIENT_STEPS.length - 1 ? 'Save' : 'Next'}
+            {loading ? (
+              <CircularProgress size={24} />
+            ) : activeStep === CREATE_CLIENT_STEPS.length - 1 ? (
+              "Save"
+            ) : (
+              "Next"
+            )}
           </Button>
         </Box>
-      )}
+      }
     >
       <Stack width="100%">
         {/* Stepper */}
@@ -90,7 +109,7 @@ const AddNewClientModal = ({ isClientAddModalVisible, setIsClientAddModalVisible
         </Stepper>
       </Stack>
 
-      <Box sx={{ mt: 2 }}  width="100%">
+      <Box sx={{ mt: 2 }} width="100%">
         <AddClientForm activeStepper={activeStep} key="client-form" />
       </Box>
     </Modal>

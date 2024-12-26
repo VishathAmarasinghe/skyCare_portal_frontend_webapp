@@ -1,9 +1,9 @@
 import { Button, Stack, Typography, useTheme } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import CarePlanMainTable from "./components/CarePlanMainTable";
-import { useAppDispatch } from "@slices/store";
-import { fetchAllCarePlans } from "@slices/carePlanSlice/carePlan";
-import { fetchClients } from "@slices/clientSlice/client";
+import { useAppDispatch } from "../../slices/store";
+import { fetchAllCarePlans } from "../../slices/carePlanSlice/carePlan";
+import { fetchClients } from "../../slices/clientSlice/client";
 import AddNewCarePlanModal from "../client-view/modal/AddNewCarePlanModal";
 
 const CarePlanView = () => {

@@ -12,13 +12,13 @@ import {
   Stack,
   useTheme,
 } from "@mui/material";
-import { useAppSelector, useAppDispatch } from "@slices/store";
+import { useAppSelector, useAppDispatch } from "../../../slices/store";
 import {
   IncidentActionTypesQuestions,
   saveIncidentQuestion,
   saveQuestion,
   updateIncidentQuestion,
-} from "@slices/incidentSlice/incident";
+} from "../../../slices/incidentSlice/incident";
 
 export interface IncidentSubActionTypeQuestionsState {
   id: string;

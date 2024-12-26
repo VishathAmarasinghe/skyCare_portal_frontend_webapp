@@ -29,7 +29,7 @@ import {
 import QuestionManager from "../components/QuestionManager";
 import { DataGrid, GridColDef, GridRowSelectionModel } from "@mui/x-data-grid";
 import { SketchPicker } from "react-color";
-import { useAppDispatch, useAppSelector } from "@slices/store";
+import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import {
   ClientType,
   Language,
@@ -41,28 +41,28 @@ import {
   updateClientStatus,
   updateClientType,
   updateLanguage,
-} from "@slices/selectorSlice/selector";
+} from "../../../slices/selectorSlice/selector";
 import {
   saveCarePlan,
   saveCarePlanStatus,
   updateCarePlanStatus,
-} from "@slices/carePlanSlice/carePlan";
+} from "../../../slices/carePlanSlice/carePlan";
 import {
   saveAppointmentTypes,
   updateAppointmentTypes,
-} from "@slices/appointmentSlice/appointment";
+} from "../../../slices/appointmentSlice/appointment";
 import {
   saveIncidentStatus,
   saveIncidentTypes,
   updateIncidentStatus,
   updateIncidentTypes,
-} from "@slices/incidentSlice/incident";
+} from "../../../slices/incidentSlice/incident";
 import {
   saveDocumentTypes,
   savePaymentTypes,
   updateDocumentTypes,
   updatePaymentTypes,
-} from "@slices/careGiverSlice/careGiver";
+} from "../../../slices/careGiverSlice/careGiver";
 
 interface SettingsDrawerProps {
   open: boolean;

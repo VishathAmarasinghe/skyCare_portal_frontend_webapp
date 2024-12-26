@@ -11,15 +11,14 @@ import {
   APPLICATION_ADMIN,
   APPLICATION_CARE_GIVER,
   APPLICATION_SUPER_ADMIN,
-} from "@config/config";
+} from "../config/config";
 import { useSnackbar } from "notistack";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { checkAuthToken } from "@slices/authSlice/auth";
+import { checkAuthToken } from "../slices/authSlice/auth";
 import { State } from "../types/types";
 import CareGiverRegistrationPage from "../layout/pages/CareGiverRegistrationPage";
 import ForgetPassword from "../layout/pages/ForgetPassword";
-import Loader from "@component/common/Loader";
 
 const AppHandler = () => {
   const { enqueueSnackbar } = useSnackbar();

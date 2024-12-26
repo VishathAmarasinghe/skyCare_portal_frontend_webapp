@@ -27,10 +27,10 @@ import {
   fetchJobAssignmentTable,
   RecurrentAppointmentValues,
   resetSelectedAppointment,
-} from "@slices/appointmentSlice/appointment";
-import { fetchClients } from "@slices/clientSlice/client";
-import { fetchAllCarePlans } from "@slices/carePlanSlice/carePlan";
-import { fetchCareGivers } from "@slices/careGiverSlice/careGiver";
+} from "../../../slices/appointmentSlice/appointment";
+import { fetchClients } from "../../../slices/clientSlice/client";
+import { fetchAllCarePlans } from "../../../slices/carePlanSlice/carePlan";
+import { fetchCareGivers } from "../../../slices/careGiverSlice/careGiver";
 import JobAssignerTable from "../component/JobAssignerTable";
 import InfoIcon from "@mui/icons-material/Info";
 import InfoCard from "../component/InfoCard";

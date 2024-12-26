@@ -4,7 +4,7 @@ import { Worker, Viewer } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
-import { FILE_DOWNLOAD_BASE_URL, ServiceBaseUrl } from "@config/config";
+import { FILE_DOWNLOAD_BASE_URL, ServiceBaseUrl } from "../../config/config";
 
 interface FileViewerWithModalProps {
   file: File | string; // File (from input) or URL (from server)
@@ -18,7 +18,10 @@ const FileViewerWithModal: React.FC<FileViewerWithModalProps> = ({
   onClose,
 }) => {
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
-  const isPdf = typeof file === "string" ? file?.endsWith(".pdf") : file?.type === "application/pdf";
+  const isPdf =
+    typeof file === "string"
+      ? file?.endsWith(".pdf")
+      : file?.type === "application/pdf";
 
   const handleDownload = async () => {
     let fileUrl: string;
@@ -28,7 +31,6 @@ const FileViewerWithModal: React.FC<FileViewerWithModalProps> = ({
       const encodedFilePath = encodeURIComponent(file); // Ensure the filePath is URL-encoded
       fileUrl = `${FILE_DOWNLOAD_BASE_URL}${encodedFilePath}`;
       console.log("fileUrl", fileUrl);
-      
     } else {
       // If the file is from an input upload (File object), create a Blob URL
       const fileURL = URL.createObjectURL(file);
@@ -86,8 +88,13 @@ const FileViewerWithModal: React.FC<FileViewerWithModalProps> = ({
     >
       {isPdf ? (
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
-          <Viewer key={typeof file === "string" ? file : file?.name}
-            fileUrl={typeof file === "string" ? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(file)}` : URL.createObjectURL(file)}
+          <Viewer
+            key={typeof file === "string" ? file : file?.name}
+            fileUrl={
+              typeof file === "string"
+                ? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(file)}`
+                : URL.createObjectURL(file)
+            }
             plugins={[defaultLayoutPluginInstance]}
           />
         </Worker>

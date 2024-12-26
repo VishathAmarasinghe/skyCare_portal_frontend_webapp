@@ -13,10 +13,10 @@ import {
   CareGiverDocuments,
   fetchDocumentTypes,
   saveCareGiver,
-} from "@slices/careGiverSlice/careGiver";
-import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
-import { Employee } from "@slices/employeeSlice/employee";
-import { useAppDispatch, useAppSelector } from "@slices/store";
+} from "../../slices/careGiverSlice/careGiver";
+import { enqueueSnackbarMessage } from "../../slices/commonSlice/common";
+import { Employee } from "../../slices/employeeSlice/employee";
+import { useAppDispatch, useAppSelector } from "../../slices/store";
 import React, { useEffect, useState } from "react";
 import { CREATE_CARE_GIVER_OUTSIDE_REGISTRATION } from "../../constants/index";
 import AgreementComponent from "../../component/common/AgreementComponent";

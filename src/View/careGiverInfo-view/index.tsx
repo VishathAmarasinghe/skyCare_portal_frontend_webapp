@@ -16,10 +16,13 @@ import {
   fetchSingleCareGiverByEmployeeID,
   saveCareGiver,
   updateCareGiver,
-} from "@slices/careGiverSlice/careGiver";
-import { useAppDispatch, useAppSelector } from "@slices/store";
-import { Employee, fetchSingleEmployee } from "@slices/employeeSlice/employee";
-import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
+} from "../../slices/careGiverSlice/careGiver";
+import { useAppDispatch, useAppSelector } from "../../slices/store";
+import {
+  Employee,
+  fetchSingleEmployee,
+} from "../../slices/employeeSlice/employee";
+import { enqueueSnackbarMessage } from "../../slices/commonSlice/common";
 import {
   CREATE_CARE_GIVER_INTERNAL_UPDATE,
   CREATE_CARE_GIVER_OUTSIDE_REGISTRATION,

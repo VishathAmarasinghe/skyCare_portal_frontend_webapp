@@ -13,10 +13,10 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import {
   getSingleShiftNoteByShiftID,
   updateShiftNote,
-} from "@slices/shiftNoteSlice/shiftNote";
-import { useAppDispatch, useAppSelector } from "@slices/store";
+} from "../../../slices/shiftNoteSlice/shiftNote";
+import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import { ConfirmationType, State } from "../../../types/types";
-import { useConfirmationModalContext } from "@context/DialogContext";
+import { useConfirmationModalContext } from "../../../context/DialogContext";
 
 function CustomToolbar() {
   return (

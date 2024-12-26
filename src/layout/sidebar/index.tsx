@@ -23,8 +23,8 @@ import { Stack, Typography } from "@mui/material";
 import {
   fetchMetaEmployees,
   fetchMetaEmployeesMapping,
-} from "@slices/employeeSlice/employee";
-import { useAppDispatch } from "@slices/store";
+} from "../../slices/employeeSlice/employee";
+import { useAppDispatch } from "../../slices/store";
 
 interface SidebarProps {
   open: boolean;

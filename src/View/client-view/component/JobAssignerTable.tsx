@@ -28,12 +28,12 @@ import {
   JobAssignShowerDTO,
   RecurrentAppointmentValues,
   updateNewAllocations,
-} from "@slices/appointmentSlice/appointment";
-import { useAppDispatch, useAppSelector } from "@slices/store";
+} from "../../../slices/appointmentSlice/appointment";
+import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import { ConfirmationType, State } from "../../../types/types";
-import { CareGiver } from "@slices/careGiverSlice/careGiver";
-import { FILE_DOWNLOAD_BASE_URL } from "@config/config";
-import { useConfirmationModalContext } from "@context/DialogContext";
+import { CareGiver } from "../../../slices/careGiverSlice/careGiver";
+import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
+import { useConfirmationModalContext } from "../../../context/DialogContext";
 
 interface JobAssignerTableProps {
   setSelectedRecurrentAppointment: React.Dispatch<

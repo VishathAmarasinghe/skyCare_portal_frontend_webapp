@@ -1,14 +1,14 @@
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, Button, Stack, Tab, Typography, useTheme } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import BasicInfoTab from '../component/tabs/BasicInfo-tab';
-import InterestTab from '../component/tabs/Interest-tab';
-import NotesTab from '../component/tabs/notes-tab';
-import AppointmentTab from '../component/tabs/Appointments-tab';
-import CarePlanTab from '../component/tabs/carePlans-tab';
+import BasicInfoTab from "../component/tabs/BasicInfo-tab";
+import InterestTab from "../component/tabs/Interest-tab";
+import NotesTab from "../component/tabs/notes-tab";
+import AppointmentTab from "../component/tabs/Appointments-tab";
+import CarePlanTab from "../component/tabs/carePlans-tab";
 import { useSearchParams } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "@slices/store";
-import { fetchSingleClients } from "@slices/clientSlice/client";
+import { useAppDispatch, useAppSelector } from "../../../slices/store";
+import { fetchSingleClients } from "../../../slices/clientSlice/client";
 import AddNewClientModal from "../modal/AddNewClientModal";
 import { State } from "../../../types/types";
 
@@ -20,24 +20,28 @@ const ClientInfoPanel = () => {
   const dispatch = useAppDispatch();
   const clientInfo = useAppSelector((state) => state.clients);
   const client = clientInfo?.selectedClient;
-  const [isClientModalVisible, setIsClientModalVisible] = useState<boolean>(false);
+  const [isClientModalVisible, setIsClientModalVisible] =
+    useState<boolean>(false);
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchClientDetails();
-  },[clientID])
+  }, [clientID]);
 
   const fetchClientDetails = async () => {
     if (clientID && clientID !== "") {
       dispatch(fetchSingleClients(clientID));
     }
-  }
+  };
 
-  useEffect(()=>{
-    if (clientInfo?.submitState === State?.success || clientInfo?.updateState === State?.success) {
+  useEffect(() => {
+    if (
+      clientInfo?.submitState === State?.success ||
+      clientInfo?.updateState === State?.success
+    ) {
       fetchClientDetails();
       setIsClientModalVisible(false);
     }
-  },[clientInfo.updateState,clientInfo?.submitState])
+  }, [clientInfo.updateState, clientInfo?.submitState]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
@@ -48,7 +52,7 @@ const ClientInfoPanel = () => {
       width="100%"
       height="100%"
       data-aos="fade-right"
-    data-aos-duration="200"
+      data-aos-duration="200"
       flexDirection="column"
       borderRadius={3}
       sx={{ backgroundColor: "white" }}
@@ -71,8 +75,19 @@ const ClientInfoPanel = () => {
           <Button sx={{ mx: 2 }} variant="outlined">
             Deactivate
           </Button>
-          <Button variant="contained" onClick={()=>{setIsClientModalVisible(true)}}>Edit</Button>
-          <AddNewClientModal isClientAddModalVisible={isClientModalVisible} setIsClientAddModalVisible={setIsClientModalVisible} key={"clientModal"}/>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setIsClientModalVisible(true);
+            }}
+          >
+            Edit
+          </Button>
+          <AddNewClientModal
+            isClientAddModalVisible={isClientModalVisible}
+            setIsClientAddModalVisible={setIsClientModalVisible}
+            key={"clientModal"}
+          />
         </Stack>
       </Stack>
       <Stack width="100%" height="80%">
@@ -89,19 +104,19 @@ const ClientInfoPanel = () => {
             </TabList>
           </Box>
           <TabPanel value="1">
-            <BasicInfoTab/>
+            <BasicInfoTab />
           </TabPanel>
           <TabPanel value="2">
-            <InterestTab/>
+            <InterestTab />
           </TabPanel>
           <TabPanel value="3">
-            <NotesTab/>
+            <NotesTab />
           </TabPanel>
           <TabPanel value="4">
-            <CarePlanTab/>
+            <CarePlanTab />
           </TabPanel>
           <TabPanel value="5">
-            <AppointmentTab/>
+            <AppointmentTab />
           </TabPanel>
         </TabContext>
       </Stack>

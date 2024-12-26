@@ -2,14 +2,14 @@ import { Button, Stack } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import CarePlanTable from "../CarePlanTable";
 import { useSearchParams } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "@slices/store";
+import { useAppDispatch, useAppSelector } from "../../../../slices/store";
 import { State } from "../../../../types/types";
 import {
   fetchCarePlansByClientID,
   fetchCarePlanStatusList,
   fetchGoalOutcomes,
   resetSubmitState,
-} from "@slices/carePlanSlice/carePlan";
+} from "../../../../slices/carePlanSlice/carePlan";
 import AddNewCarePlanModal from "../../modal/AddNewCarePlanModal";
 
 const CarePlansTab = () => {

@@ -4,19 +4,19 @@ import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import { dayjsLocalizer, Calendar, Views, View } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { useAppDispatch, useAppSelector } from "@slices/store";
+import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import {
   AppointmentCalenderType,
   fetchAppointmentbyCalender,
   fetchAppointmentbyCalenderWithUser,
   fetchRecurrentAppointmentDetails,
   fetchSingleAppointment,
-} from "@slices/appointmentSlice/appointment";
+} from "../../../slices/appointmentSlice/appointment";
 import {
   APPLICATION_ADMIN,
   APPLICATION_CARE_GIVER,
   APPLICATION_SUPER_ADMIN,
-} from "@config/config";
+} from "../../../config/config";
 
 dayjs.extend(timezone);
 const localizer = dayjsLocalizer(dayjs);

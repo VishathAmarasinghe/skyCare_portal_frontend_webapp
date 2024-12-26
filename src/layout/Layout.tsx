@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 import { Box, alpha } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import Loader from "@component/common/Loader";
+import Loader from "../component/common/Loader";
 
 import Header from "./header";
 import Sidebar from "./sidebar";
@@ -27,13 +27,7 @@ import { useSnackbar } from "notistack";
 import pJson from "../../package.json";
 import { RootState, useAppSelector } from "../slices/store";
 import { Typography } from "@mui/material";
-import {
-  APPLICATION_ADMIN,
-  APPLICATION_CARE_GIVER,
-  APPLICATION_SUPER_ADMIN,
-} from "@config/config";
-import PreLoader from "@component/common/PreLoader";
-import { selectRoles } from "@slices/authSlice/auth";
+import { selectRoles } from "../slices/authSlice/auth";
 
 export default function Layout() {
   //snackbar configuration
