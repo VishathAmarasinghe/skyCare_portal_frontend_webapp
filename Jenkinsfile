@@ -51,14 +51,15 @@ pipeline {
                             script {
                                 sh """
                         docker build -t ${BACKEND_IMAGE} \
-                            --build-arg SPRING_PROFILES_ACTIVE=dev \
-                            --build-arg SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/skycareportal_dev \
-                            --build-arg SPRING_DATASOURCE_USERNAME=root \
-                            --build-arg SPRING_DATASOURCE_PASSWORD=root \
-                            --build-arg SPRING_MAIL_USERNAME=projectvishath@gmail.com \
-                            --build-arg SPRING_MAIL_PASSWORD=ovdi uiox jqvd avai \
-                            --build-arg FRONTEND_URL=http://frontend:80 \
-                            --build-arg SERVER_PORT=5000 .
+    --build-arg SPRING_PROFILES_ACTIVE=dev \
+    --build-arg SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/skycareportal_dev \
+    --build-arg SPRING_DATASOURCE_USERNAME=root \
+    --build-arg SPRING_DATASOURCE_PASSWORD=root \
+    --build-arg SPRING_MAIL_USERNAME=projectvishath@gmail.com \
+    --build-arg SPRING_MAIL_PASSWORD='ovdi uiox jqvd avai' \
+    --build-arg FRONTEND_URL=http://frontend:80 \
+    --build-arg SERVER_PORT=5000 \
+    .
                         """
                             }
                 }
