@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { State } from "../../../types/types";
 import { useAppSelector } from "../../../slices/store";
-import AddResourceForm from "../components/ResourceForm";
+import AddResourceForm from "../../Resource-view/components/ResourceForm";
 import {
   APPLICATION_ADMIN,
   APPLICATION_SUPER_ADMIN,

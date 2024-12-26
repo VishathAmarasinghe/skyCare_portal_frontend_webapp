@@ -7,8 +7,8 @@ import {
   APPLICATION_ADMIN,
   APPLICATION_SUPER_ADMIN,
 } from "../../config/config";
-import ResourceCreationModal from "./modal/ResourceCreationModal";
-import ResourceTable from "./components/ResourceTable";
+import ResourceCreationModal from "../Resource-view/modal/ResourceCreationModal";
+import ResourceTable from "../Resource-view/components/ResourceTable";
 
 const ResourceView = () => {
   const theme = useTheme();
