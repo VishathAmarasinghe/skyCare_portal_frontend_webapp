@@ -28,9 +28,9 @@ pipeline {
             }
         }
         stage('Deploy to Staging') {
-            when {
-                branch 'dev'
-            }
+            // when {
+            //     branch 'dev'
+            // }
             steps {
                 dir('frontend') {
                             script {
