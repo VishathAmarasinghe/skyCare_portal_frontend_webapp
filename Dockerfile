@@ -38,7 +38,7 @@ RUN npm run build
 FROM nginx:alpine
 
 # Copy the custom nginx config file from the frontend directory
-COPY ./nginx.conf /etc/nginx/nginx.conf
+# COPY ./nginx.conf /etc/nginx/nginx.conf
 
 # Copy the built Vite app from the previous build stage
 COPY --from=build /app/dist /usr/share/nginx/html
