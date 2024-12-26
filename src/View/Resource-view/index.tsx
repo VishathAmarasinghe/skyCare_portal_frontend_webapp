@@ -1,12 +1,12 @@
 import { Button, Stack, Typography, useTheme } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { fetchAllResources } from "../../slices/resourceSliceName/resource";
+import { fetchAllResources } from "../../slices/resourceSlice/resource";
 import { useAppDispatch, useAppSelector } from "../../slices/store";
 import { State } from "../../types/types";
 import {
   APPLICATION_ADMIN,
   APPLICATION_SUPER_ADMIN,
-} from "../../configName/config";
+} from "../../config/config";
 import ResourceCreationModal from "../Resource-view/modal/ResourceCreationModal";
 import ResourceTable from "../Resource-view/components/ResourceTable";
 

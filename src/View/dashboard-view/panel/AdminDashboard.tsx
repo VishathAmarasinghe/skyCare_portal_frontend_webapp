@@ -4,7 +4,7 @@ import HelloCard from "../Components/HelloCard";
 import { DASHBOARD_CARDS } from "../../../constants/index";
 import DashboardCard from "../Components/DashboardCard";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
-import { fetchAdminDashboard } from "../../../slices/dashboardSliceName/dashboard";
+import { fetchAdminDashboard } from "../../../slices/dashboardSlice/dashboard";
 import { DashboardCardProps } from "../../../types/types";
 import AppointmentCard from "../Components/AppointmentCard";
 import AppointmentBarChart from "../Components/AppointmentBarChart";

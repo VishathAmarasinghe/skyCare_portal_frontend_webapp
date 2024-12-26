@@ -1,9 +1,9 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { APIService } from "../../utils/apiService";
-import { AppConfig } from "../../configName/config";
+import { AppConfig } from "../../config/config";
 import { State } from "../../types/types";
 import { enqueueSnackbarMessage } from "../commonSlice/common";
-import { SnackMessage } from "../../configName/constant";
+import { SnackMessage } from "../../config/constant";
 import axios, { AxiosError, HttpStatusCode } from "axios";
 
 // Define types for each entity

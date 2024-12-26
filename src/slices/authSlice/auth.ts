@@ -8,11 +8,11 @@ import {
   APPLICATION_ADMIN,
   APPLICATION_CARE_GIVER,
   APPLICATION_SUPER_ADMIN,
-} from "../../configName/config";
+} from "../../config/config";
 import { Password } from "@mui/icons-material";
 import axios, { HttpStatusCode } from "axios";
 import { enqueueSnackbarMessage } from "../commonSlice/common";
-import { SnackMessage } from "../../configName/constant";
+import { SnackMessage } from "../../config/constant";
 import { jwtDecode } from "jwt-decode";
 
 export interface UserData {

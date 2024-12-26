@@ -1,6 +1,6 @@
 import { Stack } from "@mui/material";
 import React from "react";
-import CareGiverDashboard from "./panelName/CareGiverDashboard";
+import CareGiverDashboard from "./panel/CareGiverDashboard";
 
 const CareGiverDashboardView = () => {
   return <Stack

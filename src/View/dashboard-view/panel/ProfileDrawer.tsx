@@ -12,8 +12,8 @@ import {
   Employee,
   EmployeeBasicInfoUpdater,
   updateEmployeeBasicInfo,
-} from "../../../slices/employeeSliceName/employee";
-import { FILE_DOWNLOAD_BASE_URL } from "../../../configName/config";
+} from "../../../slices/employeeSlice/employee";
+import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
 
 interface ProfileDrawerProps {
   open: boolean;

@@ -13,7 +13,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import {
   getSingleShiftNoteByShiftID,
   updateShiftNote,
-} from "../../../slices/shiftNoteSliceName/shiftNote";
+} from "../../../slices/shiftNoteSlice/shiftNote";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import { ConfirmationType, State } from "../../../types/types";
 import { useConfirmationModalContext } from "../../../context/DialogContext";

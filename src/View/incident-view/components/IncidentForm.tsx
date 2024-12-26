@@ -29,7 +29,7 @@ import {
   IncidentType,
   saveIncident,
   updateIncident,
-} from "../../../slices/incidentSliceName/incident";
+} from "../../../slices/incidentSlice/incident";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import DynamicQuestionsForm from "./DynamicQuestionsForm";
 import FileViewerWithModal from "../../../component/common/FileViewerWithModal";

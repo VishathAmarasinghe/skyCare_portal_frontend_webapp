@@ -16,12 +16,12 @@ import {
   fetchSingleCareGiverByEmployeeID,
   saveCareGiver,
   updateCareGiver,
-} from "../../slices/careGiverSliceName/careGiver";
+} from "../../slices/careGiverSlice/careGiver";
 import { useAppDispatch, useAppSelector } from "../../slices/store";
 import {
   Employee,
   fetchSingleEmployee,
-} from "../../slices/employeeSliceName/employee";
+} from "../../slices/employeeSlice/employee";
 import { enqueueSnackbarMessage } from "../../slices/commonSlice/common";
 import {
   CREATE_CARE_GIVER_INTERNAL_UPDATE,

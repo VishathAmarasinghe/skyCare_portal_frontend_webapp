@@ -16,14 +16,14 @@ import ListLinkItem from "../../component/layout/LinkItem";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 import { getActiveRouteDetails } from "./../../route";
-import { SIDEBAR_WIDTH } from "../../configName/ui";
+import { SIDEBAR_WIDTH } from "../../config/ui";
 import { useLocation, matchPath, useMatches } from "react-router-dom";
 import { ColorModeContext } from "../../App";
 import { Stack, Typography } from "@mui/material";
 import {
   fetchMetaEmployees,
   fetchMetaEmployeesMapping,
-} from "../../slices/employeeSliceName/employee";
+} from "../../slices/employeeSlice/employee";
 import { useAppDispatch } from "../../slices/store";
 
 interface SidebarProps {

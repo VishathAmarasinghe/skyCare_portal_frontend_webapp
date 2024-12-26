@@ -10,13 +10,13 @@ import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import {
   fetchRecurrentAppointmentDetails,
   NextAppointmentDTO,
-} from "../../../slices/appointmentSliceName/appointment";
+} from "../../../slices/appointmentSlice/appointment";
 import { ConfirmationType } from "../../../types/types";
 import { useConfirmationModalContext } from "../../../context/DialogContext";
 import {
   getCurrnetShiftNoteState,
   submitStartShiftNote,
-} from "../../../slices/shiftNoteSliceName/shiftNote";
+} from "../../../slices/shiftNoteSlice/shiftNote";
 import { set } from "date-fns";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
 

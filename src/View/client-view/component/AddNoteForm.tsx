@@ -22,7 +22,7 @@ import {
   resetSubmitState,
   saveNotes,
   updateNotes,
-} from "@slices/notesSliceName/notes";
+} from "@slices/notesSlice/notes";
 import { useSearchParams } from "react-router-dom";
 import dayjs from "dayjs";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";

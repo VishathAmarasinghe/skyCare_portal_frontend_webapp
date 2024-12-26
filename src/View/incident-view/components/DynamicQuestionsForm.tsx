@@ -10,7 +10,7 @@ import {
 import {
   IncidentActionTypeAllAnswers,
   IncidentActionTypesQuestions,
-} from "../../../slices/incidentSliceName/incident";
+} from "../../../slices/incidentSlice/incident";
 import { useAppSelector } from "../../../slices/store";
 
 interface Props {
