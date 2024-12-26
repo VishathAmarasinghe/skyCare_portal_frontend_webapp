@@ -14,13 +14,13 @@ import {
   resetSelectedAppointment,
 } from "@slices/appointmentSlice/appointment";
 import { selectUserInfo } from "@slices/authSlice/auth";
-import AppointmentDetailsModal from "../Modal/AppointmentDetailsModal";
+import AppointmentDetailsModal from "../modal/AppointmentDetailsModal";
 import { State } from "../../../types/types";
 import NextAppointmentCard from "../components/NextAppointmentCard";
-import ShiftNoteModal from "../Modal/ShiftNoteModal";
+import ShiftNoteModal from "../modal/ShiftNoteModal";
 import { fetchCareGiverDashboard } from "@slices/dashboardSlice/dashboard";
-import AppointmentBarChart from "@view/dashboard-view/Components/AppointmentBarChart";
-import RecurrentAppointmentDetailsModal from "../Modal/RecurrentAppointmentDetailsModal";
+import AppointmentBarChart from "../../dashboard-view/Components/AppointmentBarChart";
+import RecurrentAppointmentDetailsModal from "../modal/RecurrentAppointmentDetailsModal";
 
 const CareGiverDashboard = () => {
   const dispatch = useAppDispatch();

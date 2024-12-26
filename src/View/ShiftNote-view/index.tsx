@@ -11,7 +11,7 @@ import {
   getAllShiftNotes,
   getAllShiftNotesByEmployeeID,
 } from "@slices/shiftNoteSlice/shiftNote";
-import ShiftNoteModal from "@view/careGiver-dashboard-view/Modal/ShiftNoteModal";
+import ShiftNoteModal from "../careGiver-dashboard-view/modal/ShiftNoteModal";
 import { State } from "../../types/types";
 
 const ShiftNoteView = () => {
