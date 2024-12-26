@@ -58,8 +58,7 @@ pipeline {
     --build-arg SPRING_MAIL_USERNAME=projectvishath@gmail.com \
     --build-arg SPRING_MAIL_PASSWORD='ovdi uiox jqvd avai' \
     --build-arg FRONTEND_URL=http://frontend:80 \
-    --build-arg SERVER_PORT=5000 \
-    .
+    --build-arg SERVER_PORT=5000 .
                         """
                             }
                 }
