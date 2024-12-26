@@ -5,7 +5,9 @@ WORKDIR /app
 
 # Install dependencies
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm install --force
+
+RUN npm install --save-dev @types/react @types/node
 
 # Copy the source code
 COPY . ./
@@ -23,6 +25,11 @@ RUN echo "VITE_BACKEND_BASE_URL=$VITE_BACKEND_BASE_URL" >> .env && \
     echo "VITE_APPLICATION_SUPER_ADMIN=$VITE_APPLICATION_SUPER_ADMIN" >> .env && \
     echo "VITE_APPLICATION_CARE_GIVER=$VITE_APPLICATION_CARE_GIVER" >> .env && \
     echo "VITE_FILE_DOWNLOAD_PATH=$VITE_FILE_DOWNLOAD_PATH" >> .env
+
+# Run TypeScript checks
+RUN npx tsc --noEmit
+
+
 
 # Build the React Vite app
 RUN npm run build
