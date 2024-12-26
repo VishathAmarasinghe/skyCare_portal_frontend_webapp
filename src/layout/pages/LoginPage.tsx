@@ -12,8 +12,8 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import LoginImage from "../../assets/images/loginImage.png";
 import CompanyLogo from "../../assets/images/app_logo.png";
 import { emailRegex } from "../../constants/index";
-import { useAppDispatch } from "@slices/store";
-import { login } from "@slices/authSlice/auth";
+import { useAppDispatch } from "../../slices/store";
+import { login } from "../../slices/authSlice/auth";
 import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {

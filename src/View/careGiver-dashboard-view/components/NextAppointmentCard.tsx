@@ -12,11 +12,11 @@ import {
   NextAppointmentDTO,
 } from "../../../slices/appointmentSlice/appointment";
 import { ConfirmationType } from "../../../types/types";
-import { useConfirmationModalContext } from "@context/DialogContext";
+import { useConfirmationModalContext } from "../../../context/DialogContext";
 import {
   getCurrnetShiftNoteState,
   submitStartShiftNote,
-} from "@slices/shiftNoteSlice/shiftNote";
+} from "../../../slices/shiftNoteSlice/shiftNote";
 import { set } from "date-fns";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
 

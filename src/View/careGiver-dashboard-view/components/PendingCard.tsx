@@ -6,7 +6,7 @@ import {
 } from "../../../slices/appointmentSlice/appointment";
 import { Stack, Typography, Button, useTheme } from "@mui/material";
 import dayjs from "dayjs";
-import { useAppDispatch } from "@slices/store";
+import { useAppDispatch } from "../../../slices/store";
 
 interface pendingCardProps {
   jobDetails: PendingAppointments;

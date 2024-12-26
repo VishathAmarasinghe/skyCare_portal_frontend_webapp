@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { Box, Stack, TextField } from "@mui/material";
-import { useAppSelector } from "@slices/store";
-import { CareGiverPayments } from "@slices/careGiverSlice/careGiver";
+import { useAppSelector } from "../../../slices/store";
+import { CareGiverPayments } from "../../../slices/careGiverSlice/careGiver";
 import { State } from "../../../types/types";
 
 interface CareGiverPaymentRatioAdderProps {

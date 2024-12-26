@@ -2,14 +2,14 @@ import { Button, Stack, Typography, useTheme } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import IncidentTable from "./components/IncidentTable";
 import IncidentModal from "./modal/IncidentModal";
-import { useAppDispatch, useAppSelector } from "@slices/store";
-import { APPLICATION_CARE_GIVER } from "@config/config";
+import { useAppDispatch, useAppSelector } from "../../slices/store";
+import { APPLICATION_CARE_GIVER } from "../../config/config";
 import {
   fetchAllIncidents,
   fetchAllIncidentsByEmployeeId,
   fetchAllIncidentStatus,
   fetchAllIncidentTypes,
-} from "@slices/incidentSlice/incident";
+} from "../../slices/incidentSlice/incident";
 
 const IncidentView = () => {
   const theme = useTheme();

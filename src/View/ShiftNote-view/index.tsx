@@ -1,16 +1,16 @@
 import { Button, Stack, Typography, useTheme } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import ShiftNoteTable from "./components/ShiftNoteTable";
-import { useAppDispatch, useAppSelector } from "@slices/store";
+import { useAppDispatch, useAppSelector } from "../../slices/store";
 import {
   APPLICATION_ADMIN,
   APPLICATION_CARE_GIVER,
   APPLICATION_SUPER_ADMIN,
-} from "@config/config";
+} from "../../config/config";
 import {
   getAllShiftNotes,
   getAllShiftNotesByEmployeeID,
-} from "@slices/shiftNoteSlice/shiftNote";
+} from "../../slices/shiftNoteSlice/shiftNote";
 import ShiftNoteModal from "../careGiver-dashboard-view/modal/ShiftNoteModal";
 import { State } from "../../types/types";
 

@@ -15,7 +15,7 @@ import {
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { Delete, Visibility } from "@mui/icons-material";
 import { IncidentInvolvedParties } from "../../../slices/incidentSlice/incident";
-import { useAppSelector } from "@slices/store";
+import { useAppSelector } from "../../../slices/store";
 
 interface IncidentInvolvedPartiesComponentProps {
   rows: IncidentInvolvedParties[];

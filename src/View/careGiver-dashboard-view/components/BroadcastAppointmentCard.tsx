@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Stack, Typography, Button, useTheme } from "@mui/material";
 import EventIcon from "@mui/icons-material/Event";
-import { useAppDispatch } from "@slices/store";
+import { useAppDispatch } from "../../../slices/store";
 import {
   AppointmentCareGiver,
   fetchSingleAppointment,
   updateCareGiverAcceptanceState,
-} from "@slices/appointmentSlice/appointment";
+} from "../../../slices/appointmentSlice/appointment";
 import dayjs from "dayjs";
 
 interface BroadcastAppointmentCardProps {

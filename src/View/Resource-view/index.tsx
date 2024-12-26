@@ -1,11 +1,14 @@
 import { Button, Stack, Typography, useTheme } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import ResourceTable from "./components/ResourceTable";
-import ResourceCreationModal from "./modal/ResourceCreationModal";
-import { fetchAllResources } from "@slices/resourceSlice/resource";
-import { useAppDispatch, useAppSelector } from "@slices/store";
+import { fetchAllResources } from "../../slices/resourceSlice/resource";
+import { useAppDispatch, useAppSelector } from "../../slices/store";
 import { State } from "../../types/types";
-import { APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN } from "@config/config";
+import {
+  APPLICATION_ADMIN,
+  APPLICATION_SUPER_ADMIN,
+} from "../../config/config";
+import ResourceCreationModal from "./modal/ResourceCreationModal";
+import ResourceTable from "./components/ResourceTable";
 
 const ResourceView = () => {
   const theme = useTheme();

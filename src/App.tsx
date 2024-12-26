@@ -7,15 +7,15 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 // APP imports
 import { store } from "./slices/store";
 import { ThemeMode } from "./utils/types";
-import { APP_NAME, AppConfig } from "@config/config";
+import { APP_NAME, AppConfig } from "./config/config";
 import AppHandler from "./app/AppHandler";
 import { themeSettings } from "./theme";
 import "./App.css";
 
 // Other imports
 import { SnackbarProvider } from "notistack";
-import { APIService } from "@utils/apiService";
-import ConfirmationDialogContextProvider from "@context/DialogContext";
+import { APIService } from "./utils/apiService";
+import ConfirmationDialogContextProvider from "./context/DialogContext";
 import { LoadScript } from "@react-google-maps/api";
 import AOS from "aos";
 import "aos/dist/aos.css";

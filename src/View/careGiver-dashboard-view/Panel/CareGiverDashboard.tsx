@@ -2,7 +2,7 @@ import { Box, Grid, Stack, Typography } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import HelloCard from "../../dashboard-view/Components/HelloCard";
 import BroadcastAppointmentCard from "../components/BroadcastAppointmentCard";
-import { useAppDispatch, useAppSelector } from "@slices/store";
+import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import PendingCard from "../components/PendingCard";
 import {
   AppointmentCareGiver,
@@ -13,12 +13,12 @@ import {
   PendingAppointments,
   resetSelectedAppointment,
 } from "@slices/appointmentSlice/appointment";
-import { selectUserInfo } from "@slices/authSlice/auth";
+import { selectUserInfo } from "../../../slices/authSlice/auth";
 import AppointmentDetailsModal from "../modal/AppointmentDetailsModal";
 import { State } from "../../../types/types";
 import NextAppointmentCard from "../components/NextAppointmentCard";
 import ShiftNoteModal from "../modal/ShiftNoteModal";
-import { fetchCareGiverDashboard } from "@slices/dashboardSlice/dashboard";
+import { fetchCareGiverDashboard } from "../../../slices/dashboardSlice/dashboard";
 import AppointmentBarChart from "../../dashboard-view/Components/AppointmentBarChart";
 import RecurrentAppointmentDetailsModal from "../modal/RecurrentAppointmentDetailsModal";
 

@@ -21,8 +21,8 @@ import {
   resetSubmitState,
   saveEmployee,
   updateEmployee,
-} from "@slices/employeeSlice/employee";
-import { useAppDispatch, useAppSelector } from "@slices/store";
+} from "../../../slices/employeeSlice/employee";
+import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import { set } from "date-fns";
 
 interface AddNewClientModalProps {

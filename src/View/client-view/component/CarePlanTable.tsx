@@ -21,42 +21,52 @@ import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useAppDispatch, useAppSelector } from "@slices/store";
-import { CarePlan, fetchSingleCarePlan } from "@slices/carePlanSlice/carePlan";
+import { useAppDispatch, useAppSelector } from "../../../slices/store";
+import {
+  CarePlan,
+  fetchSingleCarePlan,
+} from "../../../slices/carePlanSlice/carePlan";
 import { State } from "../../../types/types";
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 function CustomToolbar() {
   return (
     <GridToolbarContainer>
-      <GridToolbarColumnsButton/>
-      <GridToolbarFilterButton/>
+      <GridToolbarColumnsButton />
+      <GridToolbarFilterButton />
       <GridToolbarQuickFilter placeholder="Search" />
     </GridToolbarContainer>
   );
 }
- 
 
 interface ClientTableProps {
-  isCarePlanModalVisible: boolean; 
+  isCarePlanModalVisible: boolean;
   setIsCarePlanModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const CarePlanTable = ({isCarePlanModalVisible,setIsCarePlanModalVisible}: ClientTableProps) => {
-  const carePlanDetails  = useAppSelector((state)=>state.carePlans);
+const CarePlanTable = ({
+  isCarePlanModalVisible,
+  setIsCarePlanModalVisible,
+}: ClientTableProps) => {
+  const carePlanDetails = useAppSelector((state) => state.carePlans);
   const [carePlans, setCarePlans] = useState<CarePlan[]>([]);
   const theme = useTheme();
   const dispatch = useAppDispatch();
 
-  useEffect(()=>{
+  useEffect(() => {
     setCarePlans(carePlanDetails.carePlans);
-  },[carePlanDetails.state])
+  }, [carePlanDetails.state]);
 
   const initialColumns: GridColDef[] = [
-    { field: "careplanID", headerName: "Care Plan ID", width: 100, align: "left" },
+    {
+      field: "careplanID",
+      headerName: "Care Plan ID",
+      width: 100,
+      align: "left",
+    },
     { field: "startDate", headerName: "Start Date" },
     { field: "endDate", headerName: "End Date" },
-  
+
     {
       field: "title",
       headerName: "Title",
@@ -80,22 +90,23 @@ const CarePlanTable = ({isCarePlanModalVisible,setIsCarePlanModalVisible}: Clien
         const navigate = useNavigate();
         return (
           <Stack flexDirection="row">
-  
             <IconButton
               aria-label="view"
-              onClick={() => {setIsCarePlanModalVisible(true); dispatch(fetchSingleCarePlan(params.row.careplanID))}}
+              onClick={() => {
+                setIsCarePlanModalVisible(true);
+                dispatch(fetchSingleCarePlan(params.row.careplanID));
+              }}
             >
               <RemoveRedEyeOutlinedIcon />
             </IconButton>
             <IconButton>
-            <DeleteOutlineIcon/>
+              <DeleteOutlineIcon />
             </IconButton>
           </Stack>
         );
       },
     },
   ];
-
 
   return (
     <Box sx={{ height: "100%", width: "100%" }}>
@@ -116,7 +127,6 @@ const CarePlanTable = ({isCarePlanModalVisible,setIsCarePlanModalVisible}: Clien
           toolbar: CustomToolbar,
         }}
         sx={{
-          
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: "white",
           },
@@ -132,4 +142,4 @@ const CarePlanTable = ({isCarePlanModalVisible,setIsCarePlanModalVisible}: Clien
   );
 };
 
-export default CarePlanTable
+export default CarePlanTable;

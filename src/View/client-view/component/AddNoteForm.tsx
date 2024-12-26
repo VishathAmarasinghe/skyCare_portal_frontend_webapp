@@ -25,7 +25,7 @@ import {
 } from "@slices/notesSlice/notes";
 import { useSearchParams } from "react-router-dom";
 import dayjs from "dayjs";
-import { useAppDispatch, useAppSelector } from "@slices/store";
+import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import { State } from "../../../types/types";
 import { Card, Upload } from "antd";
 import FileListTable from "../../../component/common/FileListTable";

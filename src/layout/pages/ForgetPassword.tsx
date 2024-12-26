@@ -15,12 +15,16 @@ import {
 } from "@mui/material";
 import companyLogo from "../../assets/images/app_logo.png";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { useAppDispatch, useAppSelector } from "@slices/store";
-import { resetSubmitState, sendOTP, validateOTP } from "@slices/oTPSlice/oTP";
+import { useAppDispatch, useAppSelector } from "../../slices/store";
+import {
+  resetSubmitState,
+  sendOTP,
+  validateOTP,
+} from "../../slices/oTPSlice/oTP";
 import { emailRegex } from "../../constants/index";
 import { State } from "../../types/types";
-import { resetPassword } from "@slices/authSlice/auth";
-import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
+import { resetPassword } from "../../slices/authSlice/auth";
+import { enqueueSnackbarMessage } from "../../slices/commonSlice/common";
 import { useNavigate } from "react-router-dom";
 
 const ForgetPassword = () => {

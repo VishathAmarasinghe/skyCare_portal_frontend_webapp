@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Button, Stack } from "@mui/material";
 import NotesTable from "../NotesTable";
 import { useSearchParams } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "@slices/store";
+import { useAppDispatch, useAppSelector } from "../../../../slices/store";
 import {
   fetchNotes,
   fetchNotesByClientID,
   resetSubmitState,
   resetSelectedNote,
-} from "@slices/notesSlice/notes";
+} from "../../../../slices/notesSlice/notes";
 import AddNewNotesModal from "../../modal/AddNewNotesModal";
 import { State } from "../../../../types/types";
 import { set } from "date-fns";

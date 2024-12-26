@@ -13,16 +13,16 @@ import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useAppDispatch, useAppSelector } from "@slices/store";
+import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import {
   deleteResource,
   fetchSingleResource,
   Resource,
-} from "@slices/resourceSlice/resource";
+} from "../../../slices/resourceSlice/resource";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import { useConfirmationModalContext } from "@context/DialogContext";
+import { useConfirmationModalContext } from "../../../context/DialogContext";
 import { ConfirmationType } from "../../../types/types";
-import { APPLICATION_CARE_GIVER } from "@config/config";
+import { APPLICATION_CARE_GIVER } from "../../../config/config";
 
 function CustomToolbar() {
   return (

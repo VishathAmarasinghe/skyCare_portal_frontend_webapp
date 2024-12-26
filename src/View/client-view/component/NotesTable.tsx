@@ -22,10 +22,14 @@ import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { deleteNotes, fetchSingleNote, Notes } from "@slices/notesSlice/notes";
-import { useAppDispatch, useAppSelector } from "@slices/store";
+import {
+  deleteNotes,
+  fetchSingleNote,
+  Notes,
+} from "../../../slices/notesSlice/notes";
+import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import { ConfirmationType, State } from "../../../types/types";
-import { useConfirmationModalContext } from "@context/DialogContext";
+import { useConfirmationModalContext } from "../../../context/DialogContext";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 function CustomToolbar() {

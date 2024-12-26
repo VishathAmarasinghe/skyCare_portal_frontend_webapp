@@ -20,10 +20,14 @@ import { Formik, Form, Field, FormikProps } from "formik";
 import * as Yup from "yup";
 import { Upload, message } from "antd";
 import dayjs from "dayjs";
-import { Client, saveClient, updateClient } from "@slices/clientSlice/client";
+import {
+  Client,
+  saveClient,
+  updateClient,
+} from "../../../slices/clientSlice/client";
 import CustomRichTextField from "../../../component/common/CustomRichTextField";
 import { GoogleMap, LoadScript, Autocomplete } from "@react-google-maps/api";
-import { useAppDispatch, useAppSelector } from "@slices/store";
+import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import SupportAddings from "./SupportAddings";
 import {
   fetchClassifications,
@@ -109,19 +113,44 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
 
   useEffect(() => {
     console.log("Selected Client", client?.selectedClient);
-    
+
     if (client?.selectedClient) {
       setInitialValues({
         ...client?.selectedClient,
-        clientLanguages:client?.selectedClient?.clientLanguages?.map((lan)=>languages?.filter((lang)=>lang?.label== lan)[0]?.value),
-        clientClassifications:client?.selectedClient?.clientClassifications?.map((cls)=>classifications?.filter((classification)=>classification?.label== cls)[0]?.value),
-        clientType:client?.selectedClient?.clientType?clientTypes?.filter((cType)=>cType?.label== client?.selectedClient?.clientType)[0]?.value:"",
-        clientStatus:client?.selectedClient?.clientStatus?clientStatuses?.filter((status)=>status?.label== client?.selectedClient?.clientStatus)[0]?.value:"",
+        clientLanguages: client?.selectedClient?.clientLanguages?.map(
+          (lan) => languages?.filter((lang) => lang?.label == lan)[0]?.value
+        ),
+        clientClassifications:
+          client?.selectedClient?.clientClassifications?.map(
+            (cls) =>
+              classifications?.filter(
+                (classification) => classification?.label == cls
+              )[0]?.value
+          ),
+        clientType: client?.selectedClient?.clientType
+          ? clientTypes?.filter(
+              (cType) => cType?.label == client?.selectedClient?.clientType
+            )[0]?.value
+          : "",
+        clientStatus: client?.selectedClient?.clientStatus
+          ? clientStatuses?.filter(
+              (status) => status?.label == client?.selectedClient?.clientStatus
+            )[0]?.value
+          : "",
         postalAddress: { ...client?.selectedClient?.postalAddress },
       });
-      console.log("postalAddress",client?.selectedClient?.postalAddress);
-      
-      if(client?.selectedClient?.physicalAddress?.address===client?.selectedClient?.postalAddress?.address && client?.selectedClient?.physicalAddress?.city===client?.selectedClient?.postalAddress?.city && client?.selectedClient?.physicalAddress?.state===client?.selectedClient?.postalAddress?.state && client?.selectedClient?.physicalAddress?.postalCode===client?.selectedClient?.postalAddress?.postalCode){
+      console.log("postalAddress", client?.selectedClient?.postalAddress);
+
+      if (
+        client?.selectedClient?.physicalAddress?.address ===
+          client?.selectedClient?.postalAddress?.address &&
+        client?.selectedClient?.physicalAddress?.city ===
+          client?.selectedClient?.postalAddress?.city &&
+        client?.selectedClient?.physicalAddress?.state ===
+          client?.selectedClient?.postalAddress?.state &&
+        client?.selectedClient?.physicalAddress?.postalCode ===
+          client?.selectedClient?.postalAddress?.postalCode
+      ) {
         // setChecked(true);
       }
     } else {
@@ -165,7 +194,13 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
         clientClassifications: [] as string[],
       });
     }
-  }, [client?.selectedClient,languages,clientTypes,classifications,clientStatuses]);
+  }, [
+    client?.selectedClient,
+    languages,
+    clientTypes,
+    classifications,
+    clientStatuses,
+  ]);
 
   // Update useState after data is loaded
   useEffect(() => {
@@ -267,9 +302,9 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
       validateOnChange={true}
       enableReinitialize={true}
       onSubmit={(values, { setSubmitting }) => {
-        if(client?.selectedClient){
-          dispatch(updateClient({clientData:values}))
-        }else{
+        if (client?.selectedClient) {
+          dispatch(updateClient({ clientData: values }));
+        } else {
           dispatch(saveClient({ clientData: values, profilePhoto: null }));
         }
         console.log("Submitting values", values);
@@ -277,7 +312,10 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
       }}
     >
       {(formikProps: FormikProps<Client>) => {
-        const handleAddressSelect = (place: google.maps.places.PlaceResult,type:string) => {
+        const handleAddressSelect = (
+          place: google.maps.places.PlaceResult,
+          type: string
+        ) => {
           if (!autocomplete) return;
           const addressComponents = place?.address_components;
           const address = place?.formatted_address;
@@ -298,25 +336,26 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
             }
           });
 
-          if(type==="physical"){
-          setAddressDetails({
-            address,
-            city,
-            state,
-            postalCode,
-          });
-        }else{
-          setAddressDetailsPostal({
-            address,
-            city,
-            state,
-            postalCode,
-          });
-        }};
+          if (type === "physical") {
+            setAddressDetails({
+              address,
+              city,
+              state,
+              postalCode,
+            });
+          } else {
+            setAddressDetailsPostal({
+              address,
+              city,
+              state,
+              postalCode,
+            });
+          }
+        };
 
         useEffect(() => {
           console.log("Address Details", addressDetails);
-          
+
           if (addressDetails) {
             // Update the form values with the selected address details
             formikProps.setFieldValue(
@@ -340,7 +379,7 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
 
         useEffect(() => {
           console.log("Address Details", addressDetails);
-          
+
           if (addressDetailsPostal) {
             // Update the form values with the selected address details
             formikProps.setFieldValue(
@@ -362,7 +401,6 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
           }
         }, [addressDetailsPostal]);
 
-
         useEffect(() => {
           if (checked) {
             formikProps.setFieldValue(
@@ -382,7 +420,6 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
               formikProps.values.physicalAddress.postalCode
             );
           } else {
-
             // formikProps.setFieldValue("postalAddress.address", "");
             // formikProps.setFieldValue("postalAddress.city", "");
             // formikProps.setFieldValue("postalAddress.state", "");
@@ -916,28 +953,30 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
                   <Grid container spacing={3}>
                     {/* Address Search */}
                     <Grid item xs={12} sm={6}>
-                        <Autocomplete
+                      <Autocomplete
                         options={{
-                          componentRestrictions: { country: 'au' }
+                          componentRestrictions: { country: "au" },
                         }}
-                        onLoad={(autocompleteInstance) => setAutocomplete(autocompleteInstance)}
+                        onLoad={(autocompleteInstance) =>
+                          setAutocomplete(autocompleteInstance)
+                        }
                         onPlaceChanged={() => {
                           if (autocomplete) {
                             const place = autocomplete.getPlace();
                             console.log("Selected Place:", place); // Check the place object
-                            handleAddressSelect(place,"physical"); // Pass the place data to the handler
+                            handleAddressSelect(place, "physical"); // Pass the place data to the handler
                           }
                         }}
-                        >
-                          <TextField
-                            label="Search Address"
-                            variant="outlined"
-                            fullWidth
-                            name="search"
-                            value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
-                          />
-                        </Autocomplete>
+                      >
+                        <TextField
+                          label="Search Address"
+                          variant="outlined"
+                          fullWidth
+                          name="search"
+                          value={searchInput}
+                          onChange={(e) => setSearchInput(e.target.value)}
+                        />
+                      </Autocomplete>
                     </Grid>
 
                     {/* Address */}
@@ -1038,24 +1077,24 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
                   <Grid container columnSpacing={3}>
                     {/* Address Search */}
                     <Grid item xs={12} sm={6}>
-                        <Autocomplete
+                      <Autocomplete
                         options={{
-                          componentRestrictions: { country: 'au' }
+                          componentRestrictions: { country: "au" },
                         }}
-                          onLoad={(autocomplete) => {
-                            const place = autocomplete.getPlace();
-                            handleAddressSelect(place,"postal");
-                          }}
-                        >
-                          <TextField
-                            label="Search Address"
-                            variant="outlined"
-                            fullWidth
-                            name="search"
-                            value={searchInputPostal}
-                            onChange={(e) => setSearchInputPostal(e.target.value)}
-                          />
-                        </Autocomplete>
+                        onLoad={(autocomplete) => {
+                          const place = autocomplete.getPlace();
+                          handleAddressSelect(place, "postal");
+                        }}
+                      >
+                        <TextField
+                          label="Search Address"
+                          variant="outlined"
+                          fullWidth
+                          name="search"
+                          value={searchInputPostal}
+                          onChange={(e) => setSearchInputPostal(e.target.value)}
+                        />
+                      </Autocomplete>
                     </Grid>
 
                     {/* Address */}

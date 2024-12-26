@@ -7,13 +7,13 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
 import { Divider } from "@mui/material";
-import { useAppDispatch, useAppSelector } from "@slices/store";
+import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import {
   Employee,
   EmployeeBasicInfoUpdater,
   updateEmployeeBasicInfo,
-} from "@slices/employeeSlice/employee";
-import { FILE_DOWNLOAD_BASE_URL } from "@config/config";
+} from "../../../slices/employeeSlice/employee";
+import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
 
 interface ProfileDrawerProps {
   open: boolean;

@@ -7,9 +7,8 @@ import CircularProgress, {
   circularProgressClasses,
   CircularProgressProps,
 } from "@mui/material/CircularProgress";
-import { APP_NAME } from "@config/config";
 import StateWithImage from "../ui/StateWithImage";
-import LinearProgress from '@mui/material/LinearProgress';
+import LinearProgress from "@mui/material/LinearProgress";
 
 function CustomCircularProgress(props: CircularProgressProps) {
   return (
@@ -83,7 +82,7 @@ const PreLoader = (props: PreLoaderProps) => {
             <StateWithImage imageUrl={loadingImage} message="Loading" />
           </Grid>
           <Grid item xs={12} width={"100%"}>
-            {props.isLoading && <LinearProgress  />}
+            {props.isLoading && <LinearProgress />}
           </Grid>
         </Grid>
       </Container>

@@ -32,11 +32,10 @@ import {
 } from "../../../slices/incidentSlice/incident";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import DynamicQuestionsForm from "./DynamicQuestionsForm";
-import { NoteFiles } from "@slices/notesSlice/notes";
-import FileViewerWithModal from "@component/common/FileViewerWithModal";
-import FileListTable from "@component/common/FileListTable";
+import FileViewerWithModal from "../../../component/common/FileViewerWithModal";
+import FileListTable from "../../../component/common/FileListTable";
 import { State } from "../../../types/types";
-import { UIShowingFile } from "View/client-view/component/AddNoteForm";
+import { UIShowingFile } from "../../client-view/component/AddNoteForm";
 
 dayjs.extend(isSameOrAfter);
 
