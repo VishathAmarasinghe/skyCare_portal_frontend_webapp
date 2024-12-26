@@ -15,7 +15,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 
 // APP imports
-import { View } from "@view/index";
+import { View } from "./View/index";
 import { isIncludedRole } from "./utils/utils";
 import {
   APPLICATION_ADMIN,

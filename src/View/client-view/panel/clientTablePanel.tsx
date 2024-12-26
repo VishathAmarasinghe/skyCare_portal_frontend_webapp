@@ -1,9 +1,9 @@
 import { Button, Stack, Typography, useTheme } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import ClientTable from "../component/ClientTable";
-import AddNewClientModal from "../modal/AddNewClientModal";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import {fetchClients, resetSelectedClient} from '../../../slices/clientSlice/client';
+import AddNewClientModal from "../modal/AddNewClientModal";
+import ClientTable from "../component/ClientTable";
 
 const ClientTablePanel = () => {
   const theme = useTheme();
