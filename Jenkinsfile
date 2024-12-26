@@ -14,15 +14,19 @@ pipeline {
                     // Checkout both repositories
                     dir('frontend') {
                         git url: "${FRONTEND_REPO}", branch: 'main', credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
+                        sh 'ls -al'
                     }
                     dir('backend') {
                         git url: "${BACKEND_REPO}", branch: 'main', credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
+                        sh 'ls -al'
                     }
                     dir('frontend') {
                         git url: "${FRONTEND_REPO}", branch: 'dev' , credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
+                        sh 'ls -al'
                     }
                     dir('backend') {
                         git url: "${BACKEND_REPO}", branch: 'dev' , credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
+                        sh 'ls -al'
                     }
                 }
             }
