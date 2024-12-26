@@ -2,12 +2,12 @@ import { Button, Stack, Typography, useTheme } from "@mui/material";
 import React, { useState } from "react";
 import AppointmentCalender from "./components/AppointmentCalender";
 import { useAppDispatch, useAppSelector } from "../../slices/store";
-import { resetSelectedAppointment } from "../../slices/appointmentSliceName/appointment";
+import { resetSelectedAppointment } from "../../slices/appointmentSlice/appointment";
 import {
   APPLICATION_ADMIN,
   APPLICATION_SUPER_ADMIN,
-} from "../../configName/config";
-import RecurrentAppointmentDetailsModal from "../careGiver-dashboard-view/modalName/RecurrentAppointmentDetailsModal";
+} from "../../config/config";
+import RecurrentAppointmentDetailsModal from "../careGiver-dashboard-view/modal/RecurrentAppointmentDetailsModal";
 import AddNewAppointmentModal from "../client-view/modal/AddNewAppointmentModal";
 
 const AppointmentView = () => {

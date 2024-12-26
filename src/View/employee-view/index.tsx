@@ -17,11 +17,11 @@ import {
   fetchCareGivers,
   fetchSingleCareGiverByEmployeeID,
   resetSelectedCareGiver,
-} from "../../slices/careGiverSliceName/careGiver";
+} from "../../slices/careGiverSlice/careGiver";
 import {
   fetchEmployeesByRole,
   resetSelectedEmployee,
-} from "../../slices/employeeSliceName/employee";
+} from "../../slices/employeeSlice/employee";
 
 const EmployeeView = () => {
   const theme = useTheme();

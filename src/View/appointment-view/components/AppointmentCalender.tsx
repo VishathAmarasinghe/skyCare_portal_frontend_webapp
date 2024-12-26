@@ -11,12 +11,12 @@ import {
   fetchAppointmentbyCalenderWithUser,
   fetchRecurrentAppointmentDetails,
   fetchSingleAppointment,
-} from "../../../slices/appointmentSliceName/appointment";
+} from "../../../slices/appointmentSlice/appointment";
 import {
   APPLICATION_ADMIN,
   APPLICATION_CARE_GIVER,
   APPLICATION_SUPER_ADMIN,
-} from "../../../configName/config";
+} from "../../../config/config";
 
 dayjs.extend(timezone);
 const localizer = dayjsLocalizer(dayjs);

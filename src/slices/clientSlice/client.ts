@@ -2,9 +2,9 @@ import { createSlice, isDraft, PayloadAction } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { APIService } from "../../utils/apiService";
 import { State } from "../../types/types";
-import { AppConfig } from "../../configName/config";
+import { AppConfig } from "../../config/config";
 import { enqueueSnackbarMessage } from "../commonSlice/common";
-import { SnackMessage } from "../../configName/constant";
+import { SnackMessage } from "../../config/constant";
 import axios, { Axios, HttpStatusCode } from "axios";
 
 // Define a type for the slice state

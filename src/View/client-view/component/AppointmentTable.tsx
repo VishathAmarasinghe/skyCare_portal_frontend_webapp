@@ -28,7 +28,7 @@ import {
   Appointment,
   fetchAppointmentTypes,
   fetchSingleAppointment,
-} from "../../../slices/appointmentSliceName/appointment";
+} from "../../../slices/appointmentSlice/appointment";
 
 function CustomToolbar() {
   return (

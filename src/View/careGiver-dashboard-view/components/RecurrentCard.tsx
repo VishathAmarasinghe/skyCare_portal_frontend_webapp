@@ -18,7 +18,7 @@ import { useAppDispatch } from "../../../slices/store";
 import {
   JobAssigner,
   updateCareGiverAcceptanceState,
-} from "../../../slices/appointmentSliceName/appointment";
+} from "../../../slices/appointmentSlice/appointment";
 
 const RecurrentCard = ({
   jobAssignData,

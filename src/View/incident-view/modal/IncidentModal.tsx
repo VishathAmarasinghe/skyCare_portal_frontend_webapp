@@ -18,7 +18,7 @@ import {
   fetchAllIncidentStatus,
   fetchAllIncidentTypes,
   resetSelectedIncident,
-} from "../../../slices/incidentSliceName/incident";
+} from "../../../slices/incidentSlice/incident";
 import { CREATE_INCIDENT_STEPS } from "../../../constants/index";
 import { Modal } from "antd";
 import IncidentForm from "../components/IncidentForm";

@@ -28,11 +28,11 @@ import {
   ShiftNoteDocuments,
   updatehiftNotes,
   updateShiftNote,
-} from "../../../slices/shiftNoteSliceName/shiftNote";
+} from "../../../slices/shiftNoteSlice/shiftNote";
 import {
   APPLICATION_ADMIN,
   APPLICATION_SUPER_ADMIN,
-} from "../../../configName/config";
+} from "../../../config/config";
 
 // Validation schema using Yup
 const validationSchema = (selectedShiftNote: updateShiftNote | null) =>

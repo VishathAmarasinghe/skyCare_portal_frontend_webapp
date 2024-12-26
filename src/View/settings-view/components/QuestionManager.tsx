@@ -18,7 +18,7 @@ import {
   saveIncidentQuestion,
   saveQuestion,
   updateIncidentQuestion,
-} from "../../../slices/incidentSliceName/incident";
+} from "../../../slices/incidentSlice/incident";
 
 export interface IncidentSubActionTypeQuestionsState {
   id: string;

@@ -5,7 +5,7 @@ import { UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import { CareGiverDocuments } from "../../../slices/careGiverSliceName/careGiver";
+import { CareGiverDocuments } from "../../../slices/careGiverSlice/careGiver";
 import { useAppSelector } from "../../../slices/store";
 import FileViewerWithModal from "../../../component/common/FileViewerWithModal";
 import UploadIcon from "@mui/icons-material/CloudUpload";

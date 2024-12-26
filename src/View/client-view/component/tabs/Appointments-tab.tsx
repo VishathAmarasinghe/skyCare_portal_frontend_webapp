@@ -9,7 +9,7 @@ import {
   fetchAppointmentsByClientID,
   fetchAppointmentTypes,
   resetSelectedAppointment,
-} from "../../../../slices/appointmentSliceName/appointment";
+} from "../../../../slices/appointmentSlice/appointment";
 
 const AppointmentsTab = () => {
   const [isAppointmentModalVisible, setIsAppointmentModalVisible] =

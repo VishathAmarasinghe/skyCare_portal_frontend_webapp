@@ -18,10 +18,10 @@ import RepeatIcon from "@mui/icons-material/Repeat";
 import {
   fetchRecurrentAppointmentDetails,
   PendingAppointments,
-} from "../../../slices/appointmentSliceName/appointment";
+} from "../../../slices/appointmentSlice/appointment";
 import { useAppSelector } from "../../../slices/store";
 import FileViewerWithModal from "../../../component/common/FileViewerWithModal";
-import { FILE_DOWNLOAD_BASE_URL } from "../../../configName/config";
+import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
 
 interface RecurrentAppointmentDetailsModalProps {
   open: boolean;

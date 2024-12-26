@@ -12,15 +12,15 @@ import {
   fetchPendingAppointmentsWithUser,
   PendingAppointments,
   resetSelectedAppointment,
-} from "@slices/appointmentSliceName/appointment";
-import { selectUserInfo } from "../../../slices/authSliceName/authName";
-import AppointmentDetailsModal from "../modalName/AppointmentDetailsModal";
+} from "@slices/appointmentSlice/appointment";
+import { selectUserInfo } from "../../../slices/authSlice/auth";
+import AppointmentDetailsModal from "../modal/AppointmentDetailsModal";
 import { State } from "../../../types/types";
 import NextAppointmentCard from "../components/NextAppointmentCard";
-import ShiftNoteModal from "../modalName/ShiftNoteModal";
-import { fetchCareGiverDashboard } from "../../../slices/dashboardSliceName/dashboard";
+import ShiftNoteModal from "../modal/ShiftNoteModal";
+import { fetchCareGiverDashboard } from "../../../slices/dashboardSlice/dashboard";
 import AppointmentBarChart from "../../dashboard-view/Components/AppointmentBarChart";
-import RecurrentAppointmentDetailsModal from "../modalName/RecurrentAppointmentDetailsModal";
+import RecurrentAppointmentDetailsModal from "../modal/RecurrentAppointmentDetailsModal";
 
 const CareGiverDashboard = () => {
   const dispatch = useAppDispatch();
