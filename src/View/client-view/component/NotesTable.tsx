@@ -26,7 +26,7 @@ import {
   deleteNotes,
   fetchSingleNote,
   Notes,
-} from "../../../slices/notesSlice/notes";
+} from "../../../slices/notesSliceName/notes";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import { ConfirmationType, State } from "../../../types/types";
 import { useConfirmationModalContext } from "../../../context/DialogContext";

@@ -14,7 +14,7 @@ import AddResourceForm from "../../Resource-view/components/ResourceForm";
 import {
   APPLICATION_ADMIN,
   APPLICATION_SUPER_ADMIN,
-} from "../../../config/config";
+} from "../../../configName/config";
 
 type AddNewNotesModalProps = {
   isResourceModalVisible: boolean;

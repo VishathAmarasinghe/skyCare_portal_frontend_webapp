@@ -4,7 +4,10 @@ import { Worker, Viewer } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
-import { FILE_DOWNLOAD_BASE_URL, ServiceBaseUrl } from "../../config/config";
+import {
+  FILE_DOWNLOAD_BASE_URL,
+  ServiceBaseUrl,
+} from "../../configName/config";
 
 interface FileViewerWithModalProps {
   file: File | string; // File (from input) or URL (from server)

@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { APIService } from "../../utils/apiService";
 import { State } from "../../types/types";
-import { AppConfig } from "../../config/config";
+import { AppConfig } from "../../configName/config";
 import { enqueueSnackbarMessage } from "../commonSlice/common";
-import { SnackMessage } from "../../config/constant";
+import { SnackMessage } from "../../configName/constant";
 import axios, { HttpStatusCode } from "axios";
-import { Employee } from "../employeeSlice/employee";
+import { Employee } from "../employeeSliceName/employee";
 
 // Define types for CareGiver and related entities
 export interface CareGiverPayments {

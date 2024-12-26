@@ -13,9 +13,9 @@ import {
   CareGiverDocuments,
   fetchDocumentTypes,
   saveCareGiver,
-} from "../../slices/careGiverSlice/careGiver";
+} from "../../slices/careGiverSliceName/careGiver";
 import { enqueueSnackbarMessage } from "../../slices/commonSlice/common";
-import { Employee } from "../../slices/employeeSlice/employee";
+import { Employee } from "../../slices/employeeSliceName/employee";
 import { useAppDispatch, useAppSelector } from "../../slices/store";
 import React, { useEffect, useState } from "react";
 import { CREATE_CARE_GIVER_OUTSIDE_REGISTRATION } from "../../constants/index";

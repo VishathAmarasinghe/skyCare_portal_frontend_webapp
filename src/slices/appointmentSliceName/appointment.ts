@@ -1,10 +1,10 @@
 import { State } from "../../types/types";
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { APIService } from "../../utils/apiService";
-import { AppConfig } from "../../config/config";
+import { AppConfig } from "../../configName/config";
 import { enqueueSnackbarMessage } from "../commonSlice/common";
 import axios, { HttpStatusCode } from "axios";
-import { SnackMessage } from "../../config/constant";
+import { SnackMessage } from "../../configName/constant";
 
 export interface CareGiverAssignedDTO {
   firstName: string;

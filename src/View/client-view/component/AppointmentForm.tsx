@@ -27,13 +27,13 @@ import {
   saveAppointment,
   updateAppointment,
   updateRecurrentAppointment,
-} from "@slices/appointmentSlice/appointment";
+} from "@slices/appointmentSliceName/appointment";
 import AppointmentParticipantTable from "../../../component/common/AppointmentParticipantTable";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import { State } from "../../../types/types";
 import { Client } from "../../../slices/clientSlice/client";
 import { useSearchParams } from "react-router-dom";
-import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
+import { FILE_DOWNLOAD_BASE_URL } from "../../../configName/config";
 import {
   CarePlan,
   fetchCarePlansByClientID,
@@ -42,7 +42,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import { Autocomplete, LoadScript } from "@react-google-maps/api";
-import { CareGiver } from "../../../slices/careGiverSlice/careGiver";
+import { CareGiver } from "../../../slices/careGiverSliceName/careGiver";
 import { set } from "date-fns";
 import { UIShowingFile } from "./AddNoteForm";
 import FileViewerWithModal from "../../../component/common/FileViewerWithModal";

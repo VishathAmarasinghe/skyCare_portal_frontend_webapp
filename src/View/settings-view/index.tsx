@@ -12,16 +12,16 @@ import {
   fetchLanguages,
 } from "../../slices/selectorSlice/selector";
 import { fetchCarePlanStatusList } from "../../slices/carePlanSlice/carePlan";
-import { fetchAppointmentTypes } from "../../slices/appointmentSlice/appointment";
+import { fetchAppointmentTypes } from "../../slices/appointmentSliceName/appointment";
 import {
   fetchAllIncidentActionTypeQuestions,
   fetchAllIncidentStatus,
   fetchAllIncidentTypes,
-} from "../../slices/incidentSlice/incident";
+} from "../../slices/incidentSliceName/incident";
 import {
   fetchDocumentTypes,
   fetchPaymentTypes,
-} from "../../slices/careGiverSlice/careGiver";
+} from "../../slices/careGiverSliceName/careGiver";
 
 const SettingsView = () => {
   const theme = useTheme();

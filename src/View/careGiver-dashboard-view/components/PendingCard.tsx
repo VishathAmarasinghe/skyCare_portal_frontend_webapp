@@ -3,7 +3,7 @@ import EventIcon from "@mui/icons-material/Event";
 import {
   fetchRecurrentAppointmentDetails,
   PendingAppointments,
-} from "../../../slices/appointmentSlice/appointment";
+} from "../../../slices/appointmentSliceName/appointment";
 import { Stack, Typography, Button, useTheme } from "@mui/material";
 import dayjs from "dayjs";
 import { useAppDispatch } from "../../../slices/store";

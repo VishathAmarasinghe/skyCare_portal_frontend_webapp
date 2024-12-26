@@ -28,7 +28,7 @@ import {
   ResourceDocument,
   saveResource,
   updateResource,
-} from "../../../slices/resourceSlice/resource";
+} from "../../../slices/resourceSliceName/resource";
 
 // Validation schema using Yup
 const validationSchema = Yup.object({

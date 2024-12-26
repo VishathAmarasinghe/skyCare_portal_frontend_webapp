@@ -21,7 +21,7 @@ import {
   resetSubmitState,
   saveEmployee,
   updateEmployee,
-} from "../../../slices/employeeSlice/employee";
+} from "../../../slices/employeeSliceName/employee";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import { set } from "date-fns";
 

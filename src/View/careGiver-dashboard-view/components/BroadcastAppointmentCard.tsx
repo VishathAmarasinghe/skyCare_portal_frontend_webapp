@@ -6,7 +6,7 @@ import {
   AppointmentCareGiver,
   fetchSingleAppointment,
   updateCareGiverAcceptanceState,
-} from "../../../slices/appointmentSlice/appointment";
+} from "../../../slices/appointmentSliceName/appointment";
 import dayjs from "dayjs";
 
 interface BroadcastAppointmentCardProps {

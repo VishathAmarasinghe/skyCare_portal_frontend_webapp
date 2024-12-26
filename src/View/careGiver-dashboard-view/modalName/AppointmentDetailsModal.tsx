@@ -19,9 +19,9 @@ import { useAppSelector } from "../../../slices/store";
 import {
   Appointment,
   AppointmentCareGiver,
-} from "../../../slices/appointmentSlice/appointment";
+} from "../../../slices/appointmentSliceName/appointment";
 import FileViewerWithModal from "../../../component/common/FileViewerWithModal";
-import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
+import { FILE_DOWNLOAD_BASE_URL } from "../../../configName/config";
 import RecurrenceCard from "../components/RecurrentCard";
 
 export interface AppointmentDetailsModalProps {

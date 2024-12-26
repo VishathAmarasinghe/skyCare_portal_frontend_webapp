@@ -21,7 +21,7 @@ import {
   APPLICATION_ADMIN,
   APPLICATION_CARE_GIVER,
   APPLICATION_SUPER_ADMIN,
-} from "@config/config";
+} from "configName/config";
 
 export interface RouteObjectWithRole extends NonIndexRouteObject {
   allowRoles: string[];

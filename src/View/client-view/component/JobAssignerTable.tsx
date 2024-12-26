@@ -28,11 +28,11 @@ import {
   JobAssignShowerDTO,
   RecurrentAppointmentValues,
   updateNewAllocations,
-} from "../../../slices/appointmentSlice/appointment";
+} from "../../../slices/appointmentSliceName/appointment";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import { ConfirmationType, State } from "../../../types/types";
-import { CareGiver } from "../../../slices/careGiverSlice/careGiver";
-import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
+import { CareGiver } from "../../../slices/careGiverSliceName/careGiver";
+import { FILE_DOWNLOAD_BASE_URL } from "../../../configName/config";
 import { useConfirmationModalContext } from "../../../context/DialogContext";
 
 interface JobAssignerTableProps {
