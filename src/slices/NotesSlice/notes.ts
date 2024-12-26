@@ -279,7 +279,7 @@ export const deleteNotes = createAsyncThunk(
 );
 
 // Define the slice with reducers and extraReducers
-const NoteSlice = createSlice({
+const notesSlice = createSlice({
   name: "note",
   initialState,
   reducers: {
@@ -372,5 +372,5 @@ const NoteSlice = createSlice({
   },
 });
 
-export const { resetSubmitState, resetSelectedNote } = NoteSlice.actions;
-export default NoteSlice.reducer;
+export const { resetSubmitState, resetSelectedNote } = notesSlice.actions;
+export default notesSlice.reducer;

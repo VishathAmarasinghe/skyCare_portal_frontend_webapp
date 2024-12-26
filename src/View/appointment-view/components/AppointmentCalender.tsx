@@ -12,7 +12,6 @@ import {
   fetchRecurrentAppointmentDetails,
   fetchSingleAppointment,
 } from "@slices/appointmentSlice/appointment";
-import AddNewAppointmentModal from "@view/client-view/modal/AddNewAppointmentModal";
 import {
   APPLICATION_ADMIN,
   APPLICATION_CARE_GIVER,

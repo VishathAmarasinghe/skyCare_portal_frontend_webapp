@@ -17,11 +17,11 @@ import {
 import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
 import { Employee } from "@slices/employeeSlice/employee";
 import { useAppDispatch, useAppSelector } from "@slices/store";
-import CareGiverFileUploader from "@view/employee-view/components/CareGiverFileUploader";
-import EmployeeBasicInfoForm from "@view/employee-view/components/EmployeeBasicInfoForm";
 import React, { useEffect, useState } from "react";
 import { CREATE_CARE_GIVER_OUTSIDE_REGISTRATION } from "../../constants/index";
 import AgreementComponent from "../../component/common/AgreementComponent";
+import EmployeeBasicInfoForm from "View/employee-view/components/EmployeeBasicInfoForm";
+import CareGiverFileUploader from "View/employee-view/components/CareGiverFileUploader";
 
 const CareGiverRegistrationPage = () => {
   const theme = useTheme();

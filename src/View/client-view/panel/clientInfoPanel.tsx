@@ -3,7 +3,7 @@ import { Box, Button, Stack, Tab, Typography, useTheme } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import BasicInfoTab from '../component/tabs/BasicInfo-tab';
 import InterestTab from '../component/tabs/Interest-tab';
-import NotesTab from '../component/tabs/Notes-tab';
+import NotesTab from '../component/tabs/notes-tab';
 import AppointmentTab from '../component/tabs/Appointments-tab';
 import CarePlanTab from '../component/tabs/carePlans-tab';
 import { useSearchParams } from "react-router-dom";
