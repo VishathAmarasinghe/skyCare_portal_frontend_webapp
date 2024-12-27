@@ -45,17 +45,17 @@ pipeline {
             //     branch 'dev'
             // }
             steps {
-                dir('frontend-prod') {
-                            script {
-                                sh """
-                                docker build -f Dockerfile.frontend  -t ${FRONTEND_IMAGE} --build-arg VITE_BACKEND_BASE_URL=http://backend:5000 \
-                                    --build-arg VITE_APPLICATION_ADMIN=admin.skyCarePortal \
-                                    --build-arg VITE_APPLICATION_SUPER_ADMIN=superadmin.skyCarePortal \
-                                    --build-arg VITE_APPLICATION_CARE_GIVER=caregiver.skyCarePortal \
-                                    --build-arg VITE_FILE_DOWNLOAD_PATH=/file/download .
-                                """
-                            }
-                }
+                // dir('frontend-prod') {
+                //             script {
+                //                 sh """
+                //                 docker build -f Dockerfile.frontend  -t ${FRONTEND_IMAGE} --build-arg VITE_BACKEND_BASE_URL=http://backend:5000 \
+                //                     --build-arg VITE_APPLICATION_ADMIN=admin.skyCarePortal \
+                //                     --build-arg VITE_APPLICATION_SUPER_ADMIN=superadmin.skyCarePortal \
+                //                     --build-arg VITE_APPLICATION_CARE_GIVER=caregiver.skyCarePortal \
+                //                     --build-arg VITE_FILE_DOWNLOAD_PATH=/file/download .
+                //                 """
+                //             }
+                // }
                 dir('backend-prod') {
                             script {
                                 sh """
