@@ -13,21 +13,18 @@ pipeline {
             steps {
                 script {
                     // Checkout both repositories
-                    dir('frontend') {
+                    dir('frontend-prod') {
                         git url: "${FRONTEND_REPO}", branch: 'main', credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
-                        sh 'ls -R'
                     }
-                    dir('backend') {
+                    dir('backend-prod') {
                         git url: "${BACKEND_REPO}", branch: 'main', credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
-                        sh 'ls -R'
+
                     }
-                    dir('frontend') {
+                    dir('frontend-stg') {
                         git url: "${FRONTEND_REPO}", branch: 'dev' , credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
-                        sh 'ls -R'
                     }
-                    dir('backend') {
+                    dir('backend-stg') {
                         git url: "${BACKEND_REPO}", branch: 'dev' , credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
-                        sh 'ls -R'
                     }
                 }
             }
@@ -48,7 +45,7 @@ pipeline {
             //     branch 'dev'
             // }
             steps {
-                dir('frontend') {
+                dir('frontend-prod') {
                             script {
                                 sh """
                                 docker build -f Dockerfile.frontend  -t ${FRONTEND_IMAGE} --build-arg VITE_BACKEND_BASE_URL=http://backend:5000 \
@@ -59,7 +56,7 @@ pipeline {
                                 """
                             }
                 }
-                dir('backend') {
+                dir('backend-prod') {
                             script {
                                 sh """
                                 docker build -t ${BACKEND_IMAGE} \
@@ -74,7 +71,7 @@ pipeline {
                                 """
                             }
                 }
-                dir('backend') {
+                dir('backend-prod') {
                     script {
                         sh 'docker-compose -f docker-compose.dev.yml up -d'
                     }
