@@ -12,14 +12,14 @@ RUN npm install --save-dev @types/react @types/node
 # Copy the source code
 COPY . ./
 
-# Use build argument to determine the environment-specific variables
+# Use build argument to determine the environment-specific variables (Optional)
 ARG VITE_BACKEND_BASE_URL
 ARG VITE_APPLICATION_ADMIN
 ARG VITE_APPLICATION_SUPER_ADMIN
 ARG VITE_APPLICATION_CARE_GIVER
 ARG VITE_FILE_DOWNLOAD_PATH
 
-# Create the .env file dynamically based on build arguments
+# Create the .env file dynamically (optional, can be skipped if set at runtime)
 RUN echo "VITE_BACKEND_BASE_URL=$VITE_BACKEND_BASE_URL" >> .env && \
     echo "VITE_APPLICATION_ADMIN=$VITE_APPLICATION_ADMIN" >> .env && \
     echo "VITE_APPLICATION_SUPER_ADMIN=$VITE_APPLICATION_SUPER_ADMIN" >> .env && \
@@ -29,16 +29,13 @@ RUN echo "VITE_BACKEND_BASE_URL=$VITE_BACKEND_BASE_URL" >> .env && \
 # Run TypeScript checks
 RUN npx tsc --noEmit
 
-
-
 # Build the React Vite app
 RUN npm run build
 
 # Step 2: Setup Nginx to serve the app
 FROM nginx:alpine
 
-
-# Copy the custom nginx config file from the frontend directory
+# Copy the custom nginx config file
 COPY ./nginx.conf /etc/nginx/nginx.conf
 
 # Copy the built Vite app from the previous build stage
