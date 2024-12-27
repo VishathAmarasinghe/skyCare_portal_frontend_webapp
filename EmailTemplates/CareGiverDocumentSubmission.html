@@ -1,69 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <title>Document Submission Acknowledgment</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Poppins", sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #E7F6FC;
+            background-color: #b6dbfb;
         }
+
         .container {
             max-width: 600px;
             margin: 20px auto;
             background: #fff;
-            padding: 20px;
+            padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-top: 5px solid #055476;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border: 2px solid #055476;
         }
+
         .header {
             text-align: center;
+            margin-bottom: 20px;
         }
+
         .header img {
-            max-width: 250px;
+            max-width: 200px;
             height: auto;
+            margin-top: 30px;
         }
+        
+
         .title {
             color: #055476;
             font-size: 24px;
+            font-weight: bold;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .image-container {
+            text-align: center;
             margin-top: 10px;
         }
+
+        .image-container img {
+            max-width: 50%;
+            height: auto;
+        }
+
         .content {
             line-height: 1.6;
             color: #333;
+            font-size: 16px;
             margin-top: 20px;
         }
+
         .footer {
             text-align: center;
             font-size: 12px;
             color: #777;
-            margin-top: 20px;
+            margin-top: 30px;
+        }
+
+        .footer a {
+            color: #055476;
+            text-decoration: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .title {
+                font-size: 22px;
+            }
+
+            .content {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
+
 <body>
+    <!-- Logo -->
+    <div class="header">
+        <img src="https://github.com/VishathAmarasinghe/publicImages/blob/main/sky%20care%20prtal%20logo.png?raw=true"
+            alt="Sky Care Portal Logo">
+    </div>
+
     <div class="container">
-        <!-- Header with Logo -->
-        <div class="header">
-            <img src="https://github.com/VishathAmarasinghe/publicImages/blob/main/sky%20care%20prtal%20logo.png?raw=true" alt="Sky Care Solutions Logo">
-            <h2 class="title">Thank You for Your Submission!</h2>
+        <!-- Header with Title -->
+        <h2 class="title">Thank You for Your Submission!</h2>
+
+        <!-- Image Section -->
+        <div class="image-container">
+            <img src="https://github.com/VishathAmarasinghe/publicImages/blob/main/Documents-rafiki.png?raw=true"
+                alt="Taking Care of the Earth">
         </div>
 
         <!-- Email Content -->
         <div class="content">
             <p>Dear [User Name],</p>
-            <p>Thank you for submitting your documents. Once our managers review and approve them, you will be able to log in to the system.</p>
+            <p>Thank you for submitting your documents. Once our managers review and approve them, you will be able to
+                log in
+                to the system.</p>
             <p>We appreciate your patience and will notify you of any updates.</p>
         </div>
 
         <!-- Footer -->
         <div class="footer">
-            <p>&copy; 2024 Sky Care Solutions. All rights reserved.</p>
+            <p>&copy; 2025 Sky Care Solutions. All rights reserved.</p>
+            <p>If you have any questions, feel free to <a href="https://skycaresolutions.com.au/">contact us</a>.</p>
         </div>
     </div>
 </body>
+
 </html>
