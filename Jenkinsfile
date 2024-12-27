@@ -87,6 +87,8 @@ pipeline {
                     sh 'docker ps -a -q --filter "name=database-staging" | xargs -r docker rm -f'
                     sh 'docker ps -a -q --filter "name=backend-staging" | xargs -r docker stop'
                     sh 'docker ps -a -q --filter "name=backend-staging" | xargs -r docker rm -f'
+                    sh 'docker ps -a -q --filter "name=reverse-proxy" | xargs -r docker stop'
+                    sh 'docker ps -a -q --filter "name=reverse-proxy" | xargs -r docker rm -f'
                 }
             }
         }
