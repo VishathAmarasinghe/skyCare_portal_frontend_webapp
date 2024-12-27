@@ -97,7 +97,6 @@ pipeline {
                 dir('backend-prod') {
                     script {
                         sh 'docker-compose -f docker-compose.dev.yml up -d'
-                        sh 'docker-compose -f docker-compose.proxy.yml up -d'
                     }
                 }
             }
