@@ -47,7 +47,7 @@ pipeline {
                             script {
                                 sh """
                                 docker build -f Dockerfile.frontend -t ${FRONTEND_IMAGE} \
-                                    --build-arg VITE_BACKEND_BASE_URL=http://backend-staging:5000 \
+                                    --build-arg VITE_BACKEND_BASE_URL=https://stg.skycare.au/api \
                                     --build-arg VITE_APPLICATION_ADMIN=admin.skyCarePortal \
                                     --build-arg VITE_APPLICATION_SUPER_ADMIN=superadmin.skyCarePortal \
                                     --build-arg VITE_APPLICATION_CARE_GIVER=caregiver.skyCarePortal \
