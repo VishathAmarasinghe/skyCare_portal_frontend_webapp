@@ -32,17 +32,17 @@ pipeline {
                 }
             }
         }
-        stage('Reverse Proxy Configuration'){
-            steps {
-                dir('frontend') {
-                    script {
-                         sh """
-                                docker build -f Dockerfile.proxy -t ${PROXY_IMAGE} .
-                            """
-                    }
-                }
-            }
-        }
+        // stage('Reverse Proxy Configuration'){
+        //     steps {
+        //         dir('frontend') {
+        //             script {
+        //                  sh """
+        //                         docker build -f Dockerfile.proxy -t ${PROXY_IMAGE} .
+        //                     """
+        //             }
+        //         }
+        //     }
+        // }
         stage('Deploy to Staging') {
             // when {
             //     branch 'dev'
