@@ -81,9 +81,12 @@ pipeline {
         stage('Remove Old Containers') {
             steps {
                 script {
-                    sh 'docker rm -f frontend-staging || true'
-                    sh 'docker rm -f database-staging || true'
-                    sh 'docker rm -f backend-staging || true'
+                    sh 'docker ps -a -q --filter "name=frontend-staging" | xargs -r docker stop'
+                    sh 'docker ps -a -q --filter "name=frontend-staging" | xargs -r docker rm -f'
+                    sh 'docker ps -a -q --filter "name=database-staging" | xargs -r docker stop'
+                    sh 'docker ps -a -q --filter "name=database-staging" | xargs -r docker rm -f'
+                    sh 'docker ps -a -q --filter "name=backend-staging" | xargs -r docker stop'
+                    sh 'docker ps -a -q --filter "name=backend-staging" | xargs -r docker rm -f'
                 }
             }
         }
