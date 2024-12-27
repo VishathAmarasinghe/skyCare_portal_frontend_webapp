@@ -6,7 +6,7 @@ pipeline {
         FRONTEND_IMAGE = 'frontend:latest'
         BACKEND_IMAGE = 'backend:latest'
         PROXY_IMAGE = 'proxy:latest'
-        REGISTRY = 'docker.io' 
+        REGISTRY = 'docker.io'
     }
     stages {
         stage('Checkout Repositories') {
@@ -18,45 +18,48 @@ pipeline {
                     }
                     dir('backend-prod') {
                         git url: "${BACKEND_REPO}", branch: 'main', credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
-
                     }
                     dir('frontend-stg') {
-                        git url: "${FRONTEND_REPO}", branch: 'dev' , credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
+                        git url: "${FRONTEND_REPO}", branch: 'dev', credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
                     }
                     dir('backend-stg') {
-                        git url: "${BACKEND_REPO}", branch: 'dev' , credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
+                        git url: "${BACKEND_REPO}", branch: 'dev', credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
                     }
                 }
             }
         }
-        stage('Reverse Proxy Configuration'){
+        stage('Reverse Proxy Configuration') {
             steps {
-                dir('frontend') {
+                dir('frontend-prod') { // Ensure the directory is correct
                     script {
-                         sh """
-                                docker build -f Dockerfile.proxy -t ${PROXY_IMAGE} .
-                            """
+                        sh """
+                            docker build -f Dockerfile.proxy -t ${PROXY_IMAGE} .
+                        """
                     }
                 }
             }
         }
-        stage('Deploy to Staging') {
-            // when {
-            //     branch 'dev'
-            // }
-            steps {
-                dir('frontend-prod') {
+        stage('Build and Deploy to Staging') {
+            parallel {
+                stage('Build Frontend') {
+                    steps {
+                        dir('frontend-prod') {
                             script {
                                 sh """
-                                docker build -f Dockerfile.frontend  -t ${FRONTEND_IMAGE} --build-arg VITE_BACKEND_BASE_URL=http://backend:5000 \
+                                docker build -f Dockerfile.frontend -t ${FRONTEND_IMAGE} \
+                                    --build-arg VITE_BACKEND_BASE_URL=http://backend:5000 \
                                     --build-arg VITE_APPLICATION_ADMIN=admin.skyCarePortal \
                                     --build-arg VITE_APPLICATION_SUPER_ADMIN=superadmin.skyCarePortal \
                                     --build-arg VITE_APPLICATION_CARE_GIVER=caregiver.skyCarePortal \
                                     --build-arg VITE_FILE_DOWNLOAD_PATH=/file/download .
                                 """
                             }
+                        }
+                    }
                 }
-                dir('backend-prod') {
+                stage('Build Backend') {
+                    steps {
+                        dir('backend-prod') {
                             script {
                                 sh """
                                 docker build -t ${BACKEND_IMAGE} \
@@ -70,12 +73,16 @@ pipeline {
                                     --build-arg SERVER_PORT=5000 .
                                 """
                             }
+                        }
+                    }
                 }
+            }
+        }
+        stage('Deploy to Staging') {
+            steps {
                 dir('backend-prod') {
                     script {
                         sh 'docker-compose -f docker-compose.dev.yml up -d'
-                    }
-                    script {
                         sh 'docker-compose -f docker-compose.proxy.yml up -d'
                     }
                 }
