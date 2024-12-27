@@ -87,6 +87,8 @@ pipeline {
                     sh 'docker ps -a -q --filter "name=database-staging" | xargs -r docker rm -f'
                     sh 'docker ps -a -q --filter "name=backend-staging" | xargs -r docker stop'
                     sh 'docker ps -a -q --filter "name=backend-staging" | xargs -r docker rm -f'
+                    sh 'docker ps -a -q --filter "name=reverse-proxy" | xargs -r docker stop'
+                    sh 'docker ps -a -q --filter "name=reverse-proxy" | xargs -r docker rm -f'
                 }
             }
         }
@@ -95,7 +97,6 @@ pipeline {
                 dir('backend-prod') {
                     script {
                         sh 'docker-compose -f docker-compose.dev.yml up -d'
-                        sh 'docker-compose -f docker-compose.proxy.yml up -d'
                     }
                 }
             }
