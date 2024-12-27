@@ -13,21 +13,18 @@ pipeline {
             steps {
                 script {
                     // Checkout both repositories
-                    dir('frontend') {
+                    dir('frontend-prod') {
                         git url: "${FRONTEND_REPO}", branch: 'main', credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
-                        sh 'ls -R'
                     }
-                    dir('backend') {
+                    dir('backend-prod') {
                         git url: "${BACKEND_REPO}", branch: 'main', credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
-                        sh 'ls -R'
+
                     }
-                    dir('frontend') {
+                    dir('frontend-stg') {
                         git url: "${FRONTEND_REPO}", branch: 'dev' , credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
-                        sh 'ls -R'
                     }
-                    dir('backend') {
+                    dir('backend-stg') {
                         git url: "${BACKEND_REPO}", branch: 'dev' , credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
-                        sh 'ls -R'
                     }
                 }
             }
@@ -48,18 +45,18 @@ pipeline {
             //     branch 'dev'
             // }
             steps {
-                dir('frontend') {
-                            script {
-                                sh """
-                                docker build -f Dockerfile.frontend  -t ${FRONTEND_IMAGE} --build-arg VITE_BACKEND_BASE_URL=http://backend:5000 \
-                                    --build-arg VITE_APPLICATION_ADMIN=admin.skyCarePortal \
-                                    --build-arg VITE_APPLICATION_SUPER_ADMIN=superadmin.skyCarePortal \
-                                    --build-arg VITE_APPLICATION_CARE_GIVER=caregiver.skyCarePortal \
-                                    --build-arg VITE_FILE_DOWNLOAD_PATH=/file/download .
-                                """
-                            }
-                }
-                dir('backend') {
+                // dir('frontend-prod') {
+                //             script {
+                //                 sh """
+                //                 docker build -f Dockerfile.frontend  -t ${FRONTEND_IMAGE} --build-arg VITE_BACKEND_BASE_URL=http://backend:5000 \
+                //                     --build-arg VITE_APPLICATION_ADMIN=admin.skyCarePortal \
+                //                     --build-arg VITE_APPLICATION_SUPER_ADMIN=superadmin.skyCarePortal \
+                //                     --build-arg VITE_APPLICATION_CARE_GIVER=caregiver.skyCarePortal \
+                //                     --build-arg VITE_FILE_DOWNLOAD_PATH=/file/download .
+                //                 """
+                //             }
+                // }
+                dir('backend-prod') {
                             script {
                                 sh """
                                 docker build -t ${BACKEND_IMAGE} \
@@ -74,7 +71,7 @@ pipeline {
                                 """
                             }
                 }
-                dir('backend') {
+                dir('backend-prod') {
                     script {
                         sh 'docker-compose -f docker-compose.dev.yml up -d'
                     }
