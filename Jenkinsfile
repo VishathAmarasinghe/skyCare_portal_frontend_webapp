@@ -5,6 +5,7 @@ pipeline {
         BACKEND_REPO  = 'https://github.com/VishathAmarasinghe/skyCarePortal_backend.git'
         FRONTEND_IMAGE = 'frontend:latest'
         BACKEND_IMAGE = 'backend:latest'
+        PROXY_IMAGE = 'proxy:latest'
         REGISTRY = 'docker.io' 
     }
     stages {
@@ -31,6 +32,17 @@ pipeline {
                 }
             }
         }
+        stage('Reverse Proxy Configuration'){
+            steps {
+                dir('frontend') {
+                    script {
+                         sh """
+                                docker build -f Dockerfile.proxy -t ${PROXY_IMAGE} .
+                            """
+                    }
+                }
+            }
+        }
         stage('Deploy to Staging') {
             // when {
             //     branch 'dev'
@@ -39,7 +51,7 @@ pipeline {
                 dir('frontend') {
                             script {
                                 sh """
-                                docker build -t ${FRONTEND_IMAGE} --build-arg VITE_BACKEND_BASE_URL=http://backend:5000 \
+                                docker build -f Dockerfile.frontend  -t ${FRONTEND_IMAGE} --build-arg VITE_BACKEND_BASE_URL=http://backend:5000 \
                                     --build-arg VITE_APPLICATION_ADMIN=admin.skyCarePortal \
                                     --build-arg VITE_APPLICATION_SUPER_ADMIN=superadmin.skyCarePortal \
                                     --build-arg VITE_APPLICATION_CARE_GIVER=caregiver.skyCarePortal \
@@ -65,6 +77,9 @@ pipeline {
                 dir('backend') {
                     script {
                         sh 'docker-compose -f docker-compose.dev.yml up -d'
+                    }
+                    script {
+                        sh 'docker-compose -f docker-compose.proxy.yml up -d'
                     }
                 }
             }
