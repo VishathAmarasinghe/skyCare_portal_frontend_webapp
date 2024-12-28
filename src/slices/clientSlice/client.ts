@@ -90,11 +90,11 @@ export const fetchClients = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.fetchClients
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }
@@ -121,11 +121,11 @@ export const fetchSingleClients = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.fetchSingleClient
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }
@@ -160,11 +160,11 @@ export const updateClient = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.updateClient
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }
@@ -213,11 +213,11 @@ export const saveClient = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.saveClient
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }

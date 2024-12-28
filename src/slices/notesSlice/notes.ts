@@ -79,11 +79,11 @@ export const fetchNotes = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.fetchNotes
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }
@@ -108,11 +108,11 @@ export const fetchSingleNote = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.fetchNotes
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }
@@ -137,11 +137,11 @@ export const fetchNotesByClientID = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.fetchNotes
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }
@@ -183,11 +183,11 @@ export const saveNotes = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.saveNotes
-                  : String(error.response?.data?.error),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }
@@ -233,11 +233,11 @@ export const updateNotes = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.updateNotes
-                  : String(error.response?.data?.error),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }
@@ -268,11 +268,11 @@ export const deleteNotes = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.NoteDeleted
-                  : String(error.response?.data?.error),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }

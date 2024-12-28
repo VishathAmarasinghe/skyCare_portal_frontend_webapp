@@ -153,7 +153,7 @@ export const fetchAllIncidentsByEmployeeId = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchIncidents
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -181,7 +181,7 @@ export const fetchAllIncidents = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchIncidents
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -209,7 +209,7 @@ export const fetchAllIncidentTypes = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchIncidentTypes
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -243,7 +243,7 @@ export const saveIncidentQuestion = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? "Failed to save incident question"
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -280,7 +280,7 @@ export const updateIncidentQuestion = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? "Failed to update incident question"
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -314,7 +314,7 @@ export const saveIncidentTypes = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? "Failed to save incident type"
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -348,7 +348,7 @@ export const updateIncidentTypes = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? "Failed to update incident type"
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -375,7 +375,7 @@ export const fetchSingleIncident = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchIncidents
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -402,7 +402,7 @@ export const fetchAllIncidentActionTypeQuestions = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchIncidentQuestions
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -429,7 +429,7 @@ export const fetchAllIncidentStatus = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchIncidentStatus
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -463,7 +463,7 @@ export const saveIncidentStatus = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? "Failed to save incident status"
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -497,7 +497,7 @@ export const updateIncidentStatus = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? "Failed to update incident status"
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -545,11 +545,11 @@ export const updateIncident = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.incidentUpdate
-                  : String(error.response?.data?.error),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }
@@ -595,7 +595,7 @@ export const saveIncident = createAsyncThunk(
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }

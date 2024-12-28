@@ -101,11 +101,11 @@ export const fetchGoalOutcomes = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.fetchGoalOutcomes
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }
@@ -131,11 +131,11 @@ export const fetchCarePlansByClientID = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.fetchCarePlans
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }
@@ -161,11 +161,11 @@ export const fetchAllCarePlans = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.fetchCarePlans
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }
@@ -191,11 +191,11 @@ export const fetchSingleCarePlan = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.fetchCarePlans
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }
@@ -226,11 +226,11 @@ export const saveCarePlan = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.saveCarePlans
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }
@@ -264,11 +264,11 @@ export const UpdateCarePlan = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.updateCarePlan
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }
@@ -298,11 +298,11 @@ export const saveCarePlanStatus = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.saveCarePlanStatus
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }
@@ -336,11 +336,11 @@ export const updateCarePlanStatus = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.updateCarePlanStatus
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }
@@ -366,11 +366,11 @@ export const fetchCarePlanStatusList = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.fetchCarePlanStatus
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }

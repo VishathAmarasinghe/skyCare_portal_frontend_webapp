@@ -226,11 +226,11 @@ export const fetchRecurrentAppointmentDetails = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.fetchAppointmentDetails
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          rejectWithValue(error.response?.data?.message);
+          rejectWithValue(error.response?.data);
         });
     });
   }
@@ -252,11 +252,11 @@ export const fetchNextAppointmentbyCareGiver = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.fetchingNextAppointment
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          rejectWithValue(error.response?.data?.message);
+          rejectWithValue(error.response?.data);
         });
     });
   }
@@ -281,11 +281,11 @@ export const fetchAppointmentsByCareGiverAndStatus = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.fetchCalenderEvents
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          rejectWithValue(error.response?.data?.message);
+          rejectWithValue(error.response?.data);
         });
     });
   }
@@ -318,11 +318,11 @@ export const updateRecurrentAppointment = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.updateRecurrentAppointment
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          rejectWithValue(error.response?.data?.message);
+          rejectWithValue(error.response?.data);
         });
     });
   }
@@ -344,11 +344,11 @@ export const fetchJobAssignmentTable = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.fetchJobAssignerTable
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          rejectWithValue(error.response?.data?.message);
+          rejectWithValue(error.response?.data);
         });
     });
   }
@@ -382,11 +382,11 @@ export const updateCareGiverAcceptanceState = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.updateJobAcceptanceState
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          rejectWithValue(error.response?.data?.message);
+          rejectWithValue(error.response?.data);
         });
     });
   }
@@ -419,11 +419,11 @@ export const cancelAppointment = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.appointmentCancel
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          rejectWithValue(error.response?.data?.message);
+          rejectWithValue(error.response?.data);
         });
     });
   }
@@ -444,11 +444,11 @@ export const fetchPendingAppointmentsWithUser = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.pendingAppointments
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          rejectWithValue(error.response?.data?.message);
+          rejectWithValue(error.response?.data);
         });
     });
   }
@@ -473,11 +473,11 @@ export const fetchAppointmentbyCalenderWithUser = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.fetchCalenderEvents
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          rejectWithValue(error.response?.data?.message);
+          rejectWithValue(error.response?.data);
         });
     });
   }
@@ -502,11 +502,11 @@ export const fetchAppointmentbyCalender = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.fetchCalenderEvents
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          rejectWithValue(error.response?.data?.message);
+          rejectWithValue(error.response?.data);
         });
     });
   }
@@ -525,11 +525,11 @@ export const fetchAppointmentsByClientID = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.fetchAppointments
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          rejectWithValue(error.response?.data?.message);
+          rejectWithValue(error.response?.data);
         });
     });
   }
@@ -548,11 +548,11 @@ export const fetchAppointmentTypes = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? "Failed to fetch appointment types."
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          rejectWithValue(error.response?.data?.message);
+          rejectWithValue(error.response?.data);
         });
     });
   }
@@ -579,11 +579,11 @@ export const saveAppointmentTypes = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? "Failed to save appointment types."
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          rejectWithValue(error.response?.data?.message);
+          rejectWithValue(error.response?.data);
         });
     });
   }
@@ -614,11 +614,11 @@ export const updateAppointmentTypes = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? "Failed to update appointment types."
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          rejectWithValue(error.response?.data?.message);
+          rejectWithValue(error.response?.data);
         });
     });
   }
@@ -645,11 +645,11 @@ export const updateNewAllocations = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? "Failed to fetch appointment types."
-                  : String(error.response?.data?.message),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          rejectWithValue(error.response?.data?.message);
+          rejectWithValue(error.response?.data);
         });
     });
   }
@@ -689,7 +689,7 @@ export const saveAppointment = createAsyncThunk(
               type: "error",
             })
           );
-          rejectWithValue(error.response?.data?.message);
+          rejectWithValue(error.response?.data);
         });
     });
   }
@@ -734,7 +734,7 @@ export const updateAppointment = createAsyncThunk(
               type: "error",
             })
           );
-          rejectWithValue(error.response?.data?.message);
+          rejectWithValue(error.response?.data);
         });
     });
   }
@@ -754,7 +754,7 @@ export const fetchSingleAppointment = createAsyncThunk(
               type: "error",
             })
           );
-          rejectWithValue(error.response?.data?.message);
+          rejectWithValue(error.response?.data);
         });
     });
   }

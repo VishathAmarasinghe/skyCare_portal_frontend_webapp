@@ -107,7 +107,7 @@ export const submitStartShiftNote = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.shiftStarted
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -134,7 +134,7 @@ export const getSingleShiftNoteByShiftID = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchShiftNotes
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -162,7 +162,7 @@ export const getAllShiftNotes = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchShiftNotes
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -189,7 +189,7 @@ export const getAllShiftNotesByEmployeeID = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchShiftNotes
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -221,7 +221,7 @@ export const getCurrnetShiftNoteState = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.shiftStarted
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -270,11 +270,11 @@ export const updatehiftNotes = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.shiftUpdate
-                  : String(error.response?.data?.error),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }
@@ -316,11 +316,11 @@ export const saveNewShiftNotes = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.shiftFinished
-                  : String(error.response?.data?.error),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }
@@ -362,11 +362,11 @@ export const saveShiftNotes = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.shiftNoteCreated
-                  : String(error.response?.data?.error),
+                  : String(error.response?.data),
               type: "error",
             })
           );
-          reject(error.response?.data?.message);
+          reject(error.response?.data);
         });
     });
   }

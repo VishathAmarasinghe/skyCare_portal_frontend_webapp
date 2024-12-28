@@ -95,11 +95,11 @@ export const fetchMetaEmployees = createAsyncThunk(
           message:
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchMetaEmployees
-              : String(error.response?.data?.message),
+              : String(error.response?.data),
           type: "error",
         })
       );
-      throw error.response?.data?.message;
+      throw error.response?.data;
     }
   }
 );
@@ -121,11 +121,11 @@ export const fetchMetaEmployeesMapping = createAsyncThunk(
           message:
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchMetaEmployees
-              : String(error.response?.data?.message),
+              : String(error.response?.data),
           type: "error",
         })
       );
-      throw error.response?.data?.message;
+      throw error.response?.data;
     }
   }
 );
@@ -175,11 +175,11 @@ export const updateEmployeeBasicInfo = createAsyncThunk(
           message:
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.saveEmployee
-              : String(error.response?.data?.message),
+              : String(error.response?.data),
           type: "error",
         })
       );
-      throw error.response?.data?.message;
+      throw error.response?.data;
     }
   }
 );
@@ -202,11 +202,11 @@ export const fetchEmployeesByRole = createAsyncThunk(
           message:
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchEmployees
-              : String(error.response?.data?.message),
+              : String(error.response?.data),
           type: "error",
         })
       );
-      throw error.response?.data?.message;
+      throw error.response?.data;
     }
   }
 );
@@ -229,11 +229,11 @@ export const fetchEmployees = createAsyncThunk(
           message:
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchEmployees
-              : String(error.response?.data?.message),
+              : String(error.response?.data),
           type: "error",
         })
       );
-      throw error.response?.data?.message;
+      throw error.response?.data;
     }
   }
 );
@@ -255,11 +255,11 @@ export const fetchCurrnetEmployee = createAsyncThunk(
           message:
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchSingleEmployee
-              : String(error.response?.data?.message),
+              : String(error.response?.data),
           type: "error",
         })
       );
-      throw error.response?.data?.message;
+      throw error.response?.data;
     }
   }
 );
@@ -282,11 +282,11 @@ export const fetchSingleEmployee = createAsyncThunk(
           message:
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchSingleEmployee
-              : String(error.response?.data?.message),
+              : String(error.response?.data),
           type: "error",
         })
       );
-      throw error.response?.data?.message;
+      throw error.response?.data;
     }
   }
 );
@@ -323,6 +323,11 @@ export const saveEmployee = createAsyncThunk(
       return response.data;
     } catch (error: any) {
       if (axios.isCancel(error)) {
+        console.log("Request canceled", error);
+        enqueueSnackbarMessage({
+          message: "Requsest Canceled",
+          type: "error",
+        });
         return rejectWithValue("Request canceled");
       }
       dispatch(
@@ -334,7 +339,7 @@ export const saveEmployee = createAsyncThunk(
           type: "error",
         })
       );
-      throw error.response?.data?.message;
+      throw error.response?.data;
     }
   }
 );
@@ -379,11 +384,11 @@ export const updateEmployee = createAsyncThunk(
           message:
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.updateEmployee
-              : String(error.response?.data?.message),
+              : String(error.response?.data),
           type: "error",
         })
       );
-      throw error.response?.data?.message;
+      throw error.response?.data;
     }
   }
 );
