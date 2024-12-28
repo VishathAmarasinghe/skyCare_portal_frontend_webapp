@@ -227,7 +227,7 @@ const EmployeeTable = ({}: ClientTableProps) => {
         paginationMode="client"
         initialState={{
           pagination: {
-            paginationModel: { pageSize: 5 },
+            paginationModel: { pageSize: 8 },
           },
         }}
         slots={{

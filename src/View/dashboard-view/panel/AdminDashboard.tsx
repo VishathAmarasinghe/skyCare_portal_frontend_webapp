@@ -1,5 +1,6 @@
 import { Grid, Paper, Stack, Typography } from "@mui/material";
 import React, { useEffect } from "react";
+import { AccessAlarm } from "@mui/icons-material"; // Importing MUI icon
 import HelloCard from "../Components/HelloCard";
 import { DASHBOARD_CARDS } from "../../../constants/index";
 import DashboardCard from "../Components/DashboardCard";
@@ -10,6 +11,7 @@ import AppointmentCard from "../Components/AppointmentCard";
 import AppointmentBarChart from "../Components/AppointmentBarChart";
 import AppointmentTypePieChart from "../Components/AppointmentTypePieChart";
 import AppointmentProgressChart from "../Components/AppointmentProgressChart";
+import { theme } from "antd";
 
 const AdminDashboard = () => {
   const dispatch = useAppDispatch();
@@ -45,7 +47,7 @@ const AdminDashboard = () => {
       data-aos-duration="200"
     >
       <Stack width="100%" height="5%">
-        <Typography variant="h5">Dashboard</Typography>
+        <Typography variant="h6">Dashboard</Typography>
       </Stack>
       <HelloCard />
       <Stack
@@ -92,8 +94,11 @@ const AdminDashboard = () => {
                 </Paper>
               </Grid>
               {/* Bottom Section: One Grid Item */}
-              <Grid item xs={12}>
-                <Paper elevation={3} style={{ padding: "10px" }}>
+              <Grid item xs={12} height={"100%"}>
+                <Paper
+                  elevation={3}
+                  style={{ padding: "10px", height: "100%" }}
+                >
                   <AppointmentBarChart
                     twoWeekAppointmentCount={
                       dashboardSlice?.adminDashboard?.twoWeekAppointmentCount ||
@@ -106,8 +111,8 @@ const AdminDashboard = () => {
           </Grid>
 
           {/* Second item */}
-          <Grid item xs={12} md={4} height={"100%"}>
-            <Paper elevation={3} style={{ padding: "10px", flexGrow: 1 }}>
+          <Grid item xs={12} md={4} style={{ height: "104%" }}>
+            <Paper elevation={3} style={{ padding: "10px", height: "100%" }}>
               <Typography
                 variant="h6"
                 align="center"
@@ -116,18 +121,45 @@ const AdminDashboard = () => {
                 Today Appointments
               </Typography>
               <Stack
-                width={"100%"}
+                width="100%"
+                // border="2px solid green"
                 flexGrow={1}
-                height={"100%"}
-                flexDirection={"column"}
-                alignItems={"center"}
-                sx={{ overflow: "auto", maxHeight: "500px" }}
+                // height="100%"
+                flexDirection="column"
+                alignItems="center"
+                sx={{ overflowY: "auto", maxHeight: "100%" }}
               >
-                <AppointmentCard
-                  todayAppointments={
-                    dashboardSlice.adminDashboard?.todayAppointments || []
-                  }
-                />
+                {(dashboardSlice.adminDashboard?.todayAppointments?.length ??
+                  0) > 0 ? (
+                  <AppointmentCard
+                    todayAppointments={
+                      dashboardSlice.adminDashboard?.todayAppointments || []
+                    }
+                  />
+                ) : (
+                  <Stack
+                    width="100%"
+                    height="100%"
+                    justifyContent="center"
+                    alignItems="center"
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      textAlign: "center",
+                      mt: 10,
+                    }}
+                  >
+                    <AccessAlarm style={{ fontSize: 30 }} color="primary" />{" "}
+                    {/* MUI icon */}
+                    <Typography
+                      variant="h6"
+                      color="textSecondary"
+                      sx={{ marginTop: 2 }}
+                    >
+                      No Appointments
+                    </Typography>
+                  </Stack>
+                )}
               </Stack>
             </Paper>
           </Grid>

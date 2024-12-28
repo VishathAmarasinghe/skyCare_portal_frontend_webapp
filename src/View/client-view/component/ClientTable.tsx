@@ -14,6 +14,9 @@ import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../../slices/store";
 import { Client } from "../../../slices/clientSlice/client";
 import { State } from "../../../types/types";
+import malAvatar from "../../../assets/images/maleavatar.jpg";
+import femaleAvatar from "../../../assets/images/female.png";
+import roboAvatar from "../../../assets/images/roboavatar.png";
 
 function CustomToolbar() {
   return (
@@ -26,7 +29,7 @@ function CustomToolbar() {
 }
 
 const initialColumns: GridColDef[] = [
-  { field: "clientID", headerName: "Client ID", flex: 1, align: "center" },
+  { field: "clientID", headerName: "Client ID", flex: 1, align: "left" },
   { field: "firstName", headerName: "First Name", flex: 1 },
   { field: "lastName", headerName: "Last Name", flex: 1 },
   {
@@ -35,7 +38,19 @@ const initialColumns: GridColDef[] = [
     flex: 2,
     renderCell: (params) => (
       <Chip
-        avatar={<Avatar>{params.row.email.charAt(0).toUpperCase()}</Avatar>}
+        avatar={
+          <Avatar
+            src={
+              params?.row?.gender === "Male"
+                ? malAvatar
+                : params?.row?.gender === "Female"
+                ? femaleAvatar
+                : roboAvatar
+            }
+          >
+            {params.row.email.charAt(0).toUpperCase()}
+          </Avatar>
+        }
         label={params.value}
         variant="outlined"
       />
@@ -47,6 +62,31 @@ const initialColumns: GridColDef[] = [
     flex: 1,
     headerAlign: "center",
     align: "center",
+    renderCell: (params) => {
+      const gender = params.value as keyof typeof chipStyles;
+
+      // Define colors for different genders
+      const chipStyles = {
+        Male: { backgroundColor: "#1976d2", color: "white" }, // Blue for Male
+        Female: { backgroundColor: "#e91e63", color: "white" }, // Pink for Female
+        Other: { backgroundColor: "#9e9e9e", color: "white" }, // Gray for Other
+      };
+
+      const style = chipStyles[gender] || chipStyles["Other"];
+
+      return (
+        <Chip
+          size="small"
+          label={gender || "Other"}
+          sx={{
+            ...style,
+            width: "70px", // Fixed width
+            height: "25px", // Fixed height
+            // fontWeight: "bold",
+          }}
+        />
+      );
+    },
   },
   {
     field: "clientType",

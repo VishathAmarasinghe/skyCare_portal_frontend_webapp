@@ -612,9 +612,22 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
           }
         }, [appointmentSlice.selectedAppointment]);
 
+        useEffect(() => {
+          if (values?.recurrentWork?.recurrenceType) {
+            if (
+              values?.recurrentWork?.recurrenceType === "Biweekly" ||
+              values?.recurrentWork?.recurrenceType === "Bimonthly"
+            ) {
+              setFieldValue("recurrentWork.frequencyCount", "2");
+            } else {
+              setFieldValue("recurrentWork.frequencyCount", "1");
+            }
+          }
+        }, [values?.recurrentWork?.recurrenceType]);
+
         return (
           <Form>
-            <Grid container spacing={1}>
+            <Grid container spacing={2}>
               {/* Title */}
               {activeStep === 0 && (
                 <>
@@ -715,7 +728,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={12} sm={3}>
+                  <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
                       <InputLabel>Care Plan</InputLabel>
                       <Select
@@ -767,7 +780,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                   </Grid>
 
                   {/* Task ID */}
-                  <Grid item xs={12} sm={3}>
+                  {/* <Grid item xs={12} sm={3}>
                     <FormControl fullWidth>
                       <InputLabel>Task</InputLabel>
                       <Select
@@ -785,7 +798,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                         <FormHelperText error>{errors.taskID}</FormHelperText>
                       )}
                     </FormControl>
-                  </Grid>
+                  </Grid> */}
 
                   <Grid item xs={12} sm={3}>
                     <TextField
@@ -897,7 +910,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                   <Grid item xs={12} sm={3}>
                     <TextField
                       fullWidth
-                      label="Duration"
+                      label="Duration(mins)"
                       name="duration"
                       type="number"
                       value={values.duration}
@@ -968,7 +981,13 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                             onBlur={handleBlur}
                             readOnly={!isEditMode} // Disable if not in edit mode
                           >
-                            {["Daily", "Weekly", "Monthly"].map((option) => (
+                            {[
+                              "Daily",
+                              "Weekly",
+                              "Biweekly",
+                              "Monthly",
+                              "Bimonthly",
+                            ].map((option) => (
                               <MenuItem key={option} value={option}>
                                 {option}
                               </MenuItem>
@@ -1037,6 +1056,13 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                           label="Frequency Count"
                           name="recurrentWork.frequencyCount"
                           type="number"
+                          disabled={
+                            ["Biweekly", "Bimonthly"].includes(
+                              values.recurrentWork.recurrenceType
+                            )
+                              ? true
+                              : false
+                          }
                           value={values.recurrentWork.frequencyCount}
                           onChange={handleChange}
                           onBlur={handleBlur}
@@ -1150,7 +1176,6 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                         onPlaceChanged={() => {
                           if (autocomplete) {
                             const place = autocomplete.getPlace();
-                            console.log("Selected Place:", place); // Check the place object
                             handleAddressSelect(place); // Pass the place data to the handler
                           }
                         }}

@@ -1075,6 +1075,11 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
         )}
         {settingType === "Incident Questions" && <QuestionManager />}
       </Stack>
+      <Typography variant="body2" color="textSecondary">
+        if you want you can only change the text and correct the values. you
+        cannot delete the values beceause it is used in other places values are
+        already used.
+      </Typography>
     </Drawer>
   );
 };

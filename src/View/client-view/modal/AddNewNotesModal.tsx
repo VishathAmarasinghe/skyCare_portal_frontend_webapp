@@ -11,6 +11,7 @@ import {
 import AddNoteForm from "../component/AddNoteForm";
 import { useAppSelector } from "../../../slices/store";
 import { State } from "../../../types/types";
+import { CarePlan } from "@slices/carePlanSlice/carePlan";
 
 type AddNewNotesModalProps = {
   isNoteModalVisible: boolean;

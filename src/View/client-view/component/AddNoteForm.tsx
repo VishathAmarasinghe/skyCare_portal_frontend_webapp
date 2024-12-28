@@ -30,6 +30,7 @@ import { State } from "../../../types/types";
 import { Card, Upload } from "antd";
 import FileListTable from "../../../component/common/FileListTable";
 import FileViewerWithModal from "../../../component/common/FileViewerWithModal";
+import { CarePlan } from "../../../slices/carePlanSlice/carePlan";
 
 // Validation schema using Yup
 const validationSchema = Yup.object({
@@ -117,16 +118,19 @@ const AddNoteForm: React.FC<AddNoteFormProps> = ({
     tasks: string[];
   }>({ appointments: [], tasks: [] });
 
+  const carePlanSlice = useAppSelector((state) => state.carePlans);
+  const [carePlans, setCarePlans] = useState<CarePlan[]>([]);
+
   useEffect(() => {
-    console.log("ui showing files", UIShowingFile);
-    console.log("uploaded files", uploadedFils);
-    console.log("previously uploaded files", previouslyUploadedFiles);
-  }, [UIShowingFile, uploadedFils, previouslyUploadedFiles]);
+    if (carePlanSlice?.carePlans?.length > 0) {
+      setCarePlans(carePlanSlice.carePlans);
+    }
+  }, [carePlanSlice.carePlans]);
+
+  useEffect(() => {}, [UIShowingFile, uploadedFils, previouslyUploadedFiles]);
 
   useEffect(() => {
     if (noteStates.selectedNote != null) {
-      console.log("initial valies  ", noteStates.selectedNote);
-
       setInitialValues({
         ...noteStates.selectedNote,
         effectiveDate: dayjs(noteStates.selectedNote.effectiveDate)
@@ -321,7 +325,7 @@ const AddNoteForm: React.FC<AddNoteFormProps> = ({
                     onBlur={handleBlur}
                     label="Note Type"
                   >
-                    <MenuItem value="Shift Note">Shift Note</MenuItem>
+                    <MenuItem value="Other Note">Other Note</MenuItem>
                     <MenuItem value="Internal Note">Internal Note</MenuItem>
                   </Select>
                   {touched.noteType && errors.noteType && (
@@ -385,8 +389,14 @@ const AddNoteForm: React.FC<AddNoteFormProps> = ({
                     label="Careplan"
                   >
                     <MenuItem value="">No Careplan</MenuItem>
-                    <MenuItem value="CP001">Careplan 1</MenuItem>
-                    <MenuItem value="CP002">Careplan 2</MenuItem>
+                    {carePlans.map((carePlan) => (
+                      <MenuItem
+                        key={carePlan.careplanID}
+                        value={carePlan.careplanID}
+                      >
+                        {carePlan.title}
+                      </MenuItem>
+                    ))}
                   </Select>
                   {touched.careplanID && errors.careplanID && (
                     <FormHelperText error>{errors.careplanID}</FormHelperText>
@@ -406,7 +416,7 @@ const AddNoteForm: React.FC<AddNoteFormProps> = ({
                     label="Job Type"
                   >
                     <MenuItem value="appointment">Appointment</MenuItem>
-                    <MenuItem value="task">Task</MenuItem>
+                    {/* <MenuItem value="task">Task</MenuItem> */}
                     <MenuItem value="none">None</MenuItem>
                   </Select>
                 </FormControl>
