@@ -43,18 +43,18 @@ pipeline {
             parallel {
                 stage('Build Frontend') {
                     steps {
-                        // dir('frontend-prod') {
-                        //     script {
-                        //         sh """
-                        //         docker build -f Dockerfile.frontend -t ${FRONTEND_IMAGE} \
-                        //             --build-arg VITE_BACKEND_BASE_URL=https://stg.skycare.au/api \
-                        //             --build-arg VITE_APPLICATION_ADMIN=admin.skyCarePortal \
-                        //             --build-arg VITE_APPLICATION_SUPER_ADMIN=superadmin.skyCarePortal \
-                        //             --build-arg VITE_APPLICATION_CARE_GIVER=caregiver.skyCarePortal \
-                        //             --build-arg VITE_FILE_DOWNLOAD_PATH=/file/download .
-                        //         """
-                        //     }
-                        // }
+                        dir('frontend-prod') {
+                            script {
+                                sh """
+                                docker build -f Dockerfile.frontend -t ${FRONTEND_IMAGE} \
+                                    --build-arg VITE_BACKEND_BASE_URL=https://stg.skycare.au/api \
+                                    --build-arg VITE_APPLICATION_ADMIN=admin.skyCarePortal \
+                                    --build-arg VITE_APPLICATION_SUPER_ADMIN=superadmin.skyCarePortal \
+                                    --build-arg VITE_APPLICATION_CARE_GIVER=caregiver.skyCarePortal \
+                                    --build-arg VITE_FILE_DOWNLOAD_PATH=/file/download .
+                                """
+                            }
+                        }
                     }
                 }
                 stage('Build Backend') {
