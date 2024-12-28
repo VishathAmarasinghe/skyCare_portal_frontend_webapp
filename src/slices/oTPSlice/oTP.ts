@@ -54,7 +54,7 @@ export const validateOTP = createAsyncThunk(
             (error as any).response?.status ===
             HttpStatusCode.InternalServerError
               ? SnackMessage.error.otpValidate
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -89,7 +89,7 @@ export const sendOTP = createAsyncThunk(
             (error as any).response?.status ===
             HttpStatusCode.InternalServerError
               ? SnackMessage.error.otpSend
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );

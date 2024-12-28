@@ -137,12 +137,12 @@ export const resetPassword = createAsyncThunk(
             message:
               error?.response?.status === HttpStatusCode.InternalServerError
                 ? SnackMessage.error.passwordReset
-                : String(error?.response?.data?.message),
+                : String(error?.response?.data),
             type: "error",
           })
         );
 
-        reject(error?.response?.data?.message || "An unknown error occurred"); // Reject the promise with an error message
+        reject(error?.response?.data || "An unknown error occurred"); // Reject the promise with an error message
       }
     });
   }

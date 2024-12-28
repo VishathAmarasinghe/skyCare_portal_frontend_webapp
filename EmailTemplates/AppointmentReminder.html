@@ -1,80 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <title>Appointment Reminder</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Poppins", sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #E7F6FC;
+            background-color: #b6dbfb;
         }
+
         .container {
             max-width: 600px;
             margin: 20px auto;
-            background: #fff;
-            padding: 20px;
+            background: #ffffff;
+            padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-top: 5px solid #055476;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border: 2px solid #055476;
         }
+
         .header {
             text-align: center;
+            margin-bottom: 20px;
         }
+
         .header img {
             max-width: 250px;
             height: auto;
+            margin-top: 20px;
         }
+
         .title {
             color: #055476;
-            font-size: 24px;
+            font-size: 22px;
+            font-weight: bold;
             margin-top: 10px;
+            text-align: center;
         }
+
+        .image-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .image-container img {
+            max-width: 50%;
+            height: auto;
+        }
+
         .content {
             line-height: 1.6;
             color: #333;
+            font-size: 16px;
             margin-top: 20px;
         }
+
         .button {
             display: inline-block;
-            padding: 10px 20px;
+            padding: 12px 24px;
             margin-top: 20px;
             background: #055476;
-            color: #fff;
+            color: #ffffff;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 6px;
             font-weight: bold;
+            text-align: center;
         }
+
+        .button:hover {
+            background: #043c4b;
+        }
+
         .footer {
             text-align: center;
             font-size: 12px;
             color: #777;
-            margin-top: 20px;
+            margin-top: 30px;
+        }
+
+        .footer a {
+            color: #055476;
+            text-decoration: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .title {
+                font-size: 20px;
+            }
+
+            .content {
+                font-size: 14px;
+            }
+
+            .button {
+                padding: 10px 20px;
+            }
         }
     </style>
 </head>
+
 <body>
+    <!-- Header -->
+    <div class="header">
+        <img src="https://github.com/VishathAmarasinghe/publicImages/blob/main/sky%20care%20prtal%20logo.png?raw=true"
+            alt="Sky Care Portal Logo">
+    </div>
+
     <div class="container">
-        <!-- Header with Logo -->
-        <div class="header">
-            <img src="https://github.com/VishathAmarasinghe/publicImages/blob/main/sky%20care%20prtal%20logo.png?raw=true" alt="Sky Care Solutions Logo">
-            <h2 class="title">Appointment Reminder</h2>
+        <!-- Header with Title -->
+        <h2 class="title">Appointment Reminder</h2>
+
+        <!-- Image Section -->
+        <div class="image-container">
+            <img src="https://github.com/VishathAmarasinghe/publicImages/blob/main/Time%20management-cuate.png?raw=true"
+                alt="Appointment Reminder">
         </div>
 
         <!-- Email Content -->
         <div class="content">
             <p>Dear [User Name],</p>
-            <p>This is a reminder for your upcoming appointment on [Appointment Date].</p>
-            <p>Title: [AppointmentTitle]</p>
-            <a href="[Appointment Details URL]" class="button">View Details</a>
+            <p>This is a gentle reminder for your upcoming appointment scheduled on <strong>[Appointment Date]</strong>.
+            </p>
+            <p><strong>Title:</strong> [AppointmentTitle]</p>
+            <p>
+                Please log in to the skycare portal to view more detials.
+            </p>
+            <a href="[Appointment Details URL]" class="button">View Appointment</a>
         </div>
 
         <!-- Footer -->
         <div class="footer">
-            <p>&copy; 2024 Sky Care Solutions. All rights reserved.</p>
+            <p>&copy; 2025 Sky Care Solutions. All rights reserved.</p>
+            <p>If you have any questions, feel free to <a href="https://skycaresolutions.com.au/">contact us</a>.</p>
         </div>
     </div>
 </body>
+
 </html>

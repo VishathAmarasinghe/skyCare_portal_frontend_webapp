@@ -91,11 +91,11 @@ export const fetchDocumentTypes = createAsyncThunk(
           message:
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchCareGiverDocumentTypes
-              : String(error.response?.data?.message),
+              : String(error.response?.data),
           type: "error",
         })
       );
-      throw error.response?.data?.message;
+      throw error.response?.data;
     }
   }
 );
@@ -125,11 +125,11 @@ export const saveDocumentTypes = createAsyncThunk(
           message:
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.saveCareGiverDocumentType
-              : String(error.response?.data?.message),
+              : String(error.response?.data),
           type: "error",
         })
       );
-      throw error.response?.data?.message;
+      throw error.response?.data;
     }
   }
 );
@@ -159,11 +159,11 @@ export const updateDocumentTypes = createAsyncThunk(
           message:
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.updateCareGiverDocumentType
-              : String(error.response?.data?.message),
+              : String(error.response?.data),
           type: "error",
         })
       );
-      throw error.response?.data?.message;
+      throw error.response?.data;
     }
   }
 );
@@ -193,11 +193,11 @@ export const updatePaymentTypes = createAsyncThunk(
           message:
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.updateCareGiverPaymentType
-              : String(error.response?.data?.message),
+              : String(error.response?.data),
           type: "error",
         })
       );
-      throw error.response?.data?.message;
+      throw error.response?.data;
     }
   }
 );
@@ -226,11 +226,11 @@ export const savePaymentTypes = createAsyncThunk(
           message:
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.saveCareGiverPaymentType
-              : String(error.response?.data?.message),
+              : String(error.response?.data),
           type: "error",
         })
       );
-      throw error.response?.data?.message;
+      throw error.response?.data;
     }
   }
 );
@@ -252,11 +252,11 @@ export const fetchPaymentTypes = createAsyncThunk(
           message:
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchCareGiverPaymentTypes
-              : String(error.response?.data?.message),
+              : String(error.response?.data),
           type: "error",
         })
       );
-      throw error.response?.data?.message;
+      throw error.response?.data;
     }
   }
 );
@@ -279,11 +279,11 @@ export const fetchCareGivers = createAsyncThunk(
           message:
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchCareGivers
-              : String(error.response?.data?.message),
+              : String(error.response?.data),
           type: "error",
         })
       );
-      throw error.response?.data?.message;
+      throw error.response?.data;
     }
   }
 );
@@ -306,11 +306,11 @@ export const fetchSingleCareGiverByEmployeeID = createAsyncThunk(
           message:
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchSingleCareGiver
-              : String(error.response?.data?.message),
+              : String(error.response?.data),
           type: "error",
         })
       );
-      throw error.response?.data?.message;
+      throw error.response?.data;
     }
   }
 );
@@ -333,11 +333,11 @@ export const fetchSingleCareGiver = createAsyncThunk(
           message:
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchSingleCareGiver
-              : String(error.response?.data?.message),
+              : String(error.response?.data),
           type: "error",
         })
       );
-      throw error.response?.data?.message;
+      throw error.response?.data;
     }
   }
 );
@@ -386,11 +386,11 @@ export const updateCareGiver = createAsyncThunk(
           message:
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.updateCareGiver
-              : String(error.response?.data?.message),
+              : String(error.response?.data),
           type: "error",
         })
       );
-      throw error.response?.data?.message;
+      throw error.response?.data;
     }
   }
 );
@@ -438,11 +438,11 @@ export const saveCareGiver = createAsyncThunk(
           message:
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.saveCareGiver
-              : String(error.response?.data?.message),
+              : String(error.response?.data),
           type: "error",
         })
       );
-      throw error.response?.data?.message;
+      throw error.response?.data;
     }
   }
 );

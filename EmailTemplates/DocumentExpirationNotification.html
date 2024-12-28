@@ -1,79 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document Expired</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap"
+        rel="stylesheet">
+    <title>Documents Expired</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #E7F6FC;
+            font-family: "Poppins", serif;
+            background-color: #b6dbfb;
         }
+
         .container {
             max-width: 600px;
-            margin: 20px auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-top: 5px solid #055476;
+            margin: 40px auto;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
+
         .header {
             text-align: center;
+            background-color: #055476;
+            padding: 30px 0;
         }
+
         .header img {
-            max-width: 250px;
+            max-width: 180px;
             height: auto;
+            margin-bottom: 15px;
         }
+
         .title {
-            color: red;
-            font-size: 24px;
-            margin-top: 10px;
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0;
         }
+
         .content {
+            padding: 20px 30px;
             line-height: 1.6;
-            color: #333;
-            margin-top: 20px;
+            color: #333333;
+            font-size: 16px;
         }
+
         .button {
-            display: inline-block;
-            padding: 10px 20px;
-            margin-top: 20px;
-            background: #055476;
-            color: #fff;
+            display: block;
+            text-align: center;
+            background-color: #055476;
+            color: #ffffff;
             text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            margin: 20px auto 0;
+            width: fit-content;
         }
+
+        .button:hover {
+            background-color: #043c4b;
+        }
+
         .footer {
+            background-color: #f7f8fc;
+            padding: 20px 30px;
             text-align: center;
             font-size: 12px;
-            color: #777;
-            margin-top: 20px;
+            color: #777777;
+            border-top: 1px solid #e6e6e6;
+        }
+
+
+        .headerLogo {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .headerLogo img {
+            max-width: 250px;
+            height: auto;
+            margin-top: 30px;
+        }
+
+        .image-container {
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        .image-container img {
+            max-width: 50%;
+            height: auto;
+        }
+
+
+        .footer p {
+            margin: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            .title {
+                font-size: 22px;
+            }
         }
     </style>
 </head>
+
 <body>
+    <div class="headerLogo">
+        <img src="https://github.com/VishathAmarasinghe/publicImages/blob/main/sky%20care%20prtal%20logo.png?raw=true"
+            alt="Sky Care Portal Logo">
+    </div>
     <div class="container">
-        <!-- Header with Logo -->
+        <!-- Header with Title -->
         <div class="header">
-            <img src="https://github.com/VishathAmarasinghe/publicImages/blob/main/sky%20care%20prtal%20logo.png?raw=true" alt="Sky Care Solutions Logo">
             <h2 class="title">Documents Expired</h2>
+        </div>
+
+        <div class="image-container">
+            <img src="https://github.com/VishathAmarasinghe/publicImages/blob/main/Pay%20attention-pana.png?raw=true"
+                alt="Taking Care of the Earth">
         </div>
 
         <!-- Email Content -->
         <div class="content">
             <p>Dear [User Name],</p>
-            <p>Some of your submitted documents have expired. To continue using our services, please upload the updated documents.</p>
+            <p>We noticed that some of your submitted documents have expired. To continue using our services, please
+                upload
+                the updated versions of your documents as soon as possible.</p>
+            <p>Click the button below to update your documents:</p>
             <a href="[Upload URL]" class="button">Upload Documents</a>
+            <p>If you need assistance or have any questions, feel free to <a href="mailto:
+info@skycaresolutions.com.au" style="color: #055476; text-decoration: none;">contact us</a>.</p>
         </div>
 
         <!-- Footer -->
         <div class="footer">
-            <p>&copy; 2024 Sky Care Solutions. All rights reserved.</p>
+            <p>&copy; 2025 Sky Care Solutions. All rights reserved.</p>
         </div>
     </div>
 </body>
+
 </html>

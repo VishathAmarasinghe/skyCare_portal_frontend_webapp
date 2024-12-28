@@ -70,7 +70,7 @@ export const fetchAdminDashboard = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchDashboard
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -98,7 +98,7 @@ export const fetchCareGiverDashboard = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchDashboard
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );

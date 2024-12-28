@@ -71,7 +71,7 @@ export const fetchSingleResource = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchSingleResource
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -105,7 +105,7 @@ export const deleteResource = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.deleteResource
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -133,7 +133,7 @@ export const fetchAllResources = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchResources
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -183,7 +183,7 @@ export const updateResource = createAsyncThunk(
             (error as any).response?.status ===
             HttpStatusCode.InternalServerError
               ? SnackMessage.error.updateResource
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -234,7 +234,7 @@ export const saveResource = createAsyncThunk(
             (error as any).response?.status ===
             HttpStatusCode.InternalServerError
               ? SnackMessage.error.saveResources
-              : String((error as any).response?.data?.message),
+              : String((error as any).response?.data),
           type: "error",
         })
       );
