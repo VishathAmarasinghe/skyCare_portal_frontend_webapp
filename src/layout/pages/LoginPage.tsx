@@ -86,15 +86,18 @@ const LoginPage = () => {
           width="100%"
           sx={{
             flexDirection: {
-              xs: "column",
-              sm: "column",
-              md: "row",
+              xs: "column", // Stacked layout for mobile
+              sm: "column", // Stacked layout for small screens
+              md: "row", // Row layout for medium and large screens
               lg: "row",
               xl: "row",
             },
             justifyContent: "space-around",
+            alignItems: "center",
+            gap: 4, // Adds space between the two sections
           }}
         >
+          {/* Login Form */}
           <Stack
             data-aos="fade-up"
             data-aos-duration="500"
@@ -104,7 +107,7 @@ const LoginPage = () => {
               padding: 4,
               borderRadius: 2,
               boxShadow: 3,
-              width: { xs: "100%", sm: "400px" },
+              width: { xs: "100%", sm: "400px", md: "400px" }, // Responsive width
             }}
           >
             {/* Header Text */}
@@ -188,7 +191,7 @@ const LoginPage = () => {
           <Stack
             spacing={2}
             sx={{
-              display: { xs: "none", sm: "flex" }, // Hide on mobile, show on larger screens
+              display: { xs: "none", sm: "block" }, // Hide on mobile, show on larger screens
               justifyContent: "center",
               alignItems: "center",
             }}
@@ -198,7 +201,11 @@ const LoginPage = () => {
               data-aos-duration="500"
               src={LoginImage} // Placeholder image, replace with your actual image
               alt="Login Illustration"
-              style={{ width: "100%", maxWidth: "350px", objectFit: "contain" }}
+              style={{
+                width: "100%",
+                maxWidth: "350px", // Adjust max width
+                objectFit: "contain",
+              }}
             />
           </Stack>
         </Stack>

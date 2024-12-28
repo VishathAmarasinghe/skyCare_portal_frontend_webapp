@@ -287,7 +287,14 @@ const AddNewAppointmentModal = ({
               </Button>
             </Stack>
             <Stack>
-              {appointmentSlice?.selectedAppointment && <InfoCard />}
+              {appointmentSlice?.selectedAppointment && (
+                <Typography variant="body2" color="textSecondary" mt={1}>
+                  Please select an appointment from the table to update its
+                  corresponding date and time. Enable editing to make changes.
+                  Without selecting an appointment, you can only update overall
+                  appointment details.
+                </Typography>
+              )}
             </Stack>
           </Stack>
         </Grid>

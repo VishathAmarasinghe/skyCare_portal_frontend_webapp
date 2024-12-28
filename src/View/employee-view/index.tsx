@@ -80,7 +80,7 @@ const EmployeeView = () => {
   }, [isStaffAddModalVisible]);
 
   useEffect(() => {
-    if (isEmployeeAddModalVisible) {
+    if (!isEmployeeAddModalVisible) {
       dispatch(resetSelectedEmployee());
       dispatch(resetSelectedCareGiver());
     }

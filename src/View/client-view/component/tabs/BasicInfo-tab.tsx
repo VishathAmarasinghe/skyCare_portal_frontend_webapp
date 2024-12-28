@@ -1,9 +1,12 @@
 import React from "react";
-import { Box, Chip, Stack } from "@mui/material";
-import { Descriptions, Avatar } from "antd";
+import { Box, Chip, Stack, Avatar } from "@mui/material";
+import { Descriptions } from "antd";
 import type { DescriptionsProps } from "antd";
 import { useAppSelector } from "../../../../slices/store";
 import { capitalize } from "../../../../utils/utils";
+import malAvatar from "../../../../assets/images/maleavatar.jpg";
+import femaleAvatar from "../../../../assets/images/female.png";
+import roboAvatar from "../../../../assets/images/roboavatar.png";
 
 const BasicInfoTab: React.FC = () => {
   const clientInfo = useAppSelector((state) => state.clients);
@@ -90,8 +93,21 @@ const BasicInfoTab: React.FC = () => {
       label: (
         <Box>
           <Avatar
-            size={64}
-            src={client?.profilePhoto || "https://via.placeholder.com/128"}
+            variant="square"
+            sx={{
+              width: "100px",
+              height: "100px",
+              margin: "auto",
+            }}
+            src={
+              client?.profilePhoto != null && client?.profilePhoto != ""
+                ? client?.profilePhoto
+                : client?.gender === "Male"
+                ? malAvatar
+                : client?.gender === "Female"
+                ? femaleAvatar
+                : roboAvatar
+            }
             alt="Customer Image"
           />
         </Box>

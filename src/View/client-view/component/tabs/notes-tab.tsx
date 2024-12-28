@@ -12,6 +12,7 @@ import {
 import AddNewNotesModal from "../../modal/AddNewNotesModal";
 import { State } from "../../../../types/types";
 import { set } from "date-fns";
+import { fetchCarePlansByClientID } from "../../../../slices/carePlanSlice/carePlan";
 
 const NotesTab = () => {
   const [isNoteModalVisible, setIsNoteModalVisible] = useState<boolean>(false);
@@ -30,6 +31,10 @@ const NotesTab = () => {
   useEffect(() => {
     if (!isNoteModalVisible) {
       setIsEditMode(false);
+    } else {
+      if (clientID !== null && clientID !== undefined && clientID !== "") {
+        dispatch(fetchCarePlansByClientID(clientID));
+      }
     }
   }, [isNoteModalVisible]);
 

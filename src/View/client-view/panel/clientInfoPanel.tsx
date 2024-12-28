@@ -72,9 +72,9 @@ const ClientInfoPanel = () => {
           Client Record: {client?.firstName} {client?.lastName}
         </Typography>
         <Stack flexDirection="row">
-          <Button sx={{ mx: 2 }} variant="outlined">
+          {/* <Button sx={{ mx: 2 }} variant="outlined">
             Deactivate
-          </Button>
+          </Button> */}
           <Button
             variant="contained"
             onClick={() => {
