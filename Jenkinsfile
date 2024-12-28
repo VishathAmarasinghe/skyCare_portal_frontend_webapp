@@ -9,6 +9,13 @@ pipeline {
         REGISTRY = 'docker.io'
     }
     stages {
+        stage('Stop MySQL') {
+            steps {
+                script {
+                    sh 'sudo systemctl stop mysql'
+                }
+            }
+        }
         stage('Checkout Repositories') {
             steps {
                 script {
@@ -89,6 +96,13 @@ pipeline {
                     sh 'docker ps -a -q --filter "name=backend-staging" | xargs -r docker rm -f'
                     sh 'docker ps -a -q --filter "name=reverse-proxy" | xargs -r docker stop'
                     sh 'docker ps -a -q --filter "name=reverse-proxy" | xargs -r docker rm -f'
+                }
+            }
+        }
+        stage('restart MySQL') {
+            steps {
+                script {
+                    sh 'sudo systemctl start mysql'
                 }
             }
         }
