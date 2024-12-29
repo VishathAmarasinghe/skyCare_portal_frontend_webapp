@@ -6,6 +6,7 @@ import { AppConfig } from "../../config/config";
 import { enqueueSnackbarMessage } from "../commonSlice/common";
 import { SnackMessage } from "../../config/constant";
 import axios, { HttpStatusCode } from "axios";
+import { string } from "yup/lib/locale";
 
 // Define types for Employee and Address
 export interface EmployeeAddress {
@@ -77,6 +78,12 @@ const initialState: EmployeeState = {
   totalEmployeeCount: 0,
 };
 
+export interface ChangePasswordDTO {
+  currentPassword: string;
+  newPassword: string;
+  employeeID: string;
+}
+
 // Fetch all employees
 export const fetchMetaEmployees = createAsyncThunk(
   "employee/fetchMetaAllEmployees",
@@ -121,6 +128,42 @@ export const fetchMetaEmployeesMapping = createAsyncThunk(
           message:
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchMetaEmployees
+              : String(error.response?.data),
+          type: "error",
+        })
+      );
+      throw error.response?.data;
+    }
+  }
+);
+
+// Save an employee
+export const updateUserPassword = createAsyncThunk(
+  "employee/updateUserPassword",
+  async (payload: ChangePasswordDTO, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await APIService.getInstance().post(
+        AppConfig.serviceUrls.employees + `/update-password`,
+        payload
+      );
+
+      dispatch(
+        enqueueSnackbarMessage({
+          message: response.data,
+          type: "success",
+        })
+      );
+
+      return response.data;
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
+      }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.updatePassword
               : String(error.response?.data),
           type: "error",
         })
