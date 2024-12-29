@@ -22,6 +22,7 @@ const AppointmentView = () => {
 
   const handleOpenAddNewAppointmentModal = () => {
     setIsAppointmentAddModalVisible(true);
+    setIsEditing(true);
     dispatch(resetSelectedAppointment());
   };
 
