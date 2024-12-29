@@ -9,9 +9,11 @@ import { styled } from "@mui/material/styles";
 import { Divider } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import {
+  ChangePasswordDTO,
   Employee,
   EmployeeBasicInfoUpdater,
   updateEmployeeBasicInfo,
+  updateUserPassword,
 } from "../../../slices/employeeSlice/employee";
 import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
 
@@ -83,6 +85,33 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ open, setOpen }) => {
     }
   };
 
+  const handlePasswordUpdate = () => {
+    if (!validatePasswords()) {
+      return; // Do not proceed if passwords are invalid
+    }
+    // Log password payload without confirmPassword
+    const { currentPassword, newPassword } = passwordUpdater;
+    const updatePasswordPayload: ChangePasswordDTO = {
+      employeeID: employeeSlice.logedEMployee?.employeeID || "",
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+    };
+    dispatch(updateUserPassword(updatePasswordPayload));
+    setPasswordErrors({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
+    setPasswordUpdater((prev) => ({
+      ...prev,
+      currentPassword: "",
+      newPassword: "",
+    }));
+    setConfirmPassword("");
+    setIsEditMode(false);
+    setShowPasswordFields(false);
+  };
+
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
     if (!newOpen) {
@@ -132,7 +161,6 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ open, setOpen }) => {
 
   const handleSaveProfile = () => {
     // Handle saving basic information
-    console.log("Updated user info:", updatedUserInfo);
 
     if (showPasswordFields) {
       if (!validatePasswords()) {
@@ -140,10 +168,8 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ open, setOpen }) => {
       }
       // Log password payload without confirmPassword
       const { currentPassword, newPassword } = passwordUpdater;
-      console.log("Password update payload:", { currentPassword, newPassword });
     }
 
-    console.log("passwordUpdater", passwordUpdater);
     dispatch(
       updateEmployeeBasicInfo({
         employeeData: passwordUpdater,
@@ -287,6 +313,13 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ open, setOpen }) => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
+              <Button
+                onClick={handlePasswordUpdate}
+                sx={{ width: "100%" }}
+                variant="contained"
+              >
+                Save Passowrd
+              </Button>
             </Box>
           )}
         </Box>

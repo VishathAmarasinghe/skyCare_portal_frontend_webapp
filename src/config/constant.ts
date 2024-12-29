@@ -113,6 +113,7 @@ export const SnackMessage = {
     saveIncident: "Failed to save incident",
     fetchIncidents: "Failed to fetch incidents",
     incidentUpdate: "Failed to update incident",
+    updatePassword: "Failed to update password",
   },
   warning: {},
 };
