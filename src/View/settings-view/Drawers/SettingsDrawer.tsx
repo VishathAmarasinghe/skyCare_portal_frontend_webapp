@@ -12,6 +12,8 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
+  FormControl,
+  FormHelperText,
 } from "@mui/material";
 import { SettingsCardTitle } from "../../../types/types";
 import {
@@ -27,7 +29,15 @@ import {
   paymentType,
 } from "./DataGridColumns";
 import QuestionManager from "../components/QuestionManager";
-import { DataGrid, GridColDef, GridRowSelectionModel } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridRowSelectionModel,
+  GridToolbarColumnsButton,
+  GridToolbarContainer,
+  GridToolbarFilterButton,
+  GridToolbarQuickFilter,
+} from "@mui/x-data-grid";
 import { SketchPicker } from "react-color";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import {
@@ -74,6 +84,16 @@ interface SettingsDrawerProps {
   >;
 }
 
+function CustomToolbar() {
+  return (
+    <GridToolbarContainer>
+      <GridToolbarColumnsButton />
+      <GridToolbarFilterButton />
+      <GridToolbarQuickFilter placeholder="Search" />
+    </GridToolbarContainer>
+  );
+}
+
 type SettingRow =
   | { id: string; language: string; languageNotes: string }
   | { id: string; classificationName: string; state: string }
@@ -109,6 +129,8 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
     carePlanStatus: "",
     documentName: "",
     expDateNeeded: false,
+    documentStatus: "Active",
+    documentrequired: true,
     incidentStatus: "",
     incidentTypeTitle: "",
     appointmentName: "",
@@ -193,6 +215,8 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
       carePlanStatus: "",
       documentName: "",
       expDateNeeded: false,
+      documentrequired: false,
+      documentStatus: "Active",
       incidentStatus: "",
       incidentTypeTitle: "",
       appointmentName: "",
@@ -387,6 +411,8 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
             documentTypeID: selectedRowData,
             documentName: formState.documentName,
             expDateNeeded: formState.expDateNeeded,
+            required: formState.documentrequired,
+            status: formState.documentStatus,
           })
         );
       } else {
@@ -395,6 +421,8 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
             documentTypeID: "",
             documentName: formState.documentName,
             expDateNeeded: formState.expDateNeeded,
+            required: formState.documentrequired,
+            status: formState.documentStatus,
           })
         );
       }
@@ -510,6 +538,8 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
               expDateNeeded: selectedDocument
                 ? selectedDocument.expDateNeeded
                 : false,
+              documentrequired: selectedDocument?.required ?? false,
+              documentStatus: selectedDocument?.status ?? "Inactive",
             }));
             break;
 
@@ -585,6 +615,8 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
           carePlanStatus: "",
           documentName: "",
           expDateNeeded: false,
+          documentrequired: true,
+          documentStatus: "Active",
           incidentStatus: "",
           incidentTypeTitle: "",
           appointmentName: "",
@@ -809,6 +841,39 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
             variant="outlined"
             fullWidth
           />
+          <FormControl fullWidth>
+            <InputLabel id="demo-si">Document Required/Optional</InputLabel>
+            <Select
+              label="Document Required/Optional"
+              name="documentrequired"
+              value={formState.documentrequired ? "true" : "false"}
+              onChange={handleSelectChange}
+              variant="outlined"
+              fullWidth
+            >
+              <MenuItem value="true">Required</MenuItem>
+              <MenuItem value="false">Optional</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl fullWidth>
+            <InputLabel id="demo-sid">Document Status</InputLabel>
+            <Select
+              label="Document Status"
+              name="documentStatus"
+              value={formState.documentStatus}
+              onChange={handleSelectChange}
+              variant="outlined"
+              fullWidth
+            >
+              <MenuItem value="Active">Active</MenuItem>
+              <MenuItem value="Inactive">Inactive</MenuItem>
+            </Select>
+            <FormHelperText>
+              {
+                "If you make this inactive this will not showing to the care givers to upload."
+              }
+            </FormHelperText>
+          </FormControl>
           <FormControlLabel
             control={
               <Switch
@@ -1010,6 +1075,16 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
       <Stack width={"100%"} my={1}>
         {settingType !== "Incident Questions" && (
           <DataGrid
+            density="compact"
+            pagination
+            initialState={{
+              pagination: {
+                paginationModel: { pageSize: 4 },
+              },
+            }}
+            slots={{
+              toolbar: CustomToolbar,
+            }}
             rows={
               settingType === "Languages"
                 ? selectorSlice.languages?.map((language) => ({

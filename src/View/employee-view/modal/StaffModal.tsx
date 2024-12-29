@@ -166,21 +166,52 @@ const StaffModal = ({
     setActiveStep((prevStep) => prevStep - 1);
   };
 
+  const checkIsRequiredFilesUploaded = () => {
+    const requiredFiles = careGiverStatus?.careGiverDocumentTypes?.filter(
+      (doc) => doc?.status === "Active" && doc?.required === true
+    );
+    const allRequiredFilesUploaded = requiredFiles?.every((doc) =>
+      careGiverDocuments.some(
+        (file) =>
+          file.documentTypeID === doc?.documentTypeID &&
+          file?.document != null &&
+          file?.document != ""
+      )
+    );
+    if (careGiverStatus?.selectedCareGiver) {
+      if (allRequiredFilesUploaded) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      if (
+        allRequiredFilesUploaded &&
+        requiredFiles.length <= uploadFiles.length
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+      
+    }
+  };
+
   useEffect(() => {
     if (errorState === "Validated") {
       if (
-        uploadFiles?.length === careGiverDocuments?.length &&
-        careGiverStatus?.selectedCareGiver == null
+        careGiverStatus?.selectedCareGiver == null &&
+        checkIsRequiredFilesUploaded()
       ) {
         const careGiverPayload: CareGiver = {
-          careGiverDocuments: careGiverDocuments,
+          careGiverDocuments: careGiverDocuments?.filter(
+            (doc) => doc?.document != "" && doc?.document != null
+          ),
           careGiverPayments: careGiverPayments,
           employee: employeeBasicInformation,
           careGiverID: "",
           status: employeeBasicInformation?.status,
         };
-        console.log("uploadFiles", uploadFiles);
-        console.log("careGiverDocuments", careGiverDocuments);
         dispatch(
           saveCareGiver({
             careGiverData: careGiverPayload,
@@ -191,18 +222,17 @@ const StaffModal = ({
         setErrorState("Pending");
       } else if (
         careGiverStatus?.selectedCareGiver != null &&
-        careGiverStatus?.careGiverDocumentTypes?.length ===
-          careGiverDocuments?.length
+        checkIsRequiredFilesUploaded()
       ) {
         const careGiverPayload: CareGiver = {
-          careGiverDocuments: careGiverDocuments,
+          careGiverDocuments: careGiverDocuments?.filter(
+            (doc) => doc?.document != "" && doc?.document != null
+          ),
           careGiverPayments: careGiverPayments,
           employee: { ...employeeBasicInformation, status: employeeState },
           careGiverID: careGiverStatus.selectedCareGiver.careGiverID,
           status: employeeState,
         };
-        console.log("careGiverPayload", careGiverPayload);
-        console.log("uploadFiles", uploadFiles);
         dispatch(
           updateCareGiver({
             careGiverData: careGiverPayload,
@@ -211,13 +241,10 @@ const StaffModal = ({
           })
         );
       } else {
-        console.log("errorState", errorState);
-        console.log("uploadFiles", uploadFiles);
-        console.log("careGiverDocuments", careGiverDocuments);
         dispatch(
           enqueueSnackbarMessage({
             message:
-              "Please upload all documents, and fill all the required fields",
+              "Please upload atleaset required documents, and fill all the required fields",
             type: "error",
           })
         );
@@ -230,6 +257,11 @@ const StaffModal = ({
   const handleSave = async () => {
     document.getElementById("employeeMainData")?.click();
     employeeBasicInformation.accessRole = "CareGiver";
+    setCareGiverDocuments(
+      careGiverDocuments?.filter(
+        (doc) => doc?.document != "" && doc?.document != null
+      )
+    );
   };
 
   const handleStatusChange = (newStatus: "Activated" | "Deactivated") => {
@@ -240,12 +272,6 @@ const StaffModal = ({
       };
       employeeBasicInformation.status = newStatus;
       setEmployeeState(newStatus);
-      dispatch(
-        enqueueSnackbarMessage({
-          message: `Status updated to ${newStatus}`,
-          type: "success",
-        })
-      );
     }
   };
 

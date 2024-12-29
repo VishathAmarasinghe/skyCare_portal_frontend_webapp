@@ -119,6 +119,8 @@ const EmployeeView = () => {
             sx={{ mx: 1 }}
             onClick={() => {
               setIsEmployeeAddModalVisible(true), setIsEditMode(true);
+              dispatch(resetSelectedEmployee());
+              dispatch(resetSelectedCareGiver());
             }}
           >
             New Admin
@@ -127,6 +129,8 @@ const EmployeeView = () => {
             variant="contained"
             onClick={() => {
               setIsStaffAddModalVisible(true), setIsEditMode(true);
+              dispatch(resetSelectedEmployee());
+              dispatch(resetSelectedCareGiver());
             }}
           >
             New Staff

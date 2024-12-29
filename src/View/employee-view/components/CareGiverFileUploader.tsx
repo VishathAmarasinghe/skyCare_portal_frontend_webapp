@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Upload, Tag, Space, DatePicker, Modal as AntModal } from "antd";
-import type { UploadProps } from "antd";
+import type { UploadFile, UploadProps } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import { CareGiverDocuments } from "../../../slices/careGiverSlice/careGiver";
+import {
+  CareGiverDocuments,
+  CareGiverDocumentTypes,
+} from "../../../slices/careGiverSlice/careGiver";
 import { useAppSelector } from "../../../slices/store";
 import FileViewerWithModal from "../../../component/common/FileViewerWithModal";
 import UploadIcon from "@mui/icons-material/CloudUpload";
@@ -19,6 +22,7 @@ export interface DocumentAdder {
   uploadedDocument: string | null;
   expirationDate: string | null;
   file: File | null;
+  requiredState: boolean;
 }
 
 interface CareGiverFileUploaderProps {
@@ -38,6 +42,10 @@ const CareGiverFileUploader = ({
 }: CareGiverFileUploaderProps) => {
   const [openModal, setOpenModal] = useState(false);
   const careGiverSlice = useAppSelector((state) => state.careGivers);
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [expirationDateError, setExpirationDateError] = useState<string | null>(
+    null
+  );
   const [selectedDocument, setSelectedDocument] =
     useState<DocumentAdder | null>(null);
   const [documents, setDocuments] = useState<DocumentAdder[]>([]);
@@ -69,7 +77,11 @@ const CareGiverFileUploader = ({
   }, [documents]);
 
   useEffect(() => {
-    const createdDocArray = careGiverSlice?.careGiverDocumentTypes?.map(
+    const activeCareGiverDocumentArray: CareGiverDocumentTypes[] =
+      careGiverSlice?.careGiverDocumentTypes?.filter(
+        (doc) => doc?.status === "Active"
+      );
+    const createdDocArray: DocumentAdder[] = activeCareGiverDocumentArray?.map(
       (doc) => ({
         documentTypeID: doc.documentTypeID,
         documentName: doc.documentName,
@@ -77,6 +89,7 @@ const CareGiverFileUploader = ({
         uploadedDocument: null,
         expirationDate: null,
         file: null,
+        requiredState: doc.required,
       })
     );
 
@@ -87,7 +100,8 @@ const CareGiverFileUploader = ({
       const updatedDocuments = createdDocArray.map((doc) => {
         const foundDocument =
           careGiverSlice?.selectedCareGiver?.careGiverDocuments.find(
-            (careGiverDoc) => careGiverDoc.documentTypeID === doc.documentTypeID
+            (careGiverDoc) =>
+              doc && careGiverDoc.documentTypeID === doc.documentTypeID
           );
         return foundDocument
           ? {
@@ -122,24 +136,76 @@ const CareGiverFileUploader = ({
   }, [careGiverSlice.supportWorkerState]);
 
   const handleOpenModal = (doc: DocumentAdder) => {
-    setSelectedDocument(doc);
+    setSelectedDocument({ ...doc, expirationDate: null });
+    setFileList([]);
     setOpenModal(true);
+    setExpirationDateError(null);
   };
 
   const handleCloseModal = () => {
     setOpenModal(false);
     setSelectedDocument(null);
+    setFileList([]);
+    if (selectedDocument) {
+      handleDeleteFile(selectedDocument);
+    }
+  };
+
+  const handleSaveDocument = () => {
+    setExpirationDateError(null);
+    if (selectedDocument) {
+      if (selectedDocument.expDateNeeded) {
+        const today = dayjs();
+        const expirationDate = selectedDocument.expirationDate
+          ? dayjs(selectedDocument.expirationDate)
+          : null;
+
+        if (!expirationDate) {
+          setExpirationDateError("Expiration date is required.");
+          return;
+        }
+
+        if (expirationDate.isBefore(today, "day")) {
+          setExpirationDateError("Expiration date cannot be in the past.");
+          return;
+        }
+
+        setExpirationDateError(null);
+      }
+    }
+    if (selectedDocument) {
+      const updatedDocuments = documents.map((doc) =>
+        doc.documentTypeID === selectedDocument.documentTypeID
+          ? { ...doc, expirationDate: selectedDocument?.expirationDate }
+          : doc
+      );
+      setDocuments(updatedDocuments);
+      const documentData = documents?.find(
+        (doc) => doc?.documentTypeID === selectedDocument?.documentTypeID
+      );
+      console.log("document data ", documentData);
+
+      if (documentData?.file != null && expirationDateError == null) {
+        setOpenModal(false);
+        setSelectedDocument(null);
+        setFileList([]);
+      } else {
+        setExpirationDateError("Upload Document");
+      }
+    }
   };
 
   const handleUploadFile = (file: File) => {
     if (selectedDocument) {
       const updatedDocuments = documents.map((doc) =>
         doc.documentTypeID === selectedDocument.documentTypeID
-          ? { ...doc, uploadedDocument: file.name, file }
+          ? { ...doc, uploadedDocument: file.name, file: file }
           : doc
       );
       setDocuments(updatedDocuments);
+      setFileList([{ uid: file.name, name: file.name }]);
     }
+    // setFileList([]);
   };
 
   const handleViewFile = (doc: DocumentAdder) => {
@@ -169,8 +235,10 @@ const CareGiverFileUploader = ({
       renderCell: (params: GridRenderCellParams) =>
         params.row.uploadedDocument ? (
           <Tag color="green">{params.row.uploadedDocument}</Tag>
-        ) : (
+        ) : params?.row?.requiredState ? (
           <Tag color="volcano">Required</Tag>
+        ) : (
+          <Tag color="cyan">Optional</Tag>
         ),
     },
     {
@@ -240,9 +308,19 @@ const CareGiverFileUploader = ({
   ];
 
   const uploadProps: UploadProps = {
+    fileList,
     beforeUpload: (file) => {
       handleUploadFile(file);
       return false;
+    },
+    onRemove: () => {
+      setFileList([]);
+      const document = documents.map((doc) =>
+        doc.documentTypeID === selectedDocument?.documentTypeID
+          ? { ...doc, uploadedDocument: null, file: null }
+          : doc
+      );
+      setDocuments(document);
     },
   };
 
@@ -267,7 +345,8 @@ const CareGiverFileUploader = ({
           <Button
             variant="contained"
             key="save"
-            onClick={() => handleCloseModal()}
+            sx={{ mx: 1 }}
+            onClick={() => handleSaveDocument()}
           >
             Save
           </Button>,
@@ -288,6 +367,11 @@ const CareGiverFileUploader = ({
             </Typography>
             <DatePicker
               style={{ width: "100%" }}
+              value={
+                selectedDocument?.expirationDate
+                  ? dayjs(selectedDocument.expirationDate)
+                  : null
+              }
               onChange={(date) =>
                 setSelectedDocument((prev) =>
                   prev
@@ -300,12 +384,17 @@ const CareGiverFileUploader = ({
                 )
               }
             />
+            {expirationDateError && (
+              <Typography color="error" style={{ marginTop: 8 }}>
+                {expirationDateError}
+              </Typography>
+            )}
           </div>
         )}
       </AntModal>
 
       <FileViewerWithModal
-        file={fileViewerState.file!}
+        file={fileViewerState.file}
         isVisible={fileViewerState.isVisible}
         onClose={() => setFileViewerState({ isVisible: false, file: "" })}
       />
