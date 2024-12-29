@@ -113,8 +113,6 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
 
   useEffect(() => {
     if (employeeSlice?.selectedEmployee) {
-      console.log("Selected Employee: ", employeeSlice.selectedEmployee);
-
       setInitialValues({
         ...employeeSlice.selectedEmployee,
       });
@@ -169,7 +167,6 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
   };
 
   const handleSubmit = (values: typeof initialValues) => {
-    console.log("Form Submitted:", values);
     setEmployeeBasicInformation({
       ...values,
       employeeID: employeeSlice?.selectedEmployee
@@ -195,9 +192,7 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
         setFieldValue,
         resetForm,
       }: FormikProps<typeof initialValues>) => {
-        useEffect(() => {
-          console.log("Errors: ", errors);
-        }, [employeeBasicInformation]);
+        useEffect(() => {}, [employeeBasicInformation]);
 
         useEffect(() => {
           if (
@@ -214,7 +209,6 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
 
         useEffect(() => {
           if (!modalOpenState) {
-            console.log("resetting form");
             resetForm();
             setProfilePhotoPreview(null);
             setProfilePic(null);
@@ -439,7 +433,6 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                       onPlaceChanged={() => {
                         if (autocomplete) {
                           const place = autocomplete.getPlace();
-                          console.log("Selected Place:", place); // Check the place object
                           handleAddressSelect(place); // Pass the place data to the handler
                         }
                       }}

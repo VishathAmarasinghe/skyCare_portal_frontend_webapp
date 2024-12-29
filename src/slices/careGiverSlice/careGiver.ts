@@ -26,6 +26,8 @@ export interface CareGiverDocumentTypes {
   documentTypeID: string;
   documentName: string;
   expDateNeeded: boolean;
+  required: boolean;
+  status:string;
 }
 
 export interface CareGiverPaymentTypes {

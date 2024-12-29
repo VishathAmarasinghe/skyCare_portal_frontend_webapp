@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Button } from "antd";
 import { Worker, Viewer } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
@@ -18,10 +18,30 @@ const FileViewerWithModal: React.FC<FileViewerWithModalProps> = ({
   onClose,
 }) => {
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
-  const isPdf =
-    typeof file === "string"
-      ? file?.endsWith(".pdf")
-      : file?.type === "application/pdf";
+  const [isPdf, setIsPdf] = useState(false);
+  const [fileUrl, setFileUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const isPdfFile =
+      typeof file === "string"
+        ? file?.toLowerCase().endsWith(".pdf")
+        : file?.type === "application/pdf";
+    setIsPdf(isPdfFile);
+
+    if (typeof file === "string") {
+      // Server file
+      setFileUrl(`${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(file)}`);
+    } else if (file) {
+      // Uploaded file (File object)
+      const blobUrl = URL.createObjectURL(file);
+      setFileUrl(blobUrl);
+
+      // Cleanup blob URL on component unmount
+      return () => {
+        URL.revokeObjectURL(blobUrl);
+      };
+    }
+  }, [file]);
 
   const handleDownload = async () => {
     let fileUrl: string;
@@ -90,17 +110,17 @@ const FileViewerWithModal: React.FC<FileViewerWithModalProps> = ({
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
           <Viewer
             key={typeof file === "string" ? file : file?.name}
-            fileUrl={
-              typeof file === "string"
-                ? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(file)}`
-                : URL.createObjectURL(file)
-            }
+            fileUrl={fileUrl || ""}
             plugins={[defaultLayoutPluginInstance]}
           />
         </Worker>
       ) : (
         <img
-          src={typeof file === "string" ? file : URL?.createObjectURL(file)}
+          src={
+            typeof file === "string"
+              ? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(file)}`
+              : URL?.createObjectURL(file)
+          }
           alt="Preview"
           style={{
             width: "100%",

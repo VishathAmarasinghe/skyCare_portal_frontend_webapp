@@ -84,9 +84,39 @@ const CareGiverRegistrationPage = () => {
   const handleNext = () => setActiveStep((prevStep) => prevStep + 1);
   const handleBack = () => setActiveStep((prevStep) => prevStep - 1);
 
+  const checkIsRequiredFilesUploaded = () => {
+    const requiredFiles = careGiverStatus?.careGiverDocumentTypes?.filter(
+      (doc) => doc?.status === "Active" && doc?.required === true
+    );
+    const allRequiredFilesUploaded = requiredFiles?.every((doc) =>
+      careGiverDocuments.some(
+        (file) =>
+          file.documentTypeID === doc?.documentName &&
+          file?.document != null &&
+          file?.document != ""
+      )
+    );
+    if (careGiverStatus?.selectedCareGiver) {
+      if (allRequiredFilesUploaded) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      if (
+        allRequiredFilesUploaded &&
+        requiredFiles.length <= uploadFiles.length
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  };
+
   useEffect(() => {
     if (errorState === "Validated") {
-      if (uploadFiles.length === careGiverDocuments.length) {
+      if (checkIsRequiredFilesUploaded()) {
         const careGiverPayload: CareGiver = {
           careGiverDocuments: careGiverDocuments,
           careGiverPayments: [],
@@ -106,7 +136,7 @@ const CareGiverRegistrationPage = () => {
         dispatch(
           enqueueSnackbarMessage({
             message:
-              "Please upload all documents, and fill all the required fields",
+              "Please upload atleast all required documents, and fill all the required fields",
             type: "error",
           })
         );
