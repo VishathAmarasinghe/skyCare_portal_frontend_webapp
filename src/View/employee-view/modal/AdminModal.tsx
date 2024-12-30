@@ -182,7 +182,12 @@ const AdminModal = ({
             onClick={handleSave}
             disabled={loading} // Disable buttons during loading
           >
-            {loading ? <CircularProgress size={24} /> : "Save"}
+            {employeeSlice?.submitState === State?.loading ||
+            employeeSlice?.updateState === State?.loading ? (
+              <CircularProgress sx={{ color: "white" }} size={24} />
+            ) : (
+              "Save"
+            )}
           </Button>
         </Box>
       }
