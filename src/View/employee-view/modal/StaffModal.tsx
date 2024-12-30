@@ -193,7 +193,6 @@ const StaffModal = ({
       } else {
         return false;
       }
-      
     }
   };
 
@@ -323,8 +322,8 @@ const StaffModal = ({
             }
             disabled={loading} // Disable buttons during loading
           >
-            {loading ? (
-              <CircularProgress size={24} />
+            {careGiverStatus?.submitState === State?.loading || careGiverStatus?.updateState === State?.loading ? (
+              <CircularProgress sx={{ color: "white" }} size={24} />
             ) : activeStep === CREATE_CARE_GIVER_STEPS.length - 1 ? (
               "Save"
             ) : (

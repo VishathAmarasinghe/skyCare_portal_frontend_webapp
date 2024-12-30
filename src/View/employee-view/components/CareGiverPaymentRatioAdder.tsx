@@ -11,14 +11,18 @@ interface CareGiverPaymentRatioAdderProps {
   modalOpenState: boolean;
 }
 
+interface Payment {
+  paymentTypeID: string;
+  paymentName: string;
+  amount: string; // Temporarily store as string for intermediate input
+}
+
 const CareGiverPaymentRatioAdder = ({
   modalOpenState,
   careGiverPayments,
   setCareGiverPayments,
 }: CareGiverPaymentRatioAdderProps) => {
-  const [payments, setPayments] = useState<
-    { paymentTypeID: string; paymentName: string; amount: number }[]
-  >([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
 
   const careGiverSlice = useAppSelector((state) => state.careGivers);
 
@@ -34,23 +38,20 @@ const CareGiverPaymentRatioAdder = ({
       (payment) => payment?.state === "Active"
     );
 
-    const createdPaymentArray = validPaymentArray?.map((payment) => {
-      return {
-        paymentTypeID: payment.paymentTypeID,
-        paymentName: payment.paymentName,
-        amount: 0,
-      };
-    });
+    const createdPaymentArray = validPaymentArray?.map((payment) => ({
+      paymentTypeID: payment.paymentTypeID,
+      paymentName: payment.paymentName,
+      amount: "0.0",
+    }));
 
     const careGiverPaymentArray: CareGiverPayments[] = createdPaymentArray?.map(
-      (payments) => {
-        return {
-          careGiverID: "",
-          paymentTypeID: payments.paymentTypeID,
-          amount: 0,
-        };
-      }
+      (payment) => ({
+        careGiverID: "",
+        paymentTypeID: payment.paymentTypeID,
+        amount: 0,
+      })
     );
+
     if (careGiverSlice?.selectedCareGiver?.careGiverPayments) {
       careGiverPaymentArray.forEach((payment) => {
         const matchingPayment =
@@ -63,7 +64,6 @@ const CareGiverPaymentRatioAdder = ({
         }
       });
 
-      // Update careGiverPaymentArray with corresponding values from selectedCareGiver.careGiverPayments
       createdPaymentArray.forEach((payment) => {
         const matchingPayment =
           careGiverSlice?.selectedCareGiver?.careGiverPayments.find(
@@ -71,7 +71,7 @@ const CareGiverPaymentRatioAdder = ({
               careGiverPayment.paymentTypeID === payment.paymentTypeID
           );
         if (matchingPayment) {
-          payment.amount = matchingPayment.amount; // Update amount if matching payment exists
+          payment.amount = matchingPayment.amount.toFixed(1); // Ensure formatted amount
         }
       });
     }
@@ -80,19 +80,38 @@ const CareGiverPaymentRatioAdder = ({
   }, [careGiverSlice.supportWorkerState]);
 
   const handleAmountChange = (id: string, value: string) => {
+    if (/^\d*\.?\d*$/.test(value)) {
+      setPayments((prev) =>
+        prev.map((payment) =>
+          payment.paymentTypeID === id ? { ...payment, amount: value } : payment
+        )
+      );
+    }
+  };
+
+  const finalizeAmount = (id: string) => {
     setPayments((prev) =>
       prev.map((payment) =>
         payment.paymentTypeID === id
-          ? { ...payment, amount: Number(value) }
+          ? {
+              ...payment,
+              amount: payment.amount.endsWith(".")
+                ? `${payment.amount}0`
+                : parseFloat(payment.amount || "0").toFixed(1),
+            }
           : payment
       )
     );
-    const payment = careGiverPayments?.find(
-      (payment) => payment?.paymentTypeID === id
+
+    const payment = careGiverPayments.find(
+      (payment) => payment.paymentTypeID === id
     );
     if (payment) {
-      payment.amount = Number(value);
+      payment.amount = parseFloat(
+        payments.find((p) => p.paymentTypeID === id)?.amount || "0"
+      );
     }
+
     setCareGiverPayments([...careGiverPayments]);
   };
 
@@ -101,7 +120,7 @@ const CareGiverPaymentRatioAdder = ({
     { field: "paymentName", headerName: "Payment Name", flex: 1 },
     {
       field: "amount",
-      headerName: "Amount",
+      headerName: "Amount (AUD)",
       width: 150,
       renderCell: (params) => (
         <Stack
@@ -115,8 +134,10 @@ const CareGiverPaymentRatioAdder = ({
             onChange={(e) =>
               handleAmountChange(params.row.paymentTypeID, e.target.value)
             }
+            onBlur={() => finalizeAmount(params.row.paymentTypeID)}
             size="small"
             fullWidth
+            inputProps={{ inputMode: "decimal", pattern: "[0-9]*[.,]?[0-9]*" }}
           />
         </Stack>
       ),
@@ -128,8 +149,8 @@ const CareGiverPaymentRatioAdder = ({
       <DataGrid
         rows={payments}
         columns={columns}
-        loading={careGiverSlice?.supportWorkerState === State?.loading}
-        getRowId={(row) => row?.paymentTypeID}
+        loading={careGiverSlice?.supportWorkerState === State.loading}
+        getRowId={(row) => row.paymentTypeID}
       />
     </Box>
   );
