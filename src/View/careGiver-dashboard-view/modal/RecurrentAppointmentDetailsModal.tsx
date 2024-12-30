@@ -123,7 +123,7 @@ const RecurrentAppointmentDetailsModal = ({
             <Stack direction="row" spacing={2} alignItems="center">
               <LocationOnIcon color="primary" />
               <Typography>
-                {`${selectedAppointmentDetails?.appointmentData?.appointmentAddress}, ${selectedAppointmentDetails?.appointmentData?.appointmentAddress?.city}, ${selectedAppointmentDetails?.appointmentData?.appointmentAddress?.state} - ${selectedAppointmentDetails?.appointmentData?.appointmentAddress?.postalCode}`}
+                {`${selectedAppointmentDetails?.appointmentData?.appointmentAddress?.address}, ${selectedAppointmentDetails?.appointmentData?.appointmentAddress?.city}, ${selectedAppointmentDetails?.appointmentData?.appointmentAddress?.state} - ${selectedAppointmentDetails?.appointmentData?.appointmentAddress?.postalCode}`}
               </Typography>
             </Stack>
             {/* Divider */}

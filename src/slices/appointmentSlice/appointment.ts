@@ -163,6 +163,12 @@ export interface Appointment {
   jobAssigns: JobAssignCreation;
 }
 
+export interface JobAssignCareGiverView {
+  assignJob: JobAssignerDTO;
+  recurrentAppointment: RecurrentAppointmentDTO;
+  appointment: Appointment;
+}
+
 export interface AppointmentState {
   state: State;
   calenderState: State;
@@ -179,6 +185,7 @@ export interface AppointmentState {
   selectedAppointment: Appointment | null;
   pendingAppointments: PendingAppointments[];
   selectedRecurrentAppointment: PendingAppointments | null;
+  JobAssignToCareGiverViewList: JobAssignCareGiverView[];
   errorMessage: string | null;
   stateMessage: string | null;
   backgroundProcess: boolean;
@@ -200,12 +207,39 @@ const initialState: AppointmentState = {
   careGvierAppointments: [],
   pendingAppointments: [],
   selectedRecurrentAppointment: null,
+  JobAssignToCareGiverViewList: [],
   selectedAppointment: null,
   errorMessage: null,
   stateMessage: null,
   backgroundProcess: false,
   backgroundProcessMessage: null,
 };
+
+export const fetchCareGiverJobAssignViews = createAsyncThunk(
+  "appointments/fetchCareGiverJobAssignViews",
+  async (payload: { employeeID: string }, { dispatch, rejectWithValue }) => {
+    return new Promise<JobAssignCareGiverView[]>((resolve, reject) => {
+      APIService.getInstance()
+        .get(
+          AppConfig.serviceUrls.jobAssigns +
+            `/careGiver-assigns/${payload.employeeID}`
+        )
+        .then((response) => resolve(response.data))
+        .catch((error) => {
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.fetchJobAssignView
+                  : String(error.response?.data),
+              type: "error",
+            })
+          );
+          rejectWithValue(error.response?.data);
+        });
+    });
+  }
+);
 
 export const fetchRecurrentAppointmentDetails = createAsyncThunk(
   "appointments/fetchRecurrentAppointmentDetails",
@@ -952,6 +986,16 @@ const appointmentSlice = createSlice({
         state.selectedRecurrentAppointment = action.payload;
       })
       .addCase(fetchRecurrentAppointmentDetails.rejected, (state) => {
+        state.state = State.failed;
+      })
+      .addCase(fetchCareGiverJobAssignViews.pending, (state) => {
+        state.state = State.loading;
+      })
+      .addCase(fetchCareGiverJobAssignViews.fulfilled, (state, action) => {
+        state.state = State.success;
+        state.JobAssignToCareGiverViewList = action.payload;
+      })
+      .addCase(fetchCareGiverJobAssignViews.rejected, (state) => {
         state.state = State.failed;
       });
   },

@@ -12,6 +12,9 @@ const careGiverDashboardView = lazy(() => import("./careGiver-dashboard-view"));
 const shiftNoteView = lazy(() => import("./ShiftNote-view"));
 const SettingsView = lazy(() => import("./settings-view"));
 const CareGiverInforView = lazy(() => import("./careGiverInfo-view"));
+const CareGiverAllocationsView = lazy(
+  () => import("./careGiver-allocations-view")
+);
 
 export const View = {
   dashboardView,
@@ -26,4 +29,5 @@ export const View = {
   shiftNoteView,
   SettingsView,
   CareGiverInforView,
+  CareGiverAllocationsView,
 };
