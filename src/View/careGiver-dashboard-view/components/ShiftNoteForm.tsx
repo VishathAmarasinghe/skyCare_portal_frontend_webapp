@@ -75,6 +75,7 @@ interface AddNoteFormProps {
   isEditMode: boolean;
   selectedShiftNote: { shiftNoteID: string | null };
   pureNew: boolean;
+  foreignDetails: { recurrentID: string | null; careGiverID: string | null };
   setSelectedShiftNote: React.Dispatch<
     React.SetStateAction<{ shiftNoteID: string | null }>
   >;
@@ -91,6 +92,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
   isEditMode,
   selectedShiftNote,
   setSelectedShiftNote,
+  foreignDetails,
   pureNew,
 }) => {
   const [jobType, setJobType] = useState<"appointment" | "task" | "none">(
@@ -117,18 +119,18 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
     noteID: "",
     title: "",
     shiftStartDate: dayjs().format("YYYY-MM-DD").toString(),
-    shiftStartTime: null,
-    shiftEndTime: null,
-    shiftEndDate: null,
+    shiftStartTime: dayjs().format("HH:mm"), // Current time in "HH:mm" format
+    shiftEndTime: dayjs().format("HH:mm"),
+    shiftEndDate: dayjs().format("YYYY-MM-DD").toString(),
     systemShiftStartDate: "",
     systemShiftEndDate: "",
     systemShiftStartTime: "",
     systemShiftEndTime: "",
-    recurrentAppointmentID: null,
+    recurrentAppointmentID: foreignDetails.recurrentID,
     notes: "",
     comments: "",
     employeeID: authUser?.userID || "",
-    careGiverID: null,
+    careGiverID: foreignDetails.careGiverID,
     state: "Active",
     documents: [],
   });
@@ -138,16 +140,10 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
     tasks: string[];
   }>({ appointments: [], tasks: [] });
 
-  useEffect(() => {
-    console.log("ui showing files", UIShowingFile);
-    console.log("uploaded files", uploadedFils);
-    console.log("previously uploaded files", previouslyUploadedFiles);
-  }, [UIShowingFile, uploadedFils, previouslyUploadedFiles]);
+  useEffect(() => {}, [UIShowingFile, uploadedFils, previouslyUploadedFiles]);
 
   useEffect(() => {
     if (shiftNoteStates.selectedShiftNote != null) {
-      console.log("initial valies  ", shiftNoteStates.selectedShiftNote);
-
       setInitialValues({
         ...shiftNoteStates.selectedShiftNote,
       });
@@ -165,24 +161,24 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
         noteID: "",
         title: "",
         shiftStartDate: dayjs().format("YYYY-MM-DD").toString(),
-        shiftStartTime: null,
-        shiftEndTime: null,
-        shiftEndDate: null,
+        shiftStartTime: dayjs().format("HH:mm"), // Current time in "HH:mm" format
+        shiftEndTime: dayjs().format("HH:mm"),
+        shiftEndDate: dayjs().format("YYYY-MM-DD").toString(),
         systemShiftStartDate: "",
         systemShiftEndDate: "",
         systemShiftStartTime: "",
         systemShiftEndTime: "",
-        recurrentAppointmentID: null,
+        recurrentAppointmentID: foreignDetails.recurrentID,
         notes: "",
         comments: "",
         employeeID: authUser?.userID || "",
-        careGiverID: null,
+        careGiverID: foreignDetails.careGiverID,
         state: "Active",
         documents: [],
       });
       setUploadedFiles([]);
     }
-  }, [shiftNoteStates?.selectedShiftNote, isNoteModalVisible]);
+  }, [shiftNoteStates?.selectedShiftNote, isNoteModalVisible, foreignDetails]);
 
   useEffect(() => {
     console.log("initial values ", initialValues);

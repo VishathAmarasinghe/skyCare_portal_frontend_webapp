@@ -25,14 +25,6 @@ const AppHandler = () => {
   const { message, type, timestamp } = useAppSelector((state) => state?.common);
   const auth = useAppSelector((state) => state?.auth);
 
-  useEffect(() => {
-    console.log("auth toles", auth.roles);
-    console.log("system roles ", [
-      APPLICATION_ADMIN,
-      APPLICATION_SUPER_ADMIN,
-      APPLICATION_CARE_GIVER,
-    ]);
-  }, [auth]);
 
   const dispatch = useDispatch();
 

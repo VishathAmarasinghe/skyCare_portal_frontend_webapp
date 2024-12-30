@@ -70,6 +70,7 @@ const ShiftNoteView = () => {
         isNoteModalVisible={shiftModalOpen}
         setIsNoteModalVisible={setShiftModalOpen}
         selectedShiftNote={selectedShiftNote}
+        foreignDetails={{ careGiverID: null, recurrentID: null }}
       />
       <Stack
         width="100%"

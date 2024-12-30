@@ -143,6 +143,7 @@ const CareGiverDashboard = () => {
         <Typography variant="h5">Dashboard</Typography>
         <ShiftNoteModal
           pureNew={false}
+          foreignDetails={{ careGiverID: null, recurrentID: null }}
           isEditMode={shiftIsEditMode}
           setIsEditMode={setShiftIsEditMode}
           isNoteModalVisible={shiftModalOpen}

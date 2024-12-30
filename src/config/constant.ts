@@ -114,6 +114,7 @@ export const SnackMessage = {
     fetchIncidents: "Failed to fetch incidents",
     incidentUpdate: "Failed to update incident",
     updatePassword: "Failed to update password",
+    fetchJobAssignView: "Fail to fetch Job Assign View",
   },
   warning: {},
 };

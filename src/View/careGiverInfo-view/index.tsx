@@ -222,10 +222,6 @@ const CareGiverInfoView = () => {
                 handleNext();
               }
             }}
-            disabled={
-              loading ||
-              activeStep === CREATE_CARE_GIVER_INTERNAL_UPDATE.length - 1 // Disable if on the last step and not agreed
-            }
           >
             {loading ? (
               <CircularProgress size={24} />

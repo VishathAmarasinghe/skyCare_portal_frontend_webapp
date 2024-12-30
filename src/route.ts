@@ -11,6 +11,7 @@ import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import StickyNote2Icon from "@mui/icons-material/StickyNote2";
 import SpeakerNotesIcon from "@mui/icons-material/SpeakerNotes";
+import WorkHistoryIcon from "@mui/icons-material/WorkHistory";
 import SettingsIcon from "@mui/icons-material/Settings";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 
@@ -85,6 +86,13 @@ export const routes: RouteObjectWithRole[] = [
       APPLICATION_SUPER_ADMIN,
       APPLICATION_CARE_GIVER,
     ],
+  },
+  {
+    path: "/Allocations",
+    text: "Allocations",
+    icon: React.createElement(WorkHistoryIcon),
+    element: React.createElement(View.CareGiverAllocationsView),
+    allowRoles: [APPLICATION_CARE_GIVER],
   },
   {
     path: "/CarePlans",
