@@ -266,12 +266,15 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
       .of(
         Yup.string()
           .required("Phone number is required")
-          .matches(
-            /^\+?[1-9]\d{1,14}$/,
-            "Invalid phone number format. Use international format like +1234567890."
+          .test(
+            "phone-format",
+            "Invalid phone number format. Use either international format like +1234567890 or normal format like 0123456789.",
+            (value) =>
+              /^\+?[1-9]\d{1,14}$/.test(value || "") ||
+              /^\d{10}$/.test(value || "")
           )
       )
-      .min(2, "Both phone numbers are required"),
+      .min(1, "At least one phone number is required"),
     clientType: Yup.string().required("Client Type is required"),
     clientStatus: Yup.string().required("Client Status is required"),
     aboutMe: Yup.string().required("About Me is required"),
