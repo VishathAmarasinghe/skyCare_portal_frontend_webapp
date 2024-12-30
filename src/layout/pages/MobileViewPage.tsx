@@ -1,12 +1,14 @@
 import React from "react";
 import { Button, Stack, Typography, useTheme } from "@mui/material";
 import pcImage from "../../assets/images/pcImage.gif";
-import { useAppDispatch } from "../../slices/store";
+import { useAppDispatch, useAppSelector } from "../../slices/store";
 import { logout } from "../../slices/authSlice/auth";
+import { APPLICATION_CARE_GIVER } from "@config/config";
 
 const MobileViewPage = () => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
+  const authUser = useAppSelector((state) => state?.auth?.roles);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -41,7 +43,9 @@ const MobileViewPage = () => {
           fontSize: { xs: "1.5rem", sm: "2rem" }, // Responsive font size
         }}
       >
-        Please use a Laptop or PC for a better experience
+        {authUser?.includes(APPLICATION_CARE_GIVER)
+          ? "Update Going on the mobile view"
+          : "Please use a Laptop or PC for a better experience"}
       </Typography>
       <Typography
         variant="body1"

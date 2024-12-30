@@ -50,8 +50,8 @@ export default function Layout() {
     <ConfirmationModalContextProvider>
       {
         // If user is an admin or super admin and screen size is mobile, show MobileViewPage
-        (userRoles?.includes(APPLICATION_ADMIN) ||
-          userRoles?.includes(APPLICATION_SUPER_ADMIN)) &&
+        // (userRoles?.includes(APPLICATION_ADMIN) ||
+        //   userRoles?.includes(APPLICATION_SUPER_ADMIN)) &&
         isMobile ? (
           <MobileViewPage />
         ) : (
