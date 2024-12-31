@@ -85,6 +85,11 @@ const BasicInfoTab: React.FC = () => {
           />
         )) || "N/A",
     },
+    {
+      key: "12",
+      label: "Address",
+      children: `${client?.physicalAddress?.address} ${client?.physicalAddress?.city} ${client?.physicalAddress?.state}`,
+    },
   ];
 
   const clientProfilePic: DescriptionsProps["items"] = [

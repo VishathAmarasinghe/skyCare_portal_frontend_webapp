@@ -36,6 +36,7 @@ import FileViewerWithModal from "../../../component/common/FileViewerWithModal";
 import FileListTable from "../../../component/common/FileListTable";
 import { State } from "../../../types/types";
 import { UIShowingFile } from "../../client-view/component/AddNoteForm";
+import { Client } from "@slices/clientSlice/client";
 
 dayjs.extend(isSameOrAfter);
 
@@ -72,6 +73,8 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
   const [autocomplete, setAutocomplete] =
     useState<google.maps.places.Autocomplete | null>(null);
   const [searchInput, setSearchInput] = useState("");
+  const clientSlice = useAppSelector((state) => state?.clients);
+  const [clientList, setClientList] = useState<Client[]>([]);
 
   const [initialValues, setInitialValues] = useState<Incidents>({
     incidentID: "",
@@ -102,6 +105,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
     answers: [],
     parties: [],
     employeeID: authUserInfo?.userID || "",
+    clientID: null,
   });
 
   // Validation schema using Yup
@@ -133,6 +137,12 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
       .required("Description is required")
       .max(2000, "Description must be 2000 characters or less"),
   });
+
+  useEffect(() => {
+    if (clientSlice?.clients?.length > 0) {
+      setClientList(clientSlice?.clients);
+    }
+  }, [clientSlice?.State]);
 
   useEffect(() => {
     if (incidentSlice?.incidentsTypes) {
@@ -196,6 +206,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
         answers: [],
         parties: [],
         employeeID: authUserInfo?.userID || "",
+        clientID: null,
       });
     }
   }, [incidentSlice.selectedIncident]);
@@ -275,7 +286,6 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
   };
 
   const handleDownload = (file: UIShowingFile) => {
-    console.log("Downloading file", file);
     // Handle download logic here
   };
 
@@ -284,10 +294,6 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
     formikHelpers: FormikHelpers<Incidents>
   ) => {
     const errors = await formikHelpers.validateForm();
-    console.log("form values ", values);
-    console.log("rows ", involvedPartiesRows);
-    console.log("files ", uploadedFils);
-    console.log("answers ", answers);
     values.parties = involvedPartiesRows;
     values.answers = answers;
     if (incidentSlice?.selectedIncident) {
@@ -467,27 +473,27 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                       ))}
                     </TextField>
                   </Grid>
-                  {/* <Grid item xs={12} sm={4} md={4}>
+                  <Grid item xs={12} sm={4} md={4}>
                     <TextField
-                        select
-                        fullWidth
-                        label="Appointment"
-                        name="appointmentID"
-                        value={values.appointmentID}
-                        onChange={handleChange}
-                        error={
-                            touched.appointmentID &&
-                            Boolean(errors.appointmentID)
-                        }
-                        helperText={
-                            touched.appointmentID && errors.appointmentID
-                        }
-                        >
-                        <MenuItem value="">Select care plan</MenuItem>
-                        <MenuItem value="1">Status 1</MenuItem>
-                        <MenuItem value="2">Status 2</MenuItem>
-                        </TextField>
-                    </Grid> */}
+                      select
+                      fullWidth
+                      label="Client"
+                      name="clientID"
+                      value={values.clientID}
+                      onChange={handleChange}
+                      error={touched.clientID && Boolean(errors.clientID)}
+                      helperText={touched.clientID && errors.clientID}
+                    >
+                      {clientList?.map((client) => (
+                        <MenuItem value={client?.clientID}>
+                          {client?.firstName +
+                            " " +
+                            client?.lastName +
+                            `(${client?.preferredName})`}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
                   <Grid item xs={12} sm={6}>
                     <Autocomplete
                       onLoad={(autocompleteInstance) =>
@@ -523,7 +529,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                       onBlur={handleBlur}
                       name="address.address"
                       InputProps={{ readOnly: !isEditMode }}
-                      value={values.address.address}
+                      value={values?.address?.address}
                       onChange={handleChange}
                       error={
                         touched.address?.address &&
@@ -543,7 +549,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                       fullWidth
                       onBlur={handleBlur}
                       name="address.city"
-                      value={values.address.city}
+                      value={values?.address?.city}
                       InputProps={{ readOnly: !isEditMode }}
                       onChange={handleChange}
                       error={
@@ -559,7 +565,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                       fullWidth
                       name="appointmentAddress.state"
                       onBlur={handleBlur}
-                      value={values.address.state}
+                      value={values?.address?.state}
                       InputProps={{ readOnly: !isEditMode }}
                       onChange={handleChange}
                       error={
@@ -577,7 +583,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                       fullWidth
                       onBlur={handleBlur}
                       name="address.postalCode"
-                      value={values.address.postalCode}
+                      value={values?.address?.postalCode}
                       onChange={handleChange}
                       InputProps={{ readOnly: !isEditMode }}
                       error={

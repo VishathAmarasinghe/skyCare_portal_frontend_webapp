@@ -14,7 +14,6 @@ export enum State {
   idle = "idle",
 }
 
-
 export interface PreLoaderProps {
   message: string | null;
   hideLogo?: boolean;
@@ -29,7 +28,15 @@ export interface DashboardCardProps {
   title: string;
   value: number;
   icon: React.ElementType<SvgIconProps>;
-  name:string;
+  name: string;
+  urlLink: string;
+}
+
+export interface AppointmentTimeFrame {
+  startDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
 }
 
 export interface SettingsCardProps {

@@ -119,6 +119,9 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
   const careGiverSlice = useAppSelector((state) => state?.careGivers);
   const dispatch = useAppDispatch();
   const [selectedRowData, setSelectedRowData] = useState<string | null>(null);
+  const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>(
+    []
+  );
 
   const [formState, setFormState] = useState({
     language: "",
@@ -233,9 +236,6 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
   };
 
   const handleAdd = () => {
-    console.log("Adding data for", settingType, formState);
-    console.log("Selected Row Data", selectedRowData);
-
     if (settingType === "Languages") {
       if (formState.language === "" || formState.languageNotes === "") {
         return;
@@ -448,13 +448,14 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
         );
       }
     }
-
+    setSelectedRowData(null);
     resetForm();
+    setSelectionModel([]);
     // Add your logic here to save the new setting
   };
 
   const handleRowSelection = (selection: GridRowSelectionModel) => {
-    console.log("Selected row:", selection);
+    setSelectionModel(selection);
     const selectedRowId = selection[0];
     if (selection.length > 0) {
       // Get the ID of the selected row
@@ -1143,6 +1144,7 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
             columns={columns}
             checkboxSelection
             disableMultipleRowSelection
+            rowSelectionModel={selectionModel}
             onRowSelectionModelChange={(selection) =>
               handleRowSelection(selection)
             }

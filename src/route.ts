@@ -120,8 +120,8 @@ export const routes: RouteObjectWithRole[] = [
     allowRoles: [APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN],
   },
   {
-    path: "/Reports",
-    text: "Reports",
+    path: "/time-sheet-Reports",
+    text: "Time-Sheet",
     icon: React.createElement(AssessmentIcon),
     element: React.createElement(View.reportView),
     allowRoles: [APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN],
@@ -138,15 +138,11 @@ export const routes: RouteObjectWithRole[] = [
     ],
   },
   {
-    path: "/shift-notes",
-    text: "Shift Notes",
+    path: "/time-sheets",
+    text: "Time Sheets",
     icon: React.createElement(SpeakerNotesIcon),
     element: React.createElement(View.shiftNoteView),
-    allowRoles: [
-      APPLICATION_ADMIN,
-      APPLICATION_CARE_GIVER,
-      APPLICATION_SUPER_ADMIN,
-    ],
+    allowRoles: [APPLICATION_CARE_GIVER],
   },
   {
     path: "/settings",

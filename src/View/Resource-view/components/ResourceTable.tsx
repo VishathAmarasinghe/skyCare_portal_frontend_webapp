@@ -22,7 +22,11 @@ import {
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import { useConfirmationModalContext } from "../../../context/DialogContext";
 import { ConfirmationType } from "../../../types/types";
-import { APPLICATION_CARE_GIVER } from "../../../config/config";
+import {
+  APPLICATION_CARE_GIVER,
+  FILE_DOWNLOAD_BASE_URL,
+} from "../../../config/config";
+import { Employee } from "@slices/employeeSlice/employee";
 
 function CustomToolbar() {
   return (
@@ -41,6 +45,8 @@ const ResourceTable = ({}: ResourceTableProps) => {
   const resourceSlice = useAppSelector((state) => state.resource);
   const [resources, setResources] = useState<Resource[]>([]);
   const authRole = useAppSelector((State) => State?.auth?.roles);
+  const employeeSlice = useAppSelector((state) => state?.employees);
+  const [employee, setEmployee] = useState<Employee[]>([]);
   const dispatch = useAppDispatch();
   const { showConfirmation } = useConfirmationModalContext();
 
@@ -55,6 +61,10 @@ const ResourceTable = ({}: ResourceTableProps) => {
       setResources(resourceSlice.resources);
     }
   }, [resourceSlice?.state]);
+
+  useEffect(() => {
+    setEmployee(employeeSlice?.metaAllEmployees);
+  }, [employeeSlice?.metaAllEmployees]);
 
   const handleDelete = (resourceId: string) => {
     dispatch(deleteResource({ resourceID: resourceId }));
@@ -92,7 +102,7 @@ const ResourceTable = ({}: ResourceTableProps) => {
           label={params.value}
           style={{
             backgroundColor:
-              params.value === "Internal Only" ? "#FFD700" : "#87CEEB",
+              params.value === "Internal Only" ? "#123580" : "#6b9eb3",
             color: "#fff",
           }}
         />
@@ -102,16 +112,38 @@ const ResourceTable = ({}: ResourceTableProps) => {
       field: "creatorId",
       headerName: "Created By",
       flex: 1,
-      renderCell: (params) => (
-        <Chip
-          size="small"
-          avatar={
-            <Avatar>{params.row.creatorId.charAt(0).toUpperCase()}</Avatar>
-          }
-          label={params.value}
-          variant="outlined"
-        />
-      ),
+      renderCell: (params) => {
+        const employeeInfo = employee?.find(
+          (emp) => emp?.employeeID === params?.value
+        );
+
+        return (
+          <Chip
+            size="small"
+            avatar={
+              <Avatar
+                src={
+                  employeeInfo?.profile_photo
+                    ? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(
+                        employeeInfo?.profile_photo
+                      )}`
+                    : ""
+                }
+              >
+                {employeeInfo
+                  ? employeeInfo.firstName.charAt(0).toUpperCase()
+                  : ""}
+              </Avatar>
+            }
+            label={
+              employeeInfo
+                ? `${employeeInfo.firstName} ${employeeInfo.lastName}`
+                : params?.value
+            }
+            variant="outlined"
+          />
+        );
+      },
     },
     {
       field: "action",

@@ -30,6 +30,8 @@
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.7",
     "formik": "^2.2.9",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
     "jwt-decode": "^4.0.0",
     "notistack": "^3.0.1",
     "react": "^18.3.1",
@@ -47,6 +49,7 @@
     "redux-thunk": "^2.4.2",
     "retry-axios": "3.0.0",
     "styled-components": "^6.1.13",
+    "xlsx": "^0.18.5",
     "yup": "^0.32.11"
   },
   "devDependencies": {

@@ -1,14 +1,24 @@
 import { Typography, useTheme } from "@mui/material";
 import React from "react";
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 interface AppointmentProgressChartProps {
   todayTotalCount: number;
   todayCompletedCount: number;
 }
 
-const AppointmentProgressChart: React.FC<AppointmentProgressChartProps> = ({ todayTotalCount, todayCompletedCount }) => {
-    const theme = useTheme();
+const AppointmentProgressChart: React.FC<AppointmentProgressChartProps> = ({
+  todayTotalCount,
+  todayCompletedCount,
+}) => {
+  const theme = useTheme();
   const completedPercentage = (todayCompletedCount / todayTotalCount) * 100;
   const pendingPercentage = 100 - completedPercentage;
 
@@ -18,8 +28,17 @@ const AppointmentProgressChart: React.FC<AppointmentProgressChartProps> = ({ tod
   ];
 
   return (
-    <div style={{ width: "100%",height:"120px", padding: "0px",marginBottom: "10px"  }}> {/* Reduced size */}
-      <Typography variant="h6" align="center" style={{ fontSize: "12px" }}>
+    <div
+      style={{
+        width: "100%",
+        height: "120px",
+        padding: "0px",
+        marginBottom: "10px",
+      }}
+    >
+      {" "}
+      {/* Reduced size */}
+      <Typography variant="h6" fontWeight={"bold"}>
         Appointment Completion Progress
       </Typography>
       <ResponsiveContainer width="100%" height="100%">
@@ -29,18 +48,18 @@ const AppointmentProgressChart: React.FC<AppointmentProgressChartProps> = ({ tod
             dataKey="value"
             nameKey="name"
             innerRadius="50%"
-            outerRadius="80%"  // Adjust radius for smaller chart
+            outerRadius="80%" // Adjust radius for smaller chart
             fill="#8884d8"
             label
           >
-            <Cell key="cell1" fill="#4CAF50" />  {/* Completed */}
-            <Cell key="cell2" fill={theme?.palette?.primary?.main} />  {/* Pending */}
+            <Cell key="cell1" fill="#4CAF50" /> {/* Completed */}
+            <Cell key="cell2" fill={theme?.palette?.primary?.main} />{" "}
+            {/* Pending */}
           </Pie>
           <Tooltip />
           <Legend />
         </PieChart>
       </ResponsiveContainer>
-     
     </div>
   );
 };

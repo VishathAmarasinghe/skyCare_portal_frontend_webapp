@@ -248,7 +248,7 @@ const AppointmentDetailsModal: React.FC<AppointmentDetailsModalProps> = ({
                         {attachment.documentID}
                       </Typography>
                     </Stack>
-                    <Stack direction="row" spacing={1}>
+                    <Stack direction="column" spacing={1}>
                       <Button
                         variant="outlined"
                         color="primary"

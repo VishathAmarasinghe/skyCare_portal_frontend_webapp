@@ -191,7 +191,16 @@ const RecurrentAppointmentDetailsModal = ({
                           {attachment.documentID}
                         </Typography>
                       </Stack>
-                      <Stack direction="row" spacing={1}>
+                      <Stack
+                        sx={{
+                          flexDirection: {
+                            xs: "column", // For extra-small screens
+                            md: "column",
+                          },
+                        }}
+                        // alignItems={"center"}
+                        spacing={1}
+                      >
                         <Button
                           variant="outlined"
                           color="primary"

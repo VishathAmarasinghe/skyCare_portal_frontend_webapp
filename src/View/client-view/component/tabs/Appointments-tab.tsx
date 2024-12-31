@@ -55,6 +55,13 @@ const AppointmentsTab = () => {
     <Stack width="100%" height="80%">
       <AddNewAppointmentModal
         isEditMode={isEditMode}
+        selectedTimeFram={{
+          startDate: "",
+          endDate: "",
+          endTime: "",
+          startTime: "",
+        }}
+        setSelectedTimeFrame={() => {}}
         setIsEditMode={setIsEditMode}
         isAppointmentAddModalVisible={isAppointmentModalVisible}
         setIsAppointmentAddModalVisible={setIsAppointmentModalVisible}

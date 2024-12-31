@@ -63,7 +63,6 @@ const AllocationCard = ({
   };
 
   const handleSelectChange = (action: string) => {
-    console.log(`Action selected: ${action}`);
     setAnchorEl(null);
   };
 
@@ -139,7 +138,7 @@ const AllocationCard = ({
           </Grid>
 
           {/* Middle Section: Start and End Date with Time */}
-          <Grid item xs={12} md={4} sx={{ textAlign: "center" }}>
+          <Grid item xs={12} md={4}>
             <Typography variant="body1">
               <AccessTimeIcon
                 fontSize="small"
@@ -198,7 +197,7 @@ const AllocationCard = ({
                     });
                   }}
                 >
-                  Submit Shift Note
+                  Submit Time Sheet
                 </Button>
               )}
 

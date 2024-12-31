@@ -1,22 +1,19 @@
-// Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
-//
-// This software is the property of WSO2 LLC. and its suppliers, if any.
-// Dissemination of any information or reproduction of any material contained
-// herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
-// You may not alter or remove any copyright or other notice from copies of this content.
-
 import React, { useEffect, useState } from "react";
 import appLogo from "../../assets/images/app_logo.png";
 import Typography from "@mui/material/Typography";
 import Toolbar from "@mui/material/Toolbar";
+import MenuIcon from "@mui/icons-material/Menu";
 import {
   AppBar,
   Avatar,
   Box,
+  IconButton,
   Menu,
   MenuItem,
   Stack,
   Tooltip,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { RootState, useAppDispatch, useAppSelector } from "../../slices/store";
 import {
@@ -37,12 +34,18 @@ import {
 import { State } from "../../types/types";
 import { useNavigate } from "react-router-dom";
 
-const Header = () => {
+interface HeaderProps {
+  onToggleSidebar: () => void;
+}
+
+const Header = ({ onToggleSidebar }: HeaderProps) => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
   //drawer open state
   const [open, setOpen] = useState<boolean>(false);
+  const theme = useTheme();
   const dispatch = useAppDispatch();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const authUser = useAppSelector((state) => state.auth.userInfo);
   const auth = useAppSelector((state) => state.auth);
   const roles = useAppSelector((state) => state.auth.roles);
@@ -111,6 +114,16 @@ const Header = () => {
           },
         }}
       >
+        {isMobile && (
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={onToggleSidebar}
+            sx={{ ml: 2 }}
+          >
+            <MenuIcon />
+          </IconButton>
+        )}
         <img
           alt="SkyCare Portal"
           style={{
@@ -131,24 +144,27 @@ const Header = () => {
         <Box sx={{ flexGrow: 0 }}>
           <>
             <Stack flexDirection={"row"} alignItems={"center"} gap={2}>
-              <Box
-                display="flex"
-                flexDirection="column"
-                justifyContent="flex-end"
-                alignItems="end"
-              >
-                <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                  {currentUserInfo?.firstName} {currentUserInfo?.lastName}
-                </Typography>
-                <Typography variant="body2">
-                  {roles.includes(APPLICATION_ADMIN) ||
-                  roles.includes(APPLICATION_SUPER_ADMIN)
-                    ? "Admin"
-                    : roles?.includes(APPLICATION_CARE_GIVER)
-                    ? "Care Giver"
-                    : "Unknown User"}
-                </Typography>
-              </Box>
+              {!isMobile && (
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="flex-end"
+                  alignItems="end"
+                >
+                  <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                    {currentUserInfo?.firstName} {currentUserInfo?.lastName}
+                  </Typography>
+                  <Typography variant="body2">
+                    {roles.includes(APPLICATION_ADMIN) ||
+                    roles.includes(APPLICATION_SUPER_ADMIN)
+                      ? "Admin"
+                      : roles?.includes(APPLICATION_CARE_GIVER)
+                      ? "Care Giver"
+                      : "Unknown User"}
+                  </Typography>
+                </Box>
+              )}
+
               <Tooltip title="Open settings">
                 <Avatar
                   onClick={handleOpenUserMenu}

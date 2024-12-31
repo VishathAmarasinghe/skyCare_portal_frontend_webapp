@@ -34,12 +34,17 @@ import { fetchCareGivers } from "../../../slices/careGiverSlice/careGiver";
 import JobAssignerTable from "../component/JobAssignerTable";
 import InfoIcon from "@mui/icons-material/Info";
 import InfoCard from "../component/InfoCard";
+import { AppointmentTimeFrame } from "../../../types/types";
 
 interface AddNewAppointmentModalProps {
   isAppointmentAddModalVisible: boolean;
   setIsAppointmentAddModalVisible: (value: boolean) => void;
   isEditMode: boolean;
   setIsEditMode: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedTimeFram: AppointmentTimeFrame;
+  setSelectedTimeFrame: React.Dispatch<
+    React.SetStateAction<AppointmentTimeFrame>
+  >;
 }
 
 const AddNewAppointmentModal = ({
@@ -47,6 +52,8 @@ const AddNewAppointmentModal = ({
   setIsAppointmentAddModalVisible: setIsAppointmentModalVisible,
   isEditMode,
   setIsEditMode,
+  selectedTimeFram,
+  setSelectedTimeFrame,
 }: AddNewAppointmentModalProps) => {
   const [activeStep, setActiveStep] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
@@ -221,6 +228,8 @@ const AddNewAppointmentModal = ({
           <Stack width={"100%"}>
             <AppointmentForm
               selectedRecurrentAppointment={selectedRecurrentAppointment}
+              selectedTimeFram={selectedTimeFram}
+              setSelectedTimeFrame={setSelectedTimeFrame}
               activeStep={activeStep}
               isEditMode={isEditMode}
             />

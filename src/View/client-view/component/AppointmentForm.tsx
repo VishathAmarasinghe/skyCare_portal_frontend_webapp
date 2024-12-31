@@ -30,7 +30,7 @@ import {
 } from "@slices/appointmentSlice/appointment";
 import AppointmentParticipantTable from "../../../component/common/AppointmentParticipantTable";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
-import { State } from "../../../types/types";
+import { AppointmentTimeFrame, State } from "../../../types/types";
 import { Client } from "../../../slices/clientSlice/client";
 import { useSearchParams } from "react-router-dom";
 import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
@@ -63,12 +63,18 @@ interface AppointmentFormProps {
   isEditMode: boolean;
   activeStep: number;
   selectedRecurrentAppointment: RecurrentAppointmentValues | null;
+  selectedTimeFram: AppointmentTimeFrame;
+  setSelectedTimeFrame: React.Dispatch<
+    React.SetStateAction<AppointmentTimeFrame>
+  >;
 }
 
 const AppointmentForm: React.FC<AppointmentFormProps> = ({
   isEditMode,
   activeStep,
   selectedRecurrentAppointment,
+  selectedTimeFram,
+  setSelectedTimeFrame,
 }) => {
   const [appointmentParticipants, setAppointmentsParticipants] = useState<
     CaregiverInfo[]
@@ -109,10 +115,10 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
     appointmentTypeID: "",
     clientID: "",
     caregiverCount: 0,
-    startDate: "",
-    startTime: "",
-    endDate: "",
-    endTime: "",
+    startDate: selectedTimeFram?.startDate,
+    startTime: selectedTimeFram?.startTime,
+    endDate: selectedTimeFram?.endDate,
+    endTime: selectedTimeFram?.endTime,
     duration: 0,
     comment: "",
     carePlanID: "",
@@ -303,10 +309,10 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
         appointmentTypeID: "",
         clientID: "",
         caregiverCount: 0,
-        startDate: "",
-        startTime: "",
-        endDate: "",
-        endTime: "",
+        startDate: selectedTimeFram?.startDate,
+        startTime: selectedTimeFram?.startTime,
+        endDate: selectedTimeFram?.endDate,
+        endTime: selectedTimeFram?.endTime,
         duration: 0,
         comment: "",
         carePlanID: "",
@@ -341,7 +347,11 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
         },
       });
     }
-  }, [appointmentSlice?.selectedAppointment, selectedRecurrentAppointment]);
+  }, [
+    appointmentSlice?.selectedAppointment,
+    selectedRecurrentAppointment,
+    selectedTimeFram,
+  ]);
 
   useEffect(() => {
     if (appointmentSlice.state === State.success) {
@@ -350,8 +360,6 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
   }, [appointmentSlice.state]);
 
   useEffect(() => {
-    console.log("Client Slice", clientSlice.clients);
-
     setClientList(clientSlice.clients);
     if (clientID) {
       setClientList(

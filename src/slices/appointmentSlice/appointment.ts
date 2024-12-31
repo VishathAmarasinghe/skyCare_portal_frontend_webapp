@@ -56,7 +56,7 @@ interface JobAssignerDTO {
   recurrentAppointmentID: string;
 }
 
-interface RecurrentAppointmentDTO {
+export interface RecurrentAppointmentDTO {
   recurrentAppointmentID: string;
   appointmentID: string;
   recurrentWorkID: string;

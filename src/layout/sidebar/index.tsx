@@ -32,6 +32,7 @@ interface SidebarProps {
   handleDrawer: () => void;
   roles: string[];
   currentPath: string;
+  toggle: () => void;
 }
 
 function useRouteMatch(patterns: readonly string[]) {
@@ -98,6 +99,7 @@ const Sidebar = (props: SidebarProps) => {
                     icon={r.icon}
                     open={props.open}
                     isActive={currentIndex === idx}
+                    visible={props.toggle}
                   />
                 )}
               </div>

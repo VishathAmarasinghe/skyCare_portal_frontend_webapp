@@ -11,6 +11,8 @@ import {
   FormControlLabel,
   Switch,
   Stack,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import {
@@ -23,6 +25,8 @@ import { CREATE_INCIDENT_STEPS } from "../../../constants/index";
 import { Modal } from "antd";
 import IncidentForm from "../components/IncidentForm";
 import { State } from "../../../types/types";
+import { APPLICATION_CARE_GIVER } from "@config/config";
+import { fetchClients, fetchClientsAssociatedToCareGiver } from "@slices/clientSlice/client";
 
 interface IncidentModalProps {
   isIncidentModalVisible: boolean;
@@ -37,13 +41,31 @@ const IncidentModal = ({
   isEditMode,
   setIsEditMode,
 }: IncidentModalProps) => {
+  const theme = useTheme();
   const [activeStep, setActiveStep] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const incidentSlice = useAppSelector((state) => state.incident);
   const [selectedIncidentDetails, setSelectedIncidentDetails] = useState<
     any | null
   >(null);
   const dispatch = useAppDispatch();
+  const authDate = useAppSelector((state)=>state?.auth);
+
+
+  useEffect(()=>{
+    if (isIncidentModalVisible) {
+      if (authDate?.roles?.includes(APPLICATION_CARE_GIVER)) {
+        if (authDate?.userInfo?.userID) {
+          dispatch(fetchClientsAssociatedToCareGiver(authDate.userInfo.userID));
+        }else{
+          dispatch(fetchClients());
+        }
+      }
+    }
+  },[authDate,isIncidentModalVisible])
+
+
 
   useEffect(() => {
     if (!isIncidentModalVisible) {
@@ -106,7 +128,7 @@ const IncidentModal = ({
           )}
         </Box>
       }
-      width={"80%"}
+      width={isMobile ? "100%" : "80%"}
       centered
       maskClosable={false}
       closable={false}
@@ -162,16 +184,18 @@ const IncidentModal = ({
       }
     >
       <Stack>
-        <Stack width="100%">
-          {/* Stepper */}
-          <Stepper activeStep={activeStep}>
-            {CREATE_INCIDENT_STEPS.map((label, index) => (
-              <Step key={index}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-        </Stack>
+        {!isMobile && (
+          <Stack width="100%">
+            {/* Stepper */}
+            <Stepper activeStep={activeStep}>
+              {CREATE_INCIDENT_STEPS.map((label, index) => (
+                <Step key={index}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          </Stack>
+        )}
 
         <Box sx={{ mt: 2 }} width="100%">
           <IncidentForm

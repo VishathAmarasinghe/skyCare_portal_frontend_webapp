@@ -127,7 +127,7 @@ const CareGiverAllocationsView = () => {
       </Stack>
       <Stack
         width="100%"
-        height="480px"
+        height="100%"
         sx={{ overflowY: "auto", padding: 1 }}
         spacing={2}
       >

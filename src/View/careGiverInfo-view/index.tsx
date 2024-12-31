@@ -6,6 +6,7 @@ import {
   Step,
   StepLabel,
   Stepper,
+  Typography,
   useTheme,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
@@ -150,14 +151,28 @@ const CareGiverInfoView = () => {
   return (
     <Stack
       width="100%"
-      // height="100vh"
+      height="100%"
       flexDirection="column"
       alignItems={"center"}
       justifyContent="center"
       sx={{ backgroundColor: theme.palette.background.default }}
     >
       <Stack
-        width="80%"
+        width="100%"
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <Typography
+          color={theme.palette.primary.main}
+          fontWeight="600"
+          variant="h6"
+        >
+          User Info
+        </Typography>
+      </Stack>
+      <Stack
+        width="100%"
         sx={{
           backgroundColor: "white",
           padding: 2,

@@ -111,7 +111,7 @@ const LoginPage = () => {
             }}
           >
             {/* Header Text */}
-            <Typography variant="h3" align="center" sx={{ fontWeight: "bold" }}>
+            <Typography variant="h4" align="center" sx={{ fontWeight: "bold" }}>
               Login
             </Typography>
             <img

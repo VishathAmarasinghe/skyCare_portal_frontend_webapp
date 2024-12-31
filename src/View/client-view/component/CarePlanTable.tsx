@@ -24,10 +24,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import {
   CarePlan,
+  deactivateCarePlan,
   fetchSingleCarePlan,
 } from "../../../slices/carePlanSlice/carePlan";
-import { State } from "../../../types/types";
+import { ConfirmationType, State } from "../../../types/types";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { useConfirmationModalContext } from "@context/DialogContext";
 
 function CustomToolbar() {
   return (
@@ -52,10 +54,15 @@ const CarePlanTable = ({
   const [carePlans, setCarePlans] = useState<CarePlan[]>([]);
   const theme = useTheme();
   const dispatch = useAppDispatch();
+  const { showConfirmation } = useConfirmationModalContext();
 
   useEffect(() => {
     setCarePlans(carePlanDetails.carePlans);
-  }, [carePlanDetails.state]);
+  }, [
+    carePlanDetails.state,
+    carePlanDetails?.submitState,
+    carePlanDetails?.updateState,
+  ]);
 
   const initialColumns: GridColDef[] = [
     {
@@ -99,7 +106,18 @@ const CarePlanTable = ({
             >
               <RemoveRedEyeOutlinedIcon />
             </IconButton>
-            <IconButton>
+            <IconButton
+              onClick={() => {
+                showConfirmation(
+                  "Delete CarePlan",
+                  "Are you sure you want to delete this Care Plan? This action cannot be undone.",
+                  "accept" as ConfirmationType,
+                  () => dispatch(deactivateCarePlan(params?.row?.careplanID)),
+                  "Delete Now",
+                  "Cancel"
+                );
+              }}
+            >
               <DeleteOutlineIcon />
             </IconButton>
           </Stack>
