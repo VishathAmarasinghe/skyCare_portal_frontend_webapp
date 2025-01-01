@@ -118,6 +118,15 @@ export const routes: RouteObjectWithRole[] = [
     icon: React.createElement(EmojiPeopleIcon),
     element: React.createElement(View.EmployeeView),
     allowRoles: [APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN],
+    children: [
+      {
+        path: "employeeInfo",
+        text: "Employee Information",
+        icon: undefined,
+        element: React.createElement(View.EmployeeView),
+        allowRoles: [APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN],
+      },
+    ],
   },
   {
     path: "/time-sheet-Reports",

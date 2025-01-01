@@ -27,6 +27,7 @@ import {
   fetchSingleEmployee,
 } from "../../../slices/employeeSlice/employee";
 import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
+import { fetchSingleCareGiverByEmployeeID } from "@slices/careGiverSlice/careGiver";
 
 function CustomToolbar() {
   return (
@@ -133,6 +134,18 @@ const EmployeeTable = ({}: ClientTableProps) => {
       },
     },
     {
+      field: "address",
+      headerName: "Address",
+      width: 250,
+      renderCell: (params) => params?.row?.employeeAddresses[0]?.address,
+    },
+    {
+      field: "phone No",
+      headerName: "Phone No",
+      width: 100,
+      renderCell: (params) => params?.row?.employeePhoneNo[0],
+    },
+    {
       field: "accessRole",
       headerName: "Occupation",
       width: 150,
@@ -204,9 +217,18 @@ const EmployeeTable = ({}: ClientTableProps) => {
           <Stack flexDirection="row">
             <IconButton
               aria-label="view"
-              onClick={() =>
-                dispatch(fetchSingleEmployee(params.row.employeeID))
-              }
+              onClick={() => {
+                if (params?.row?.accessRole == "CareGiver") {
+                  dispatch(
+                    fetchSingleCareGiverByEmployeeID(params?.row?.employeeID)
+                  );
+                  navigate(
+                    `/Employees/employeeInfo?employeeID=${params.row.employeeID}`
+                  );
+                } else {
+                  dispatch(fetchSingleEmployee(params.row.employeeID));
+                }
+              }}
             >
               <RemoveRedEyeOutlinedIcon />
             </IconButton>

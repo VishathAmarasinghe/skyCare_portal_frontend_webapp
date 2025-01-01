@@ -322,7 +322,8 @@ const StaffModal = ({
             }
             disabled={loading} // Disable buttons during loading
           >
-            {careGiverStatus?.submitState === State?.loading || careGiverStatus?.updateState === State?.loading ? (
+            {careGiverStatus?.submitState === State?.loading ||
+            careGiverStatus?.updateState === State?.loading ? (
               <CircularProgress sx={{ color: "white" }} size={24} />
             ) : activeStep === CREATE_CARE_GIVER_STEPS.length - 1 ? (
               "Save"
@@ -372,6 +373,7 @@ const StaffModal = ({
             modalOpenState={IsCareGiverAddModalVisible}
             careGiverPayments={careGiverPayments}
             setCareGiverPayments={setCareGiverPayments}
+            isEditable={false}
           />
         </Stack>
       </Box>
