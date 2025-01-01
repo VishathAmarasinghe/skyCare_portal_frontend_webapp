@@ -133,7 +133,7 @@ const CareGiverFileUploader = ({
         }))
       );
     }
-  }, [careGiverSlice.supportWorkerState]);
+  }, [careGiverSlice.supportWorkerState,careGiverSlice?.selectedCareGiver]);
 
   const handleOpenModal = (doc: DocumentAdder) => {
     setSelectedDocument({ ...doc, expirationDate: null });

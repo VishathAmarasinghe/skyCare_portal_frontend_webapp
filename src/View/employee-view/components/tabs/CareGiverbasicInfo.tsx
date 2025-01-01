@@ -9,6 +9,19 @@ const CareGiverbasicInfo = () => {
   const careGiverInfo = useAppSelector((state) => state.careGivers);
   const careGiver = careGiverInfo?.selectedCareGiver;
 
+  const getChipStyle = (status: string) => {
+    switch (status) {
+      case "Activated":
+        return { color: "white", backgroundColor: "#4CAF50" }; // Green
+      case "Deactivated":
+        return { color: "white", backgroundColor: "#F44336" }; // Red
+      case "Pending":
+        return { color: "black", backgroundColor: "#FFC107" }; // Yellow
+      default:
+        return { color: "black", backgroundColor: "#E0E0E0" }; // Gray for unknown status
+    }
+  };
+
   const clientDetails: DescriptionsProps["items"] = [
     {
       key: "1",
@@ -16,21 +29,20 @@ const CareGiverbasicInfo = () => {
       children: careGiver?.careGiverID || "N/A",
     },
     {
-      key: "4",
+      key: "2",
       label: "Employee ID",
       children: capitalize(careGiver?.employee?.employeeID),
     },
     {
-      key: "2",
+      key: "3",
       label: "First Name",
       children: capitalize(careGiver?.employee?.firstName),
     },
     {
-      key: "3",
+      key: "4",
       label: "Last Name",
       children: capitalize(careGiver?.employee?.lastName),
     },
-
     {
       key: "5",
       label: "Email Address",
@@ -44,20 +56,38 @@ const CareGiverbasicInfo = () => {
     {
       key: "7",
       label: "Join Date",
-      children: careGiver?.employee?.joinDate,
+      children: careGiver?.employee?.joinDate || "N/A",
     },
     {
-      key: "11",
+      key: "8",
+      label: "Status",
+      children: (
+        <Chip
+          label={careGiver?.employee?.status || "Unknown"}
+          sx={{
+            ...getChipStyle(careGiver?.employee?.status || "Unknown"),
+            fontWeight: "bold",
+            textTransform: "capitalize",
+          }}
+        />
+      ),
+    },
+    {
+      key: "9",
       label: "Phone Numbers",
       children:
-        careGiver?.employee.employeePhoneNo?.map((no, index) => (
+        careGiver?.employee?.employeePhoneNo?.map((no, index) => (
           <Chip key={index} label={no} sx={{ margin: "4px" }} />
         )) || "N/A",
     },
     {
-      key: "12",
+      key: "10",
       label: "Address",
-      children: `${careGiver?.employee?.employeeAddresses[0]?.address} ${careGiver?.employee?.employeeAddresses[0]?.postal_code}`,
+      children: `${
+        careGiver?.employee?.employeeAddresses[0]?.address || "N/A"
+      } ${
+        careGiver?.employee?.employeeAddresses[0]?.postal_code || ""
+      }`,
     },
   ];
 

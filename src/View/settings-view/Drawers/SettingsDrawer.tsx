@@ -153,7 +153,7 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
     case "Languages":
       columns = languageColumns;
       break;
-    case "Client Classification":
+    case "Client Fundings":
       columns = clientClassificationColumns;
       break;
     case "Client Type":
@@ -288,7 +288,7 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
       } else {
         dispatch(saveClientStatus({ status: formState.clientStatus }));
       }
-    } else if (settingType === "Client Classification") {
+    } else if (settingType === "Client Fundings") {
       if (formState.classificationName === "") {
         return;
       }
@@ -476,7 +476,7 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
             }));
             break;
 
-          case "Client Classification":
+          case "Client Fundings":
             const selectedClassification = selectorSlice?.classifications.find(
               (row) => row.classificationID === selectedRowId
             );
@@ -689,7 +689,7 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
         </Stack>
       )}
 
-      {settingType === "Client Classification" && (
+      {settingType === "Client Fundings" && (
         <Stack spacing={2}>
           <TextField
             label="Classification Name"
@@ -1092,7 +1092,7 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
                     id: language.languageID,
                     ...language,
                   }))
-                : settingType === "Client Classification"
+                : settingType === "Client Fundings"
                 ? selectorSlice.classifications?.map((classification) => ({
                     id: classification.classificationID,
                     ...classification,

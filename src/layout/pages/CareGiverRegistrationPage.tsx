@@ -146,19 +146,6 @@ const CareGiverRegistrationPage = () => {
 
   const handleSave = async () => {
     document.getElementById("employeeMainData")?.click();
-    if (
-      employeeBasicInformation.firstName &&
-      employeeBasicInformation.lastName
-    ) {
-      employeeBasicInformation.accessRole = "CareGiver";
-    } else {
-      dispatch(
-        enqueueSnackbarMessage({
-          message: "Please fill in the required fields",
-          type: "error",
-        })
-      );
-    }
   };
 
   return (

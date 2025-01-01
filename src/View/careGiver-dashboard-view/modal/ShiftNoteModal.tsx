@@ -10,9 +10,11 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useAppSelector } from "../../../slices/store";
+import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import { State } from "../../../types/types";
 import ShiftNoteForm from "../components/ShiftNoteForm";
+import { APPLICATION_CARE_GIVER } from "@config/config";
+import { fetchClients, fetchClientsAssociatedToCareGiver } from "@slices/clientSlice/client";
 
 type AddNewNotesModalProps = {
   isNoteModalVisible: boolean;
@@ -40,6 +42,21 @@ const ShiftNoteModal = ({
   const theme = useTheme();
   const shiftNoteState = useAppSelector((state) => state.shiftNotes);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+   const dispatch = useAppDispatch();
+   const authDate = useAppSelector((state)=>state?.auth);
+
+  useEffect(()=>{
+    if (isNoteModalVisible) {
+      if (authDate?.roles?.includes(APPLICATION_CARE_GIVER)) {
+        if (authDate?.userInfo?.userID) {
+          dispatch(fetchClientsAssociatedToCareGiver(authDate.userInfo.userID));
+        }else{
+          dispatch(fetchClients());
+        }
+      }
+    }
+  },[authDate,isNoteModalVisible])
+
 
   const handleToggleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsEditMode(event.target.checked);
@@ -90,7 +107,7 @@ const ShiftNoteModal = ({
               document.getElementById("note-submit-button")?.click()
             }
           >
-            Save
+            Submit
           </Button>
         </Box>
       }

@@ -30,6 +30,11 @@ export interface CarePlanBillable {
   amount: number;
 }
 
+export interface CarePlanBillablesWithCarePlan{
+  carePlanBilables: CarePlanBillable;
+  carePlan:CarePlan;
+}
+
 export interface CarePlan {
   title: string;
   careplanID: string;
@@ -50,6 +55,7 @@ export interface CarePlanState {
   carePlanStatusList: CarePlanStatus[];
   goalOutcomeList: GoalOutcome[];
   selectedCarePlan: CarePlan | null;
+  carePlanBillableList:CarePlanBillablesWithCarePlan[];
   errorMessage: string | null;
   stateMessage: string | null;
   backgroundProcess: boolean;
@@ -76,6 +82,7 @@ const initialState: CarePlanState = {
   errorMessage: "",
   carePlans: [],
   carePlanStatusList: [],
+  carePlanBillableList:[],
   goalOutcomeList: [],
   selectedCarePlan: null,
   backgroundProcess: false,
@@ -106,6 +113,35 @@ export const deactivateCarePlan = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.deleteCarePlan
+                  : String(error.response?.data),
+              type: "error",
+            })
+          );
+          reject(error.response?.data);
+        });
+    });
+  }
+);
+
+// Fetch careplans by clientID
+export const fetchCarePlanBillablesWithCarePlan = createAsyncThunk(
+  "carePlans/fetchCarePlanBillablesWithCarePlan",
+  async (_, { dispatch, rejectWithValue }) => {
+    return new Promise<CarePlanBillablesWithCarePlan[]>((resolve, reject) => {
+      APIService.getInstance()
+        .get(AppConfig.serviceUrls.carePlanBillings)
+        .then((response) => {
+          resolve(response.data);
+        })
+        .catch((error) => {
+          if (axios.isCancel(error)) {
+            return rejectWithValue("Request canceled");
+          }
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.fetchCarePlanBillings
                   : String(error.response?.data),
               type: "error",
             })
@@ -551,6 +587,19 @@ const CarePlanSlice = createSlice({
       .addCase(deactivateCarePlan.rejected, (state) => {
         state.submitState = State.failed;
         state.stateMessage = "Failed to deactivate care plan!";
+      })
+      .addCase(fetchCarePlanBillablesWithCarePlan.pending, (state) => {
+        state.state = State.loading;
+        state.stateMessage = "Fetching Care Plan Billables...";
+      })
+      .addCase(fetchCarePlanBillablesWithCarePlan.fulfilled, (state, action) => {
+        state.state = State.success;
+        state.stateMessage = "Successfully fetched care plan billables!";
+        state.carePlanBillableList = action.payload;
+      })
+      .addCase(fetchCarePlanBillablesWithCarePlan.rejected, (state) => {
+        state.state = State.failed;
+        state.stateMessage = "Failed to fetch care plan billables!";
       });
   },
 });

@@ -49,7 +49,7 @@ export type SettingsCardTitle =
   | "Languages"
   | "Client Type"
   | "Client Status"
-  | "Client Classification"
+  | "Client Fundings"
   | "Care Plan Status"
   | "Appointment Types"
   | "Incident Types"

@@ -38,5 +38,6 @@ export const AppConfig = {
     dashboard: `${ServiceBaseUrl}/dashboard`,
     incident: `${ServiceBaseUrl}/incidents`,
     clientDocuments: `${ServiceBaseUrl}/client-documents`,
+    carePlanBillings: `${ServiceBaseUrl}/care-plan-bills`,
   },
 };

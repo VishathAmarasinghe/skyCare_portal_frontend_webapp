@@ -13,6 +13,7 @@ import StickyNote2Icon from "@mui/icons-material/StickyNote2";
 import SpeakerNotesIcon from "@mui/icons-material/SpeakerNotes";
 import WorkHistoryIcon from "@mui/icons-material/WorkHistory";
 import SettingsIcon from "@mui/icons-material/Settings";
+import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 
 // APP imports
@@ -159,6 +160,13 @@ export const routes: RouteObjectWithRole[] = [
     icon: React.createElement(SettingsIcon),
     element: React.createElement(View.SettingsView),
     allowRoles: [APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN],
+  },
+  {
+    path: "/file-upload",
+    text: "File Uploadings",
+    icon: React.createElement(DriveFolderUploadIcon),
+    element: React.createElement(View.careGiverFileUploadView),
+    allowRoles: [APPLICATION_CARE_GIVER],
   },
   {
     path: "/userInfo",

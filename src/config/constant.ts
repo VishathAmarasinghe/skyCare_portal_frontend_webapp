@@ -123,6 +123,7 @@ export const SnackMessage = {
     deleteClientDocuments: "Fail to delete client documents",
     deleteCarePlan: "Fail to delete care plan",
     fetchTimeSheets: "Fail to fetch time sheets",
+    fetchCarePlanBillings: "Fail to fetch care plan billings",
   },
   warning: {},
 };

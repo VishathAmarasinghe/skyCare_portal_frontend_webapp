@@ -64,6 +64,13 @@ const initialColumns: GridColDef[] = [
     align: "center",
   },
   {
+    field: "clientClassifications",
+    headerName: "Client Fundings",
+    width: 200,
+    headerAlign: "left",
+    align: "left",
+  },
+  {
     field: "gender",
     headerName: "Gender",
     flex: 1,

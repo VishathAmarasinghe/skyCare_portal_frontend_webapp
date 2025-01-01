@@ -61,7 +61,6 @@ const SupportAddings: React.FC<SupportAddingsProps> = ({
   });
 
   useEffect(() => {
-    console.log("supporter.submitState", supporter.submitState);
 
     if (supporter.submitState === State.success) {
       setSupportTypeCreater({ ...supportTypeCreater, isOpen: false });
@@ -95,9 +94,8 @@ const SupportAddings: React.FC<SupportAddingsProps> = ({
       if (payload.classificationName.trim() != "") {
         dispatch(saveClassification(payload));
       } else {
-        console.log("Classification Name is required");
         enqueueSnackbar({
-          message: "Classification Name is required",
+          message: "Funding Name is required",
           variant: "error",
           anchorOrigin: { vertical: "bottom", horizontal: "right" },
         });
@@ -183,7 +181,7 @@ const SupportAddings: React.FC<SupportAddingsProps> = ({
       sx={{ border: "1px solid #ccc", borderRadius: 1, mt: 2 }}
     >
       <Typography align="left" variant="h6" fontWeight={600} color="primary">
-        Add New {supportTypeCreater.supportType}
+        Add New {supportTypeCreater.supportType==="classification"? "Funding": supportTypeCreater.supportType}
       </Typography>
       <Stack flexDirection={"row"} alignItems="center">
         <Grid
@@ -219,7 +217,7 @@ const SupportAddings: React.FC<SupportAddingsProps> = ({
             <>
               <Grid item xs={12} sm={5}>
                 <TextField
-                  label="Classification Name"
+                  label="Funding Name"
                   name="classificationName"
                   value={formData.classificationName}
                   onChange={handleInputChange}

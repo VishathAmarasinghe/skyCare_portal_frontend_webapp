@@ -78,6 +78,7 @@ export interface Client {
   clientClassifications: string[];
   clientType: string;
   clientStatus: string;
+  referenceNo:string;
 }
 
 export const deleteClientDocument = createAsyncThunk(

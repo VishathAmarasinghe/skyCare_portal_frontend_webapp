@@ -18,7 +18,7 @@ import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 export const CREATE_CLIENT_STEPS = [
   "Basic Info",
   "Interests and Dislikes",
-  "Address Info",
+  "Address Info"
 ];
 
 export const CREATE_CARE_PLAN_STEPS = ["Basic Info", "Goals", "Billing/budget"];
@@ -99,7 +99,7 @@ export const SETTINGS_CARD_ARRAY: SettingsCardProps[] = [
     subText: "Track and update client activity statuses",
   },
   {
-    title: "Client Classification",
+    title: "Client Fundings",
     icon: BusinessIcon,
     subText: "Organize clients based on classification",
   },

@@ -43,6 +43,7 @@ export interface updateShiftNote {
   careGiverID: string | null;
   state: string;
   documents: ShiftNoteDocuments[];
+  clientID:string | null;
 }
 
 export interface currentShiftNoteState {

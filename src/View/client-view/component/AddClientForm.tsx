@@ -89,6 +89,7 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
     interests: "",
     dislikes: "",
     clientClassifications: [] as string[],
+    referenceNo: "",
   });
   const [classifications, setClassifications] = useState<
     { label: string; value: string }[]
@@ -192,6 +193,7 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
         interests: "",
         dislikes: "",
         clientClassifications: [] as string[],
+        referenceNo: "",
       });
     }
   }, [
@@ -761,7 +763,7 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
 
                   <Grid item xs={12} sm={4}>
                     <FormControl fullWidth required>
-                      <InputLabel>Client Classification</InputLabel>
+                      <InputLabel>Client Fundings</InputLabel>
                       <Select
                         multiple
                         value={formikProps.values.clientClassifications}
@@ -809,7 +811,7 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
                           textDecoration: "underline",
                         }}
                       >
-                        New Classification
+                        New Funding
                       </Typography>
                       {formikProps.touched.clientLanguages &&
                         formikProps.errors.clientLanguages && (
@@ -862,6 +864,26 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
                       helperText={
                         formikProps.touched.phoneNumbers &&
                         formikProps.errors.phoneNumbers?.[1]
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <TextField
+                      label="Reference No"
+                      variant="outlined"
+                      fullWidth
+                      required
+                      name="referenceNo"
+                      value={formikProps.values.referenceNo}
+                      onChange={formikProps.handleChange}
+                      onBlur={formikProps.handleBlur}
+                      error={
+                        formikProps.touched.referenceNo &&
+                        Boolean(formikProps.errors.referenceNo)
+                      }
+                      helperText={
+                        formikProps.touched.referenceNo &&
+                        formikProps.errors.referenceNo
                       }
                     />
                   </Grid>
@@ -1190,6 +1212,7 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
                 </Stack>
               </Stack>
             )}
+            
 
             <Box mt={3} textAlign="center" display="none">
               <button style={{ display: "none" }} type="submit" id="submit-btn">
