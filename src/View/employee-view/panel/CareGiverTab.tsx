@@ -5,7 +5,7 @@ import { State } from "../../../types/types";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import CareGiverbasicInfo from "../components/tabs/CareGiverbasicInfo";
-import CareGiverDocumentInfo from "../components/tabs/careGiverDocumentInfo";
+import CareGiverDocumentInfo from "../components/tabs/CareGiverDocumentInfo";
 import CareGiverPaymentInfo from "../components/tabs/CareGiverPaymentInfo";
 import { fetchSingleClients } from "@slices/clientSlice/client";
 import { fetchSingleCareGiverByEmployeeID } from "@slices/careGiverSlice/careGiver";
