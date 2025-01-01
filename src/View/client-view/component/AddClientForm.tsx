@@ -89,6 +89,7 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
     interests: "",
     dislikes: "",
     clientClassifications: [] as string[],
+    referenceNo: "",
   });
   const [classifications, setClassifications] = useState<
     { label: string; value: string }[]
@@ -192,6 +193,7 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
         interests: "",
         dislikes: "",
         clientClassifications: [] as string[],
+        referenceNo: "",
       });
     }
   }, [
@@ -264,20 +266,24 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
       .required("Languages are required"),
     phoneNumbers: Yup.array()
       .of(
-        Yup.string()
-          .required("Phone number is required")
-          .test(
-            "phone-format",
-            "Invalid phone number format. Use either international format like +1234567890 or normal format like 0123456789.",
-            (value) =>
-              /^\+?[1-9]\d{1,14}$/.test(value || "") ||
-              /^\d{10}$/.test(value || "")
-          )
+        Yup.string().test(
+          "phone-format",
+          "Invalid phone number format. Use either international format like +1234567890 or normal format like 0123456789.",
+          (value) =>
+            !value || // Allow empty values
+            /^\+?[1-9]\d{1,14}$/.test(value || "") || // International format
+            /^\d{10}$/.test(value || "") // Normal format
+        )
       )
-      .min(1, "At least one phone number is required"),
+      .test(
+        "at-least-one-phone",
+        "At least one phone number is required.",
+        (value) =>
+          !!value && value.some((phone) => phone && phone.trim() !== "")
+      ),
     clientType: Yup.string().required("Client Type is required"),
     clientStatus: Yup.string().required("Client Status is required"),
-    aboutMe: Yup.string().required("About Me is required"),
+    // aboutMe: Yup.string().required("About Me is required"),
     physicalAddress: Yup.object().shape({
       address: Yup.string().required("Address is required"),
       city: Yup.string().required("City is required"),
@@ -290,8 +296,8 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
       state: Yup.string().required("State is required"),
       postalCode: Yup.string().required("Postal Code is required"),
     }),
-    interests: Yup.string().required("Interests are required"),
-    dislikes: Yup.string().required("Dislikes are required"),
+    // interests: Yup.string().required("Interests are required"),
+    // dislikes: Yup.string().required("Dislikes are required"),
     clientClassifications: Yup.array()
       .min(1, "Select at least one classification")
       .required("Classifications are required"),
@@ -757,7 +763,7 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
 
                   <Grid item xs={12} sm={4}>
                     <FormControl fullWidth required>
-                      <InputLabel>Client Classification</InputLabel>
+                      <InputLabel>Client Fundings</InputLabel>
                       <Select
                         multiple
                         value={formikProps.values.clientClassifications}
@@ -805,7 +811,7 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
                           textDecoration: "underline",
                         }}
                       >
-                        New Classification
+                        New Funding
                       </Typography>
                       {formikProps.touched.clientLanguages &&
                         formikProps.errors.clientLanguages && (
@@ -858,6 +864,26 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
                       helperText={
                         formikProps.touched.phoneNumbers &&
                         formikProps.errors.phoneNumbers?.[1]
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <TextField
+                      label="Reference No"
+                      variant="outlined"
+                      fullWidth
+                      required
+                      name="referenceNo"
+                      value={formikProps.values.referenceNo}
+                      onChange={formikProps.handleChange}
+                      onBlur={formikProps.handleBlur}
+                      error={
+                        formikProps.touched.referenceNo &&
+                        Boolean(formikProps.errors.referenceNo)
+                      }
+                      helperText={
+                        formikProps.touched.referenceNo &&
+                        formikProps.errors.referenceNo
                       }
                     />
                   </Grid>
@@ -1186,6 +1212,7 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
                 </Stack>
               </Stack>
             )}
+            
 
             <Box mt={3} textAlign="center" display="none">
               <button style={{ display: "none" }} type="submit" id="submit-btn">

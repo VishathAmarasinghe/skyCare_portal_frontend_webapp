@@ -1,4 +1,4 @@
-import { Box, Grid, Stack, Typography } from "@mui/material";
+import { Box, Grid, Paper, Stack, Typography } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import HelloCard from "../../dashboard-view/Components/HelloCard";
 import BroadcastAppointmentCard from "../components/BroadcastAppointmentCard";
@@ -125,6 +125,23 @@ const CareGiverDashboard = () => {
     setIsRecurrentAppointmentModalVisible(false);
   };
 
+  const Item = ({ children }: { children: React.ReactNode }) => (
+    <Paper
+      sx={{
+        p: 2,
+        width: "100%",
+        height: "100%",
+        // textAlign: "center",
+        color: "text.secondary",
+        backgroundColor: "white",
+        boxShadow: 1,
+        borderRadius: 2,
+      }}
+    >
+      <Typography>{children}</Typography>
+    </Paper>
+  );
+
   return (
     <Stack
       width="100%"
@@ -140,7 +157,7 @@ const CareGiverDashboard = () => {
         onClose={handleModalClose}
       />
       <Stack width="100%" height="5%">
-        <Typography variant="h5">Dashboard</Typography>
+        <Typography variant="h6">Dashboard</Typography>
         <ShiftNoteModal
           pureNew={false}
           foreignDetails={{ careGiverID: null, recurrentID: null }}
@@ -158,164 +175,147 @@ const CareGiverDashboard = () => {
         onClose={() => setIsAppointmentModalVisible(false)}
       />
       <Stack
-        width="100%"
-        height={"90%"}
-        my={2}
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="space-between"
+        sx={{
+          // border: "2px solid red",
+          width: "100%",
+          height: "90%",
+          mt: 2,
+        }}
       >
-        <Stack
-          width="100%"
+        <Box
           sx={{
-            flexDirection: {
-              xs: "column-reverse",
-              sm: "column-reverse",
-              md: "column",
-              lg: "column-reverse",
-              xl: "column",
+            display: "grid",
+            // border: "2px solid red",
+            height: "100%",
+            gridTemplateColumns: {
+              xs: "repeat(1, 1fr)", // 1 column for mobile
+              sm: "repeat(1, 1fr)", // 1 column for small screens
+              md: "repeat(12, 1fr)", // 12-column grid for medium+ screens
             },
+            gap: 2,
           }}
         >
-          <Box width="100%" p={2}>
-            <Grid
-              container
-              spacing={2}
-              sx={{
-                flexDirection: { xs: "column-reverse", sm: "row" }, // On mobile, last item comes first
-              }}
-            >
-              <Grid item xs={12} sm={8}>
+          {/* Left Top Item */}
+          <Box
+            sx={{
+              gridColumn: { md: "span 8", xs: "span 12" },
+              height: "100%",
+              // border: "2px solid blue",
+            }}
+          >
+            <Item>
+              <AppointmentBarChart
+                twoWeekAppointmentCount={
+                  careGiverDashboard?.careGiverDashboard
+                    ?.twoWeekAppointmentCount || {}
+                }
+              />
+            </Item>
+          </Box>
+
+          {/* Right Item */}
+          <Box
+            sx={{
+              gridColumn: { md: "span 4", xs: "span 12" },
+              gridRow: { md: "span 2" },
+              height: "100%",
+              // border: "2px solid yellow",
+            }}
+          >
+            <Item>
+              <Stack
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  minHeight: "100%", // Ensure a minimum height
+                  maxHeight: "250px", // Maximum height for the stack
+                }}
+              >
+                {/* Fixed title */}
+                <Typography variant="h6" fontWeight="bold">
+                  Pending Appointments
+                </Typography>
+
+                {/* Scrollable area */}
                 <Box
                   sx={{
-                    width: "100%",
-                    padding: 2,
-                    borderRadius: 2,
-                    elevation: 2,
-                    textAlign: "center",
-                    backgroundColor: "white",
+                    overflowY: "auto", // Enable scrolling
+                    maxHeight: "150px", // Adjust based on remaining height
+                    mt: 2, // Add some spacing between the title and the list
                   }}
                 >
-                  <AppointmentBarChart
-                    twoWeekAppointmentCount={
-                      careGiverDashboard?.careGiverDashboard
-                        ?.twoWeekAppointmentCount || {}
-                    }
-                  />
+                  {pendingAppointment?.length ?? 0 > 0 ? (
+                    pendingAppointment?.map((appointment, index) => (
+                      <PendingCard
+                        key={index}
+                        jobDetails={appointment}
+                        isModalVisible={isRecurrentAppointmentModalVisible}
+                        setIsModalVisible={
+                          setIsRecurrentAppointmentModalVisible
+                        }
+                      />
+                    ))
+                  ) : (
+                    <Typography variant="body2" color="textSecondary">
+                      No pending appointments.
+                    </Typography>
+                  )}
                 </Box>
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <NextAppointmentCard
-                  isRecurrentModalVisible={isRecurrentAppointmentModalVisible}
-                  setIsRecurrentModalVisible={
-                    setIsRecurrentAppointmentModalVisible
-                  }
-                  selectedShiftNote={selectedShiftNote}
-                  setSelectedShiftNote={setSelectedShiftNote}
-                  setIsEditMode={setShiftIsEditMode}
-                  setIsModalVisible={setShiftModalOpen}
-                />
-              </Grid>
-            </Grid>
+              </Stack>
+            </Item>
           </Box>
-        </Stack>
-        <Grid
-          container
-          spacing={2} // Add spacing between grid items
-          sx={{ height: "80%", width: "100%" }}
-        >
-          {/* Broadcast Appointments */}
-          <Grid item xs={12} md={8}>
-            {" "}
-            {/* Occupies full width on small screens and 8/12 on medium+ screens */}
-            <Stack
-              bgcolor="white"
-              justifyContent="flex-start"
-              flexDirection="column"
-              borderRadius={2}
-              boxShadow={2}
-              sx={{
-                height: { xs: "auto", md: "100%" },
-                minHeight: "150px",
-              }}
-            >
-              {/* Title */}
-              <Stack width={"100%"} sx={{ p: 1 }} height={"10%"}>
-                <Typography variant="h6" fontWeight="bold" fontSize={"12px"}>
-                  Broadcast Appointments
-                </Typography>
-              </Stack>
 
-              {/* Scrollable Stack for the Cards */}
+          {/* Left Bottom Item */}
+          <Box
+            sx={{
+              gridColumn: { md: "span 8", xs: "span 12" },
+              height: "100%",
+              // border: "2px solid blue",
+            }}
+          >
+            <Item>
               <Stack
-                width={"100%"}
+                justifyContent="flex-start"
                 flexDirection="column"
-                mt={1}
+                borderRadius={2}
+                width={"100%"}
                 sx={{
-                  justifyContent: "flex-start",
-                  alignItems: "flex-start",
-                  overflowY: "auto",
+                  height: { xs: "auto", md: "100%" },
+                  minHeight: "150px",
                 }}
               >
-                {broadcastAppointments.map((appointment) => (
-                  <BroadcastAppointmentCard
-                    setIsAppointmentAddModalVisible={
-                      setIsAppointmentModalVisible
-                    }
-                    jobDetails={appointment}
-                    key={appointment.appointmentData?.appointmentID}
-                  />
-                ))}
-              </Stack>
-            </Stack>
-          </Grid>
-
-          {/* Pending Appointments */}
-          <Grid item xs={12} md={4}>
-            {" "}
-            {/* Occupies full width on small screens and 4/12 on medium+ screens */}
-            <Stack
-              sx={{
-                backgroundColor: "white",
-                padding: 2,
-                borderRadius: 2,
-                boxShadow: 2,
-                height: "100%",
-                minHeight: "150px", // Ensure a minimum height
-                maxHeight: "250px", // Maximum height for the stack
-              }}
-            >
-              {/* Fixed title */}
-              <Typography variant="h6" fontWeight="bold" fontSize={"12px"}>
-                Pending Appointments
-              </Typography>
-
-              {/* Scrollable area */}
-              <Box
-                sx={{
-                  overflowY: "auto", // Enable scrolling
-                  maxHeight: "150px", // Adjust based on remaining height
-                  mt: 2, // Add some spacing between the title and the list
-                }}
-              >
-                {pendingAppointment?.length ?? 0 > 0 ? (
-                  pendingAppointment?.map((appointment, index) => (
-                    <PendingCard
-                      key={index}
-                      jobDetails={appointment}
-                      isModalVisible={isRecurrentAppointmentModalVisible}
-                      setIsModalVisible={setIsRecurrentAppointmentModalVisible}
-                    />
-                  ))
-                ) : (
-                  <Typography variant="body2" color="textSecondary">
-                    No pending appointments.
+                {/* Title */}
+                <Stack width={"100%"} sx={{ p: 1 }} height={"10%"}>
+                  <Typography variant="h6" fontWeight="bold">
+                    Broadcast Appointments
                   </Typography>
-                )}
-              </Box>
-            </Stack>
-          </Grid>
-        </Grid>
+                </Stack>
+
+                {/* Scrollable Stack for the Cards */}
+                <Stack
+                  width={"100%"}
+                  flexDirection="column"
+                  mt={1}
+                  sx={{
+                    justifyContent: "flex-start",
+                    alignItems: "flex-start",
+                    overflowY: "auto",
+                  }}
+                >
+                  {broadcastAppointments.map((appointment) => (
+                    <BroadcastAppointmentCard
+                      setIsAppointmentAddModalVisible={
+                        setIsAppointmentModalVisible
+                      }
+                      jobDetails={appointment}
+                      key={appointment.appointmentData?.appointmentID}
+                    />
+                  ))}
+                </Stack>
+              </Stack>
+            </Item>
+          </Box>
+        </Box>
       </Stack>
     </Stack>
   );

@@ -5,6 +5,13 @@ import { AppConfig } from "../../config/config";
 import { enqueueSnackbarMessage } from "../commonSlice/common";
 import { SnackMessage } from "../../config/constant";
 import axios, { HttpStatusCode } from "axios";
+import { Client } from "@slices/clientSlice/client";
+import {
+  Appointment,
+  RecurrentAppointmentDTO,
+  RecurrentAppointmentValues,
+} from "@slices/appointmentSlice/appointment";
+import { Employee } from "@slices/employeeSlice/employee";
 
 // Define the type for Resource model
 export interface StartShiftNote {
@@ -36,6 +43,7 @@ export interface updateShiftNote {
   careGiverID: string | null;
   state: string;
   documents: ShiftNoteDocuments[];
+  clientID:string | null;
 }
 
 export interface currentShiftNoteState {
@@ -47,12 +55,22 @@ export interface currentShiftNoteState {
   shiftNoteAvailability: string;
 }
 
+export interface TimeSheet {
+  client: Client;
+  employeeDTO: Employee;
+  shiftNoteDTO: updateShiftNote;
+  totalHours: string;
+  recurrentAppointment: RecurrentAppointmentDTO;
+  appointment: Appointment;
+}
+
 interface ShiftNoteState {
   state: State;
   startState: State;
   submitState: State;
   updateState: State;
   shiftNotes: updateShiftNote[];
+  timeSheets: TimeSheet[];
   currentShiftNoteState: currentShiftNoteState | null;
   selectedShiftNote: updateShiftNote | null;
   deleteState: State;
@@ -70,6 +88,7 @@ const initialState: ShiftNoteState = {
   updateState: State.idle,
   deleteState: State.idle,
   shiftNotes: [],
+  timeSheets: [],
   selectedShiftNote: null,
   currentShiftNoteState: null,
   stateMessage: "",
@@ -77,6 +96,37 @@ const initialState: ShiftNoteState = {
   backgroundProcess: false,
   backgroundProcessMessage: null,
 };
+
+export const fetchTimeSheets = createAsyncThunk(
+  "shiftNote/fetchTimeSheets",
+  async (
+    payload: { startDate: string; endDate: string; employeeID: string },
+    { dispatch, rejectWithValue }
+  ) => {
+    try {
+      const response = await APIService.getInstance().get(
+        AppConfig.serviceUrls.shiftNotes +
+          `/time-sheets?startDate=${payload?.startDate}&endDate=${payload?.endDate}&careGiverID=${payload?.employeeID}`
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
+      }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            axios.isAxiosError(error) &&
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.shiftStarted
+              : String((error as any).response?.data),
+          type: "error",
+        })
+      );
+      throw error;
+    }
+  }
+);
 
 // Fetch single resources
 export const submitStartShiftNote = createAsyncThunk(
@@ -473,6 +523,19 @@ const ShiftNoteSlice = createSlice({
       .addCase(updatehiftNotes.rejected, (state) => {
         state.updateState = State.failed;
         state.stateMessage = "fail to update shiftNote!";
+      })
+      .addCase(fetchTimeSheets.pending, (state) => {
+        state.state = State.loading;
+        state.stateMessage = "loading timesheets...";
+      })
+      .addCase(fetchTimeSheets.fulfilled, (state, action) => {
+        state.state = State.success;
+        state.timeSheets = action.payload;
+        state.stateMessage = "time sheets fetched Successfully!";
+      })
+      .addCase(fetchTimeSheets.rejected, (state) => {
+        state.state = State.failed;
+        state.stateMessage = "fail to fetch time sheets shiftNote!";
       });
   },
 });

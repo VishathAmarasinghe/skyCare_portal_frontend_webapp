@@ -83,7 +83,7 @@ const ShiftNoteView = () => {
           fontWeight="600"
           variant="h6"
         >
-          Shift Notes
+          Time Sheets
         </Typography>
         <Button
           variant="contained"
@@ -94,7 +94,7 @@ const ShiftNoteView = () => {
               setPureNew(true);
           }}
         >
-          New Shift Note
+          New Time Sheet
         </Button>
       </Stack>
       <Stack width="100%" height="480px">

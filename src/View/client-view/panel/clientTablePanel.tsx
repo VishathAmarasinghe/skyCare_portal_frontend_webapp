@@ -7,6 +7,7 @@ import {
 } from "../../../slices/clientSlice/client";
 import AddNewClientModal from "../modal/AddNewClientModal";
 import ClientTable from "../component/ClientTable";
+import { fetchClientStatus } from "@slices/selectorSlice/selector";
 
 const ClientTablePanel = () => {
   const theme = useTheme();
@@ -26,6 +27,7 @@ const ClientTablePanel = () => {
 
   const fetchAllClients = async () => {
     dispatch(fetchClients());
+    dispatch(fetchClientStatus());
   };
 
   const handleOpenModel = () => {

@@ -119,6 +119,9 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
   const careGiverSlice = useAppSelector((state) => state?.careGivers);
   const dispatch = useAppDispatch();
   const [selectedRowData, setSelectedRowData] = useState<string | null>(null);
+  const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>(
+    []
+  );
 
   const [formState, setFormState] = useState({
     language: "",
@@ -150,7 +153,7 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
     case "Languages":
       columns = languageColumns;
       break;
-    case "Client Classification":
+    case "Client Fundings":
       columns = clientClassificationColumns;
       break;
     case "Client Type":
@@ -233,9 +236,6 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
   };
 
   const handleAdd = () => {
-    console.log("Adding data for", settingType, formState);
-    console.log("Selected Row Data", selectedRowData);
-
     if (settingType === "Languages") {
       if (formState.language === "" || formState.languageNotes === "") {
         return;
@@ -288,7 +288,7 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
       } else {
         dispatch(saveClientStatus({ status: formState.clientStatus }));
       }
-    } else if (settingType === "Client Classification") {
+    } else if (settingType === "Client Fundings") {
       if (formState.classificationName === "") {
         return;
       }
@@ -448,13 +448,14 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
         );
       }
     }
-
+    setSelectedRowData(null);
     resetForm();
+    setSelectionModel([]);
     // Add your logic here to save the new setting
   };
 
   const handleRowSelection = (selection: GridRowSelectionModel) => {
-    console.log("Selected row:", selection);
+    setSelectionModel(selection);
     const selectedRowId = selection[0];
     if (selection.length > 0) {
       // Get the ID of the selected row
@@ -475,7 +476,7 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
             }));
             break;
 
-          case "Client Classification":
+          case "Client Fundings":
             const selectedClassification = selectorSlice?.classifications.find(
               (row) => row.classificationID === selectedRowId
             );
@@ -688,7 +689,7 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
         </Stack>
       )}
 
-      {settingType === "Client Classification" && (
+      {settingType === "Client Fundings" && (
         <Stack spacing={2}>
           <TextField
             label="Classification Name"
@@ -1091,7 +1092,7 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
                     id: language.languageID,
                     ...language,
                   }))
-                : settingType === "Client Classification"
+                : settingType === "Client Fundings"
                 ? selectorSlice.classifications?.map((classification) => ({
                     id: classification.classificationID,
                     ...classification,
@@ -1143,6 +1144,7 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
             columns={columns}
             checkboxSelection
             disableMultipleRowSelection
+            rowSelectionModel={selectionModel}
             onRowSelectionModelChange={(selection) =>
               handleRowSelection(selection)
             }

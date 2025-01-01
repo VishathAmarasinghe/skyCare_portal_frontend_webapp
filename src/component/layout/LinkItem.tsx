@@ -27,11 +27,12 @@ const Link = React.forwardRef<HTMLAnchorElement, RouterLinkProps>(function Link(
 });
 
 const ListItemLink = (props: ListItemLinkProps) => {
-  const { icon, primary, to, open, theme, isActive } = props;
+  const { icon, primary, to, open, theme, isActive,visible } = props;
 
   return (
     <ListItem
       component={Link}
+      onClick={()=>visible()}
       to={to}
       sx={{
         borderRadius: 2,
@@ -98,4 +99,5 @@ interface ListItemLinkProps {
   open: boolean;
   isActive: boolean;
   theme: Theme;
+  visible:()=>void;
 }

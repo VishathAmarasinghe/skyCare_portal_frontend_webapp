@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Stack } from "@mui/material";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
@@ -17,6 +17,7 @@ import {
   APPLICATION_CARE_GIVER,
   APPLICATION_SUPER_ADMIN,
 } from "../../../config/config";
+import { AppointmentTimeFrame } from "../../../types/types";
 
 dayjs.extend(timezone);
 const localizer = dayjsLocalizer(dayjs);
@@ -44,12 +45,18 @@ interface AppointmentCalendarProps {
   >;
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
   setRecurrentAppointmentVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedTimeFram: AppointmentTimeFrame;
+  setSelectedTimeFrame: React.Dispatch<
+    React.SetStateAction<AppointmentTimeFrame>
+  >;
 }
 
 const AppointmentCalendar = ({
   setIsAppointmentAddModalVisible,
   setIsEditing,
   setRecurrentAppointmentVisible,
+  selectedTimeFram,
+  setSelectedTimeFrame,
 }: AppointmentCalendarProps) => {
   const dispatch = useAppDispatch();
   const appointmentSlice = useAppSelector((state) => state.appointments);
@@ -172,6 +179,30 @@ const AppointmentCalendar = ({
     };
   };
 
+  const handleSelectSlot = useCallback(
+    ({ start, end }: { start: Date; end: Date }) => {
+      const formattedStartDate = dayjs(start).format("YYYY-MM-DD"); // Start date
+      const formattedStartTime = dayjs(start).format("HH:mm:ss"); // Start time
+      const formattedEndDate = dayjs(end).format("YYYY-MM-DD"); // End date
+      const formattedEndTime = dayjs(end).format("HH:mm:ss"); // End time
+
+      if (
+        authRole?.includes(APPLICATION_ADMIN) ||
+        authRole?.includes(APPLICATION_SUPER_ADMIN)
+      ) {
+        setSelectedTimeFrame({
+          startDate: formattedStartDate,
+          endDate: formattedEndDate,
+          startTime: formattedStartTime,
+          endTime: formattedEndTime,
+        });
+
+        setIsAppointmentAddModalVisible(true);
+      }
+    },
+    []
+  );
+
   const handleSelectEvent = (
     event: CalenderEventCellType,
     e: React.SyntheticEvent<HTMLElement, Event>
@@ -204,6 +235,8 @@ const AppointmentCalendar = ({
           dayLayoutAlgorithm="no-overlap"
           localizer={localizer}
           onSelectEvent={handleSelectEvent}
+          onSelectSlot={handleSelectSlot}
+          selectable
           showMultiDayTimes
           step={60}
           popup

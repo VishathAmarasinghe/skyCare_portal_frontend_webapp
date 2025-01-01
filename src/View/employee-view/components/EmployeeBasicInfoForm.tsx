@@ -123,6 +123,7 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
           )}`
         );
       }
+      setErrorState("Pending");
     } else {
       setProfilePhotoPreview(null);
       setInitialValues({
@@ -167,6 +168,8 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
   };
 
   const handleSubmit = (values: typeof initialValues) => {
+    console.log("handSubmit", values);
+    
     setEmployeeBasicInformation({
       ...values,
       employeeID: employeeSlice?.selectedEmployee

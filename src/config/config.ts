@@ -5,7 +5,9 @@ export const APPLICATION_SUPER_ADMIN =
   import.meta.env.VITE_APPLICATION_SUPER_ADMIN ?? "";
 export const APPLICATION_CARE_GIVER =
   import.meta.env.VITE_APPLICATION_CARE_GIVER ?? "";
-export const FILE_DOWNLOAD_BASE_URL =`${import.meta.env.VITE_BACKEND_BASE_URL}${import.meta.env.VITE_FILE_DOWNLOAD_PATH}?filePath=`;
+export const FILE_DOWNLOAD_BASE_URL = `${
+  import.meta.env.VITE_BACKEND_BASE_URL
+}${import.meta.env.VITE_FILE_DOWNLOAD_PATH}?filePath=`;
 
 export const AppConfig = {
   serviceUrls: {
@@ -35,6 +37,7 @@ export const AppConfig = {
     incidentQuestions: `${ServiceBaseUrl}/incident-action-types`,
     dashboard: `${ServiceBaseUrl}/dashboard`,
     incident: `${ServiceBaseUrl}/incidents`,
-    
+    clientDocuments: `${ServiceBaseUrl}/client-documents`,
+    carePlanBillings: `${ServiceBaseUrl}/care-plan-bills`,
   },
 };

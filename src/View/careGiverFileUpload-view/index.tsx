@@ -182,7 +182,7 @@ const CareGiverInfoView = () => {
           fontWeight="600"
           variant="h6"
         >
-          User Info
+          File Uploadings
         </Typography>
       </Stack>
       <Stack
@@ -196,8 +196,9 @@ const CareGiverInfoView = () => {
           maxHeight: "80vh",
         }}
       >
+
         <Box sx={{ mt: 2 }} width="100%">
-          <Stack>
+          <Stack sx={{ display: "none" }}>
             <EmployeeBasicInfoForm
               profilePic={profilePic}
               setProfilePic={setProfilePic}
@@ -210,7 +211,7 @@ const CareGiverInfoView = () => {
               setIsEditMode={setIsEditMode}
             />
           </Stack>
-          <Stack sx={{ display:"none" }}>
+          <Stack>
             <CareGiverFileUploader
               modalOpenState={IsCareGiverAddModalVisible}
               uploadFiles={uploadFiles}
@@ -221,6 +222,7 @@ const CareGiverInfoView = () => {
           </Stack>
         </Box>
         <Box display="flex" justifyContent="end" width="100%">
+          {/* Next or Save Button */}
           <Button
             sx={{ mx: 1 }}
             variant="contained"

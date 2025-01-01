@@ -1,4 +1,4 @@
-import { Grid, Paper, Stack, Typography } from "@mui/material";
+import { Box, Grid, Paper, Stack, Typography } from "@mui/material";
 import React, { useEffect } from "react";
 import { AccessAlarm } from "@mui/icons-material"; // Importing MUI icon
 import HelloCard from "../Components/HelloCard";
@@ -20,6 +20,22 @@ const AdminDashboard = () => {
   useEffect(() => {
     dispatch(fetchAdminDashboard());
   }, [dispatch]);
+
+  const Item = ({ children }: { children: React.ReactNode }) => (
+    <Paper
+      sx={{
+        p: 2,
+        width: "100%",
+        height: "100%",
+        color: "text.secondary",
+        backgroundColor: "white",
+        boxShadow: 1,
+        borderRadius: 2,
+      }}
+    >
+      <Typography>{children}</Typography>
+    </Paper>
+  );
 
   const dashboardCardInfo: DashboardCardProps[] = DASHBOARD_CARDS.map(
     (card) => {
@@ -65,66 +81,75 @@ const AdminDashboard = () => {
           ))}
         </Grid>
       </Stack>
-      <Stack width={"100%"} height={"100%"}>
-        <Grid container spacing={2} height={"100%"}>
-          {/* First item */}
-          <Grid item xs={12} md={8}>
-            <Grid container spacing={2}>
-              {/* Top Section: Two Grid Items */}
-              <Grid item xs={12} sm={6}>
-                <Paper elevation={3} style={{ padding: "10px" }}>
-                  <AppointmentProgressChart
-                    todayCompletedCount={
-                      dashboardSlice?.adminDashboard?.todayCompletedCount ?? 0
-                    }
-                    todayTotalCount={
-                      dashboardSlice?.adminDashboard?.todayTotalCount ?? 0
-                    }
-                  />
-                </Paper>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Paper elevation={3} style={{ padding: "16px" }}>
-                  <AppointmentTypePieChart
-                    appointmentCountByType={
-                      dashboardSlice?.adminDashboard?.appointmentCountByType ||
-                      {}
-                    }
-                  />
-                </Paper>
-              </Grid>
-              {/* Bottom Section: One Grid Item */}
-              <Grid item xs={12} height={"100%"}>
-                <Paper
-                  elevation={3}
-                  style={{ padding: "10px", height: "100%" }}
-                >
-                  <AppointmentBarChart
-                    twoWeekAppointmentCount={
-                      dashboardSlice?.adminDashboard?.twoWeekAppointmentCount ||
-                      {}
-                    }
-                  />
-                </Paper>
-              </Grid>
-            </Grid>
-          </Grid>
+      <Box
+        sx={{
+          display: "grid",
+          // border: "2px solid red",
+          height: "100%",
+          width: "100%",
+          gridTemplateColumns: {
+            xs: "repeat(1, 1fr)", // 1 column for mobile
+            sm: "repeat(1, 1fr)", // 1 column for small screens
+            md: "repeat(12, 1fr)", // 12-column grid for medium+ screens
+          },
+          gap: 2,
+        }}
+      >
+        {/* Left Top Item */}
+        <Box
+          sx={{
+            gridColumn: { md: "span 4", xs: "span 12" },
+            // border: "2px solid green",
+            height: "100%",
+          }}
+        >
+          <Item>
+            <AppointmentProgressChart
+              todayCompletedCount={
+                dashboardSlice?.adminDashboard?.todayCompletedCount ?? 0
+              }
+              todayTotalCount={
+                dashboardSlice?.adminDashboard?.todayTotalCount ?? 0
+              }
+            />
+          </Item>
+        </Box>
 
-          {/* Second item */}
-          <Grid item xs={12} md={4} style={{ height: "104%" }}>
-            <Paper elevation={3} style={{ padding: "10px", height: "100%" }}>
-              <Typography
-                variant="h6"
-                align="center"
-                style={{ fontSize: "12px" }}
-              >
+        <Box
+          sx={{
+            gridColumn: { md: "span 4", xs: "span 12" },
+            // border: "2px solid green",
+            height: "100%",
+          }}
+        >
+          <Item>
+            <AppointmentTypePieChart
+              appointmentCountByType={
+                dashboardSlice?.adminDashboard?.appointmentCountByType || {}
+              }
+            />
+          </Item>
+        </Box>
+
+        {/* Right Item */}
+        <Box
+          sx={{
+            gridColumn: { md: "span 4", xs: "span 12" },
+            // border: "2px solid green",
+            height: "100%",
+            gridRow: "span 2",
+          }}
+        >
+          <Item>
+            <Stack height={"100%"}>
+              <Typography variant="h6" fontWeight={"bold"}>
                 Today Appointments
               </Typography>
               <Stack
                 width="100%"
-                // border="2px solid green"
+                // border="2px solid blue"
                 flexGrow={1}
-                // height="100%"
+                height="100%"
                 flexDirection="column"
                 alignItems="center"
                 sx={{ overflowY: "auto", maxHeight: "100%" }}
@@ -161,10 +186,27 @@ const AdminDashboard = () => {
                   </Stack>
                 )}
               </Stack>
-            </Paper>
-          </Grid>
-        </Grid>
-      </Stack>
+            </Stack>
+          </Item>
+        </Box>
+
+        {/* Left Bottom Item */}
+        <Box
+          sx={{
+            gridColumn: { md: "span 8", xs: "span 12" },
+            // border: "2px solid pink",
+            height: "100%",
+          }}
+        >
+          <Item>
+            <AppointmentBarChart
+              twoWeekAppointmentCount={
+                dashboardSlice?.adminDashboard?.twoWeekAppointmentCount || {}
+              }
+            />
+          </Item>
+        </Box>
+      </Box>
     </Stack>
   );
 };

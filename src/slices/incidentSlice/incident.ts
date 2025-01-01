@@ -30,6 +30,7 @@ export interface Incidents {
   parties: IncidentInvolvedParties[];
   answers: IncidentActionTypeAllAnswers[];
   employeeID: string;
+  clientID: string | null;
 }
 
 export interface IncidentStatus {
@@ -792,7 +793,7 @@ const IncidentSlice = createSlice({
       .addCase(fetchAllIncidentsByEmployeeId.fulfilled, (state, action) => {
         state.state = State.success;
         state.stateMessage = "Successfully fetched incident!";
-        state.selectedIncident = action.payload;
+        state.incidents = action.payload;
       })
       .addCase(fetchAllIncidentsByEmployeeId.rejected, (state) => {
         state.state = State.failed;

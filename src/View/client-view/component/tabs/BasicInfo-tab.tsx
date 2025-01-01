@@ -63,7 +63,7 @@ const BasicInfoTab: React.FC = () => {
     },
     {
       key: "9",
-      label: "Client Classification",
+      label: "Client Fundings",
       children:
         client?.clientClassifications?.map((classification, index) => (
           <Chip
@@ -84,6 +84,11 @@ const BasicInfoTab: React.FC = () => {
             sx={{ margin: "4px" }}
           />
         )) || "N/A",
+    },
+    {
+      key: "12",
+      label: "Address",
+      children: `${client?.physicalAddress?.address} ${client?.physicalAddress?.city} ${client?.physicalAddress?.state}`,
     },
   ];
 

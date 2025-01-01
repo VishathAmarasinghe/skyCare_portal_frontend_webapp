@@ -117,9 +117,23 @@ const RecurrentCard = ({
           </Typography>
 
           {/* Status and Chips */}
-          <Stack direction="row" spacing={1} marginTop={1}>
+          <Stack
+            sx={{
+              flexDirection: {
+                xs: "column", // For extra-small screens
+                md: "row", // For medium screens and larger
+              },
+              alignItems: {
+                xs: "start",
+              },
+            }}
+            // spacing={1}
+
+            marginTop={1}
+          >
             <Chip
               size="small"
+              sx={{ m: 0.5 }}
               label={`Status: ${recurrentAppointmentData?.status}`}
               color={
                 recurrentAppointmentData?.status === "cancelled"
@@ -129,11 +143,13 @@ const RecurrentCard = ({
             />
             <Chip
               size="small"
+              sx={{ m: 0.5 }}
               label={`Total Required: ${totalRequired}`}
               color="primary"
             />
             <Chip
               size="small"
+              sx={{ m: 0.5 }}
               label={`Pending: ${pendingRequired}`}
               color="secondary"
             />

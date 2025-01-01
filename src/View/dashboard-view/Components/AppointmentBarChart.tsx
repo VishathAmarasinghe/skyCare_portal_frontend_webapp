@@ -6,20 +6,25 @@ interface AppointmentChartProps {
   twoWeekAppointmentCount: Record<string, number>;
 }
 
-const AppointmentBarChart: React.FC<AppointmentChartProps> = ({ twoWeekAppointmentCount }) => {
+const AppointmentBarChart: React.FC<AppointmentChartProps> = ({
+  twoWeekAppointmentCount,
+}) => {
   // Transform the data into a format suitable for the BarChart
   const theme = useTheme();
   const chartData = Object.entries(twoWeekAppointmentCount)
-    .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime()) // Sort by date
+    .sort(
+      ([dateA], [dateB]) =>
+        new Date(dateA).getTime() - new Date(dateB).getTime()
+    ) // Sort by date
     .map(([date, count]) => ({ date, count }));
 
   return (
     <div style={{ width: "100%", height: "100%" }}>
-      <Typography variant="h6" align="center" style={{ fontSize: "12px" }}>
+      <Typography variant="h6" fontWeight={"bold"}>
         Appointment Counts for Next 2 Weeks
       </Typography>
       <BarChart
-        height={180}
+        height={150}
         xAxis={[
           {
             id: "date-axis",
@@ -39,7 +44,7 @@ const AppointmentBarChart: React.FC<AppointmentChartProps> = ({ twoWeekAppointme
             id: "appointment-series",
             data: chartData.map((entry) => entry.count), // Map counts for the series
             label: "Appointments",
-            color: theme?.palette?.primary?.main
+            color: theme?.palette?.primary?.main,
           },
         ]}
         tooltip={{

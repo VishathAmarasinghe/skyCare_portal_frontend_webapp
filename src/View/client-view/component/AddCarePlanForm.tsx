@@ -60,6 +60,7 @@ const AddCarePlanForm = ({
     clientID: "",
     carePlanLongTermGoals: [],
     carePlanBillables: [],
+    status: "Active",
   });
   const clientID = searchParams.get("clientID");
   const dispatch = useAppDispatch();
@@ -114,6 +115,7 @@ const AddCarePlanForm = ({
         clientID: "",
         carePlanLongTermGoals: [],
         carePlanBillables: [],
+        status: "Active",
       });
     }
   }, [carePlanSlice.selectedCarePlan]);

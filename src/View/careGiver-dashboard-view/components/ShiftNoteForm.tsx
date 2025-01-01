@@ -33,6 +33,7 @@ import {
   APPLICATION_ADMIN,
   APPLICATION_SUPER_ADMIN,
 } from "../../../config/config";
+import { Client } from "@slices/clientSlice/client";
 
 // Validation schema using Yup
 const validationSchema = (selectedShiftNote: updateShiftNote | null) =>
@@ -115,6 +116,9 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
   const [imageViewerImageURl, setImageViewerImageURl] = useState<File | string>(
     ""
   );
+  const clientSlice = useAppSelector((state) => state?.clients);
+  const [clientList, setClientList] = useState<Client[]>([]);
+  
   const [initialValues, setInitialValues] = useState<updateShiftNote>({
     noteID: "",
     title: "",
@@ -133,6 +137,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
     careGiverID: foreignDetails.careGiverID,
     state: "Active",
     documents: [],
+    clientID:null
   });
 
   const [clientAppointmentAndTask, setClientAppointmentAndTask] = useState<{
@@ -141,6 +146,12 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
   }>({ appointments: [], tasks: [] });
 
   useEffect(() => {}, [UIShowingFile, uploadedFils, previouslyUploadedFiles]);
+
+  useEffect(() => {
+    if (clientSlice?.clients?.length > 0) {
+      setClientList(clientSlice?.clients);
+    }
+  }, [clientSlice?.State]);
 
   useEffect(() => {
     if (shiftNoteStates.selectedShiftNote != null) {
@@ -175,14 +186,11 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
         careGiverID: foreignDetails.careGiverID,
         state: "Active",
         documents: [],
+        clientID:null
       });
       setUploadedFiles([]);
     }
   }, [shiftNoteStates?.selectedShiftNote, isNoteModalVisible, foreignDetails]);
-
-  useEffect(() => {
-    console.log("initial values ", initialValues);
-  }, [initialValues]);
 
   const handleClosePDFViewer = () => {
     setPsdImageShowerModalOpen(false);
@@ -533,6 +541,27 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
+              <Grid item xs={12} sm={4} md={12}>
+                    <TextField
+                      select
+                      fullWidth
+                      label="Client"
+                      name="clientID"
+                      value={values.clientID}
+                      onChange={handleChange}
+                      error={touched.clientID && Boolean(errors.clientID)}
+                      helperText={touched.clientID && errors.clientID}
+                    >
+                      {clientList?.map((client) => (
+                        <MenuItem value={client?.clientID}>
+                          {client?.firstName +
+                            " " +
+                            client?.lastName +
+                            `(${client?.preferredName})`}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
 
               {/* Notes */}
               <Grid item xs={12}>

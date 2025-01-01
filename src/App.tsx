@@ -20,6 +20,11 @@ import { LoadScript } from "@react-google-maps/api";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
+// console.log = () => {}; // Disable all console logs in production
+// console.error = () => {}; // Disable all console errors in production
+// console.warn = () => {};
+// console.info = () => {};
+
 export const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
 function App() {

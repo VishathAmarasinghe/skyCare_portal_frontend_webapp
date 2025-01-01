@@ -9,6 +9,7 @@ import {
 } from "../../config/config";
 import RecurrentAppointmentDetailsModal from "../careGiver-dashboard-view/modal/RecurrentAppointmentDetailsModal";
 import AddNewAppointmentModal from "../client-view/modal/AddNewAppointmentModal";
+import { AppointmentTimeFrame } from "../../types/types";
 
 const AppointmentView = () => {
   const theme = useTheme();
@@ -19,6 +20,13 @@ const AppointmentView = () => {
   const authRole = useAppSelector((State) => State?.auth?.roles);
   const [recurrentAppointmentVisible, setRecurrentAppointmentVisible] =
     useState<boolean>(false);
+  const [selectedTimeFram, setSelectedTimeFrame] =
+    useState<AppointmentTimeFrame>({
+      endDate: "",
+      endTime: "",
+      startDate: "",
+      startTime: "",
+    });
 
   const handleOpenAddNewAppointmentModal = () => {
     setIsAppointmentAddModalVisible(true);
@@ -43,6 +51,8 @@ const AppointmentView = () => {
         isAppointmentAddModalVisible={isAppointmentDetailShowingModalOpen}
         setIsAppointmentAddModalVisible={setIsAppointmentAddModalVisible}
         isEditMode={isEditing}
+        selectedTimeFram={selectedTimeFram}
+        setSelectedTimeFrame={setSelectedTimeFrame}
         setIsEditMode={setIsEditing}
       />
       <RecurrentAppointmentDetailsModal
@@ -78,6 +88,8 @@ const AppointmentView = () => {
           setRecurrentAppointmentVisible={setRecurrentAppointmentVisible}
           setIsAppointmentAddModalVisible={setIsAppointmentAddModalVisible}
           setIsEditing={setIsEditing}
+          selectedTimeFram={selectedTimeFram}
+          setSelectedTimeFrame={setSelectedTimeFrame}
         />
       </Stack>
     </Stack>

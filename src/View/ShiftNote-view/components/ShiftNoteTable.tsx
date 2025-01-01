@@ -120,12 +120,6 @@ const ShiftNoteTable = ({
           >
             <RemoveRedEyeOutlinedIcon />
           </IconButton>
-          {/* <IconButton
-            aria-label="deleteNote"
-            onClick={() => handleDeleteNote(params.row.noteID)}
-          >
-            <DeleteOutlineIcon />
-          </IconButton> */}
         </Stack>
       ),
     },

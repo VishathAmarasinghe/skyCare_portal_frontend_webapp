@@ -11,6 +11,7 @@ import {
   resetSubmitState,
 } from "../../../../slices/carePlanSlice/carePlan";
 import AddNewCarePlanModal from "../../modal/AddNewCarePlanModal";
+import { useConfirmationModalContext } from "@context/DialogContext";
 
 const CarePlansTab = () => {
   const [isCarePlanModalVisible, setIsCarePlanModalVisible] =
@@ -19,6 +20,7 @@ const CarePlansTab = () => {
   const clientID = searchParams.get("clientID");
   const dispatch = useAppDispatch();
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
+
 
   const carePlans = useAppSelector((state) => state.carePlans);
 

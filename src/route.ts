@@ -13,6 +13,7 @@ import StickyNote2Icon from "@mui/icons-material/StickyNote2";
 import SpeakerNotesIcon from "@mui/icons-material/SpeakerNotes";
 import WorkHistoryIcon from "@mui/icons-material/WorkHistory";
 import SettingsIcon from "@mui/icons-material/Settings";
+import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 
 // APP imports
@@ -118,10 +119,19 @@ export const routes: RouteObjectWithRole[] = [
     icon: React.createElement(EmojiPeopleIcon),
     element: React.createElement(View.EmployeeView),
     allowRoles: [APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN],
+    children: [
+      {
+        path: "employeeInfo",
+        text: "Employee Information",
+        icon: undefined,
+        element: React.createElement(View.EmployeeView),
+        allowRoles: [APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN],
+      },
+    ],
   },
   {
-    path: "/Reports",
-    text: "Reports",
+    path: "/time-sheet-Reports",
+    text: "Time-Sheet",
     icon: React.createElement(AssessmentIcon),
     element: React.createElement(View.reportView),
     allowRoles: [APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN],
@@ -138,15 +148,11 @@ export const routes: RouteObjectWithRole[] = [
     ],
   },
   {
-    path: "/shift-notes",
-    text: "Shift Notes",
+    path: "/time-sheets",
+    text: "Time Sheets",
     icon: React.createElement(SpeakerNotesIcon),
     element: React.createElement(View.shiftNoteView),
-    allowRoles: [
-      APPLICATION_ADMIN,
-      APPLICATION_CARE_GIVER,
-      APPLICATION_SUPER_ADMIN,
-    ],
+    allowRoles: [APPLICATION_CARE_GIVER],
   },
   {
     path: "/settings",
@@ -154,6 +160,13 @@ export const routes: RouteObjectWithRole[] = [
     icon: React.createElement(SettingsIcon),
     element: React.createElement(View.SettingsView),
     allowRoles: [APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN],
+  },
+  {
+    path: "/file-upload",
+    text: "File Uploadings",
+    icon: React.createElement(DriveFolderUploadIcon),
+    element: React.createElement(View.careGiverFileUploadView),
+    allowRoles: [APPLICATION_CARE_GIVER],
   },
   {
     path: "/userInfo",

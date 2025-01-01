@@ -78,7 +78,7 @@ const IncidentTable = ({
 
   useEffect(() => {
     setIncidents(incidentSlice.incidents);
-  }, [incidentSlice.state]);
+  }, [incidentSlice.incidents]);
 
   const handlePageChange = (newPage: number) => {};
 
@@ -141,7 +141,11 @@ const IncidentTable = ({
                       )}`
                     : ""
                 } // Replace with your avatar URL logic
-                alt={employee?.firstName || params.row?.employeeID || ""}
+                alt={
+                  employee?.firstName?.charAt(0).toString() ||
+                  params.row?.employeeID ||
+                  ""
+                }
               >
                 {params?.row?.employeeID}
               </Avatar>

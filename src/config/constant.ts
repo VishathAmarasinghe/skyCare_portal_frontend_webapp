@@ -38,6 +38,9 @@ export const SnackMessage = {
     updateClient: "Client updated successfully",
     saveIncident: "Incident saved successfully",
     updateIncident: "Incident updated successfully",
+    saveClientDocuments: "Client documents saved successfully",
+    deleteClientDocuments: "Document Deleted Successfully",
+    deleteCarePlan: "Care Plan deleted successfully",
   },
   error: {
     fetchClients: "Failed to fetch clients",
@@ -115,6 +118,12 @@ export const SnackMessage = {
     incidentUpdate: "Failed to update incident",
     updatePassword: "Failed to update password",
     fetchJobAssignView: "Fail to fetch Job Assign View",
+    fetchClientDocuments: "Fail to fetch client documents",
+    saveClientDocuments: "Fail to save client documents",
+    deleteClientDocuments: "Fail to delete client documents",
+    deleteCarePlan: "Fail to delete care plan",
+    fetchTimeSheets: "Fail to fetch time sheets",
+    fetchCarePlanBillings: "Fail to fetch care plan billings",
   },
   warning: {},
 };

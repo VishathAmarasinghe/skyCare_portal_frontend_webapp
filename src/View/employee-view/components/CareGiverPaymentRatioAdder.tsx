@@ -9,6 +9,7 @@ interface CareGiverPaymentRatioAdderProps {
   careGiverPayments: CareGiverPayments[];
   setCareGiverPayments: (value: CareGiverPayments[]) => void;
   modalOpenState: boolean;
+  isEditable: boolean;
 }
 
 interface Payment {
@@ -21,6 +22,7 @@ const CareGiverPaymentRatioAdder = ({
   modalOpenState,
   careGiverPayments,
   setCareGiverPayments,
+  isEditable,
 }: CareGiverPaymentRatioAdderProps) => {
   const [payments, setPayments] = useState<Payment[]>([]);
 
@@ -137,7 +139,11 @@ const CareGiverPaymentRatioAdder = ({
             onBlur={() => finalizeAmount(params.row.paymentTypeID)}
             size="small"
             fullWidth
-            inputProps={{ inputMode: "decimal", pattern: "[0-9]*[.,]?[0-9]*" }}
+            inputProps={{
+              inputMode: "decimal",
+              pattern: "[0-9]*[.,]?[0-9]*",
+              readOnly: isEditable,
+            }}
           />
         </Stack>
       ),

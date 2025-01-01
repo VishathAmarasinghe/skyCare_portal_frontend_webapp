@@ -1,112 +1,130 @@
 import { Suspense, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { Box, alpha, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  CssBaseline,
+  Typography,
+  alpha,
+  useMediaQuery,
+} from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import Loader from "../component/common/Loader";
-
-import Header from "./header";
-import Sidebar from "./sidebar";
 import {
   Outlet,
   useLocation,
   useNavigate,
   matchRoutes,
 } from "react-router-dom";
-import { routes } from "../route";
-
-import ConfirmationModalContextProvider from "../context/DialogContext";
 import { useSnackbar } from "notistack";
-import pJson from "../../package.json";
-import { RootState, useAppSelector } from "../slices/store";
-import { Typography } from "@mui/material";
+import { useAppSelector } from "../slices/store";
 import { selectRoles } from "../slices/authSlice/auth";
-import { APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN } from "../config/config";
+import Loader from "../component/common/Loader";
+import Sidebar from "./sidebar";
+import Header from "./header";
 import MobileViewPage from "./pages/MobileViewPage";
+import ConfirmationModalContextProvider from "../context/DialogContext";
+import { APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN } from "../config/config";
+import { routes } from "../route";
+import pJson from "../../package.json";
 
 export default function Layout() {
-  // Snackbar configuration
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
+  const location = useLocation();
+  const theme = useTheme();
+
   const userRoles = useAppSelector(selectRoles);
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const [open, setOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
+
+  const toggleSidebar = () => setSidebarOpen(isMobile ? !sidebarOpen : true);
 
   useEffect(() => {
-    if (localStorage.getItem("hris-app-redirect-url")) {
-      navigate(localStorage.getItem("hris-app-redirect-url") as string);
+    const redirectUrl = localStorage.getItem("hris-app-redirect-url");
+    if (redirectUrl) {
+      navigate(redirectUrl);
       localStorage.removeItem("hris-app-redirect-url");
     }
   }, [navigate]);
 
-  const location = useLocation();
-  const matches = matchRoutes(routes, location.pathname);
-  const theme = useTheme();
+  useEffect(() => {
+    // Update sidebar visibility when screen size changes
+    setSidebarOpen(!isMobile);
+  }, [isMobile]);
 
-  const [open, setOpen] = useState(false);
-
-  // Check if the screen size is mobile (you can adjust the breakpoint as needed)
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  if (
+    (userRoles?.includes(APPLICATION_ADMIN) ||
+      userRoles?.includes(APPLICATION_SUPER_ADMIN)) &&
+    isMobile
+  ) {
+    return <MobileViewPage />;
+  }
 
   return (
     <ConfirmationModalContextProvider>
-      {
-        // If user is an admin or super admin and screen size is mobile, show MobileViewPage
-        // (userRoles?.includes(APPLICATION_ADMIN) ||
-        //   userRoles?.includes(APPLICATION_SUPER_ADMIN)) &&
-        isMobile ? (
-          <MobileViewPage />
-        ) : (
-          <Box
-            sx={{ display: "flex" }}
-            data-aos="fade-up"
-            data-aos-duration="200"
-          >
-            <CssBaseline />
-
+      <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+        <CssBaseline />
+        <Header onToggleSidebar={toggleSidebar} />
+        <Box
+          sx={{
+            display: "flex",
+            flex: 1,
+            flexDirection: isMobile ? "column" : "row",
+            overflow: "hidden",
+          }}
+        >
+          {sidebarOpen ? (
             <Sidebar
               roles={userRoles}
               currentPath={location.pathname}
               open={open}
               handleDrawer={() => setOpen(!open)}
               theme={theme}
+              toggle={toggleSidebar}
             />
-            <Header />
-
-            <Box
-              component="main"
-              className="Hello"
-              sx={{
-                flexGrow: 1,
-                height: "100vh",
-                p: 3,
-                pt: 9,
-                pb: 6,
-              }}
-            >
-              <Suspense fallback={<Loader />}>
-                <Outlet />
-              </Suspense>
+          ) : (
+            <></>
+          )}
+          <Box
+            component="main"
+            sx={{
+              flexGrow: 1,
+              height: "100%",
+              overflowY: "auto",
+              p: isMobile ? 2 : 3,
+              pt: isMobile ? 8 : 9,
+              pb: isMobile ? 3 : 6,
+            }}
+          >
+            <Suspense fallback={<Loader />}>
+              <Outlet />
+            </Suspense>
+            {!isMobile && (
               <Box
                 className="layout-note"
                 sx={{
                   background:
                     theme.palette.mode === "light"
-                      ? (theme) =>
-                          alpha(
-                            theme.palette.secondary.main,
-                            theme.palette.action.activatedOpacity
-                          )
+                      ? alpha(
+                          theme.palette.secondary.main,
+                          theme.palette.action.activatedOpacity
+                        )
                       : "#0d0d0d",
+                  py: 1,
+                  width: "100%",
+
+                  // textAlign: "center",
                 }}
               >
-                <Typography variant="h6" sx={{ color: "#919090" }}>
+                <Typography variant="caption" sx={{ color: "#919090" }}>
                   v {pJson.version} | © {new Date().getFullYear()} Sky Care
                   Solutions
                 </Typography>
               </Box>
-            </Box>
+            )}
           </Box>
-        )
-      }
+        </Box>
+      </Box>
     </ConfirmationModalContextProvider>
   );
 }

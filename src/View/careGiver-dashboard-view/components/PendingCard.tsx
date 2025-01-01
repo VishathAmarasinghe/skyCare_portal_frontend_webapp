@@ -50,20 +50,20 @@ const PendingCard = ({
       <Stack direction="row" alignItems="center" spacing={2} width="100%">
         <EventIcon
           color="primary"
-          sx={{ fontSize: { xs: 30, sm: 30, md: 20 } }}
+          sx={{ fontSize: { xs: 30, sm: 30, md: 27 } }}
         />
         <Stack width={"90%"}>
           <Typography
-            variant="body1"
+            variant="h6"
             fontWeight="bold"
-            sx={{ fontSize: { xs: "1rem", sm: "1.2rem", md: "12px" } }}
+            // sx={{ fontSize: { xs: "1rem", sm: "1.2rem", md: "12px" } }}
           >
             {jobDetails?.appointmentData?.title}
           </Typography>
           <Typography
             variant="body2"
             color="textSecondary"
-            sx={{ fontSize: { xs: "0.9rem", sm: "1rem", md: "11px" } }}
+            // sx={{ fontSize: { xs: "0.9rem", sm: "1rem", md: "11px" } }}
           >
             {`${dayjs(jobDetails?.startDate).format("MMM D, YYYY")} at ${dayjs(
               jobDetails?.startTime,
