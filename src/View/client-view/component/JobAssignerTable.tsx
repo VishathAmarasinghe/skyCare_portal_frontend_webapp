@@ -52,6 +52,7 @@ const JobAssignerTable = ({
   const authInfo = useAppSelector((state) => state.auth.userInfo);
   const dispatch = useAppDispatch();
   const careGiverSlice = useAppSelector((state) => state.careGivers);
+  const [selectedCareGiverID, setSelectedCareGiverID] = useState<string>("");
   const { showConfirmation } = useConfirmationModalContext();
   const [assignerChanges, setAssignerChanges] = useState<{
     added: string[];
@@ -66,7 +67,8 @@ const JobAssignerTable = ({
   });
 
   useEffect(() => {
-    if (!openModal && appointmentSlice.selectedAppointment) {
+    if (openModal && appointmentSlice.selectedAppointment) {
+      setSelectedCareGiverID("");
       dispatch(
         fetchJobAssignmentTable({
           appointmentID: appointmentSlice.selectedAppointment.appointmentID,
@@ -78,6 +80,7 @@ const JobAssignerTable = ({
         recurrentAppointmentID: "",
         assignerID: authInfo?.userID || "",
       });
+      
     }
   }, [openModal]);
 
@@ -359,6 +362,7 @@ const JobAssignerTable = ({
         <Select
           fullWidth
           displayEmpty
+          value={selectedCareGiverID}
           onChange={(e) => {
             const selectedCareGiver = careGivers.find(
               (option) => option.careGiverID === e.target.value
