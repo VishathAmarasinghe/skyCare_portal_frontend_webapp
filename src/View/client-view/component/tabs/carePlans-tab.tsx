@@ -40,9 +40,7 @@ const CarePlansTab = () => {
   }, [clientID]);
 
   useEffect(() => {
-    if (isCarePlanModalVisible) {
       fetchCarePlansRelatedToClient();
-    }
   }, [isCarePlanModalVisible]);
 
   const fetchCarePlansRelatedToClient = async () => {
