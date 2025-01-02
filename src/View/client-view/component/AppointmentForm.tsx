@@ -97,6 +97,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
   const [searchInput, setSearchInput] = useState("");
   const [searchParams] = useSearchParams();
   const clientID = searchParams.get("clientID");
+  const authUser = useAppSelector((state)=>state?.auth?.userInfo);
   const [selectedClient, setSelectedClient] = useState("");
   const [addressDetails, setAddressDetails] = useState<any>(null);
   const [uploadedFils, setUploadedFiles] = useState<File[]>([]);
@@ -149,7 +150,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
       taskID: "",
       appointmentID: "",
       assignType: "",
-      assigner: "EM00001",
+      assigner: authUser?.userID || "EM1",
     },
   });
 
@@ -343,7 +344,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
           taskID: "",
           appointmentID: "",
           assignType: "",
-          assigner: "EM00001",
+          assigner: authUser?.userID || "EM1",
         },
       });
     }
