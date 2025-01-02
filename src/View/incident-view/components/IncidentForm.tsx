@@ -261,8 +261,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
 
       const viewingFile = uploadedFils.find((f) => f.name == file.docID);
       if (viewingFile) {
-        console.log("Viewing file", viewingFile);
-        setImageViewerImageURl(new File([viewingFile], viewingFile.name));
+        setImageViewerImageURl(viewingFile);
         setPsdImageShowerModalOpen(true);
       }
     }

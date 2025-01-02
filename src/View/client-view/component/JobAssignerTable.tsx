@@ -204,7 +204,6 @@ const JobAssignerTable = ({
       field: "assigners",
       headerName: "Assigners",
       width: 100,
-
       renderCell: (params) => (
         <Button
           variant="outlined"
@@ -216,13 +215,14 @@ const JobAssignerTable = ({
         >
           Manage
         </Button>
-      ),
+      )
     },
     {
       field: "headcountSatisfied",
       headerName: "Headcount",
       width: 150,
       renderCell: (params) => (
+        <Stack height={"100%"} flexDirection={"column"} alignItems={"center"} justifyContent={"center"} alignContent={"center"}>
         <Typography
           color={
             params.row.assigners.length >= params.row.requiredHeadcount
@@ -234,6 +234,7 @@ const JobAssignerTable = ({
             ? "Satisfied"
             : "Not Satisfied"}
         </Typography>
+        </Stack>
       ),
     },
     {

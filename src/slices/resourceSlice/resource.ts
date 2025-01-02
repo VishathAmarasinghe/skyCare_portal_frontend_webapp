@@ -298,15 +298,15 @@ const ResourceSlice = createSlice({
         state.stateMessage = "Failed to fetch single Resource!";
       })
       .addCase(updateResource.pending, (state) => {
-        state.state = State.loading;
+        state.updateState = State.loading;
         state.stateMessage = "Updating resource...";
       })
       .addCase(updateResource.fulfilled, (state, action) => {
-        state.state = State.success;
+        state.updateState = State.success;
         state.stateMessage = "Successfully updated resource!";
       })
       .addCase(updateResource.rejected, (state) => {
-        state.state = State.failed;
+        state.updateState = State.failed;
         state.stateMessage = "Failed to update single Resource!";
       })
       .addCase(deleteResource.pending, (state) => {

@@ -1,20 +1,32 @@
 import { Button, Stack, Typography, useTheme } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import CarePlanMainTable from "./components/CarePlanMainTable";
-import { useAppDispatch } from "../../slices/store";
-import { fetchAllCarePlans } from "../../slices/carePlanSlice/carePlan";
+import { useAppDispatch, useAppSelector } from "../../slices/store";
+import { fetchAllCarePlans, fetchCarePlanStatusList, fetchGoalOutcomes } from "../../slices/carePlanSlice/carePlan";
 import { fetchClients } from "../../slices/clientSlice/client";
 import AddNewCarePlanModal from "../client-view/modal/AddNewCarePlanModal";
+import { State } from "../../types/types";
 
 const CarePlanView = () => {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const dispatch = useAppDispatch();
+  const carePlanSlice = useAppSelector((state)=>state?.carePlans);
 
   useEffect(() => {
     dispatch(fetchAllCarePlans());
     dispatch(fetchClients());
+    dispatch(fetchCarePlanStatusList());
+    dispatch(fetchGoalOutcomes());
+
   }, [isModalVisible]);
+
+  useEffect(()=>{
+    if(carePlanSlice?.submitState === State?.success || carePlanSlice?.updateState === State?.success){
+      setIsModalVisible(false);
+      dispatch(fetchAllCarePlans());
+    }
+  },[carePlanSlice?.submitState,carePlanSlice?.updateState])
 
   const theme = useTheme();
   return (

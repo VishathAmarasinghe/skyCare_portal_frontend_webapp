@@ -62,6 +62,7 @@ const CarePlanTable = ({
     carePlanDetails.state,
     carePlanDetails?.submitState,
     carePlanDetails?.updateState,
+    carePlanDetails?.fetchState
   ]);
 
   const initialColumns: GridColDef[] = [
@@ -84,7 +85,7 @@ const CarePlanTable = ({
     {
       field: "carePlanStatusID",
       headerName: "Status",
-      width: 100,
+      width: 170,
       headerAlign: "center",
       align: "center",
     },

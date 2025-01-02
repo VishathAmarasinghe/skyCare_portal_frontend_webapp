@@ -223,7 +223,9 @@ const AddNoteForm: React.FC<AddNoteFormProps> = ({
       const viewingFile = uploadedFils.find((f) => f.name == file.docID);
       if (viewingFile) {
         console.log("Viewing file", viewingFile);
-        setImageViewerImageURl(new File([viewingFile], viewingFile.name));
+        const fileUrl = URL.createObjectURL(viewingFile);
+        setImageViewerImageURl(viewingFile);
+
         setPsdImageShowerModalOpen(true);
       }
     }

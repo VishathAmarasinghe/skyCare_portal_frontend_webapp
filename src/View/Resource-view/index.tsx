@@ -1,6 +1,6 @@
 import { Button, Stack, Typography, useTheme } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { fetchAllResources } from "../../slices/resourceSlice/resource";
+import { fetchAllResources, resetSelectedResource } from "../../slices/resourceSlice/resource";
 import { useAppDispatch, useAppSelector } from "../../slices/store";
 import { State } from "../../types/types";
 import {
@@ -32,6 +32,7 @@ const ResourceView = () => {
     ) {
       setIsResourceModalVisible(false);
       setIsEditMode(false);
+      dispatch(resetSelectedResource());
     }
   }, [resourceSlice?.submitState, resourceSlice?.updateState]);
 

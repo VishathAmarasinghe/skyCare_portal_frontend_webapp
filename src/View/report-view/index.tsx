@@ -12,6 +12,7 @@ import {
   Grid,
   FormControl,
   InputLabel,
+  Button,
 } from "@mui/material";
 import {
   APPLICATION_ADMIN,
@@ -30,6 +31,7 @@ import ShiftNoteModal from "../careGiver-dashboard-view/modal/ShiftNoteModal";
 import TimeSheetTable from "./components/TimeSheetTable";
 import dayjs from "dayjs";
 import { Employee, fetchEmployeesByRole } from "@slices/employeeSlice/employee";
+import { fetchClients } from "@slices/clientSlice/client";
 
 const ReportView = () => {
   const theme = useTheme();
@@ -56,6 +58,7 @@ const ReportView = () => {
 
   useEffect(() => {
     dispatch(fetchEmployeesByRole("CareGiver"));
+    dispatch(fetchClients());
   }, []);
 
   useEffect(() => {
@@ -80,6 +83,11 @@ const ReportView = () => {
       setShiftModalOpen(false);
       setSelectedShiftNote({ shiftNoteID: null });
       setShiftIsEditMode(false);
+      fetchTimeSheets({
+        startDate: startDate,
+        endDate: endDate,
+        employeeID: selectedOption,
+      })
     }
   }, [shiftSlice?.submitState, shiftSlice?.updateState]);
 
@@ -134,6 +142,17 @@ const ReportView = () => {
         >
           Time Sheets
         </Typography>
+        <Button
+          variant="contained"
+          onClick={() => {
+            setSelectedShiftNote({ shiftNoteID: null }),
+              setShiftIsEditMode(true),
+              setShiftModalOpen(true),
+              setPureNew(true);
+          }}
+        >
+          New Time Sheet
+        </Button>
       </Stack>
       <Stack width="100%" height="480px" mt={1}>
         <Grid container width={"100%"} spacing={2} alignItems="center">

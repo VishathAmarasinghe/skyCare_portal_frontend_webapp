@@ -52,6 +52,7 @@ export interface CarePlanState {
   submitState: State;
   updateState: State;
   carePlans: CarePlan[];
+  fetchState:State;
   carePlanStatusList: CarePlanStatus[];
   goalOutcomeList: GoalOutcome[];
   selectedCarePlan: CarePlan | null;
@@ -78,6 +79,7 @@ const initialState: CarePlanState = {
   state: State.idle,
   submitState: State.idle,
   updateState: State.idle,
+  fetchState:State.idle,
   stateMessage: "",
   errorMessage: "",
   carePlans: [],
@@ -463,16 +465,16 @@ const CarePlanSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchCarePlansByClientID.pending, (state) => {
-        state.state = State.loading;
+        state.fetchState = State.loading;
         state.stateMessage = "Fetching Care plans...";
       })
       .addCase(fetchCarePlansByClientID.fulfilled, (state, action) => {
-        state.state = State.success;
+        state.fetchState = State.success;
         state.stateMessage = "Successfully fetched careplans!";
         state.carePlans = action.payload;
       })
       .addCase(fetchCarePlansByClientID.rejected, (state) => {
-        state.state = State.failed;
+        state.fetchState = State.failed;
         state.stateMessage = "Failed to fetch carePlans!";
       })
       .addCase(fetchCarePlanStatusList.pending, (state) => {
@@ -540,16 +542,19 @@ const CarePlanSlice = createSlice({
         state.stateMessage = "Failed to fetch care plan!";
       })
       .addCase(fetchAllCarePlans.pending, (state) => {
+        state.fetchState = State.loading;
         state.state = State.loading;
         state.stateMessage = "fetching care Plan...";
       })
       .addCase(fetchAllCarePlans.fulfilled, (state, action) => {
-        state.state = State.success;
+        state.fetchState = State.success;
+        state.state = State.success
         state.stateMessage = "Successfully fetched care plan!";
         state.carePlans = action.payload;
       })
       .addCase(fetchAllCarePlans.rejected, (state) => {
-        state.state = State.failed;
+        state.fetchState = State.failed;
+        state.state = State.success
         state.stateMessage = "Failed to fetch care plan!";
       })
       .addCase(updateCarePlanStatus.pending, (state) => {
