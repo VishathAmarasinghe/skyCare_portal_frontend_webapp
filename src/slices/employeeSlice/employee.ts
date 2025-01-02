@@ -207,6 +207,9 @@ export const updateEmployeeBasicInfo = createAsyncThunk(
           type: "success",
         })
       );
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
 
       return response.data;
     } catch (error: any) {
@@ -552,6 +555,19 @@ const EmployeeSlice = createSlice({
       .addCase(fetchCurrnetEmployee.rejected, (state) => {
         state.state = State.failed;
         state.stateMessage = "Failed to fetch meta employees!";
+      })
+      .addCase(updateEmployeeBasicInfo.pending, (state) => {
+        state.updateState = State.loading;
+        state.stateMessage = "Updating employee Basic Info...";
+      })
+      .addCase(updateEmployeeBasicInfo.fulfilled, (state, action) => {
+        state.updateState = State.success;
+        state.stateMessage = "Updated employee Basic info!";
+        state.logedEMployee = action.payload;
+      })
+      .addCase(updateEmployeeBasicInfo.rejected, (state) => {
+        state.updateState = State.failed;
+        state.stateMessage = "Failed to update employees basic info!";
       });
   },
 });

@@ -168,15 +168,27 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ open, setOpen }) => {
       }
       // Log password payload without confirmPassword
       const { currentPassword, newPassword } = passwordUpdater;
+
     }
+    const updatedUserInfoPayload = {
+      ...updatedUserInfo,
+      employeeID: currentUserInfo?.employeeID || "",
+    };
 
-    dispatch(
-      updateEmployeeBasicInfo({
-        employeeData: passwordUpdater,
-        profilePhoto: uploadedProfilePhoto,
-      })
-    );
-
+    if (updatedUserInfoPayload?.firstName!=""  && updatedUserInfoPayload?.lastName!="" && updatedUserInfoPayload?.email!="") {
+      dispatch(
+        updateEmployeeBasicInfo({
+          employeeData: {employeeID: currentUserInfo?.employeeID || "", 
+            firstName: updatedUserInfoPayload?.firstName!, 
+            lastName: updatedUserInfoPayload?.lastName!, 
+            email: updatedUserInfoPayload?.email!,
+            currentPassword:"",
+            newPassword:""
+          },
+          profilePhoto: uploadedProfilePhoto,
+        })
+      );
+    }
     // Update the current user info state
     setCurrentUserInfo({ ...currentUserInfo, ...updatedUserInfo } as Employee);
     setIsEditMode(false);
