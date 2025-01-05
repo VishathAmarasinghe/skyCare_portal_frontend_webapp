@@ -7,6 +7,8 @@ import {
   IconButton,
   Switch,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { State } from "../../../types/types";
 import { useAppSelector } from "../../../slices/store";
@@ -28,8 +30,10 @@ const ResourceCreationModal = ({
   isEditMode,
   setIsEditMode,
 }: AddNewNotesModalProps) => {
+  const theme = useTheme();
   const resourceSlice = useAppSelector((state) => state.resource);
   const authRole = useAppSelector((state) => state.auth.roles);
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleToggleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsEditMode(event.target.checked);
@@ -59,7 +63,7 @@ const ResourceCreationModal = ({
             )}
         </Box>
       }
-      width="80%"
+      width={isMobile ? "100%" : "50%"}
       centered
       maskClosable={false}
       open={isResourceModalVisible}

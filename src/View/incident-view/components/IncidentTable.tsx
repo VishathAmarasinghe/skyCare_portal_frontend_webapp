@@ -15,6 +15,7 @@ import {
   IconButton,
   Stack,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
@@ -52,6 +53,7 @@ const IncidentTable = ({
   const theme = useTheme();
   const incidentSlice = useAppSelector((state) => state?.incident);
   const employeeSlice = useAppSelector((state) => state?.employees);
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [incidents, setIncidents] = useState<Incidents[]>([]);
   const dispatch = useAppDispatch();
 
@@ -88,6 +90,7 @@ const IncidentTable = ({
       headerName: "Incident ID",
       width: 50,
       align: "center",
+      
     },
     { field: "title", headerName: "title", flex: 1 },
     {
@@ -192,11 +195,42 @@ const IncidentTable = ({
     },
   ];
 
+  const initialColumnsMobile: GridColDef[] = [
+    { field: "title", headerName: "title", flex: 1 },
+    {
+      field: "incidentDate",
+      headerName: "Incident Date",
+      width: 100,
+      headerAlign: "center",
+      align: "center",
+    },
+    {
+      field: "action",
+      headerName: "Action",
+      width: 150,
+      renderCell: (params) => {
+        return (
+          <Stack flexDirection="row">
+            <IconButton
+              aria-label="view"
+              onClick={() => {
+                dispatch(fetchSingleIncident(params.row?.incidentID));
+                setIsIncidentModalOpen(true);
+              }}
+            >
+              <RemoveRedEyeOutlinedIcon />
+            </IconButton>
+          </Stack>
+        );
+      },
+    },
+  ];
+
   return (
     <Box sx={{ height: "100%", width: "100%" }}>
       <DataGrid
         rows={incidents as Incidents[]}
-        columns={initialColumns}
+        columns={isMobile? initialColumnsMobile:initialColumns}
         getRowId={(row) => row.incidentID}
         density="compact"
         loading={incidentSlice.state === State?.loading}

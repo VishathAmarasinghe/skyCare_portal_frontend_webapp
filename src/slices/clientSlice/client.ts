@@ -55,6 +55,7 @@ export interface ClientDocuments {
   documentLocation: string;
   createdDate: string;
   clientId: string;
+  urlLink: string;
   // shareType: string;
 }
 

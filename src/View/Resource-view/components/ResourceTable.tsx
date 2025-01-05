@@ -8,7 +8,15 @@ import {
   GridToolbarFilterButton,
   GridToolbarQuickFilter,
 } from "@mui/x-data-grid";
-import { Avatar, Box, Chip, IconButton, Stack, useTheme } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Chip,
+  IconButton,
+  Stack,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
@@ -46,6 +54,7 @@ const ResourceTable = ({}: ResourceTableProps) => {
   const [resources, setResources] = useState<Resource[]>([]);
   const authRole = useAppSelector((State) => State?.auth?.roles);
   const employeeSlice = useAppSelector((state) => state?.employees);
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [employee, setEmployee] = useState<Employee[]>([]);
   const dispatch = useAppDispatch();
   const { showConfirmation } = useConfirmationModalContext();
@@ -183,6 +192,48 @@ const ResourceTable = ({}: ResourceTableProps) => {
     },
   ];
 
+  const initialColumnsMobile: GridColDef[] = [
+    { field: "resourceName", headerName: "Resource Name", flex: 1 },
+    {
+      field: "action",
+      headerName: "Action",
+      width: 80,
+      renderCell: (params) => {
+        return (
+          <Stack width={"100%"} flexDirection={"row"}>
+            <IconButton
+              aria-label="view"
+              onClick={() => {
+                dispatch(
+                  fetchSingleResource({ resourceID: params.row.resourceId })
+                );
+              }}
+            >
+              <RemoveRedEyeOutlinedIcon />
+            </IconButton>
+            {!isMobile && (
+              <IconButton
+                aria-label="delete"
+                onClick={() => {
+                  showConfirmation(
+                    "Delete Resource",
+                    `Are you sure you want to delete resource "${params.row.resourceName}"?`,
+                    ConfirmationType.update,
+                    () => handleDelete(params.row.resourceId),
+                    "Delete",
+                    "Cancel"
+                  );
+                }}
+              >
+                <DeleteOutlineOutlinedIcon />
+              </IconButton>
+            )}
+          </Stack>
+        );
+      },
+    },
+  ];
+
   const handlePageChange = (newPage: number) => {
     // Handle pagination if needed
   };
@@ -191,7 +242,7 @@ const ResourceTable = ({}: ResourceTableProps) => {
     <Box sx={{ height: "100%", width: "100%" }}>
       <DataGrid
         rows={resources}
-        columns={initialColumns}
+        columns={isMobile? initialColumnsMobile:initialColumns}
         getRowId={(row) => row.resourceId}
         density="compact"
         // loading={clientInfo.State === State.loading}

@@ -3,7 +3,7 @@ import { Upload, Tag, Space, DatePicker, Modal as AntModal } from "antd";
 import type { UploadFile, UploadProps } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Button, IconButton, Stack, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import {
   CareGiverDocuments,
@@ -40,8 +40,10 @@ const CareGiverFileUploader = ({
   uploadFiles,
   setUploadFiles,
 }: CareGiverFileUploaderProps) => {
+  const theme = useTheme();
   const [openModal, setOpenModal] = useState(false);
   const careGiverSlice = useAppSelector((state) => state.careGivers);
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [expirationDateError, setExpirationDateError] = useState<string | null>(
     null
@@ -234,7 +236,88 @@ const CareGiverFileUploader = ({
       flex: 1,
       renderCell: (params: GridRenderCellParams) =>
         params.row.uploadedDocument ? (
-          <Tag color="green">{params.row.uploadedDocument}</Tag>
+          <Tag color="green">Uploaded</Tag>
+        ) : params?.row?.requiredState ? (
+          <Tag color="volcano">Required</Tag>
+        ) : (
+          <Tag color="cyan">Optional</Tag>
+        ),
+    },
+    {
+      field: "expirationDate",
+      headerName: "Expiration Date",
+      flex: 1,
+      renderCell: (params: GridRenderCellParams) => {
+        const today = new Date();
+        const expirationDate = params.row.expirationDate
+          ? dayjs(params.row.expirationDate).toDate()
+          : null;
+
+        if (params.row.expDateNeeded && !params.row.uploadedDocument) {
+          return <Tag color="warning">Expired Date Required</Tag>;
+        }
+
+        if (expirationDate && expirationDate < today) {
+          return <Tag color="red">Expired</Tag>;
+        }
+
+        return expirationDate ? (
+          <Tag color="green">
+            Expires on {dayjs(expirationDate).format("YYYY-MM-DD")}
+          </Tag>
+        ) : null;
+      },
+    },
+    {
+      field: "action",
+      headerName: "Action",
+      flex: 1,
+      renderCell: (params: GridRenderCellParams) => (
+        <Stack width="100%" flexDirection="row">
+          {!params.row.uploadedDocument ? (
+            <Tooltip title="Upload">
+              <IconButton
+                color="primary"
+                onClick={() => handleOpenModal(params.row)}
+                disabled={!!params.row.uploadedDocument}
+              >
+                <UploadIcon />
+              </IconButton>
+            </Tooltip>
+          ) : (
+            <>
+              <Tooltip title="View">
+                <IconButton
+                  color="info"
+                  onClick={() => handleViewFile(params.row)}
+                >
+                  <VisibilityIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Delete">
+                <IconButton
+                  color="error"
+                  onClick={() => handleDeleteFile(params.row)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
+            </>
+          )}
+        </Stack>
+      ),
+    },
+  ];
+
+  const columnsMobile: GridColDef[] = [
+    { field: "documentName", headerName: "Document Name", flex: 1 },
+    {
+      field: "uploadedDocument",
+      headerName: "Uploaded Document",
+      flex: 1,
+      renderCell: (params: GridRenderCellParams) =>
+        params.row.uploadedDocument ? (
+          <Tag color="green">Uploaded</Tag>
         ) : params?.row?.requiredState ? (
           <Tag color="volcano">Required</Tag>
         ) : (
@@ -330,7 +413,7 @@ const CareGiverFileUploader = ({
       <div style={{ height: 400, width: "100%" }}>
         <DataGrid
           rows={documents}
-          columns={columns}
+          columns={isMobile?columnsMobile:columns}
           getRowId={(row) => row.documentTypeID}
           disableRowSelectionOnClick
         />

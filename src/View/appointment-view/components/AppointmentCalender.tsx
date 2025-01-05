@@ -72,7 +72,7 @@ const AppointmentCalendar = ({
       Views.WEEK,
       Views.WORK_WEEK,
       Views.DAY,
-      Views.AGENDA,
+      // Views.AGENDA,
     ];
     return {
       components: {
