@@ -70,6 +70,7 @@ const DocumentsTable = ({
       renderCell: (params) => {
         const url = params.row.urlLink; // The URL string from the row data
         return (
+          url!="" && url!=null &&
           <a 
             href={url} 
             target="_blank" 
@@ -88,7 +89,7 @@ const DocumentsTable = ({
       renderCell: (params) => (
         <Stack direction="row" spacing={1}>
           {
-            params?.row?.urlLink=="" || params?.row?.urlLink==null ?
+            params?.row?.documentName!="Document Linked" ?
             <IconButton
             aria-label="view"
             onClick={() => {

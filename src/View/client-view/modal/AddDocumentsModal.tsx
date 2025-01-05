@@ -51,7 +51,7 @@ const AddDocumentsModal: React.FC<AddDocumentsModalProps> = ({
   };
 
   const handleSave = () => {
-    if (!validateUrl(url)) {
+    if (url!="" && !validateUrl(url)) {
       setUrlError("Please enter a valid URL.");
       return;
     }
