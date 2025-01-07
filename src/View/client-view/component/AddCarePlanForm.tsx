@@ -67,7 +67,7 @@ const AddCarePlanForm = ({
 
   useEffect(() => {
     setClients(clientDetails?.clients);
-  }, [clientDetails?.State]);
+  }, [clientDetails?.State,clientDetails?.clients]);
 
   useEffect(() => {
     setCarePlanStatusList(carePlanSlice.carePlanStatusList);
@@ -94,7 +94,7 @@ const AddCarePlanForm = ({
         })),
       ]);
     }
-  }, [clientID]);
+  }, [clientID,clientDetails?.clients,clientDetails?.State]);
 
   useEffect(() => {
     if (carePlanSlice.selectedCarePlan) {

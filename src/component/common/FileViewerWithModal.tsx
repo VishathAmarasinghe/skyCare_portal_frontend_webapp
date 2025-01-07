@@ -5,6 +5,7 @@ import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import { FILE_DOWNLOAD_BASE_URL, ServiceBaseUrl } from "../../config/config";
+import { useMediaQuery, useTheme } from "@mui/material";
 
 interface FileViewerWithModalProps {
   file: File | string; // File (from input) or URL (from server)
@@ -19,6 +20,8 @@ const FileViewerWithModal: React.FC<FileViewerWithModalProps> = ({
 }) => {
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const [isPdf, setIsPdf] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [fileUrl, setFileUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -103,7 +106,7 @@ const FileViewerWithModal: React.FC<FileViewerWithModalProps> = ({
           Close
         </Button>,
       ]}
-      width={isPdf ? "80%" : "50%"}
+      width={isPdf ? isMobile?"100%": "80%" : isMobile?"100%":"50%"}
       styles={{ body: { height: "80vh", overflow: "auto" } }}
     >
       {isPdf ? (

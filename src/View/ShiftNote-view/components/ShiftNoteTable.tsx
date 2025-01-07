@@ -7,7 +7,7 @@ import {
   GridToolbarFilterButton,
   GridToolbarQuickFilter,
 } from "@mui/x-data-grid";
-import { Box, IconButton, Stack, useTheme } from "@mui/material";
+import { Box, IconButton, Stack, useMediaQuery, useTheme } from "@mui/material";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import {
@@ -44,6 +44,7 @@ const ShiftNoteTable = ({
   const dispatch = useAppDispatch();
   const { showConfirmation } = useConfirmationModalContext();
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     setShiftNotes(shiftNoteSlice.shiftNotes);
@@ -125,6 +126,58 @@ const ShiftNoteTable = ({
     },
   ];
 
+  const initialColumnsMobile: GridColDef[] = [
+    { field: "title", headerName: "Title", align: "left", flex: 2 },
+    {
+      field: "shiftStartDate",
+      headerName: "Start Date",
+      align: "left",
+      flex: 1,
+    },
+    {
+      field: "shiftStartTime",
+      headerName: "Start Time",
+      align: "left",
+      flex: 1,
+    },
+    {
+      field: "shiftEndDate",
+      headerName: "End Date",
+      align: "left",
+      flex: 1,
+    },
+    {
+      field: "shiftEndTime",
+      headerName: "End Time",
+      align: "left",
+      flex: 1,
+    },
+    {
+      field: "action",
+      headerName: "Action",
+      flex: 1,
+      headerAlign: "left",
+      renderCell: (params) => (
+        <Stack
+          width={"100%"}
+          flexDirection={"row"}
+          justifyContent="space-between"
+        >
+          <IconButton
+            aria-label="view"
+            onClick={() => {
+              dispatch(getSingleShiftNoteByShiftID(params.row?.noteID));
+              setIsNoteModalVisible(true);
+              setPureNew(false);
+            }}
+          >
+            <RemoveRedEyeOutlinedIcon />
+          </IconButton>
+        </Stack>
+      ),
+    },
+  ];
+
   return (
     <Box
       sx={{
@@ -136,7 +189,7 @@ const ShiftNoteTable = ({
     >
       <DataGrid
         rows={shiftNotes}
-        columns={initialColumns}
+        columns={isMobile?initialColumnsMobile:initialColumns}
         getRowId={(row) => row.noteID}
         density="compact"
         pagination

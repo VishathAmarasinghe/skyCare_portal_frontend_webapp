@@ -40,7 +40,11 @@ const CarePlansTab = () => {
   }, [clientID]);
 
   useEffect(() => {
-      fetchCarePlansRelatedToClient();
+      // fetchCarePlansRelatedToClient();
+      if (clientID !== null && clientID !== undefined && clientID !== "") {
+        dispatch(fetchCarePlansByClientID(clientID));
+      }
+
   }, [isCarePlanModalVisible]);
 
   const fetchCarePlansRelatedToClient = async () => {

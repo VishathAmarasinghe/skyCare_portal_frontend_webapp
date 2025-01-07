@@ -81,15 +81,9 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
     tasks: string[];
   }>({ appointments: [], tasks: [] });
 
-  useEffect(() => {
-    console.log("ui showing files", UIShowingFile);
-    console.log("uploaded files", uploadedFils);
-    console.log("previously uploaded files", previouslyUploadedFiles);
-  }, [UIShowingFile, uploadedFils, previouslyUploadedFiles]);
 
   useEffect(() => {
     if (resourceSlice.selectedResource != null) {
-      console.log("initial valies  ", resourceSlice.selectedResource);
       setInitialValues({
         ...resourceSlice.selectedResource,
         validFrom: dayjs(resourceSlice.selectedResource.validFrom).format(
@@ -121,9 +115,6 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
     }
   }, [resourceSlice?.selectedResource, isNoteModalVisible]);
 
-  useEffect(() => {
-    console.log("initial values ", initialValues);
-  }, [initialValues]);
 
   const handleClosePDFViewer = () => {
     setPsdImageShowerModalOpen(false);
@@ -169,8 +160,7 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
 
       const viewingFile = uploadedFils.find((f) => f.name == file.docID);
       if (viewingFile) {
-        console.log("Viewing file", viewingFile);
-        setImageViewerImageURl(new File([viewingFile], viewingFile.name));
+        setImageViewerImageURl(viewingFile);
         setPsdImageShowerModalOpen(true);
       }
     }

@@ -47,18 +47,32 @@ const DocumentsTab = () => {
     }
   }, [selectedClientDocument]);
 
-  const handleSave = (file: File | null) => {
+  const handleSave = (file: {file:File|null,url:string}) => {
     console.log("Saved files:", file);
-    if (file != null) {
+    if (file.file != null) {
       const payload: ClientDocuments = {
         clientDocumentID: "",
         clientId: clientID || "",
         createdDate: dayjs().format("YYYY-MM-DD"),
         documentLocation: "",
-        documentName: file?.name,
+        documentName: file?.file?.name || "",
+        urlLink:file.url
       };
-      dispatch(saveClientDocuments({ documents: payload, files: [file] }));
+      dispatch(saveClientDocuments({ documents: payload, files: [file.file] }));
+    }else{
+      if (file.url != "") {
+        const payload: ClientDocuments = {
+          clientDocumentID: "",
+          clientId: clientID || "",
+          createdDate: dayjs().format("YYYY-MM-DD"),
+          documentLocation: "",
+          documentName: file.url,
+          urlLink:file.url
+        };
+        dispatch(saveClientDocuments({ documents: payload, files: [] }));
+      }
     }
+    
   };
 
   return (

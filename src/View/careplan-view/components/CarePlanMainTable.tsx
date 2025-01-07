@@ -67,7 +67,7 @@ const CarePlanMainTable = ({
 
   useEffect(() => {
     setCarePlans(carePlanDetails.carePlans);
-  }, [carePlanDetails.state]);
+  }, [carePlanDetails.state,carePlanDetails?.fetchState]);
 
   const findCorrespondingClientDetails = (clientID: string): Client | null => {
     const employee = clientArray.find(
@@ -156,7 +156,7 @@ const CarePlanMainTable = ({
         paginationMode="client"
         initialState={{
           pagination: {
-            paginationModel: { pageSize: 5 },
+            paginationModel: { pageSize: 10 },
           },
         }}
         slots={{

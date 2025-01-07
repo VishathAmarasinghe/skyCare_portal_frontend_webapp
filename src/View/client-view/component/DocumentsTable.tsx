@@ -64,19 +64,42 @@ const DocumentsTable = ({
       width: 150,
     },
     {
+      field: "urlLink",
+      headerName: "URL",
+      width: 150,
+      renderCell: (params) => {
+        const url = params.row.urlLink; // The URL string from the row data
+        return (
+          url!="" && url!=null &&
+          <a 
+            href={url} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            style={{ color: "#1976d2", textDecoration: "underline" }}
+          >
+            Open Link
+          </a>
+        );
+      },
+    },
+    {
       field: "action",
       headerName: "Action",
       width: 150,
       renderCell: (params) => (
         <Stack direction="row" spacing={1}>
-          <IconButton
+          {
+            params?.row?.documentName!="Document Linked" ?
+            <IconButton
             aria-label="view"
             onClick={() => {
               setSelectedClientDocument(params?.row);
             }}
           >
             <RemoveRedEyeOutlinedIcon />
-          </IconButton>
+          </IconButton> : null
+          }
+          
           <IconButton
             aria-label="delete"
             onClick={() => {

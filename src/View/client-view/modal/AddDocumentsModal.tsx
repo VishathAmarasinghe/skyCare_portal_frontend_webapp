@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Box, Button, Typography, Stack } from "@mui/material";
+import { Modal, Box, Button, Typography, Stack, TextField } from "@mui/material";
 import { Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import type { UploadFile } from "antd/es/upload/interface";
@@ -7,7 +7,7 @@ import type { UploadFile } from "antd/es/upload/interface";
 interface AddDocumentsModalProps {
   open: boolean;
   onClose: () => void;
-  onSave: (file: File | null) => void;
+  onSave: (file: {file:File|null,url:string}) => void;
 }
 
 const AddDocumentsModal: React.FC<AddDocumentsModalProps> = ({
@@ -17,11 +17,15 @@ const AddDocumentsModal: React.FC<AddDocumentsModalProps> = ({
 }) => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [url, setUrl] = useState<string>('');
+  const [urlError, setUrlError] = useState<string>("");
 
   useEffect(() => {
     if (open) {
       setFileList([]);
       setUploadedFile(null);
+      setUrl('');
+      setUrlError('');
     }
   }, [open]);
 
@@ -41,9 +45,26 @@ const AddDocumentsModal: React.FC<AddDocumentsModalProps> = ({
     }
   };
 
+  const validateUrl = (inputUrl: string): boolean => {
+    const urlRegex = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+    return urlRegex.test(inputUrl);
+  };
+
   const handleSave = () => {
-    onSave(uploadedFile); // Pass the uploaded file to the parent component
+    if (url!="" && !validateUrl(url)) {
+      setUrlError("Please enter a valid URL.");
+      return;
+    }
+    onSave({file:uploadedFile,url:url}); // Pass the uploaded file to the parent component
     onClose(); // Close the modal
+  };
+
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputUrl = e.target.value;
+    setUrl(inputUrl);
+    if (urlError) {
+      setUrlError(""); // Clear the error if the user starts typing
+    }
   };
 
   return (
@@ -75,12 +96,21 @@ const AddDocumentsModal: React.FC<AddDocumentsModalProps> = ({
               Upload File
             </Button>
           </Upload>
+          <TextField
+            label="URL"
+            variant="outlined"
+            fullWidth
+            value={url}
+            onChange={handleUrlChange}
+            error={!!urlError}
+            helperText={urlError || "Enter a valid URL (e.g., https://example.com)"}
+          />
           <Stack direction="row" justifyContent="flex-end" spacing={2}>
             <Button
               variant="contained"
               color="primary"
               onClick={handleSave}
-              disabled={!uploadedFile} // Disable save if no file is selected
+              disabled={!uploadedFile && url.trim() === ""}
             >
               Save
             </Button>
