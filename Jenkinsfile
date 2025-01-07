@@ -39,9 +39,9 @@ pipeline {
             }
         }
         stage('Build and Deploy for Staging') {
-            // when {
-            //     branch 'dev'
-            // }
+            when {
+                branch 'dev'
+            }
             stages {
                 stage('Build Staging Frontend') {
                     steps {
@@ -103,9 +103,9 @@ pipeline {
             }
         }
         stage('Build and Deploy for Production') {
-            // when {
-            //     branch 'main'
-            // }
+            when {
+                branch 'main'
+            }
             stages {
                 stage('Build Production Frontend') {
                     steps {
@@ -172,7 +172,7 @@ pipeline {
             echo 'Build and deployment completed successfully!'
         }
         failure {
-            echo 'Pipeline failed. Please check the logs.'
+            echo 'Pipeline failed. Please check the logs to inspect.'
         }
     }
 }
