@@ -9,13 +9,6 @@ pipeline {
         REGISTRY = 'docker.io'
     }
     stages {
-        stage('Stop MySQL') {
-            steps {
-                script {
-                    sh 'sudo systemctl stop mysql'
-                }
-            }
-        }
         stage('Checkout Repositories') {
             steps {
                 script {
@@ -46,11 +39,14 @@ pipeline {
                 }
             }
         }
-        stage('Build and Deploy to Staging') {
+        stage('Build and Deploy for staging') {
+            when{
+                branch 'dev'
+            }
             parallel {
-                stage('Build Frontend') {
+                stage('Build staging Frontend') {
                     steps {
-                        dir('frontend-prod') {
+                        dir('frontend-stg') {
                             script {
                                 sh """
                                 docker build -f Dockerfile.frontend -t ${FRONTEND_IMAGE} \
@@ -64,9 +60,9 @@ pipeline {
                         }
                     }
                 }
-                stage('Build Backend') {
+                stage('Build staging Backend') {
                     steps {
-                        dir('backend-prod') {
+                        dir('backend-dev') {
                             script {
                                 sh """
                                 docker build -t ${BACKEND_IMAGE} \
@@ -83,38 +79,99 @@ pipeline {
                         }
                     }
                 }
+                
             }
-        }
-        stage('Remove Old Containers') {
-            steps {
-                script {
-                    sh 'docker ps -a -q --filter "name=frontend-staging" | xargs -r docker stop'
-                    sh 'docker ps -a -q --filter "name=frontend-staging" | xargs -r docker rm -f'
-                    sh 'docker ps -a -q --filter "name=database-staging" | xargs -r docker stop'
-                    sh 'docker ps -a -q --filter "name=database-staging" | xargs -r docker rm -f'
-                    sh 'docker ps -a -q --filter "name=backend-staging" | xargs -r docker stop'
-                    sh 'docker ps -a -q --filter "name=backend-staging" | xargs -r docker rm -f'
-                    sh 'docker ps -a -q --filter "name=reverse-proxy" | xargs -r docker stop'
-                    sh 'docker ps -a -q --filter "name=reverse-proxy" | xargs -r docker rm -f'
-                }
+            stage('Remove Old staging Containers') {
+                    steps {
+                        script {
+                            sh 'docker ps -a -q --filter "name=frontend-staging" | xargs -r docker stop'
+                            sh 'docker ps -a -q --filter "name=frontend-staging" | xargs -r docker rm -f'
+                            sh 'docker ps -a -q --filter "name=database-staging" | xargs -r docker stop'
+                            sh 'docker ps -a -q --filter "name=database-staging" | xargs -r docker rm -f'
+                            sh 'docker ps -a -q --filter "name=backend-staging" | xargs -r docker stop'
+                            sh 'docker ps -a -q --filter "name=backend-staging" | xargs -r docker rm -f'
+                            sh 'docker ps -a -q --filter "name=reverse-proxy" | xargs -r docker stop'
+                            sh 'docker ps -a -q --filter "name=reverse-proxy" | xargs -r docker rm -f'
+                        }
+                    }
             }
-        }
-        stage('restart MySQL') {
-            steps {
-                script {
-                    sh 'sudo systemctl start mysql'
-                }
-            }
-        }
-        stage('Deploy to Staging') {
-            steps {
-                dir('backend-prod') {
-                    script {
-                        sh 'docker-compose -f docker-compose.dev.yml up -d'
+            stage('Deploy to Staging') {
+                steps {
+                    dir('backend-prod') {
+                        script {
+                            sh 'docker-compose -f docker-compose.dev.yml up -d'
+                        }
                     }
                 }
             }
         }
+        stage('Build and Deploy for production') {
+            when{
+                branch 'main'
+            }
+            parallel {
+                stage('Build production Frontend') {
+                    steps {
+                        dir('frontend-prod') {
+                            script {
+                                sh """
+                                docker build -f Dockerfile.frontend -t ${FRONTEND_IMAGE} \
+                                    --build-arg VITE_BACKEND_BASE_URL=https://skycare.au/api \
+                                    --build-arg VITE_APPLICATION_ADMIN=admin.skyCarePortal \
+                                    --build-arg VITE_APPLICATION_SUPER_ADMIN=superadmin.skyCarePortal \
+                                    --build-arg VITE_APPLICATION_CARE_GIVER=caregiver.skyCarePortal \
+                                    --build-arg VITE_FILE_DOWNLOAD_PATH=/file/download .
+                                """
+                            }
+                        }
+                    }
+                }
+                stage('Build production Backend') {
+                    steps {
+                        dir('backend-prod') {
+                            script {
+                                sh """
+                                docker build -t ${BACKEND_IMAGE} \
+                                    --build-arg SPRING_PROFILES_ACTIVE=dev \
+                                    --build-arg SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/skycareportal_prod \
+                                    --build-arg SPRING_DATASOURCE_USERNAME=root \
+                                    --build-arg SPRING_DATASOURCE_PASSWORD=root \
+                                    --build-arg SPRING_MAIL_USERNAME=projectvishath@gmail.com \
+                                    --build-arg SPRING_MAIL_PASSWORD='ovdi uiox jqvd avai' \
+                                    --build-arg FRONTEND_URL=http://frontend:80 \
+                                    --build-arg SERVER_PORT=5000 .
+                                """
+                            }
+                        }
+                    }
+                }
+                
+            }
+            stage('Remove Old production Containers') {
+                    steps {
+                        script {
+                            sh 'docker ps -a -q --filter "name=frontend-production" | xargs -r docker stop'
+                            sh 'docker ps -a -q --filter "name=frontend-production" | xargs -r docker rm -f'
+                            sh 'docker ps -a -q --filter "name=database-production" | xargs -r docker stop'
+                            sh 'docker ps -a -q --filter "name=database-production" | xargs -r docker rm -f'
+                            sh 'docker ps -a -q --filter "name=backend-production" | xargs -r docker stop'
+                            sh 'docker ps -a -q --filter "name=backend-production" | xargs -r docker rm -f'
+                            sh 'docker ps -a -q --filter "name=reverse-proxy" | xargs -r docker stop'
+                            sh 'docker ps -a -q --filter "name=reverse-proxy" | xargs -r docker rm -f'
+                        }
+                    }
+            }
+            stage('Deploy to production') {
+                steps {
+                    dir('backend-prod') {
+                        script {
+                            sh 'docker-compose -f docker-compose.prod.yml up -d'
+                        }
+                    }
+                }
+            }
+        }
+        
     }
     post {
         success {
