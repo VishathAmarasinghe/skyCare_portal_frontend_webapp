@@ -12,7 +12,6 @@ pipeline {
         stage('Checkout Repositories') {
             steps {
                 script {
-                    // Checkout both repositories
                     dir('frontend-prod') {
                         git url: "${FRONTEND_REPO}", branch: 'main', credentialsId: 'GITHUB_VISHATH_CREDENTIALS'
                     }
@@ -30,7 +29,7 @@ pipeline {
         }
         stage('Reverse Proxy Configuration') {
             steps {
-                dir('frontend-prod') { // Ensure the directory is correct
+                dir('frontend-prod') {
                     script {
                         sh """
                             docker build -f Dockerfile.proxy -t ${PROXY_IMAGE} .
@@ -39,12 +38,12 @@ pipeline {
                 }
             }
         }
-        stage('Build and Deploy for staging') {
-            when{
+        stage('Build and Deploy for Staging') {
+            when {
                 branch 'dev'
             }
-            parallel {
-                stage('Build staging Frontend') {
+            stages {
+                stage('Build Staging Frontend') {
                     steps {
                         dir('frontend-stg') {
                             script {
@@ -60,9 +59,9 @@ pipeline {
                         }
                     }
                 }
-                stage('Build staging Backend') {
+                stage('Build Staging Backend') {
                     steps {
-                        dir('backend-dev') {
+                        dir('backend-stg') {
                             script {
                                 sh """
                                 docker build -t ${BACKEND_IMAGE} \
@@ -79,38 +78,36 @@ pipeline {
                         }
                     }
                 }
-                
-            }
-            stage('Remove Old staging Containers') {
+                stage('Remove Old Staging Containers') {
                     steps {
                         script {
-                            sh 'docker ps -a -q --filter "name=frontend-staging" | xargs -r docker stop'
-                            sh 'docker ps -a -q --filter "name=frontend-staging" | xargs -r docker rm -f'
-                            sh 'docker ps -a -q --filter "name=database-staging" | xargs -r docker stop'
-                            sh 'docker ps -a -q --filter "name=database-staging" | xargs -r docker rm -f'
-                            sh 'docker ps -a -q --filter "name=backend-staging" | xargs -r docker stop'
-                            sh 'docker ps -a -q --filter "name=backend-staging" | xargs -r docker rm -f'
-                            sh 'docker ps -a -q --filter "name=reverse-proxy" | xargs -r docker stop'
-                            sh 'docker ps -a -q --filter "name=reverse-proxy" | xargs -r docker rm -f'
+                            def containers = ['frontend-staging', 'database-staging', 'backend-staging', 'reverse-proxy']
+                            containers.each { container ->
+                                sh """
+                                docker ps -a -q --filter "name=${container}" | xargs -r docker stop
+                                docker ps -a -q --filter "name=${container}" | xargs -r docker rm -f
+                                """
+                            }
                         }
                     }
-            }
-            stage('Deploy to Staging') {
-                steps {
-                    dir('backend-prod') {
-                        script {
-                            sh 'docker-compose -f docker-compose.dev.yml up -d'
+                }
+                stage('Deploy to Staging') {
+                    steps {
+                        dir('backend-stg') {
+                            script {
+                                sh 'docker-compose -f docker-compose.dev.yml up -d'
+                            }
                         }
                     }
                 }
             }
         }
-        stage('Build and Deploy for production') {
-            when{
+        stage('Build and Deploy for Production') {
+            when {
                 branch 'main'
             }
-            parallel {
-                stage('Build production Frontend') {
+            stages {
+                stage('Build Production Frontend') {
                     steps {
                         dir('frontend-prod') {
                             script {
@@ -126,13 +123,13 @@ pipeline {
                         }
                     }
                 }
-                stage('Build production Backend') {
+                stage('Build Production Backend') {
                     steps {
                         dir('backend-prod') {
                             script {
                                 sh """
                                 docker build -t ${BACKEND_IMAGE} \
-                                    --build-arg SPRING_PROFILES_ACTIVE=dev \
+                                    --build-arg SPRING_PROFILES_ACTIVE=prod \
                                     --build-arg SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/skycareportal_prod \
                                     --build-arg SPRING_DATASOURCE_USERNAME=root \
                                     --build-arg SPRING_DATASOURCE_PASSWORD=root \
@@ -145,33 +142,30 @@ pipeline {
                         }
                     }
                 }
-                
-            }
-            stage('Remove Old production Containers') {
+                stage('Remove Old Production Containers') {
                     steps {
                         script {
-                            sh 'docker ps -a -q --filter "name=frontend-production" | xargs -r docker stop'
-                            sh 'docker ps -a -q --filter "name=frontend-production" | xargs -r docker rm -f'
-                            sh 'docker ps -a -q --filter "name=database-production" | xargs -r docker stop'
-                            sh 'docker ps -a -q --filter "name=database-production" | xargs -r docker rm -f'
-                            sh 'docker ps -a -q --filter "name=backend-production" | xargs -r docker stop'
-                            sh 'docker ps -a -q --filter "name=backend-production" | xargs -r docker rm -f'
-                            sh 'docker ps -a -q --filter "name=reverse-proxy" | xargs -r docker stop'
-                            sh 'docker ps -a -q --filter "name=reverse-proxy" | xargs -r docker rm -f'
+                            def containers = ['frontend-production', 'database-production', 'backend-production', 'reverse-proxy']
+                            containers.each { container ->
+                                sh """
+                                docker ps -a -q --filter "name=${container}" | xargs -r docker stop
+                                docker ps -a -q --filter "name=${container}" | xargs -r docker rm -f
+                                """
+                            }
                         }
                     }
-            }
-            stage('Deploy to production') {
-                steps {
-                    dir('backend-prod') {
-                        script {
-                            sh 'docker-compose -f docker-compose.prod.yml up -d'
+                }
+                stage('Deploy to Production') {
+                    steps {
+                        dir('backend-prod') {
+                            script {
+                                sh 'docker-compose -f docker-compose.prod.yml up -d'
+                            }
                         }
                     }
                 }
             }
         }
-        
     }
     post {
         success {
