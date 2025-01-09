@@ -153,6 +153,12 @@ const ShiftNoteTable = ({
       flex: 1,
     },
     {
+      field:"totalWorkHrs",
+      headerName:"Total Work Hrs",
+      align:"left",
+      flex:1
+    },
+    {
       field: "action",
       headerName: "Action",
       flex: 1,

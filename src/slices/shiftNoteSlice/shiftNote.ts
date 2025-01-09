@@ -44,6 +44,7 @@ export interface updateShiftNote {
   state: string;
   documents: ShiftNoteDocuments[];
   clientID:string | null;
+  totalWorkHrs:number
 }
 
 export interface currentShiftNoteState {

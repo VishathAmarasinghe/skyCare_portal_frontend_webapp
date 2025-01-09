@@ -73,7 +73,7 @@ const ReportView = () => {
         employeeID: selectedOption,
       })
     );
-  }, [endDate, startDate, selectedOption]);
+  }, [endDate, startDate, selectedOption,shiftModalOpen]);
 
   useEffect(() => {
     if (
@@ -89,7 +89,7 @@ const ReportView = () => {
         employeeID: selectedOption,
       })
     }
-  }, [shiftSlice?.submitState, shiftSlice?.updateState]);
+  }, [shiftSlice?.submitState, shiftSlice?.updateState]) ;
 
   // Handlers
   const handleOptionChange = (event: SelectChangeEvent<string>) => {

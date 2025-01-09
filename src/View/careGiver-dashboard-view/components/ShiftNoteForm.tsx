@@ -34,6 +34,7 @@ import {
   APPLICATION_SUPER_ADMIN,
 } from "../../../config/config";
 import { Client } from "@slices/clientSlice/client";
+import { CareGiver } from "@slices/careGiverSlice/careGiver";
 
 // Validation schema using Yup
 const validationSchema = (selectedShiftNote: updateShiftNote | null) =>
@@ -111,6 +112,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
   const clientID = searchParams.get("clientID");
   const authRoles = useAppSelector((state) => state.auth.roles);
   const shiftNoteStates = useAppSelector((state) => state.shiftNotes);
+  const careGiverSlice = useAppSelector((state) => state?.careGivers);
   const [psdImageShowerModalOpen, setPsdImageShowerModalOpen] =
     useState<boolean>(false);
   const [imageViewerImageURl, setImageViewerImageURl] = useState<File | string>(
@@ -118,7 +120,8 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
   );
   const clientSlice = useAppSelector((state) => state?.clients);
   const [clientList, setClientList] = useState<Client[]>([]);
-  
+  const [careGiverList, setCareGiverList] = useState<CareGiver[]>([]);
+
   const [initialValues, setInitialValues] = useState<updateShiftNote>({
     noteID: "",
     title: "",
@@ -137,7 +140,8 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
     careGiverID: foreignDetails.careGiverID,
     state: "Active",
     documents: [],
-    clientID:null
+    clientID: null,
+    totalWorkHrs: 0,
   });
 
   const [clientAppointmentAndTask, setClientAppointmentAndTask] = useState<{
@@ -152,6 +156,12 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
       setClientList(clientSlice?.clients);
     }
   }, [clientSlice?.State]);
+
+  useEffect(() => {
+    if (careGiverSlice?.careGivers?.length > 0) {
+      setCareGiverList(careGiverSlice?.careGivers);
+    }
+  }, [careGiverSlice?.state]);
 
   useEffect(() => {
     if (shiftNoteStates.selectedShiftNote != null) {
@@ -186,7 +196,8 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
         careGiverID: foreignDetails.careGiverID,
         state: "Active",
         documents: [],
-        clientID:null
+        clientID: null,
+        totalWorkHrs: 0,
       });
       setUploadedFiles([]);
     }
@@ -204,7 +215,9 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
   const handleUploadChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
-      const validFiles = filesArray.filter(file => file.size <= 5 * 1024 * 1024);
+      const validFiles = filesArray.filter(
+        (file) => file.size <= 5 * 1024 * 1024
+      );
       setUploadedFiles((prevFiles) => [...prevFiles, ...validFiles]);
 
       const previousUploadedFiles = UIShowingFile.filter(
@@ -542,27 +555,68 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
-              <Grid item xs={12} sm={4} md={12}>
-                    <TextField
-                      select
-                      fullWidth
-                      label="Client"
-                      name="clientID"
-                      value={values.clientID}
-                      onChange={handleChange}
-                      error={touched.clientID && Boolean(errors.clientID)}
-                      helperText={touched.clientID && errors.clientID}
-                    >
-                      {clientList?.map((client) => (
-                        <MenuItem value={client?.clientID}>
-                          {client?.firstName +
-                            " " +
-                            client?.lastName +
-                            `(${client?.preferredName})`}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </Grid>
+              <Grid item xs={12} sm={4} md={6}>
+                <TextField
+                  select
+                  fullWidth
+                  label="Client"
+                  name="clientID"
+                  value={values.clientID}
+                  onChange={handleChange}
+                  error={touched.clientID && Boolean(errors.clientID)}
+                  helperText={touched.clientID && errors.clientID}
+                >
+                  {clientList?.map((client) => (
+                    <MenuItem value={client?.clientID}>
+                      {client?.firstName +
+                        " " +
+                        client?.lastName +
+                        `(${client?.preferredName})`}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+              {authRoles?.includes(APPLICATION_ADMIN) ||
+              authRoles?.includes(APPLICATION_SUPER_ADMIN) ? (
+                <Grid item xs={12} sm={4} md={6}>
+                  <TextField
+                    select
+                    fullWidth
+                    label="Care Giver"
+                    name="careGiverID"
+                    value={values.careGiverID}
+                    onChange={handleChange}
+                    error={touched.careGiverID && Boolean(errors.careGiverID)}
+                    helperText={touched.careGiverID && errors.careGiverID}
+                  >
+                    {careGiverList?.map((client) => (
+                      <MenuItem value={client?.careGiverID}>
+                        {client?.employee?.firstName +
+                          " " +
+                          client?.employee?.lastName}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+              ) : (
+                <></>
+              )}
+
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  InputProps={{ readOnly: !isEditMode }}
+                  type="number"
+                  name="totalWorkHrs"
+                  label="Total Work Hours"
+                  value={values.totalWorkHrs}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.totalWorkHrs && Boolean(errors.totalWorkHrs)}
+                  helperText={touched.totalWorkHrs && errors.totalWorkHrs}
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
 
               {/* Notes */}
               <Grid item xs={12}>
@@ -644,7 +698,9 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
                     />
                   </Button>
                 )}
-<Typography variant="body2" color="textSecondary">Please upload images or PDF files size less than 5MB</Typography>
+                <Typography variant="body2" color="textSecondary">
+                  Please upload images or PDF files size less than 5MB
+                </Typography>
               </Stack>
             </Stack>
           </Form>
