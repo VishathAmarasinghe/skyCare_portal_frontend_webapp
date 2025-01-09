@@ -15,6 +15,7 @@ import { State } from "../../../types/types";
 import ShiftNoteForm from "../components/ShiftNoteForm";
 import { APPLICATION_CARE_GIVER } from "@config/config";
 import { fetchClients, fetchClientsAssociatedToCareGiver } from "@slices/clientSlice/client";
+import { fetchCareGivers } from "@slices/careGiverSlice/careGiver";
 
 type AddNewNotesModalProps = {
   isNoteModalVisible: boolean;
@@ -54,6 +55,7 @@ const ShiftNoteModal = ({
           dispatch(fetchClients());
         }
       }
+      dispatch(fetchCareGivers());
     }
   },[authDate,isNoteModalVisible])
 

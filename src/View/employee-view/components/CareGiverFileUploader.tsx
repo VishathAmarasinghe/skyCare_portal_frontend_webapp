@@ -31,6 +31,7 @@ interface CareGiverFileUploaderProps {
   uploadFiles: File[];
   setUploadFiles: (value: File[]) => void;
   modalOpenState: boolean;
+  onlyView?: boolean;
 }
 
 const CareGiverFileUploader = ({
@@ -39,6 +40,7 @@ const CareGiverFileUploader = ({
   setCareGiverDocuments,
   uploadFiles,
   setUploadFiles,
+  onlyView=false,
 }: CareGiverFileUploaderProps) => {
   const theme = useTheme();
   const [openModal, setOpenModal] = useState(false);
@@ -276,13 +278,16 @@ const CareGiverFileUploader = ({
         <Stack width="100%" flexDirection="row">
           {!params.row.uploadedDocument ? (
             <Tooltip title="Upload">
-              <IconButton
+              {
+                !onlyView ? <IconButton
                 color="primary"
                 onClick={() => handleOpenModal(params.row)}
                 disabled={!!params.row.uploadedDocument}
               >
                 <UploadIcon />
-              </IconButton>
+              </IconButton>:<></>
+              }
+              
             </Tooltip>
           ) : (
             <>
@@ -294,14 +299,15 @@ const CareGiverFileUploader = ({
                   <VisibilityIcon />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Delete">
+              {
+                !onlyView ? <Tooltip title="Delete">
                 <IconButton
                   color="error"
                   onClick={() => handleDeleteFile(params.row)}
                 >
                   <DeleteIcon />
-                </IconButton>
-              </Tooltip>
+                </IconButton></Tooltip>:<></>
+              }
             </>
           )}
         </Stack>
@@ -393,6 +399,13 @@ const CareGiverFileUploader = ({
   const uploadProps: UploadProps = {
     fileList,
     beforeUpload: (file) => {
+      if (file.size > 5 * 1024 * 1024) {
+        AntModal.error({
+          title: "File Size Error",
+          content: "File size cannot exceed 5MB.",
+        });
+        return false;
+      }
       handleUploadFile(file);
       return false;
     },
@@ -438,7 +451,8 @@ const CareGiverFileUploader = ({
           </Button>,
         ]}
       >
-        <Upload listType="picture" {...uploadProps}>
+        <Upload listType="picture" accept=".jpg,.jpeg,.png,.gif,.pdf" {...uploadProps}
+        >
           <Button variant="outlined" startIcon={<UploadOutlined />}>
             Click to Upload
           </Button>

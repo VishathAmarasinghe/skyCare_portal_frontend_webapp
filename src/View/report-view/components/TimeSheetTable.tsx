@@ -87,6 +87,11 @@ const TimeSheetTable = ({
       width: 80,
     },
     {
+      field:"totalWorkHrs",
+      headerName:"Total Work Hrs(Manual)",
+      align:"left",
+    },
+    {
       field: "clientName",
       headerName: "Client Name",
       width: 250,
@@ -173,9 +178,10 @@ const TimeSheetTable = ({
         shiftNote?.recurrentAppointment?.recurrentAppointmentID || "N/A",
       shiftNotes: shiftNote?.shiftNoteDTO?.notes || "N/A",
       comments: shiftNote?.shiftNoteDTO?.comments || "N/A",
+      totalWorkHrs:shiftNote?.shiftNoteDTO?.totalWorkHrs || 0,
     }));
     setRows(mappedRows || []);
-  }, [shiftNoteSlice?.timeSheets]);
+  }, [shiftNoteSlice?.timeSheets,shiftNoteSlice?.submitState, shiftNoteSlice?.updateState]);
 
   const handleExportPDF = () => {
     const doc = new jsPDF();
