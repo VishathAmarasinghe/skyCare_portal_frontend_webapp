@@ -16,7 +16,7 @@ const CareGiverPaymentInfo = () => {
         modalOpenState={IsCareGiverAddModalVisible}
         careGiverPayments={careGiverPayments}
         setCareGiverPayments={setCareGiverPayments}
-        isEditable={false}
+        isEditable={true}
       />
     </Stack>
   );

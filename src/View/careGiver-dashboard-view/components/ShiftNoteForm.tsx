@@ -204,7 +204,8 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
   const handleUploadChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
-      setUploadedFiles((prevFiles) => [...prevFiles, ...filesArray]);
+      const validFiles = filesArray.filter(file => file.size <= 5 * 1024 * 1024);
+      setUploadedFiles((prevFiles) => [...prevFiles, ...validFiles]);
 
       const previousUploadedFiles = UIShowingFile.filter(
         (file) => file.status === "Old"
@@ -643,6 +644,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
                     />
                   </Button>
                 )}
+<Typography variant="body2" color="textSecondary">Please upload images or PDF files size less than 5MB</Typography>
               </Stack>
             </Stack>
           </Form>

@@ -18,6 +18,7 @@ const CareGiverDocumentInfo = () => {
         setUploadFiles={setUploadFiles}
         careGiverDocuments={careGiverDocuments}
         setCareGiverDocuments={setCareGiverDocuments}
+        onlyView={true}
       />
     </Stack>
   );

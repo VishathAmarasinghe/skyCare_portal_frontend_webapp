@@ -39,6 +39,10 @@ const AddDocumentsModal: React.FC<AddDocumentsModalProps> = ({
     // Extract the file object from the new file list and set it to uploadedFile
     if (newFileList.length > 0) {
       const latestFile = newFileList[0].originFileObj;
+      if (latestFile && latestFile.size > 5 * 1024 * 1024) {
+        setFileList([]);
+        return false;
+      }
       setUploadedFile(latestFile || null);
     } else {
       setUploadedFile(null);
@@ -90,12 +94,16 @@ const AddDocumentsModal: React.FC<AddDocumentsModalProps> = ({
             fileList={fileList}
             onChange={handleFileChange}
             listType="picture"
+            accept= ".jpg,.jpeg,.png,.gif,.pdf"
             beforeUpload={() => false} // Disable automatic upload
           >
             <Button variant="outlined" startIcon={<UploadOutlined />} fullWidth>
               Upload File
             </Button>
           </Upload>
+          <Stack>
+            <Typography variant="body2">Please upload images or PDF files less than 5MB</Typography>
+          </Stack>
           <TextField
             label="URL"
             variant="outlined"

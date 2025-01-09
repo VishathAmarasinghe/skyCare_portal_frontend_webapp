@@ -63,7 +63,7 @@ const ResourceCreationModal = ({
             )}
         </Box>
       }
-      width={isMobile ? "100%" : "50%"}
+      width={isMobile ? "100%" : "60%"}
       centered
       maskClosable={false}
       open={isResourceModalVisible}
