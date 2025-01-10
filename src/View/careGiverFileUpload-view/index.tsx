@@ -132,7 +132,9 @@ const CareGiverInfoView = () => {
   };
 
   useEffect(() => {
-    if (errorState === "Validated") {      
+    if (errorState === "Validated") { 
+      console.log("care Giver file validation ",checkIsRequiredFilesUploaded());
+           
       if (
         careGiverStatus?.selectedCareGiver != null && checkIsRequiredFilesUploaded()
       ) {
@@ -155,6 +157,7 @@ const CareGiverInfoView = () => {
         );
       }
     }
+    setErrorState("Pending");
   }, [errorState]);
 
   const handleSave = async () => {
