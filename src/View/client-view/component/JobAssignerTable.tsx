@@ -217,26 +217,26 @@ const JobAssignerTable = ({
         </Button>
       )
     },
-    {
-      field: "headcountSatisfied",
-      headerName: "Headcount",
-      width: 150,
-      renderCell: (params) => (
-        <Stack height={"100%"} flexDirection={"column"} alignItems={"center"} justifyContent={"center"} alignContent={"center"}>
-        <Typography
-          color={
-            params.row.assigners.length >= params.row.requiredHeadcount
-              ? "green"
-              : "red"
-          }
-        >
-          {params.row.assigners.length >= params.row.requiredHeadcount
-            ? "Satisfied"
-            : "Not Satisfied"}
-        </Typography>
-        </Stack>
-      ),
-    },
+    // {
+    //   field: "headcountSatisfied",
+    //   headerName: "Headcount",
+    //   width: 150,
+    //   renderCell: (params) => (
+    //     <Stack height={"100%"} flexDirection={"column"} alignItems={"center"} justifyContent={"center"} alignContent={"center"}>
+    //     <Typography
+    //       color={
+    //         params.row.assigners.length >= params.row.requiredHeadcount
+    //           ? "green"
+    //           : "red"
+    //       }
+    //     >
+    //       {params.row.assigners.length >= params.row.requiredHeadcount
+    //         ? "Satisfied"
+    //         : "Not Satisfied"}
+    //     </Typography>
+    //     </Stack>
+    //   ),
+    // },
     {
       field: "Action",
       headerName: "Action",
