@@ -20,41 +20,46 @@ const BasicInfoTab: React.FC = () => {
     },
     {
       key: "2",
+      label: "Reference No",
+      children: client?.referenceNo || "N/A",
+    },
+    {
+      key: "3",
       label: "First Name",
       children: capitalize(client?.firstName),
     },
     {
-      key: "3",
+      key: "4",
       label: "Last Name",
       children: capitalize(client?.lastName),
     },
     {
-      key: "4",
+      key: "5",
       label: "Preferred Name",
       children: capitalize(client?.preferredName),
     },
     {
-      key: "5",
+      key: "6",
       label: "Email Address",
       children: client?.email || "N/A",
     },
     {
-      key: "6",
+      key: "7",
       label: "Gender",
       children: capitalize(client?.gender),
     },
     {
-      key: "7",
+      key: "8",
       label: "Client Type",
       children: capitalize(client?.clientType),
     },
     {
-      key: "8",
+      key: "9",
       label: "Client Status",
       children: capitalize(client?.clientStatus),
     },
     {
-      key: "11",
+      key: "10",
       label: "Phone Numbers",
       children:
         client?.phoneNumbers?.map((no, index) => (
@@ -62,7 +67,7 @@ const BasicInfoTab: React.FC = () => {
         )) || "N/A",
     },
     {
-      key: "9",
+      key: "11",
       label: "Client Fundings",
       children:
         client?.clientClassifications?.map((classification, index) => (
@@ -74,7 +79,7 @@ const BasicInfoTab: React.FC = () => {
         )) || "N/A",
     },
     {
-      key: "10",
+      key: "12",
       label: "Languages",
       children:
         client?.clientLanguages?.map((language, index) => (
@@ -86,7 +91,7 @@ const BasicInfoTab: React.FC = () => {
         )) || "N/A",
     },
     {
-      key: "12",
+      key: "13",
       label: "Address",
       children: `${client?.physicalAddress?.address} ${client?.physicalAddress?.city} ${client?.physicalAddress?.state}`,
     },
@@ -122,7 +127,7 @@ const BasicInfoTab: React.FC = () => {
           bordered
           items={clientDetails}
           column={2}
-          size="default"
+          size="small"
           style={{ width: "100%" }}
         />
       ),
