@@ -102,18 +102,27 @@ const CareGiverInfoView = () => {
   const handleBack = () => setActiveStep((prevStep) => prevStep - 1);
 
   const checkIsRequiredFilesUploaded = () => {
+    console.log("care Giver document Types ",careGiverStatus?.careGiverDocumentTypes);
+    
     const requiredFiles = careGiverStatus?.careGiverDocumentTypes?.filter(
       (doc) => doc?.status === "Active" && doc?.required === true
     );
+    console.log("requiredFiles",requiredFiles);
+    console.log("careGiverDocuments",careGiverDocuments);
+    
     const allRequiredFilesUploaded = requiredFiles?.every((doc) =>
       careGiverDocuments.some(
         (file) =>
-          file.documentTypeID === doc?.documentName &&
+          file.documentTypeID === doc?.documentTypeID &&
           file?.document != null &&
           file?.document != ""
       )
     );
+    console.log("allRequiredFilesUploaded",allRequiredFilesUploaded);
+    
     if (careGiverStatus?.selectedCareGiver) {
+      console.log("selected careGivers");
+      
       if (allRequiredFilesUploaded) {
         return true;
       } else {

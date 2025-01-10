@@ -62,11 +62,6 @@ const TimeSheetTable = ({
       width: 200,
     },
     {
-      field: "employeeEmail",
-      headerName: "Employee Email",
-      width: 250,
-    },
-    {
       field: "startDate",
       headerName: "Start Date",
       width: 100,

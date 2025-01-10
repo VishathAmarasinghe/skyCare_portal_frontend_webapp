@@ -134,7 +134,7 @@ const CareGiverInfoView = () => {
   useEffect(() => {
     if (errorState === "Validated") {      
       if (
-        careGiverStatus?.selectedCareGiver != null && checkIsRequiredFilesUploaded()
+        careGiverStatus?.selectedCareGiver != null
       ) {
         const careGiverPayload: CareGiver = {
           careGiverDocuments: careGiverDocuments,
@@ -155,6 +155,7 @@ const CareGiverInfoView = () => {
         );
       }
     }
+    setErrorState("Pending");
   }, [errorState]);
 
   const handleSave = async () => {
