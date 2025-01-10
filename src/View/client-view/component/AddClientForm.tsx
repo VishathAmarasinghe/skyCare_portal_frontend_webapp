@@ -37,9 +37,15 @@ import {
 } from "@slices/selectorSlice/selector";
 import { State } from "../../../types/types";
 
-const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
+interface AddClientFormProps {
+  activeStepper: number;
+  setActiveStepper: React.Dispatch<React.SetStateAction<number>>;
+}
+
+const AddClientForm = ({ activeStepper,setActiveStepper }:AddClientFormProps) => {
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
+  const [currentStepper, setCurrentStepper] = useState<number>(activeStepper)
   const [loading, setLoading] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [searchInputPostal, setSearchInputPostal] = useState("");
@@ -299,9 +305,44 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
     // interests: Yup.string().required("Interests are required"),
     // dislikes: Yup.string().required("Dislikes are required"),
     clientClassifications: Yup.array()
-      .min(1, "Select at least one classification")
-      .required("Classifications are required"),
+      .min(1, "Select at least one funding")
+      .required("fundings are required"),
   });
+
+  useEffect(() => {
+    if (currentStepper !== activeStepper) {
+      setCurrentStepper(activeStepper)
+    }
+  }, [activeStepper])
+
+  // Function to handle step change with validation
+  const handleNextStep = async (
+    formikProps: FormikProps<Client>,
+  ) => {
+    const errors = await formikProps.validateForm()
+    // Define validation-specific fields for each step
+    const stepFields: { [key: number]: string[] } = {
+      0: [
+        'firstName',
+        'lastName',
+        'email',
+        'gender',
+        'birthday',
+        'clientLanguages',
+        'phoneNumbers',
+        'clientType',
+        'clientStatus',
+        'clientClassifications'
+      ],
+    }
+    const currentFields = stepFields[currentStepper] || []
+    const stepValid = currentFields.every((field) => !(errors as any)[field])
+    if (stepValid) {
+      setActiveStepper(currentStepper + 1)
+    } else {
+      currentFields.forEach((field) => formikProps.setFieldTouched(field, true))
+    }
+  }
 
   return (
     <Formik
@@ -1218,6 +1259,14 @@ const AddClientForm = ({ activeStepper }: { activeStepper: number }) => {
               <button style={{ display: "none" }} type="submit" id="submit-btn">
                 Submit
               </button>
+              <button
+              id="client-form-next"
+              type="button"
+              style={{ display: 'none' }}
+              onClick={() => handleNextStep(formikProps)}
+            >
+              Next
+            </button>
             </Box>
           </Form>
         );

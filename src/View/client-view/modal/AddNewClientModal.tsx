@@ -43,7 +43,8 @@ const AddNewClientModal = ({
 
   // Handle next step
   const handleNext = () => {
-    setActiveStep((prevStep) => prevStep + 1);
+    document.getElementById('client-form-next')?.click();
+    // setActiveStep((prevStep) => prevStep + 1);
   };
 
   // Handle back step
@@ -110,7 +111,7 @@ const AddNewClientModal = ({
       </Stack>
 
       <Box sx={{ mt: 2 }} width="100%">
-        <AddClientForm activeStepper={activeStep} key="client-form" />
+        <AddClientForm activeStepper={activeStep} setActiveStepper={setActiveStep} key="client-form" />
       </Box>
     </Modal>
   );
