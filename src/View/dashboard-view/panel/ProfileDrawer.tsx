@@ -148,6 +148,9 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ open, setOpen }) => {
     if (!passwordUpdater.newPassword) {
       errors.newPassword = "New password is required.";
     }
+    if(passwordUpdater?.newPassword.length<6){
+      errors.newPassword = "Password must be at least 6 characters long.";
+    }
 
     if (passwordUpdater.newPassword !== confirmPassword) {
       errors.confirmPassword = "Passwords do not match.";

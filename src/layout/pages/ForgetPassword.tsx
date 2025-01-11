@@ -86,6 +86,13 @@ const ForgetPassword = () => {
         dispatch(
           resetPassword({ email: email, password: password, employeeID: "" })
         );
+      }else{
+        dispatch(
+          enqueueSnackbarMessage({
+            message: "Password must be at least 6 characters",
+            type: "error",
+          })
+        );
       }
     } else {
       dispatch(
