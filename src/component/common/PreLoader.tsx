@@ -2,7 +2,7 @@ import { PreLoaderProps } from "../../types/types";
 import companyLogo from "../../assets/images/app_logo.png";
 import Grid from "@mui/material/Grid";
 import loadingImage from "../../assets/images/Loading.gif";
-import { Box, Container, Paper, alpha, useTheme } from "@mui/material";
+import { Box, Container, Paper, alpha, useTheme, useMediaQuery } from "@mui/material";
 import CircularProgress, {
   circularProgressClasses,
   CircularProgressProps,
@@ -45,6 +45,7 @@ function CustomCircularProgress(props: CircularProgressProps) {
 
 const PreLoader = (props: PreLoaderProps) => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <Paper
@@ -57,31 +58,36 @@ const PreLoader = (props: PreLoaderProps) => {
         ),
         display: "flex",
         justifyContent: "center",
+        alignItems: "center",
         borderRadius: 2,
-        paddingY: 5,
+        paddingY: isMobile ? 2 : 5,
         position: "relative",
-        top: 120,
+        top: isMobile ? 60 : 120,
         m: "auto",
-        maxWidth: "40vw",
+        maxWidth: isMobile ? "90vw" : "40vw",
       }}
     >
-      <Container maxWidth="md">
+      <Container maxWidth={isMobile ? "xs" : "md"}>
         <Grid
           container
           direction="column"
           justifyContent="center"
           alignItems="center"
-          gap={2}
+          gap={isMobile ? 1 : 2}
         >
           <Grid item xs={12}>
             {!props.hideLogo && (
-              <img alt="logo" width="320" src={companyLogo}></img>
+              <img
+                alt="logo"
+                width={isMobile ? "200" : "320"}
+                src={companyLogo}
+              />
             )}
           </Grid>
           <Grid item xs={12}>
             <StateWithImage imageUrl={loadingImage} message="Loading" />
           </Grid>
-          <Grid item xs={12} width={"100%"}>
+          <Grid item xs={12} width="100%">
             {props.isLoading && <LinearProgress />}
           </Grid>
         </Grid>
