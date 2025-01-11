@@ -10,6 +10,7 @@ import {
   MenuItem,
   Box,
   useTheme,
+  Chip,
 } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import EventIcon from "@mui/icons-material/Event";
@@ -85,6 +86,7 @@ const AllocationCard = ({
       endDate,
       startTime,
       endTime,
+      isCancelled
     },
     appointment: { appointmentID, title, appointmentAddress },
   } = jobAssignData;
@@ -134,6 +136,13 @@ const AllocationCard = ({
                   {appointmentAddress?.city}
                 </Typography>
               </Grid>
+              {
+                isCancelled && (
+                  <Grid item xs={12}>
+                    <Chip color="error" label="Appointment Cancelled"/>
+                  </Grid>
+                )
+              }
             </Grid>
           </Grid>
 
@@ -174,7 +183,7 @@ const AllocationCard = ({
                 gap: 1,
               }}
             >
-              {acceptanceType === "Allocated" && (
+              {acceptanceType === "Allocated" && !isCancelled && (
                 <Button
                   variant="outlined"
                   size="small"
@@ -183,7 +192,7 @@ const AllocationCard = ({
                   Update Acceptance
                 </Button>
               )}
-              {acceptanceType === "Accepted" && (
+              {acceptanceType === "Accepted" && !isCancelled && (
                 <Button
                   variant="contained"
                   size="small"

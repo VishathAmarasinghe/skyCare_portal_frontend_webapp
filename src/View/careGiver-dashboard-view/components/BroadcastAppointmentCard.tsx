@@ -43,6 +43,14 @@ const BroadcastAppointmentCard = ({
         margin: "auto",
         marginY: 0.5,
       }}
+      onClick={() => {
+        setIsAppointmentAddModalVisible(true),
+          dispatch(
+            fetchSingleAppointment(
+              jobDetails?.appointmentData?.appointmentID
+            )
+          );
+      }}
     >
       {/* Left Section: Icon and Appointment Details */}
       <Stack direction="row" alignItems="center" spacing={2} width="100%">
