@@ -1,6 +1,7 @@
 import React from 'react';
 import { Table, Button } from 'antd';
 import { DownloadOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useMediaQuery, useTheme } from '@mui/material';
 
 interface File {
     name: string;
@@ -13,9 +14,12 @@ interface FileListTableProps {
   onDownload: (fileName: any) => void;
   onView: (file: any) => void;
   onDelete: (file: any) => void;
+  isEditMode: boolean;
 }
 
-const FileListTable: React.FC<FileListTableProps> = ({ files, onDownload, onView, onDelete }) => {
+const FileListTable: React.FC<FileListTableProps> = ({ files, onDownload, onView, onDelete,isEditMode }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const columns = [
     {
       title: 'No.',
@@ -37,18 +41,22 @@ const FileListTable: React.FC<FileListTableProps> = ({ files, onDownload, onView
             size="small"
             style={{ marginRight: 8 }}
           />
-          <Button
+          {/* <Button
             icon={<DownloadOutlined />}
             onClick={() => onDownload(record)}
             size="small"
             style={{ marginRight: 8 }}
-          />
-          <Button
-            icon={<DeleteOutlined />}
-            onClick={() => onDelete(record)}
-            size="small"
-            danger
-          />
+          /> */}
+          {
+            isEditMode && (
+              <Button
+                icon={<DeleteOutlined />}
+                onClick={() => onDelete(record)}
+                size="small"
+                danger
+              />
+            )
+          }
         </div>
       ),
     },

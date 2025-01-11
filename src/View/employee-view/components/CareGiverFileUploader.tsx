@@ -316,10 +316,10 @@ const CareGiverFileUploader = ({
   ];
 
   const columnsMobile: GridColDef[] = [
-    { field: "documentName", headerName: "Document Name", flex: 1 },
+    { field: "documentName", headerName: "", flex: 1 },
     {
       field: "uploadedDocument",
-      headerName: "Uploaded Document",
+      headerName: "",
       flex: 1,
       renderCell: (params: GridRenderCellParams) =>
         params.row.uploadedDocument ? (
@@ -332,7 +332,7 @@ const CareGiverFileUploader = ({
     },
     {
       field: "expirationDate",
-      headerName: "Expiration Date",
+      headerName: "",
       flex: 1,
       renderCell: (params: GridRenderCellParams) => {
         const today = new Date();
@@ -357,7 +357,7 @@ const CareGiverFileUploader = ({
     },
     {
       field: "action",
-      headerName: "Action",
+      headerName: "",
       flex: 1,
       renderCell: (params: GridRenderCellParams) => (
         <Stack width="100%" flexDirection="row">
@@ -429,6 +429,23 @@ const CareGiverFileUploader = ({
           columns={isMobile?columnsMobile:columns}
           getRowId={(row) => row.documentTypeID}
           disableRowSelectionOnClick
+          sx={{
+            "& .MuiDataGrid-cell": {
+      whiteSpace: "balance", // Allow wrapping
+      wordWrap: "break-word",
+      display: "flex", // Use flexbox for alignment
+      alignItems: "center", // Center content vertically
+      // justifyContent: "center", // Center content horizontally
+      // textAlign: "center", // Align text in the center
+      lineHeight: 1.5, // Adjust line height for readability
+    },
+    "& .MuiDataGrid-columnHeaders": {
+      whiteSpace: "normal", // Enable wrapping
+      wordWrap: "break-word", // Allow long text to wrap
+      display: "flex", // Use flexbox for centering
+      alignItems: "center", // Vertically center text
+    },
+          }}
         />
       </div>
       <AntModal

@@ -1433,6 +1433,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                       onDownload={handleDownload}
                       onView={handleView}
                       onDelete={handleDeleteUploaded}
+                      isEditMode={isEditMode}
                     />
 
                     {isEditMode && (

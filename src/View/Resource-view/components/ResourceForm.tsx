@@ -12,6 +12,7 @@ import {
   Stack,
   Typography,
   useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { Formik, Field, Form, FormikProps, validateYupSchema } from "formik";
@@ -64,6 +65,7 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
   const [imageViewerImageURl, setImageViewerImageURl] = useState<File | string>(
     ""
   );
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const resourceSlice = useAppSelector((state) => state.resource);
   const [initialValues, setInitialValues] = useState<Resource>({
     resourceId: "",
@@ -261,7 +263,8 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
-              <Grid item xs={12}>
+              {
+                !isMobile &&  <Grid item xs={12}>
                 <FormControl fullWidth>
                   <InputLabel>Share Type</InputLabel>
                   <Select
@@ -282,8 +285,9 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
                   )}
                 </FormControl>
               </Grid>
-              {/* Effective Date */}
-              <Grid item xs={12} sm={6}>
+              }
+              {
+                !isMobile && <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   type="date"
@@ -298,8 +302,12 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
+              }
+              
+              {/* Effective Date */}
 
-              <Grid item xs={12} sm={6}>
+              {
+                !isMobile && <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   type="date"
@@ -314,6 +322,8 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
+              }
+              
               {/* Description */}
               <Grid item xs={12}>
                 <TextField
@@ -359,6 +369,7 @@ const ResourceForm: React.FC<AddResourceFormProps> = ({
                   onDownload={handleDownload}
                   onView={handleView}
                   onDelete={handleDeleteUploaded}
+                  isEditMode={isEditMode}
                 />
 
                 {isEditMode && (

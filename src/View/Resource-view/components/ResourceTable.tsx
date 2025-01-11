@@ -50,11 +50,11 @@ interface ResourceTableProps {}
 
 const ResourceTable = ({}: ResourceTableProps) => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const resourceSlice = useAppSelector((state) => state.resource);
   const [resources, setResources] = useState<Resource[]>([]);
   const authRole = useAppSelector((State) => State?.auth?.roles);
   const employeeSlice = useAppSelector((state) => state?.employees);
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [employee, setEmployee] = useState<Employee[]>([]);
   const dispatch = useAppDispatch();
   const { showConfirmation } = useConfirmationModalContext();
@@ -193,10 +193,10 @@ const ResourceTable = ({}: ResourceTableProps) => {
   ];
 
   const initialColumnsMobile: GridColDef[] = [
-    { field: "resourceName", headerName: "Resource Name", flex: 1 },
+    { field: "resourceName", headerName: "Name", flex: 1 },
     {
       field: "action",
-      headerName: "Action",
+      headerName: "",
       width: 80,
       renderCell: (params) => {
         return (

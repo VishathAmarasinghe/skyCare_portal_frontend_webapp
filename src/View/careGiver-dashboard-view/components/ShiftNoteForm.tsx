@@ -680,6 +680,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
                   onDownload={handleDownload}
                   onView={handleView}
                   onDelete={handleDeleteUploaded}
+                  isEditMode={isEditMode}
                 />
 
                 {isEditMode && (
