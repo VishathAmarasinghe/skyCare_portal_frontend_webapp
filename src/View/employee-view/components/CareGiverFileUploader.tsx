@@ -333,7 +333,7 @@ const CareGiverFileUploader = ({
     {
       field: "expirationDate",
       headerName: "",
-      flex: 1,
+      flex: 1.5,
       renderCell: (params: GridRenderCellParams) => {
         const today = new Date();
         const expirationDate = params.row.expirationDate
@@ -341,7 +341,7 @@ const CareGiverFileUploader = ({
           : null;
 
         if (params.row.expDateNeeded && !params.row.uploadedDocument) {
-          return <Tag color="warning">Expired Date Required</Tag>;
+          return <Tag color="warning" style={{textWrap:"wrap"}}>Exp Date Required</Tag>;
         }
 
         if (expirationDate && expirationDate < today) {
@@ -349,8 +349,8 @@ const CareGiverFileUploader = ({
         }
 
         return expirationDate ? (
-          <Tag color="green">
-            Expires on {dayjs(expirationDate).format("YYYY-MM-DD")}
+          <Tag color="green" style={{textWrap:"wrap"}}>
+            Exp on {dayjs(expirationDate).format("YYYY-MM-DD")}
           </Tag>
         ) : null;
       },
@@ -358,7 +358,7 @@ const CareGiverFileUploader = ({
     {
       field: "action",
       headerName: "",
-      flex: 1,
+      width: 80,
       renderCell: (params: GridRenderCellParams) => (
         <Stack width="100%" flexDirection="row">
           {!params.row.uploadedDocument ? (
@@ -431,7 +431,7 @@ const CareGiverFileUploader = ({
           disableRowSelectionOnClick
           sx={{
             "& .MuiDataGrid-cell": {
-      whiteSpace: "balance", // Allow wrapping
+      whiteSpace: "normal", // Allow wrapping
       wordWrap: "break-word",
       display: "flex", // Use flexbox for alignment
       alignItems: "center", // Center content vertically
