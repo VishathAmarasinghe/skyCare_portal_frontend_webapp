@@ -684,6 +684,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                       onDownload={handleDownload}
                       onView={handleView}
                       onDelete={handleDeleteUploaded}
+                      isEditMode={isEditMode}
                     />
 
                     {isEditMode && (

@@ -127,40 +127,21 @@ const ShiftNoteTable = ({
   ];
 
   const initialColumnsMobile: GridColDef[] = [
-    { field: "title", headerName: "Title", align: "left", flex: 2 },
     {
       field: "shiftStartDate",
       headerName: "Start Date",
       align: "left",
-      flex: 1,
+      flex: 2,
     },
     {
       field: "shiftStartTime",
       headerName: "Start Time",
       align: "left",
-      flex: 1,
-    },
-    {
-      field: "shiftEndDate",
-      headerName: "End Date",
-      align: "left",
-      flex: 1,
-    },
-    {
-      field: "shiftEndTime",
-      headerName: "End Time",
-      align: "left",
-      flex: 1,
-    },
-    {
-      field:"totalWorkHrs",
-      headerName:"Total Work Hrs",
-      align:"left",
-      flex:1
+      flex: 2,
     },
     {
       field: "action",
-      headerName: "Action",
+      headerName: "",
       flex: 1,
       headerAlign: "left",
       renderCell: (params) => (
