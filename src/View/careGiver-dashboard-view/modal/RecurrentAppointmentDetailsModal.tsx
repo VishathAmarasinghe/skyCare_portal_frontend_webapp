@@ -168,9 +168,11 @@ const RecurrentAppointmentDetailsModal = ({
                 // Display a message if there are no attachments
                 selectedAppointmentDetails?.appointmentData?.attachments.length ===
                 0 && (
+                  <Grid item xs={12} sm={6} key={"noData"}>
                   <Typography variant="body2" color="textSecondary">
                     No attachments available
                   </Typography>
+                  </Grid>
                 )
               }
               {selectedAppointmentDetails?.appointmentData?.attachments.map(
