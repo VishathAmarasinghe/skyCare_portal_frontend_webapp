@@ -129,11 +129,13 @@ const DocumentsTable = ({
         getRowId={(row) => row.clientDocumentID}
         density="compact"
         pagination
+        pageSizeOptions={[5, 10, 20]}
         paginationModel={{ pageSize: 5, page: 0 }}
         slots={{
           toolbar: CustomToolbar,
         }}
         sx={{
+          height: "100%",
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: "white",
           },

@@ -71,7 +71,7 @@ const SettingsView = () => {
     <Stack
       width={"100%"}
       height={"100%"}
-      //   border={"2px solid red"}
+        // border={"2px solid red"}
       sx={{
         // backgroundColor: "white",
         // boxShadow: 1,
@@ -84,6 +84,7 @@ const SettingsView = () => {
         flexDirection="row"
         alignItems="center"
         justifyContent="space-between"
+        height="9%"
       >
         <Typography
           color={theme.palette.primary.main}
@@ -93,7 +94,7 @@ const SettingsView = () => {
           Settings
         </Typography>
       </Stack>
-      <Grid container spacing={2}>
+      <Grid width={"100%"} height={"100%"} container spacing={2}>
         {SETTINGS_CARD_ARRAY.map((item, index) => (
           <Grid item xs={12} mt={2} sm={6} md={4} key={index}>
             <SettingsCard

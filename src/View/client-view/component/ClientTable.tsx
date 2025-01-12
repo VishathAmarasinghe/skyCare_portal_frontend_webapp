@@ -158,7 +158,7 @@ const ClientTable = () => {
         loading={clientInfo.State === State.loading}
         pagination
         paginationMode="client"
-        autoHeight
+        pageSizeOptions={[ 15, 20,25]}
         initialState={{
           pagination: {
             paginationModel: { pageSize: 15 },
@@ -168,6 +168,7 @@ const ClientTable = () => {
           toolbar: CustomToolbar,
         }}
         sx={{
+          height: "100%",
           flexGrow: 1,
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: theme.palette.grey[200],

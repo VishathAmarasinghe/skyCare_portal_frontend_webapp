@@ -47,6 +47,7 @@ const CarePlanView = () => {
         flexDirection="row"
         alignItems="center"
         justifyContent="space-between"
+        height="9%"
       >
         <AddNewCarePlanModal
           isEditMode={isEditMode}
@@ -70,7 +71,7 @@ const CarePlanView = () => {
           Add Care Plan
         </Button>
       </Stack>
-      <Stack width="100%" height="480px">
+      <Stack width="100%" height="100%">
         <CarePlanMainTable
           isCarePlanModalVisible={isModalVisible}
           setIsCarePlanModalVisible={setIsModalVisible}

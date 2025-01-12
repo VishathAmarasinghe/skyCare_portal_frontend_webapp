@@ -73,12 +73,13 @@ const NotesTab = () => {
     }
   };
   return (
-    <Stack width="100%" height="80%">
+    <Stack width="100%" height="100%">
       <Stack
         width="100%"
         flexDirection="row"
         alignItems="end"
         justifyContent="flex-end"
+        height="10%"
       >
         <Button
           variant="contained"
@@ -90,7 +91,7 @@ const NotesTab = () => {
           Add Notes
         </Button>
       </Stack>
-      <Stack width="100%" height="480px">
+      <Stack width="100%" height="90%">
         <AddNewNotesModal
           isEditMode={isEditMode}
           setIsEditMode={setIsEditMode}

@@ -132,6 +132,7 @@ const AppointmentTable = ({
         loading={appointmentSlice.state === State.loading}
         pagination
         paginationMode="client"
+        pageSizeOptions={[5, 10, 20]}
         initialState={{
           pagination: {
             paginationModel: { pageSize: 5 },
@@ -141,6 +142,7 @@ const AppointmentTable = ({
           toolbar: CustomToolbar,
         }}
         sx={{
+          height: "100%",
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: "white",
           },

@@ -77,11 +77,14 @@ export const themeSettings = (mode: PaletteMode) => {
       fontFamily: ["Poppins", "sans-serif"].join(","),
       default: {
         // Default styles for typography without a specified variant
-        fontSize: "0.8rem",
-        [`@media (max-width:1400px)`]: { fontSize: "0.95rem" },
-        [`@media (max-width:1200px)`]: { fontSize: "0.7rem" },
-        [`@media (max-width:960px)`]: { fontSize: "0.85rem" },
-        [`@media (max-width:768px)`]: { fontSize: "0.8rem" },
+        fontSize: "0.875rem",
+        [`@media (max-width:2000px)`]: { fontSize: "1.1rem" },
+        [`@media (max-width:1700px)`]: { fontSize: "0.9rem" },
+        [`@media (max-width:1450px)`]: { fontSize: "0.87rem" },
+        [`@media (max-width:1200px)`]: { fontSize: "0.8rem" },
+        [`@media (max-width:960px)`]: { fontSize: "0.75rem" },
+        [`@media (max-width:768px)`]: { fontSize: "0.7rem" },
+
       },
       h1: {
         fontSize: "2.5rem",
@@ -168,7 +171,18 @@ export const themeSettings = (mode: PaletteMode) => {
 
     components: {
       MuiButton: {
-        styleOverrides: {},
+        styleOverrides: {
+          root:{
+            fontSize: "0.875rem",
+            [`@media (max-width:2000px)`]: { fontSize: "1.1rem" },
+            [`@media (max-width:1700px)`]: { fontSize: "0.9rem" },
+            [`@media (max-width:1450px)`]: { fontSize: "0.87rem" },
+            [`@media (max-width:1200px)`]: { fontSize: "0.8rem" },
+            [`@media (max-width:960px)`]: { fontSize: "0.75rem" },
+            [`@media (max-width:768px)`]: { fontSize: "0.7rem" },
+
+          }
+        },
       },
       MuiTextField: {
         styleOverrides: {
@@ -176,6 +190,14 @@ export const themeSettings = (mode: PaletteMode) => {
             "& .MuiInputBase-root": {
               size: "small",
             },
+            fontSize: "0.875rem",
+            [`@media (max-width:2000px)`]: { fontSize: "1.1rem" },
+            [`@media (max-width:1700px)`]: { fontSize: "0.9rem" },
+            [`@media (max-width:1450px)`]: { fontSize: "0.87rem" },
+            [`@media (max-width:1200px)`]: { fontSize: "0.8rem" },
+            [`@media (max-width:960px)`]: { fontSize: "0.75rem" },
+            [`@media (max-width:768px)`]: { fontSize: "0.7rem" },
+
           },
         },
       },
@@ -198,6 +220,13 @@ export const themeSettings = (mode: PaletteMode) => {
         styleOverrides: {
           root: {
             fontSize: 12,
+            [`@media (max-width:2000px)`]: { fontSize: "1.1rem" },
+            [`@media (max-width:1700px)`]: { fontSize: "0.9rem" },
+            [`@media (max-width:1450px)`]: { fontSize: "0.87rem" },
+            [`@media (max-width:1200px)`]: { fontSize: "0.8rem" },
+            [`@media (max-width:960px)`]: { fontSize: "0.75rem" },
+            [`@media (max-width:768px)`]: { fontSize: "0.7rem" },
+
             pb: 0,
             height: `calc(100% - 40px)`,
             width: "100%",
@@ -238,6 +267,14 @@ export const themeSettings = (mode: PaletteMode) => {
             backgroundColor: alpha("#769FCD", 0.2),
             borderRadius: 0,
             mb: 2,
+            fontSize: "0.875rem",
+            [`@media (max-width:2000px)`]: { fontSize: "1.1rem" },
+            [`@media (max-width:1700px)`]: { fontSize: "0.9rem" },
+            [`@media (max-width:1450px)`]: { fontSize: "0.87rem" },
+            [`@media (max-width:1200px)`]: { fontSize: "0.8rem" },
+            [`@media (max-width:960px)`]: { fontSize: "0.75rem" },
+            [`@media (max-width:768px)`]: { fontSize: "0.7rem" },
+
           },
         },
       },

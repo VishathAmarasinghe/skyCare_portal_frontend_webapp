@@ -154,6 +154,7 @@ const CarePlanMainTable = ({
         loading={carePlanDetails.state === State.loading}
         pagination
         paginationMode="client"
+        pageSizeOptions={[10, 20, 30]}
         initialState={{
           pagination: {
             paginationModel: { pageSize: 10 },
@@ -163,6 +164,7 @@ const CarePlanMainTable = ({
           toolbar: CustomToolbar,
         }}
         sx={{
+          height: "100%",
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: "white",
           },

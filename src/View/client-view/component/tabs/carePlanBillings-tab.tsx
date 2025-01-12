@@ -84,6 +84,7 @@ const CarePlanBillings = () => {
         density="compact"
         pagination
         loading={carePlanSlice.state === State.loading}
+        pageSizeOptions={[10,15, 20]}
         initialState={{
           pagination: {
             paginationModel: { pageSize: 10 },
@@ -93,6 +94,7 @@ const CarePlanBillings = () => {
           toolbar: CustomToolbar,
         }}
         sx={{
+          height: "100%",
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: "white",
           },

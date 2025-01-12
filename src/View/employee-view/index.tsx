@@ -98,7 +98,8 @@ const EmployeeView = () => {
   }, [isEmployeeAddModalVisible]);
 
   return (
-    <Stack width="100%" height="100%">
+    <Stack width="100%" 
+    height="100%">
       {location.pathname === "/Employees" ? (
         <Stack
           width="100%"
@@ -118,6 +119,7 @@ const EmployeeView = () => {
             alignItems="center"
             justifyContent="space-between"
             padding="8px"
+            height="9%"
           >
             <Typography
               color={theme.palette.primary.main}
@@ -152,7 +154,7 @@ const EmployeeView = () => {
           </Stack>
 
           {/* Button Group Section */}
-          <Stack padding="8px">
+          <Stack width={"100%"} height={"9%"} padding="8px">
             <ButtonGroup variant="outlined">
               <Button
                 sx={{
@@ -188,7 +190,7 @@ const EmployeeView = () => {
           </Stack>
 
           {/* Table Section */}
-          <Stack width="100%" height="480px">
+          <Stack width="100%" height="81%">
             <AdminModal
               isEditMode={isEditMode}
               setIsEditMode={setIsEditMode}

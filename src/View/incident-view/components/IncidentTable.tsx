@@ -235,15 +235,18 @@ const IncidentTable = ({
         density="compact"
         loading={incidentSlice.state === State?.loading}
         pagination
+        paginationMode="client"
+        pageSizeOptions={[10,15,20]}
         initialState={{
           pagination: {
-            paginationModel: { pageSize: 5 },
+            paginationModel: { pageSize: 10 },
           },
         }}
         slots={{
           toolbar: CustomToolbar,
         }}
         sx={{
+          height: "100%",
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: "white",
           },

@@ -93,7 +93,7 @@ const CareGiverTab = () => {
           </Button>
         </Stack>
       </Stack>
-      <Stack width="100%" height="80%">
+      <Stack width="100%" height="90%">
         <StaffModal
           isCareGiverAddModalVisible={isClientModalVisible}
           isEditMode={true}
@@ -110,19 +110,19 @@ const CareGiverTab = () => {
               <Tab label="Appointments" value="5" />
             </TabList>
           </Box>
-          <TabPanel value="1">
+          <TabPanel sx={{height:"100%"}}  value="1">
             <CareGiverbasicInfo />
           </TabPanel>
-          <TabPanel value="2">
+          <TabPanel sx={{height:"100%"}} value="2">
             <CareGiverDocumentInfo />
           </TabPanel>
-          <TabPanel value="3">
+          <TabPanel sx={{height:"100%"}} value="3">
             <CareGiverPaymentInfo />
           </TabPanel>
-          <TabPanel value="4">
+          <TabPanel sx={{height:"100%"}} value="4">
             <TimeSheetTabs/>
           </TabPanel>
-          <TabPanel value="5">
+          <TabPanel sx={{height:"100%"}} value="5">
             <CareGiverAppointments/>
           </TabPanel>
         </TabContext>

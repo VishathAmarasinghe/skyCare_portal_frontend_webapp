@@ -217,6 +217,7 @@ const TimeSheetTable = ({
         }
         density="compact"
         pagination
+        pageSizeOptions={[5, 10, 15]}
         initialState={{
           pagination: {
             paginationModel: { pageSize: 10 },
@@ -231,6 +232,7 @@ const TimeSheetTable = ({
           ),
         }}
         sx={{
+          height: "100%",
           flexGrow: 1,
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: theme.palette.grey[200],

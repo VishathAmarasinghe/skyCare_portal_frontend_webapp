@@ -241,6 +241,32 @@ export const fetchCareGiverJobAssignViews = createAsyncThunk(
   }
 );
 
+export const fetchCareGiverAllJobAssignViews = createAsyncThunk(
+  "appointments/fetchCareGiverAllJobAssignViews",
+  async (payload: { employeeID: string }, { dispatch, rejectWithValue }) => {
+    return new Promise<JobAssignCareGiverView[]>((resolve, reject) => {
+      APIService.getInstance()
+        .get(
+          AppConfig.serviceUrls.jobAssigns +
+            `/careGiver-assigns/all/${payload.employeeID}`
+        )
+        .then((response) => resolve(response.data))
+        .catch((error) => {
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.fetchJobAssignView
+                  : String(error.response?.data),
+              type: "error",
+            })
+          );
+          rejectWithValue(error.response?.data);
+        });
+    });
+  }
+);
+
 export const fetchRecurrentAppointmentDetails = createAsyncThunk(
   "appointments/fetchRecurrentAppointmentDetails",
   async (
@@ -996,6 +1022,16 @@ const appointmentSlice = createSlice({
         state.JobAssignToCareGiverViewList = action.payload;
       })
       .addCase(fetchCareGiverJobAssignViews.rejected, (state) => {
+        state.state = State.failed;
+      })
+      .addCase(fetchCareGiverAllJobAssignViews.pending, (state) => {
+        state.state = State.loading;
+      })
+      .addCase(fetchCareGiverAllJobAssignViews.fulfilled, (state, action) => {
+        state.state = State.success;
+        state.JobAssignToCareGiverViewList = action.payload;
+      })
+      .addCase(fetchCareGiverAllJobAssignViews.rejected, (state) => {
         state.state = State.failed;
       });
   },

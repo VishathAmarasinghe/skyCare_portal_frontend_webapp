@@ -52,7 +52,7 @@ const AppointmentsTab = () => {
     }
   };
   return (
-    <Stack width="100%" height="80%">
+    <Stack width="100%" height="100%">
       <AddNewAppointmentModal
         isEditMode={isEditMode}
         selectedTimeFram={{
@@ -71,6 +71,7 @@ const AppointmentsTab = () => {
         flexDirection="row"
         alignItems="end"
         justifyContent="flex-end"
+        height="9%"
       >
         <Button
           variant="contained"
@@ -82,7 +83,7 @@ const AppointmentsTab = () => {
           Add Appointments
         </Button>
       </Stack>
-      <Stack width="100%" height="480px">
+      <Stack width="100%" height="100%">
         <AppointmentTable
           isCarePlanModalVisible={isAppointmentModalVisible}
           setIsCarePlanModalVisible={setIsAppointmentModalVisible}

@@ -181,6 +181,8 @@ const NotesTable = ({
         getRowId={(row) => row.noteID}
         density="compact"
         pagination
+        paginationMode="client"
+        pageSizeOptions={[5, 10, 20]}
         loading={noteDetails.State === State.loading}
         initialState={{
           pagination: {
@@ -191,6 +193,7 @@ const NotesTable = ({
           toolbar: CustomToolbar,
         }}
         sx={{
+          height: "100%",
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: "white",
           },
