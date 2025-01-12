@@ -224,10 +224,6 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
     // carePlanID: Yup.string().required("Care Plan ID is required"),
     // taskID: Yup.string().required("Task ID is required"),
     broadcastType: Yup.string().required("Broadcast Type is required"),
-    appointmentAddress: Yup.object({
-      // Add validation for nested appointment address if necessary
-      // e.g. street, city, zip code
-    }),
     recurrenceState: Yup.boolean().required("Recurrence State is required"),
     recurrentWork: Yup.object().shape({
       recurrenceType: Yup.string().when("recurrenceState", {
@@ -1213,7 +1209,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                         onBlur={handleBlur}
                         name="appointmentAddress.address"
                         InputProps={{ readOnly: !isEditMode }}
-                        value={values.appointmentAddress.address}
+                        value={values?.appointmentAddress?.address}
                         onChange={handleChange}
                         error={
                           touched.appointmentAddress?.address &&
@@ -1236,7 +1232,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                         fullWidth
                         onBlur={handleBlur}
                         name="appointmentAddress.city"
-                        value={values.appointmentAddress.city}
+                        value={values.appointmentAddress?.city}
                         InputProps={{ readOnly: !isEditMode }}
                         onChange={handleChange}
                         error={
@@ -1256,7 +1252,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                         fullWidth
                         name="appointmentAddress.state"
                         onBlur={handleBlur}
-                        value={values.appointmentAddress.state}
+                        value={values.appointmentAddress?.state}
                         InputProps={{ readOnly: !isEditMode }}
                         onChange={handleChange}
                         error={
@@ -1276,7 +1272,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                         fullWidth
                         onBlur={handleBlur}
                         name="appointmentAddress.postalCode"
-                        value={values.appointmentAddress.postalCode}
+                        value={values.appointmentAddress?.postalCode}
                         onChange={handleChange}
                         InputProps={{ readOnly: !isEditMode }}
                         error={
