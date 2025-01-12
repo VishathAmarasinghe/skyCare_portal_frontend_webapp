@@ -239,7 +239,7 @@ const EmployeeTable = ({}: ClientTableProps) => {
   ];
 
   return (
-    <Box sx={{ height: "100%", width: "100%" }}>
+    <Box sx={{ height: "100%", width: "100%", overflowY:"auto" }}>
       <DataGrid
         rows={employees}
         columns={initialColumns}
@@ -247,6 +247,7 @@ const EmployeeTable = ({}: ClientTableProps) => {
         density="compact"
         pagination
         paginationMode="client"
+        pageSizeOptions={[8, 12, 20]}
         initialState={{
           pagination: {
             paginationModel: { pageSize: 8 },
@@ -256,6 +257,7 @@ const EmployeeTable = ({}: ClientTableProps) => {
           toolbar: CustomToolbar,
         }}
         sx={{
+          height: "100%",
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: "white",
           },

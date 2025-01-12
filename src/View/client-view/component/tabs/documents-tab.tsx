@@ -76,12 +76,13 @@ const DocumentsTab = () => {
   };
 
   return (
-    <Stack width="100%" height="80%">
+    <Stack width="100%" height="100%">
       <Stack
         width="100%"
         flexDirection="row"
         alignItems="end"
         justifyContent="flex-end"
+        height="9%"
       >
         <Button
           variant="contained"
@@ -97,7 +98,7 @@ const DocumentsTab = () => {
           onSave={handleSave}
         />
       </Stack>
-      <Stack width="100%" height="480px">
+      <Stack width="100%" height="100%">
         <DocumentsTable
           selectedClientDocument={selectedClientDocument}
           setSelectedClientDocument={setSelectedClientDocument}

@@ -92,7 +92,7 @@ const ClientInfoPanel = () => {
           />
         </Stack>
       </Stack>
-      <Stack width="100%" height="80%">
+      <Stack width="100%" height="100%">
         <TabContext value={tabValue}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <TabList onChange={handleChange} aria-label="client tabs">
@@ -105,25 +105,25 @@ const ClientInfoPanel = () => {
               <Tab label="Documents" value="7" />
             </TabList>
           </Box>
-          <TabPanel value="1">
+          <TabPanel sx={{height:"100%"}} value="1">
             <BasicInfoTab />
-          </TabPanel>
-          <TabPanel value="2">
+          </TabPanel >
+          <TabPanel sx={{height:"100%"}} value="2">
             <InterestTab />
           </TabPanel>
-          <TabPanel value="3">
+          <TabPanel sx={{height:"100%"}} value="3">
             <NotesTab />
           </TabPanel>
-          <TabPanel value="4">
+          <TabPanel sx={{height:"100%"}} value="4">
             <CarePlanTab />
           </TabPanel>
-          <TabPanel value="5">
+          <TabPanel sx={{height:"100%"}} value="5">
             <AppointmentTab />
           </TabPanel>
-          <TabPanel value="7">
+          <TabPanel sx={{height:"100%"}} value="7">
             <DocumentsTab />
           </TabPanel>
-          <TabPanel value="8">
+          <TabPanel sx={{height:"100%"}} value="8">
             <CarePlanBillings/>
           </TabPanel>
         </TabContext>

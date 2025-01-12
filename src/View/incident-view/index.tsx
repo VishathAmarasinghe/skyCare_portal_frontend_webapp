@@ -60,6 +60,7 @@ const IncidentView = () => {
         flexDirection="row"
         alignItems="center"
         justifyContent="space-between"
+        height="9%"
       >
         <Typography
           color={theme.palette.primary.main}
@@ -77,7 +78,7 @@ const IncidentView = () => {
           New Incident
         </Button>
       </Stack>
-      <Stack width="100%" height="480px">
+      <Stack width="100%" height="100%">
         <IncidentTable
           isIncidentModalVisible={isIncidentModalOpen}
           setIsIncidentModalOpen={setIsIncidentModalOpen}

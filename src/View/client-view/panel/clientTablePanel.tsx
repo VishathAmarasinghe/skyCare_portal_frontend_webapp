@@ -52,6 +52,7 @@ const ClientTablePanel = () => {
         flexDirection="row"
         alignItems="end"
         justifyContent="flex-end"
+        height="9%"
       >
         <AddNewClientModal
           isClientAddModalVisible={isClientAddModalVisible}
@@ -77,7 +78,7 @@ const ClientTablePanel = () => {
           </Button>
         </Stack>
       </Stack>
-      <Stack width="100%" height="80%">
+      <Stack width="100%" height="100%">
         <ClientTable />
       </Stack>
     </Stack>

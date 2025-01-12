@@ -61,6 +61,7 @@ const ResourceView = () => {
         flexDirection="row"
         alignItems="center"
         justifyContent="space-between"
+        height={"9%"}
       >
         <ResourceCreationModal
           isEditMode={isEditMode}
@@ -89,7 +90,7 @@ const ResourceView = () => {
           <></>
         )}
       </Stack>
-      <Stack width="100%" height="480px">
+      <Stack width="100%" height="100%">
         <ResourceTable />
       </Stack>
     </Stack>

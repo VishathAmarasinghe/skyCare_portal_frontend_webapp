@@ -173,8 +173,8 @@ const ResourceTable = ({}: ResourceTableProps) => {
             >
               <RemoveRedEyeOutlinedIcon />
             </IconButton>
-            {authRole?.includes(APPLICATION_ADMIN) ||
-              (authRole?.includes(APPLICATION_SUPER_ADMIN) && (
+            {(authRole?.includes(APPLICATION_ADMIN) ||
+              (authRole?.includes(APPLICATION_SUPER_ADMIN)) ? (
                 <IconButton
                   aria-label="delete"
                   onClick={() => {
@@ -190,7 +190,7 @@ const ResourceTable = ({}: ResourceTableProps) => {
                 >
                   <DeleteOutlineOutlinedIcon />
                 </IconButton>
-              ))}
+              ):<></>)}
           </Stack>
         );
       },
@@ -216,7 +216,7 @@ const ResourceTable = ({}: ResourceTableProps) => {
             >
               <RemoveRedEyeOutlinedIcon />
             </IconButton>
-            {!isMobile && (
+            {/* {!isMobile && (
               <IconButton
                 aria-label="delete"
                 onClick={() => {
@@ -232,7 +232,7 @@ const ResourceTable = ({}: ResourceTableProps) => {
               >
                 <DeleteOutlineOutlinedIcon />
               </IconButton>
-            )}
+            )} */}
           </Stack>
         );
       },
@@ -253,6 +253,7 @@ const ResourceTable = ({}: ResourceTableProps) => {
         // loading={clientInfo.State === State.loading}
         pagination
         paginationMode="client"
+        pageSizeOptions={[10, 15,25]}
         initialState={{
           pagination: {
             paginationModel: { pageSize: 10 },
@@ -262,6 +263,7 @@ const ResourceTable = ({}: ResourceTableProps) => {
           toolbar: CustomToolbar,
         }}
         sx={{
+          height: "100%",
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: "white",
           },

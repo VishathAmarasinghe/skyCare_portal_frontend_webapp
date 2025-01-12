@@ -12,6 +12,7 @@ import AppointmentBarChart from "../Components/AppointmentBarChart";
 import AppointmentTypePieChart from "../Components/AppointmentTypePieChart";
 import AppointmentProgressChart from "../Components/AppointmentProgressChart";
 import { theme } from "antd";
+import { fetchAppointmentTypes } from "@slices/appointmentSlice/appointment";
 
 const AdminDashboard = () => {
   const dispatch = useAppDispatch();
@@ -19,6 +20,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     dispatch(fetchAdminDashboard());
+    dispatch(fetchAppointmentTypes());
   }, [dispatch]);
 
   const Item = ({ children }: { children: React.ReactNode }) => (

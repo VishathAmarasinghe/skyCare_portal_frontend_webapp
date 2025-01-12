@@ -134,6 +134,7 @@ const ReportView = () => {
         flexDirection="row"
         alignItems="center"
         justifyContent="space-between"
+        height={"9%"}
       >
         <Typography
           color={theme.palette.primary.main}
@@ -154,8 +155,8 @@ const ReportView = () => {
           New Time Sheet
         </Button>
       </Stack>
-      <Stack width="100%" height="480px" mt={1}>
-        <Grid container width={"100%"} spacing={2} alignItems="center">
+      <Stack width="100%" height="90%" mt={1}>
+        <Grid container width={"100%"} height="10%" spacing={2} alignItems="center">
           {/* Selector */}
           <Grid item xs={12} sm={4} md={6}>
             <FormControl fullWidth>
@@ -165,6 +166,7 @@ const ReportView = () => {
                 onChange={handleOptionChange}
                 displayEmpty
                 variant="outlined"
+                size="small"
                 sx={{ minWidth: 120 }}
               >
                 <MenuItem value="all">All</MenuItem>
@@ -198,6 +200,7 @@ const ReportView = () => {
           <Grid item xs={12} sm={4} md={3}>
             <TextField
               fullWidth
+              size="small"
               label="Start Date"
               type="date"
               name="startDate"
@@ -216,6 +219,7 @@ const ReportView = () => {
               label="End Date"
               type="date"
               name="endDate"
+              size="small"
               value={endDate}
               onChange={handleEndDateChange}
               InputLabelProps={{
@@ -224,11 +228,14 @@ const ReportView = () => {
             />
           </Grid>
         </Grid>
+        <Stack width={"100%"} height={"100%"}>
         <TimeSheetTable
           setPureNew={setPureNew}
           isNoteModalVisible={shiftModalOpen}
           setIsNoteModalVisible={setShiftModalOpen}
         />
+        </Stack>
+        
       </Stack>
     </Stack>
   );

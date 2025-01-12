@@ -77,6 +77,7 @@ const ShiftNoteView = () => {
         flexDirection="row"
         alignItems="center"
         justifyContent="space-between"
+        height="10%"
       >
         <Typography
           color={theme.palette.primary.main}
@@ -97,7 +98,7 @@ const ShiftNoteView = () => {
           New Time Sheet
         </Button>
       </Stack>
-      <Stack width="100%" height="480px">
+      <Stack width="100%" height="100%">
         <ShiftNoteTable
           setPureNew={setPureNew}
           isNoteModalVisible={shiftModalOpen}

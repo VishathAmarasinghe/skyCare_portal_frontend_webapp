@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   PieChart,
   Pie,
@@ -8,6 +8,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Typography } from "@mui/material";
+import { AppointmentType } from "@slices/appointmentSlice/appointment";
+import { useAppSelector } from "@slices/store";
 
 interface AppointmentTypePieChartProps {
   appointmentCountByType: Record<string, number>;
@@ -17,6 +19,8 @@ const AppointmentTypePieChart: React.FC<AppointmentTypePieChartProps> = ({
   appointmentCountByType,
 }) => {
   // Prepare data for the appointment type pie chart
+  const appointmentSlice = useAppSelector((state) => state.appointments);
+  const [appointmentTypes,setAppointmentTypes] = useState<AppointmentType[]>([]);
   const appointmentTypeData = Object.keys(appointmentCountByType).map(
     (type) => ({
       name: type,
@@ -24,17 +28,21 @@ const AppointmentTypePieChart: React.FC<AppointmentTypePieChartProps> = ({
     })
   );
 
+  useEffect(() => {
+    setAppointmentTypes(appointmentSlice.appointmentTypes);
+  }, [appointmentSlice?.appointmentTypes]);
+
   return (
     <div
       style={{
         width: "100%",
-        height: "120px",
+        height: "110px",
         padding: "0px",
         marginBottom: "0px",
       }}
     >
       <Typography variant="h6" fontWeight={"bold"}>
-        Appointment Types
+        Appointment Count(By Type)
       </Typography>
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
@@ -50,12 +58,12 @@ const AppointmentTypePieChart: React.FC<AppointmentTypePieChartProps> = ({
             {appointmentTypeData.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
-                fill={index % 2 === 0 ? "#4CAF50" : "#FFC107"} // Alternate colors
+                fill={appointmentTypes?.find((app)=>app?.name==entry.name)?.color} // Alternate colors
               />
             ))}
           </Pie>
           <Tooltip />
-          <Legend />
+          <Legend align="left" />
         </PieChart>
       </ResponsiveContainer>
     </div>
