@@ -31,7 +31,9 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import { useConfirmationModalContext } from "../../../context/DialogContext";
 import { ConfirmationType } from "../../../types/types";
 import {
+  APPLICATION_ADMIN,
   APPLICATION_CARE_GIVER,
+  APPLICATION_SUPER_ADMIN,
   FILE_DOWNLOAD_BASE_URL,
 } from "../../../config/config";
 import { Employee } from "@slices/employeeSlice/employee";
@@ -171,21 +173,24 @@ const ResourceTable = ({}: ResourceTableProps) => {
             >
               <RemoveRedEyeOutlinedIcon />
             </IconButton>
-            <IconButton
-              aria-label="delete"
-              onClick={() => {
-                showConfirmation(
-                  "Delete Resource",
-                  `Are you sure you want to delete resource "${params.row.resourceName}"?`,
-                  ConfirmationType.update,
-                  () => handleDelete(params.row.resourceId),
-                  "Delete",
-                  "Cancel"
-                );
-              }}
-            >
-              <DeleteOutlineOutlinedIcon />
-            </IconButton>
+            {authRole?.includes(APPLICATION_ADMIN) ||
+              (authRole?.includes(APPLICATION_SUPER_ADMIN) && (
+                <IconButton
+                  aria-label="delete"
+                  onClick={() => {
+                    showConfirmation(
+                      "Delete Resource",
+                      `Are you sure you want to delete resource "${params.row.resourceName}"?`,
+                      ConfirmationType.update,
+                      () => handleDelete(params.row.resourceId),
+                      "Delete",
+                      "Cancel"
+                    );
+                  }}
+                >
+                  <DeleteOutlineOutlinedIcon />
+                </IconButton>
+              ))}
           </Stack>
         );
       },
@@ -242,7 +247,7 @@ const ResourceTable = ({}: ResourceTableProps) => {
     <Box sx={{ height: "100%", width: "100%" }}>
       <DataGrid
         rows={resources}
-        columns={isMobile? initialColumnsMobile:initialColumns}
+        columns={isMobile ? initialColumnsMobile : initialColumns}
         getRowId={(row) => row.resourceId}
         density="compact"
         // loading={clientInfo.State === State.loading}
