@@ -12,6 +12,7 @@ import { fetchSingleCareGiverByEmployeeID } from "@slices/careGiverSlice/careGiv
 import StaffModal from "../modal/StaffModal";
 import { fetchSingleEmployee } from "@slices/employeeSlice/employee";
 import TimeSheetTabs from "../components/tabs/TimeSheetTabs";
+import CareGiverAppointments from "../components/tabs/CareGiverAppointments";
 
 const CareGiverTab = () => {
   const theme = useTheme();
@@ -106,6 +107,7 @@ const CareGiverTab = () => {
               <Tab label="Documents" value="2" />
               <Tab label="Payments" value="3" />
               <Tab label="Time Sheets" value="4" />
+              <Tab label="Appointments" value="5" />
             </TabList>
           </Box>
           <TabPanel value="1">
@@ -119,6 +121,9 @@ const CareGiverTab = () => {
           </TabPanel>
           <TabPanel value="4">
             <TimeSheetTabs/>
+          </TabPanel>
+          <TabPanel value="5">
+            <CareGiverAppointments/>
           </TabPanel>
         </TabContext>
       </Stack>

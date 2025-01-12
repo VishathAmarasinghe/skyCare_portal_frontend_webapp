@@ -164,6 +164,15 @@ const RecurrentAppointmentDetailsModal = ({
               Attachments
             </Typography>
             <Grid container spacing={2}>
+              {
+                // Display a message if there are no attachments
+                selectedAppointmentDetails?.appointmentData?.attachments.length ===
+                0 && (
+                  <Typography variant="body2" color="textSecondary">
+                    No attachments available
+                  </Typography>
+                )
+              }
               {selectedAppointmentDetails?.appointmentData?.attachments.map(
                 (attachment) => (
                   <Grid item xs={12} sm={6} key={attachment.documentID}>
