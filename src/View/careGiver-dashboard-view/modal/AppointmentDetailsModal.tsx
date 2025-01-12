@@ -174,7 +174,7 @@ const AppointmentDetailsModal: React.FC<AppointmentDetailsModalProps> = ({
             <Stack direction="row" spacing={2} alignItems="center">
               <LocationOnIcon color="primary" />
               <Typography>
-                {`${selectedAppointment.appointmentAddress.address}, ${selectedAppointment.appointmentAddress.city}, ${selectedAppointment.appointmentAddress.state} - ${selectedAppointment.appointmentAddress.postalCode}`}
+                {`${selectedAppointment?.appointmentAddress?.address}, ${selectedAppointment?.appointmentAddress?.city}, ${selectedAppointment?.appointmentAddress?.state} - ${selectedAppointment?.appointmentAddress?.postalCode}`}
               </Typography>
             </Stack>
 
@@ -222,6 +222,16 @@ const AppointmentDetailsModal: React.FC<AppointmentDetailsModalProps> = ({
               Attachments
             </Typography>
             <Grid container spacing={2}>
+              {
+                // Display a message if there are no attachments
+                selectedAppointment.attachments.length === 0 && (
+                  <Grid item xs={12}>
+                    <Typography variant="body2" color="textSecondary">
+                      No attachments found
+                    </Typography>
+                  </Grid>
+                )
+              }
               {selectedAppointment.attachments.map((attachment) => (
                 <Grid item xs={12} sm={6} key={attachment.documentID}>
                   <Paper
