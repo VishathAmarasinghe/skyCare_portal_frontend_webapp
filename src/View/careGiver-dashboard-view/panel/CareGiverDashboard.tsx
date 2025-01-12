@@ -240,7 +240,7 @@ const CareGiverDashboard = () => {
                 <Box
                   sx={{
                     overflowY: "auto", // Enable scrolling
-                    maxHeight: "150px", // Adjust based on remaining height
+                    // maxHeight: "150px", // Adjust based on remaining height
                     mt: 2, // Add some spacing between the title and the list
                   }}
                 >
