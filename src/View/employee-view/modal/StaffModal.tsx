@@ -263,7 +263,7 @@ const StaffModal = ({
     );
   };
 
-  const handleStatusChange = (newStatus: "Activated" | "Deactivated") => {
+  const handleStatusChange = (newStatus: "Activated" | "Deactivated" | "Pending") => {
     if (careGiverStatus.selectedCareGiver) {
       const updatedCareGiver = {
         ...careGiverStatus.selectedCareGiver,
@@ -296,11 +296,11 @@ const StaffModal = ({
                 color={employeeState === "Pending" ? "success" : "error"}
                 onClick={() =>
                   handleStatusChange(
-                    employeeState === "Pending" ? "Activated" : "Deactivated"
+                    employeeState === "Pending" ? "Activated" : employeeState ==="Activated"? "Deactivated":employeeState==="Deactivated"?"Activated":"Pending"
                   )
                 }
               >
-                {employeeState === "Pending" ? "Activate" : "Deactivate"}
+                {employeeState === "Pending" ? "Activate" : employeeState=="Activated"? "Deactivate":employeeState==="Deactivated"? "Activate":"Pending"}
               </Button>
             )}
           <Button
