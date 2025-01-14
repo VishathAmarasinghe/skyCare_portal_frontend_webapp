@@ -53,6 +53,7 @@ const EmployeeView = () => {
     if (employeeSlice?.selectedEmployee) {
       if (selectedEmployee?.accessRole === "Admin") {
         setIsEmployeeAddModalVisible(true);
+        setIsEditMode(false);
       } else if (selectedEmployee?.accessRole === "CareGiver") {
         dispatch(
           fetchSingleCareGiverByEmployeeID(selectedEmployee?.employeeID)

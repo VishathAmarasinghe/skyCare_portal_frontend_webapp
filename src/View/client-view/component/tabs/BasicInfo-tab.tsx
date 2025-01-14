@@ -60,6 +60,11 @@ const BasicInfoTab: React.FC = () => {
     },
     {
       key: "10",
+      label: "Birth Date",
+      children: client?.birthday || "N/A",
+    },
+    {
+      key: "11",
       label: "Phone Numbers",
       children:
         client?.phoneNumbers?.map((no, index) => (
@@ -67,7 +72,12 @@ const BasicInfoTab: React.FC = () => {
         )) || "N/A",
     },
     {
-      key: "11",
+      key: "12",
+      label: "Emergency Contact",
+      children: `${client?.emergencyUser || "No Person "} - ${client?.emergencyPhoneNo || "No Phone Number"}`,
+    },
+    {
+      key: "13",
       label: "Client Fundings",
       children:
         client?.clientClassifications?.map((classification, index) => (
@@ -79,7 +89,7 @@ const BasicInfoTab: React.FC = () => {
         )) || "N/A",
     },
     {
-      key: "12",
+      key: "14",
       label: "Languages",
       children:
         client?.clientLanguages?.map((language, index) => (
@@ -91,9 +101,9 @@ const BasicInfoTab: React.FC = () => {
         )) || "N/A",
     },
     {
-      key: "13",
+      key: "15",
       label: "Address",
-      children: `${client?.physicalAddress?.address} ${client?.physicalAddress?.city} ${client?.physicalAddress?.state}`,
+      children: `${client?.physicalAddress?.address}`,
     },
   ];
 

@@ -198,6 +198,7 @@ const AppointmentCalendar = ({
         });
 
         setIsAppointmentAddModalVisible(true);
+        setIsEditing(true);
       }
     },
     []

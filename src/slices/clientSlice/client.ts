@@ -80,6 +80,9 @@ export interface Client {
   clientType: string;
   clientStatus: string;
   referenceNo:string;
+  emergencyPhoneNo:string;
+  emergencyUser:string;
+
 }
 
 export const deleteClientDocument = createAsyncThunk(

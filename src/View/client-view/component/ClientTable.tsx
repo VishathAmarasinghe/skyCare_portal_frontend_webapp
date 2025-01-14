@@ -29,9 +29,9 @@ function CustomToolbar() {
 }
 
 const initialColumns: GridColDef[] = [
-  { field: "clientID", headerName: "Client ID", flex: 1, align: "left" },
+  { field: "clientID", headerName: "Client ID", width:100, align: "left" },
   {
-    field:"referenceNo",headerName:"Reference No",flex:1,align:"left"
+    field:"referenceNo",headerName:"Reference No",width:180,align:"left"
   },
   { field: "firstName", headerName: "First Name", flex: 1 },
   { field: "lastName", headerName: "Last Name", flex: 1 },
@@ -69,7 +69,7 @@ const initialColumns: GridColDef[] = [
   {
     field: "clientClassifications",
     headerName: "Client Fundings",
-    width: 230,
+    width: 260,
     headerAlign: "left",
     align: "left",
   },

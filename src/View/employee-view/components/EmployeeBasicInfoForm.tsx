@@ -21,20 +21,30 @@ import { set } from "date-fns";
 const validationSchema = Yup.object({
   firstName: Yup.string().required("First name is required"),
   lastName: Yup.string().required("Last name is required"),
-  email: Yup.string().email("Invalid email").required("Email is required"),
+  email: Yup.string().trim().email("Invalid email").required("Email is required"),
   joinDate: Yup.date().required("Join date is required"),
   // profilePhoto: Yup.mixed().required("Profile photo is required"),
   employeePhoneNo: Yup.array()
-    .of(Yup.string().required("Phone number is required"))
-    .min(2, "Both phone numbers are required")
-    .test(
-      "unique-phone-numbers",
-      "Phone numbers must be unique",
-      (phoneNumbers) => {
-        if (!phoneNumbers) return true;
-        const uniquePhoneNumbers = new Set(phoneNumbers);
-        return uniquePhoneNumbers.size === phoneNumbers.length;
-      }
+    .of(
+      Yup.string()
+        .test(
+          "phone-format",
+          "Invalid phone number format. Use either international format like +1234567890 or normal format like 0123456789.",
+          (value) =>
+            /^\+?[1-9]\d{1,14}$/.test(value || "") || // International format
+            /^\d{10}$/.test(value || "") // Normal format
+        )
+        .required("Phone number is required")
+    )
+    .min(1, "At least one phone number is required")
+    .max(1, "Only one phone number is allowed"),
+    emergencyPhoneNo: Yup.string().test(
+      "phone-format",
+      "Invalid phone number format. Use either international format like +1234567890 or normal format like 0123456789.",
+      (value) =>
+        !value || // Allow empty values
+        /^\+?[1-9]\d{1,14}$/.test(value || "") || // International format
+        /^\d{10}$/.test(value || "") // Normal format
     ),
   employeeAddresses: Yup.array().of(
     Yup.object().shape({
@@ -108,13 +118,16 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
     ],
     status: "",
     employeeJobRoles: [],
-    employeePhoneNo: ["", ""],
+    employeePhoneNo: [""],
+    emergencyPhoneNo:"",
+    emergencyUser:""
   });
 
   useEffect(() => {
     if (employeeSlice?.selectedEmployee) {
       setInitialValues({
         ...employeeSlice.selectedEmployee,
+        employeePhoneNo:[employeeSlice?.selectedEmployee?.employeePhoneNo[0]]
       });
       if (employeeSlice.selectedEmployee.profile_photo) {
         setProfilePhotoPreview(
@@ -146,7 +159,9 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
         ],
         status: "",
         employeeJobRoles: [],
-        employeePhoneNo: ["", ""],
+        employeePhoneNo: [""],
+        emergencyPhoneNo:"",
+        emergencyUser:""
       });
     }
   }, [employeeSlice?.selectedEmployee]);
@@ -292,6 +307,10 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
         //   }
         //  },[modalOpenState])
 
+        useEffect(() => {
+          console.log("errors ",errors);
+          
+        }, [values]);
         return (
           <Form>
             <Grid container spacing={2}>
@@ -313,7 +332,7 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                   accept="image/*"
                   id="upload-photo"
                   type="file"
-                  // disabled={!isEditMode}
+                  disabled={!isEditMode}
                   onChange={(e) => handleFileUpload(e, setFieldValue)}
                 />
                 <Typography variant="h6" sx={{ my: 1 }} textAlign="center">
@@ -337,7 +356,9 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                       label="First Name"
                       name="firstName"
                       fullWidth
-                      readOnly={!isEditMode}
+                      InputProps={{
+                        readOnly: !isEditMode, 
+                      }}
                       error={touched.firstName && Boolean(errors.firstName)}
                       helperText={touched.firstName && errors.firstName}
                     />
@@ -348,6 +369,9 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                       label="Last Name"
                       name="lastName"
                       fullWidth
+                      InputProps={{
+                        readOnly: !isEditMode, 
+                      }}
                       error={touched.lastName && Boolean(errors.lastName)}
                       helperText={touched.lastName && errors.lastName}
                     />
@@ -358,6 +382,9 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                       label="Email"
                       name="email"
                       fullWidth
+                      InputProps={{
+                        readOnly: !isEditMode, 
+                      }}
                       error={touched.email && Boolean(errors.email)}
                       helperText={touched.email && errors.email}
                     />
@@ -368,21 +395,9 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                       label="Phone No"
                       name="employeePhoneNo[0]"
                       fullWidth
-                      error={
-                        touched.employeePhoneNo &&
-                        Boolean(errors.employeePhoneNo?.[0])
-                      }
-                      helperText={
-                        touched.employeePhoneNo && errors.employeePhoneNo?.[0]
-                      }
-                    />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Field
-                      as={TextField}
-                      label="Emergency Phone No"
-                      name="employeePhoneNo[1]"
-                      fullWidth
+                      InputProps={{
+                        readOnly: !isEditMode, 
+                      }}
                       error={
                         touched.employeePhoneNo &&
                         Boolean(errors.employeePhoneNo?.[1])
@@ -395,9 +410,48 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                   <Grid item xs={6}>
                     <Field
                       as={TextField}
+                      label="Emergency Phone No"
+                      name="emergencyPhoneNo"
+                      fullWidth
+                      InputProps={{
+                        readOnly: !isEditMode, 
+                      }}
+                      error={
+                        touched.emergencyPhoneNo &&
+                        Boolean(errors.emergencyPhoneNo)
+                      }
+                      helperText={
+                        touched.emergencyPhoneNo && errors.emergencyPhoneNo
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Field
+                      as={TextField}
+                      label="Emergency Contact Person"
+                      name="emergencyUser"
+                      fullWidth
+                      InputProps={{
+                        readOnly: !isEditMode, 
+                      }}
+                      error={
+                        touched.emergencyUser &&
+                        Boolean(errors.emergencyUser)
+                      }
+                      helperText={
+                        touched.emergencyUser && errors.emergencyUser
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Field
+                      as={TextField}
                       label="Join Date"
                       type="date"
                       name="joinDate"
+                      InputProps={{
+                        readOnly: !isEditMode, 
+                      }}
                       fullWidth
                       InputLabelProps={{ shrink: true }}
                       error={touched.joinDate && Boolean(errors.joinDate)}
@@ -457,6 +511,9 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                       label="Address"
                       name="employeeAddresses[0].address"
                       fullWidth
+                      InputProps={{
+                        readOnly: !isEditMode, 
+                      }}
                       error={
                         touched.employeeAddresses?.[0]?.address &&
                         typeof errors.employeeAddresses?.[0] === "object" &&
@@ -475,6 +532,9 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                       label="City"
                       name="employeeAddresses[0].city"
                       fullWidth
+                      InputProps={{
+                        readOnly: !isEditMode, 
+                      }}
                       error={
                         touched.employeeAddresses?.[0]?.city &&
                         typeof errors.employeeAddresses?.[0] === "object" &&
@@ -493,6 +553,9 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                       label="State"
                       name="employeeAddresses[0].state"
                       fullWidth
+                      InputProps={{
+                        readOnly: !isEditMode, 
+                      }}
                       error={
                         touched.employeeAddresses?.[0]?.state &&
                         typeof errors.employeeAddresses?.[0] === "object" &&
@@ -511,6 +574,9 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                       label="Postal Code"
                       name="employeeAddresses[0].postal_code"
                       fullWidth
+                      InputProps={{
+                        readOnly: !isEditMode, 
+                      }}
                       error={
                         touched.employeeAddresses?.[0]?.postal_code &&
                         typeof errors.employeeAddresses?.[0] === "object" &&

@@ -75,6 +75,8 @@ const CareGiverInfoView = () => {
       ],
       employeeJobRoles: [],
       employeePhoneNo: ["", ""],
+      emergencyPhoneNo:"",
+      emergencyUser:""
     });
 
   useEffect(() => {
