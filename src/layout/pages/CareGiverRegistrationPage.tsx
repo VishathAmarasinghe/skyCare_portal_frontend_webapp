@@ -64,7 +64,9 @@ const CareGiverRegistrationPage = () => {
         },
       ],
       employeeJobRoles: [],
-      employeePhoneNo: ["", ""],
+      employeePhoneNo: [""],
+      emergencyPhoneNo:"",
+      emergencyUser:""
     });
 
   useEffect(() => {

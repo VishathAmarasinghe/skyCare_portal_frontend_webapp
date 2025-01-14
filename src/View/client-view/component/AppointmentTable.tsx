@@ -69,6 +69,7 @@ const AppointmentTable = ({
     {
       field: "appointmentTypeID",
       headerName: "Appointment Type",
+      flex:1,
       renderCell: (params) => {
         const appointmentType = appointmentSlice.appointmentTypes.find(
           (type) => type.appointmentTypeID === params.value
@@ -89,14 +90,15 @@ const AppointmentTable = ({
     {
       field: "startDate",
       headerName: "Start Date",
-      headerAlign: "center",
+      headerAlign: "left",
+      flex:1,
       align: "left",
     },
     {
       field: "endDate",
       headerName: "End Date",
-      width: 100,
-      headerAlign: "center",
+      flex:1,
+      headerAlign: "left",
       align: "left",
     },
     {

@@ -69,7 +69,9 @@ const AdminModal = ({
         },
       ],
       employeeJobRoles: [],
-      employeePhoneNo: ["", ""],
+      employeePhoneNo: [""],
+      emergencyPhoneNo: "",
+      emergencyUser: "",
     });
 
   useEffect(() => {
@@ -99,7 +101,9 @@ const AdminModal = ({
 
   useEffect(() => {
     employeeBasicInformation.accessRole = "Admin";
-    console.log("employeeBasicInformation is", employeeBasicInformation);
+    console.log("errorState is", errorState);
+    
+    // console.log("employeeBasicInformation is", employeeBasicInformation);
     employeeBasicInformation.profile_photo = "";
     if (errorState == "Validated") {
       if (employeeSlice?.selectedEmployee) {
@@ -125,7 +129,6 @@ const AdminModal = ({
   const handleSave = async () => {
     document.getElementById("employeeMainData")?.click();
     employeeBasicInformation.accessRole = "Admin";
-    console.log("employeeBasicInformation is", employeeBasicInformation);
     employeeBasicInformation.profile_photo = "";
   };
 

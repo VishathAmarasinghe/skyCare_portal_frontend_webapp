@@ -96,6 +96,8 @@ const AddClientForm = ({ activeStepper,setActiveStepper }:AddClientFormProps) =>
     dislikes: "",
     clientClassifications: [] as string[],
     referenceNo: "",
+    emergencyPhoneNo:"",
+    emergencyUser:""
   });
   const [classifications, setClassifications] = useState<
     { label: string; value: string }[]
@@ -200,6 +202,8 @@ const AddClientForm = ({ activeStepper,setActiveStepper }:AddClientFormProps) =>
         dislikes: "",
         clientClassifications: [] as string[],
         referenceNo: "",
+        emergencyPhoneNo:"",
+        emergencyUser:""
       });
     }
   }, [
@@ -286,6 +290,14 @@ const AddClientForm = ({ activeStepper,setActiveStepper }:AddClientFormProps) =>
         "At least one phone number is required.",
         (value) =>
           !!value && value.some((phone) => phone && phone.trim() !== "")
+      ),
+      emergencyPhoneNo: Yup.string().test(
+        "phone-format",
+        "Invalid phone number format. Use either international format like +1234567890 or normal format like 0123456789.",
+        (value) =>
+          !value || // Allow empty values
+          /^\+?[1-9]\d{1,14}$/.test(value || "") || // International format
+          /^\d{10}$/.test(value || "") // Normal format
       ),
     clientType: Yup.string().required("Client Type is required"),
     clientStatus: Yup.string().required("Client Status is required"),
@@ -887,6 +899,26 @@ const AddClientForm = ({ activeStepper,setActiveStepper }:AddClientFormProps) =>
                       }
                     />
                   </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <TextField
+                      label="Emeregncy Contact Person"
+                      variant="outlined"
+                      fullWidth
+                      required={false}
+                      name="emergencyUser"
+                      value={formikProps.values.emergencyUser}
+                      onChange={formikProps.handleChange}
+                      onBlur={formikProps.handleBlur}
+                      error={
+                        formikProps.touched.emergencyUser &&
+                        Boolean(formikProps.errors.emergencyUser)
+                      }
+                      helperText={
+                        formikProps.touched.emergencyUser &&
+                        formikProps.errors.emergencyUser
+                      }
+                    />
+                  </Grid>
                   {/* Phone Numbers */}
                   <Grid item xs={12} sm={4}>
                     <TextField
@@ -894,17 +926,17 @@ const AddClientForm = ({ activeStepper,setActiveStepper }:AddClientFormProps) =>
                       variant="outlined"
                       fullWidth
                       required
-                      name="phoneNumbers[1]"
-                      value={formikProps.values.phoneNumbers[1]}
+                      name="emergencyPhoneNo"
+                      value={formikProps.values.emergencyPhoneNo}
                       onChange={formikProps.handleChange}
                       onBlur={formikProps.handleBlur}
                       error={
-                        formikProps.touched.phoneNumbers &&
-                        Boolean(formikProps.errors.phoneNumbers?.[1])
+                        formikProps.touched.emergencyPhoneNo &&
+                        Boolean(formikProps.errors.emergencyPhoneNo)
                       }
                       helperText={
-                        formikProps.touched.phoneNumbers &&
-                        formikProps.errors.phoneNumbers?.[1]
+                        formikProps.touched.emergencyPhoneNo &&
+                        formikProps.errors.emergencyPhoneNo
                       }
                     />
                   </Grid>

@@ -162,14 +162,14 @@ const IncidentTable = ({
     {
       field: "incidentDate",
       headerName: "Incident Date",
-      width: 100,
+      flex: 1,
       headerAlign: "center",
       align: "center",
     },
     {
       field: "reportDate",
       headerName: "Reporting Date",
-      width: 150,
+      flex: 1,
       headerAlign: "center",
       align: "center",
     },

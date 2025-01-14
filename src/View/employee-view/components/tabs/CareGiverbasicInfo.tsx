@@ -82,11 +82,14 @@ const CareGiverbasicInfo = () => {
     },
     {
       key: "10",
+      label: "Emergency Contact",
+      children: `${careGiver?.employee?.emergencyUser || "No Person "} - ${careGiver?.employee?.emergencyPhoneNo || "No Phone Number"}`,
+    },
+    {
+      key: "11",
       label: "Address",
       children: `${
         careGiver?.employee?.employeeAddresses[0]?.address || "N/A"
-      } ${
-        careGiver?.employee?.employeeAddresses[0]?.postal_code || ""
       }`,
     },
   ];

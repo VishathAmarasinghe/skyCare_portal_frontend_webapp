@@ -120,16 +120,16 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
       .required("Incident Date is required")
       .max(new Date(), "Incident Date cannot be in the future"),
     incidentTime: Yup.string().required("Incident Time is required"),
-    address: Yup.object({
-      address: Yup.string()
-        .required("Address is required")
-        .max(255, "Address must be 255 characters or less"),
-      city: Yup.string().required("City is required"),
-      state: Yup.string().required("State is required"),
-      postalCode: Yup.string()
-        .required("Postal Code is required")
-        .matches(/^\d{5}(-\d{4})?$/, "Enter a valid postal code"),
-    }),
+    // address: Yup.object({
+    //   address: Yup.string()
+    //     .required("Address is required")
+    //     .max(255, "Address must be 255 characters or less"),
+    //   city: Yup.string().required("City is required"),
+    //   state: Yup.string().required("State is required"),
+    //   postalCode: Yup.string()
+    //     .required("Postal Code is required")
+    //     .matches(/^\d{5}(-\d{4})?$/, "Enter a valid postal code"),
+    // }),
     issue: Yup.string()
       .required("Issue is required")
       .max(1000, "Issue description must be 1000 characters or less"),

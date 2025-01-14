@@ -91,7 +91,9 @@ const StaffModal = ({
         },
       ],
       employeeJobRoles: [],
-      employeePhoneNo: ["", ""],
+      employeePhoneNo: [""],
+      emergencyPhoneNo:"",
+      emergencyUser:""
     });
 
   const resetEmployeeBasicInformation = () => {
@@ -117,7 +119,9 @@ const StaffModal = ({
         },
       ],
       employeeJobRoles: [],
-      employeePhoneNo: ["", ""],
+      employeePhoneNo: [""],
+      emergencyPhoneNo:"",
+      emergencyUser:""
     });
   };
 

@@ -136,7 +136,7 @@ const EmployeeTable = ({}: ClientTableProps) => {
     {
       field: "address",
       headerName: "Address",
-      width: 250,
+      flex:2,
       renderCell: (params) => params?.row?.employeeAddresses[0]?.address,
     },
     {

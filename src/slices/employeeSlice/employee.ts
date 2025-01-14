@@ -32,6 +32,8 @@ export interface Employee {
   employeeAddresses: EmployeeAddress[];
   employeeJobRoles: string[];
   employeePhoneNo: string[];
+  emergencyPhoneNo:string;
+  emergencyUser:string;
 }
 
 export interface EmployeeBasicInfoUpdater {

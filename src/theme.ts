@@ -124,7 +124,7 @@ export const themeSettings = (mode: PaletteMode) => {
       },
       h5: {
         fontSize: "1.0rem",
-        fontWeight: 400,
+        fontWeight: 500,
         [`@media (max-width:1400px)`]: { fontSize: "1.3rem" },
         [`@media (max-width:1200px)`]: { fontSize: "1.2rem" },
         [`@media (max-width:960px)`]: { fontSize: "1.1rem" },
@@ -133,12 +133,12 @@ export const themeSettings = (mode: PaletteMode) => {
       },
       h6: {
         fontSize: "0.9rem",
-        fontWeight: 400,
+        fontWeight: 600,
         [`@media (max-width:1400px)`]: { fontSize: "1.1rem" },
         [`@media (max-width:1200px)`]: { fontSize: "1rem" },
-        [`@media (max-width:960px)`]: { fontSize: "0.7rem" },
-        [`@media (max-width:768px)`]: { fontSize: "0.7rem" },
-        [`@media (max-width:600px)`]: { fontSize: "0.7rem" },
+        [`@media (max-width:960px)`]: { fontSize: "0.9rem" },
+        [`@media (max-width:768px)`]: { fontSize: "0.9rem" },
+        [`@media (max-width:600px)`]: { fontSize: "0.9rem" },
       },
       body1: {
         fontSize: "0.80rem",
