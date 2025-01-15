@@ -155,7 +155,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
     if (clientSlice?.clients?.length > 0) {
       setClientList(clientSlice?.clients);
     }
-  }, [clientSlice?.State]);
+  }, [clientSlice?.State,clientSlice?.clients]);
 
   useEffect(() => {
     if (careGiverSlice?.careGivers?.length > 0) {
@@ -167,6 +167,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
     if (shiftNoteStates.selectedShiftNote != null) {
       setInitialValues({
         ...shiftNoteStates.selectedShiftNote,
+        clientID:shiftNoteStates?.selectedShiftNote?.clientID
       });
 
       console.log("");
@@ -563,6 +564,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
                   name="clientID"
                   value={values.clientID}
                   onChange={handleChange}
+                  InputProps={{ readOnly: !isEditMode }}
                   error={touched.clientID && Boolean(errors.clientID)}
                   helperText={touched.clientID && errors.clientID}
                 >
@@ -586,6 +588,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
                     name="careGiverID"
                     value={values.careGiverID}
                     onChange={handleChange}
+                    InputProps={{ readOnly: !isEditMode }}
                     error={touched.careGiverID && Boolean(errors.careGiverID)}
                     helperText={touched.careGiverID && errors.careGiverID}
                   >
