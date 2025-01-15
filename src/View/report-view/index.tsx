@@ -59,7 +59,7 @@ const ReportView = () => {
   useEffect(() => {
     dispatch(fetchEmployeesByRole("CareGiver"));
     dispatch(fetchClients());
-  }, []);
+  }, [shiftModalOpen]);
 
   useEffect(() => {
     setEmployees(employeeSlice?.employees);

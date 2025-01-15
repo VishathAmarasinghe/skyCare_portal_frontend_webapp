@@ -291,14 +291,6 @@ const AddClientForm = ({ activeStepper,setActiveStepper }:AddClientFormProps) =>
         (value) =>
           !!value && value.some((phone) => phone && phone.trim() !== "")
       ),
-      emergencyPhoneNo: Yup.string().test(
-        "phone-format",
-        "Invalid phone number format. Use either international format like +1234567890 or normal format like 0123456789.",
-        (value) =>
-          !value || // Allow empty values
-          /^\+?[1-9]\d{1,14}$/.test(value || "") || // International format
-          /^\d{10}$/.test(value || "") // Normal format
-      ),
     clientType: Yup.string().required("Client Type is required"),
     clientStatus: Yup.string().required("Client Status is required"),
     // aboutMe: Yup.string().required("About Me is required"),
