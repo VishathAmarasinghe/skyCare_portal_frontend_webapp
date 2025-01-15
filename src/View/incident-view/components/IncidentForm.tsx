@@ -142,7 +142,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
     if (clientSlice?.clients?.length > 0) {
       setClientList(clientSlice?.clients);
     }
-  }, [clientSlice?.State]);
+  }, [clientSlice?.State,clientSlice?.clients]);
 
   useEffect(() => {
     if (incidentSlice?.incidentsTypes) {

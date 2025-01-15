@@ -59,8 +59,10 @@ const IncidentModal = ({
         if (authDate?.userInfo?.userID) {
           dispatch(fetchClientsAssociatedToCareGiver(authDate.userInfo.userID));
         }else{
-          dispatch(fetchClients());
+          
         }
+      }else{
+        dispatch(fetchClients());
       }
     }
   },[authDate,isIncidentModalVisible])
