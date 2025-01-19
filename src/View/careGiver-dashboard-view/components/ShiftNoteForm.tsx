@@ -612,7 +612,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
                   InputProps={{ readOnly: !isEditMode }}
                   type="text"
                   name="totalWorkHrs"
-                  label="Total Work Hours"
+                  label="Total Work Hours(hrs)"
                   value={values.totalWorkHrs}
                   onChange={(event) => {
                     // Ensure the input is a valid decimal number
