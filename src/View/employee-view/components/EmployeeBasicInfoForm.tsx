@@ -38,14 +38,6 @@ const validationSchema = Yup.object({
     )
     .min(1, "At least one phone number is required")
     .max(1, "Only one phone number is allowed"),
-    emergencyPhoneNo: Yup.string().test(
-      "phone-format",
-      "Invalid phone number format. Use either international format like +1234567890 or normal format like 0123456789.",
-      (value) =>
-        !value || // Allow empty values
-        /^\+?[1-9]\d{1,14}$/.test(value || "") || // International format
-        /^\d{10}$/.test(value || "") // Normal format
-    ),
   employeeAddresses: Yup.array().of(
     Yup.object().shape({
       // longitude: Yup.string().required("Longitude is required"),
