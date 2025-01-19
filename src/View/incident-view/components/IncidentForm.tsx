@@ -177,6 +177,8 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
         })) || []),
       ]);
     } else {
+      setUIShowingFile([]);
+      setUploadedFiles([]);
       setInitialValues({
         incidentID: "",
         title: "",
@@ -610,6 +612,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                       error={touched.issue && Boolean(errors.issue)}
                       helperText={touched.issue && errors.issue}
                       InputProps={{ readOnly: !isEditMode }}
+                      multiline
                       rows={3}
                     />
                   </Grid>
@@ -623,7 +626,8 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                       error={touched.description && Boolean(errors.description)}
                       helperText={touched.description && errors.description}
                       InputProps={{ readOnly: !isEditMode }}
-                      rows={3}
+                      multiline
+                      rows={4}
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -636,6 +640,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                       error={touched.followUp && Boolean(errors.followUp)}
                       helperText={touched.followUp && errors.followUp}
                       InputProps={{ readOnly: !isEditMode }}
+                      multiline
                       rows={3}
                     />
                   </Grid>
@@ -649,6 +654,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                       error={touched.notes && Boolean(errors.notes)}
                       helperText={touched.notes && errors.notes}
                       InputProps={{ readOnly: !isEditMode }}
+                      multiline
                       rows={3}
                     />
                   </Grid>
