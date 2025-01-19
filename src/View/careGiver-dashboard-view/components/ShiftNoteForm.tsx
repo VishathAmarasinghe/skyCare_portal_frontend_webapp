@@ -213,6 +213,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
     setJobType(event.target.value as "appointment" | "task" | "none");
   };
 
+
   const handleUploadChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
@@ -609,11 +610,17 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
                 <TextField
                   fullWidth
                   InputProps={{ readOnly: !isEditMode }}
-                  type="number"
+                  type="text"
                   name="totalWorkHrs"
                   label="Total Work Hours"
                   value={values.totalWorkHrs}
-                  onChange={handleChange}
+                  onChange={(event) => {
+                    // Ensure the input is a valid decimal number
+                    const input = event.target.value;
+                    if (/^\d*\.?\d*$/.test(input)) {
+                      handleChange(event);
+                    }
+                  }}
                   onBlur={handleBlur}
                   error={touched.totalWorkHrs && Boolean(errors.totalWorkHrs)}
                   helperText={touched.totalWorkHrs && errors.totalWorkHrs}
