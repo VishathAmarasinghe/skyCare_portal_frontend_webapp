@@ -64,7 +64,7 @@ const TimeSheetTable = ({
     {
       field: "startDate",
       headerName: "Start Date",
-      width: 100,
+      width: 200,
     },
     {
       field: "startTime",
@@ -74,7 +74,7 @@ const TimeSheetTable = ({
     {
       field: "endDate",
       headerName: "End Date",
-      width: 100,
+      width: 200,
     },
     {
       field: "endTime",
@@ -89,27 +89,27 @@ const TimeSheetTable = ({
     {
       field: "clientName",
       headerName: "Client Name",
-      width: 250,
+      width: 150,
     },
     {
       field: "appointmentTitle",
       headerName: "Appointment Title",
-      width: 250,
+      width: 100,
     },
     {
       field: "shiftTitle",
       headerName: "Shift Title",
-      width: 250,
+      width: 100,
     },
     {
       field: "totalHours",
-      headerName: "Total Hours",
+      headerName: "System Hrs",
       width: 150,
     },
     {
       field: "recurrentAppointmentID",
       headerName: "Recurrent Appointment ID",
-      width: 150,
+      width: 80,
     },
     {
       field: "shiftNotes",
@@ -243,11 +243,19 @@ const TimeSheetTable = ({
           "& .MuiDataGrid-scrollArea": {
             scrollbarWidth: "thin", // For Firefox
             "&::-webkit-scrollbar": {
-              width: "20px",
-              height: "10px", // For Chrome/Safari
+              width: "16px", // Adjust the width for the vertical scrollbar
+              height: "12px", // Adjust the height for the horizontal scrollbar
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: theme.palette.primary.main, // Thumb color
+              borderRadius: "10px", // Optional: to give a rounded effect to the scrollbar thumb
+            },
+            "&::-webkit-scrollbar-track": {
+              backgroundColor: theme.palette.grey[300], // Track color
+              borderRadius: "10px", // Optional: to give a rounded effect to the scrollbar track
             },
           },
-        }}
+        }}        
         disableColumnMenu
       />
     </Box>
