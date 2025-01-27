@@ -917,7 +917,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                   <Grid item xs={12} sm={3}>
                     <TextField
                       fullWidth
-                      label="Duration(mins)"
+                      label="Duration(hrs)"
                       name="duration"
                       type="number"
                       value={values.duration}
