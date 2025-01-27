@@ -64,7 +64,7 @@ const TimeSheetTable = ({
     {
       field: "startDate",
       headerName: "Start Date",
-      width: 200,
+      width: 180,
     },
     {
       field: "startTime",
@@ -74,7 +74,7 @@ const TimeSheetTable = ({
     {
       field: "endDate",
       headerName: "End Date",
-      width: 200,
+      width: 180,
     },
     {
       field: "endTime",
@@ -82,10 +82,18 @@ const TimeSheetTable = ({
       width: 80,
     },
     {
-      field:"totalWorkHrs",
-      headerName:"Total Work Hrs(Manual)",
-      align:"left",
+      field: "totalWorkHrs",
+      headerName: "Total Work Hrs (Manual)",
+      align: "left",
+      width:200,
+      renderCell: (params) => {
+        const totalWorkHrs = params.value || 0; // Handle undefined/null values
+        const hours = Math.floor(totalWorkHrs); // Extract hours
+        const minutes = Math.round((totalWorkHrs % 1) * 60); // Extract minutes
+        return `${hours} hrs ${minutes} mins`; // Format as "HH hrs MM mins"
+      },
     },
+    
     {
       field: "clientName",
       headerName: "Client Name",

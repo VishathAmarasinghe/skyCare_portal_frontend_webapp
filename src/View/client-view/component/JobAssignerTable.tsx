@@ -194,19 +194,20 @@ const JobAssignerTable = ({
   };
 
   const columns: GridColDef[] = [
-    { field: "recurrentAppointmentID", headerName: "ID", width: 100 },
+    { field: "recurrentAppointmentID", headerName: "ID", flex:1 },
     { field: "jobState", headerName: "Job State", width: 80 },
-    { field: "startDate", headerName: "Start Date", width: 100 },
+    { field: "startDate", headerName: "Start Date", width: 120 },
     { field: "startTime", headerName: "Start Time", width: 80 },
-    { field: "endDate", headerName: "End Date", width: 100 },
+    { field: "endDate", headerName: "End Date", width: 120 },
     { field: "endTime", headerName: "End Time", width: 80 },
     {
       field: "assigners",
       headerName: "Assigners",
-      width: 100,
+      width:120,
       renderCell: (params) => (
         <Button
           variant="outlined"
+          size="small"
           disabled={params.row.jobState === "cancelled"}
           onClick={() => {
             setCurrentRow(params.row);
@@ -240,11 +241,12 @@ const JobAssignerTable = ({
     {
       field: "Action",
       headerName: "Action",
-      width: 100,
+      width: 120,
       renderCell: (params) => (
         <Button
           variant="contained"
           color="primary"
+          size="small"
           disabled={params.row.jobState === "cancelled"}
           onClick={() => {
             showConfirmation(

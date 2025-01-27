@@ -113,6 +113,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
   const authRoles = useAppSelector((state) => state.auth.roles);
   const shiftNoteStates = useAppSelector((state) => state.shiftNotes);
   const careGiverSlice = useAppSelector((state) => state?.careGivers);
+  const [workhoursWithMinutes, setWorkhoursWithMinutes] = useState<number>(0);
   const [psdImageShowerModalOpen, setPsdImageShowerModalOpen] =
     useState<boolean>(false);
   const [imageViewerImageURl, setImageViewerImageURl] = useState<File | string>(
@@ -155,7 +156,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
     if (clientSlice?.clients?.length > 0) {
       setClientList(clientSlice?.clients);
     }
-  }, [clientSlice?.State,clientSlice?.clients]);
+  }, [clientSlice?.State, clientSlice?.clients]);
 
   useEffect(() => {
     if (careGiverSlice?.careGivers?.length > 0) {
@@ -167,7 +168,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
     if (shiftNoteStates.selectedShiftNote != null) {
       setInitialValues({
         ...shiftNoteStates.selectedShiftNote,
-        clientID:shiftNoteStates?.selectedShiftNote?.clientID
+        clientID: shiftNoteStates?.selectedShiftNote?.clientID,
       });
 
       console.log("");
@@ -212,7 +213,6 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
   const handleJobTypeChange = (event: SelectChangeEvent<string>) => {
     setJobType(event.target.value as "appointment" | "task" | "none");
   };
-
 
   const handleUploadChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -606,19 +606,47 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
                 <></>
               )}
 
-              <Grid item xs={12} md={6}>
+              <Grid item xs={6} md={6}>
                 <TextField
                   fullWidth
                   InputProps={{ readOnly: !isEditMode }}
                   type="text"
-                  name="totalWorkHrs"
-                  label="Total Work Hours(hrs)"
-                  value={values.totalWorkHrs}
+                  name="hours"
+                  label="Work Hours"
+                  value={Math.floor(values.totalWorkHrs || 0)} // Extract hours
                   onChange={(event) => {
-                    // Ensure the input is a valid decimal number
                     const input = event.target.value;
-                    if (/^\d*\.?\d*$/.test(input)) {
-                      handleChange(event);
+                    if (/^\d*$/.test(input) && Number(input) >= 0) {
+                      const minutes = (values.totalWorkHrs % 1) * 60; // Get existing minutes
+                      const totalWorkHrs =
+                        parseInt(input || "0") + minutes / 60;
+                      setFieldValue("totalWorkHrs", totalWorkHrs.toFixed(2));
+                    }
+                  }}
+                  onBlur={handleBlur}
+                  error={touched.totalWorkHrs && Boolean(errors.totalWorkHrs)}
+                  helperText={touched.totalWorkHrs && errors.totalWorkHrs}
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
+              <Grid item xs={6} md={6}>
+                <TextField
+                  fullWidth
+                  InputProps={{ readOnly: !isEditMode }}
+                  type="text"
+                  name="minutes"
+                  label="Work Minutes"
+                  value={Math.round((values.totalWorkHrs % 1) * 60)} // Extract minutes
+                  onChange={(event) => {
+                    const input = event.target.value;
+                    if (
+                      /^\d*$/.test(input) &&
+                      Number(input) >= 0 &&
+                      Number(input) < 60
+                    ) {
+                      const hours = Math.floor(values.totalWorkHrs || 0); // Get existing hours
+                      const totalWorkHrs = hours + parseInt(input || "0") / 60;
+                      setFieldValue("totalWorkHrs", totalWorkHrs.toFixed(2));
                     }
                   }}
                   onBlur={handleBlur}
@@ -641,7 +669,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
                   error={touched.notes && Boolean(errors.notes)}
                   helperText={touched.notes && errors.notes}
                   multiline
-                  rows={2}
+                  rows={5}
                 />
               </Grid>
 
