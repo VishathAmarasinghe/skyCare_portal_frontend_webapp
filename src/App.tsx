@@ -7,7 +7,7 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 // APP imports
 import { store } from "./slices/store";
 import { ThemeMode } from "./utils/types";
-import { APP_NAME, AppConfig } from "./config/config";
+import { APP_NAME, AppConfig, GOOGLE_MAPS_API_KEY } from "./config/config";
 import AppHandler from "./app/AppHandler";
 import { themeSettings } from "./theme";
 import "./App.css";
@@ -74,7 +74,7 @@ function App() {
     <ColorModeContext.Provider value={colorMode}>
       <SnackbarProvider maxSnack={3} preventDuplicate>
         <LoadScript
-          googleMapsApiKey="AIzaSyB_cvNijyVjUPr189twbkzvxKNPId0rPNk"
+          googleMapsApiKey={GOOGLE_MAPS_API_KEY}
           libraries={["places"]}
           onError={(e) => console.error("Error loading Google API", e)}
           onLoad={() => console.log("Google API loaded successfully")}
