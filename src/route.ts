@@ -15,6 +15,9 @@ import WorkHistoryIcon from "@mui/icons-material/WorkHistory";
 import SettingsIcon from "@mui/icons-material/Settings";
 import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
+import SendIcon from '@mui/icons-material/Send';
+import TaskOutlinedIcon from '@mui/icons-material/TaskOutlined';
+import PendingActionsIcon from '@mui/icons-material/PendingActions';
 
 // APP imports
 import { View } from "./View/index";
@@ -22,6 +25,7 @@ import { isIncludedRole } from "./utils/utils";
 import {
   APPLICATION_ADMIN,
   APPLICATION_CARE_GIVER,
+  APPLICATION_CLIENT,
   APPLICATION_SUPER_ADMIN,
 } from "@config/config";
 
@@ -60,7 +64,20 @@ export const routes: RouteObjectWithRole[] = [
     element: React.createElement(View.careGiverDashboardView),
     allowRoles: [APPLICATION_CARE_GIVER],
   },
-
+  {
+    path: "/dashboard/client",
+    text: "Dashboard",
+    icon: React.createElement(DashboardIcon),
+    element: React.createElement(View.clientDashboardView),
+    allowRoles: [APPLICATION_CLIENT],
+  },
+  {
+    path: "/time-sheets/client",
+    text: "Time Sheets",
+    icon: React.createElement(AssessmentIcon),
+    element: React.createElement(View.clientTimeSheetView),
+    allowRoles: [APPLICATION_CLIENT],
+  },
   {
     path: "/Clients",
     text: "Clients",
@@ -154,6 +171,27 @@ export const routes: RouteObjectWithRole[] = [
     element: React.createElement(View.shiftNoteView),
     allowRoles: [APPLICATION_CARE_GIVER],
   },
+  // {
+  //   path: "/pending-appointments",
+  //   text: "Pending Appointments",
+  //   icon: React.createElement(PendingActionsIcon),
+  //   element: React.createElement(View.clientPendingAppointments),
+  //   allowRoles: [APPLICATION_CLIENT],
+  // },
+  {
+    path: "/past-appointments",
+    text: "Past Appointments",
+    icon: React.createElement(TaskOutlinedIcon),
+    element: React.createElement(View.clientPastAppointmentView),
+    allowRoles: [APPLICATION_CLIENT],
+  },
+  {
+    path: "/chat",
+    text: "SkyChat",
+    icon: React.createElement(SendIcon),
+    element: React.createElement(View.skyChatView),
+    allowRoles: [APPLICATION_CARE_GIVER,APPLICATION_ADMIN,APPLICATION_SUPER_ADMIN,APPLICATION_CLIENT],
+  },
   {
     path: "/settings",
     text: "Settings",
@@ -175,6 +213,7 @@ export const routes: RouteObjectWithRole[] = [
     element: React.createElement(View.CareGiverInforView),
     allowRoles: [APPLICATION_CARE_GIVER],
   },
+  
 ];
 export const getActiveRoutesV2 = (
   routes: RouteObjectWithRole[] | undefined,

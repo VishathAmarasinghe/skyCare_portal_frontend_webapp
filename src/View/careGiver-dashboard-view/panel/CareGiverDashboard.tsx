@@ -138,7 +138,7 @@ const CareGiverDashboard = () => {
         borderRadius: 2,
       }}
     >
-      <Typography>{children}</Typography>
+      {children}
     </Paper>
   );
 
@@ -200,7 +200,6 @@ const CareGiverDashboard = () => {
             sx={{
               gridColumn: { md: "span 8", xs: "span 12" },
               height: "100%",
-              // border: "2px solid blue",
             }}
           >
             <Item>

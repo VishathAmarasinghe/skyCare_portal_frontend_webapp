@@ -5,6 +5,7 @@ export const APPLICATION_SUPER_ADMIN =
   import.meta.env.VITE_APPLICATION_SUPER_ADMIN ?? "";
 export const APPLICATION_CARE_GIVER =
   import.meta.env.VITE_APPLICATION_CARE_GIVER ?? "";
+export const APPLICATION_CLIENT = import.meta.env.VITE_APPLICATION_CLIENT ?? "";
 export const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAP_API_KEY ?? "";
 export const FILE_DOWNLOAD_BASE_URL = `${
   import.meta.env.VITE_BACKEND_BASE_URL
@@ -40,5 +41,7 @@ export const AppConfig = {
     incident: `${ServiceBaseUrl}/incidents`,
     clientDocuments: `${ServiceBaseUrl}/client-documents`,
     carePlanBillings: `${ServiceBaseUrl}/care-plan-bills`,
+    chat:`${ServiceBaseUrl}/chats`,
   },
+  webSocketUrl:`${ServiceBaseUrl}/ws`,
 };

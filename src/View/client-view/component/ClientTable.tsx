@@ -106,6 +106,24 @@ const initialColumns: GridColDef[] = [
     },
   },
   {
+    field: "status",
+    headerName: "Status",
+    flex: 1,
+    headerAlign: "center",
+    align: "center",
+    renderCell: (params) => {
+      const status = params.value;
+  
+      return (
+        <Chip
+          label={status}
+          size="small"
+          color={status === "Activated" ? "success" : status === "Deactivated" ? "error" : "default"}
+        />
+      );
+    },
+  },
+  {
     field: "clientType",
     headerName: "Client Type",
     flex: 1,

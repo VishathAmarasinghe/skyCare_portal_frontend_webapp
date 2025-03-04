@@ -36,21 +36,24 @@ const AppointmentTypePieChart: React.FC<AppointmentTypePieChartProps> = ({
     <div
       style={{
         width: "100%",
-        height: "110px",
+        height: "100%",
         padding: "0px",
         marginBottom: "0px",
+        display:"flex",
+        flexDirection:"column",
+        justifyContent:"space-between"
       }}
     >
-      <Typography variant="h6" fontWeight={"bold"}>
+      <Typography variant="h6" fontWeight={"bold"} height={"20%"}>
         Appointment Count(By Type)
       </Typography>
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="65%">
         <PieChart>
           <Pie
             data={appointmentTypeData}
             dataKey="value"
             nameKey="name"
-            innerRadius="50%"
+            innerRadius="57%"
             outerRadius="80%"
             fill="#8884d8"
             label

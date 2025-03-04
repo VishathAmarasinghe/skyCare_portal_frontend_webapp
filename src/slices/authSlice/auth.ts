@@ -7,6 +7,7 @@ import {
   AppConfig,
   APPLICATION_ADMIN,
   APPLICATION_CARE_GIVER,
+  APPLICATION_CLIENT,
   APPLICATION_SUPER_ADMIN,
 } from "../../config/config";
 import { Password } from "@mui/icons-material";
@@ -172,6 +173,9 @@ export const checkAuthToken = (dispatch: AppDispatch) => {
       if (decodedAccessRoles.includes(APPLICATION_CARE_GIVER)) {
         userRoles.push(APPLICATION_CARE_GIVER);
       }
+      if (decodedAccessRoles.includes(APPLICATION_CLIENT)) {
+        userRoles.push(APPLICATION_CLIENT);
+      }
       // Token is valid
       dispatch(
         authSlice.actions.loginSuccess({
@@ -259,6 +263,9 @@ export const authSlice = createSlice({
           }
           if (decodedAccessRoles.includes(APPLICATION_CARE_GIVER)) {
             state.roles.push(APPLICATION_CARE_GIVER);
+          }
+          if (decodedAccessRoles.includes(APPLICATION_CLIENT)) {
+            state.roles.push(APPLICATION_CLIENT);
           }
           state.exp = decodedToken?.exp;
           state.iat = decodedToken?.iat;

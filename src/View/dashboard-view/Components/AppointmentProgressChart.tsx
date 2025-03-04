@@ -1,4 +1,4 @@
-import { Typography, useTheme } from "@mui/material";
+import { Stack, Typography, useTheme } from "@mui/material";
 import React from "react";
 import {
   PieChart,
@@ -28,26 +28,27 @@ const AppointmentProgressChart: React.FC<AppointmentProgressChartProps> = ({
   ];
 
   return (
-    <div
+    <Stack
       style={{
+        // flexGrow: 1,
+        height: "100%",
         width: "100%",
-        height: "120px",
         padding: "0px",
         marginBottom: "10px",
+        justifyContent:"space-between"
       }}
     >
-      {" "}
       {/* Reduced size */}
-      <Typography variant="h6" fontWeight={"bold"}>
-        Appointment Completion Progress
+      <Typography variant="h6" fontWeight={"bold"} height={"20%"}>
+        Appointment Completion Progress-Today
       </Typography>
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="65%">
         <PieChart>
           <Pie
             data={data}
             dataKey="value"
             nameKey="name"
-            innerRadius="50%"
+            innerRadius="57%"
             outerRadius="80%" // Adjust radius for smaller chart
             fill="#8884d8"
             label
@@ -60,7 +61,7 @@ const AppointmentProgressChart: React.FC<AppointmentProgressChartProps> = ({
           <Legend />
         </PieChart>
       </ResponsiveContainer>
-    </div>
+    </Stack>
   );
 };
 

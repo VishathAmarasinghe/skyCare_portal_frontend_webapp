@@ -52,6 +52,7 @@ const validationSchema = (selectedShiftNote: updateShiftNote | null) =>
         is: () => !selectedShiftNote,
         then: Yup.string().required("Shift Start Time is required"),
       }),
+    clientID: Yup.string().required("Client is required"),
     shiftEndDate: Yup.date()
       .nullable()
       .when(["shiftStartDate"], (shiftStartDate, schema) =>
@@ -143,6 +144,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
     documents: [],
     clientID: null,
     totalWorkHrs: 0,
+    paymentState:"Pending"
   });
 
   const [clientAppointmentAndTask, setClientAppointmentAndTask] = useState<{
@@ -200,6 +202,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
         documents: [],
         clientID: null,
         totalWorkHrs: 0,
+        paymentState:"Pending"
       });
       setUploadedFiles([]);
     }

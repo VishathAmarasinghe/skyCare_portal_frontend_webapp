@@ -57,3 +57,22 @@ export type SettingsCardTitle =
   | "Incident Questions"
   | "Care Giver File Uploads"
   | "Care Giver Salary";
+
+
+  export interface Chat {
+    id: string;
+    name: string;
+    avatar: string;
+    lastMessage: string;
+  }
+  
+  export interface Message {
+    chatID: number;
+    senderID: string;
+    content: string;
+    messageID: number;          
+    timeStamp: string;  
+    senderName: string;
+    senderProfilePic: string;        
+  }
+  

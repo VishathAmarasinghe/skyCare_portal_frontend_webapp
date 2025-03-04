@@ -194,7 +194,7 @@ const RecurrentCard = ({
         <DialogTitle>Confirm Action</DialogTitle>
         <DialogContent>
           <Typography>
-            Are you sure you want to <strong>{selectedAction}</strong> this
+            Are you sure you want to <strong>{selectedAction==="Accepted"?"Accept":selectedAction==="Rejected"?"Reject":""}</strong> this
             appointment?
           </Typography>
         </DialogContent>

@@ -29,6 +29,7 @@ import {
   fetchAppointmentTypes,
   fetchSingleAppointment,
 } from "../../../slices/appointmentSlice/appointment";
+import { EmployeeMapping } from "@slices/employeeSlice/employee";
 
 function CustomToolbar() {
   return (
@@ -50,9 +51,15 @@ const AppointmentTable = ({
   setIsCarePlanModalVisible,
 }: ClientTableProps) => {
   const appointmentSlice = useAppSelector((state) => state.appointments);
+  const employeeSlice = useAppSelector((state)=>state?.employees);
   const [Appointments, setAppointments] = useState<Appointment[]>([]);
+
   const theme = useTheme();
   const dispatch = useAppDispatch();
+
+  const getEmployeeIDByCareGiverID = (name: string, mapping: EmployeeMapping) => {
+    return Object.keys(mapping).find((key) => mapping[key] === name) || null;
+  };
 
   useEffect(() => {
     setAppointments(appointmentSlice.appointments);
@@ -86,6 +93,36 @@ const AppointmentTable = ({
           />
         );
       },
+    },
+    {
+      field: "Allocator",
+      headerName: "Allocated Caregiver",
+      headerAlign: "left",
+      flex:1,
+      align: "left",
+      renderCell:(params)=>{
+        if (params?.row?.jobAssigns?.careGiverIDs?.length>1) {
+          return (
+            <Stack width="100%" height="100%" justifyContent="center">
+              <Typography>
+                Multiple Caregivers
+              </Typography>
+            </Stack>
+          )
+        }else{
+          const employeeID = getEmployeeIDByCareGiverID(params?.row?.jobAssigns?.careGiverIDs[0],employeeSlice?.metaAllEmployeeMapping);
+          if (employeeID) {
+            const employee = employeeSlice?.metaAllEmployees?.find((employee)=>employee.employeeID===employeeID);
+            return (
+              <Stack width="100%" height="100%" justifyContent="center">
+                <Typography>
+                  {employee?.firstName} {employee?.lastName}
+                </Typography>
+              </Stack>
+            )
+          }
+        }
+      }
     },
     {
       field: "startDate",

@@ -8,9 +8,10 @@ import {
   GridToolbarQuickFilter,
 } from "@mui/x-data-grid";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
-import { Box, IconButton, Stack, Button, useTheme, Chip } from "@mui/material";
+import { Box, IconButton, Stack, Button, useTheme, Chip, Select, MenuItem, Tooltip } from "@mui/material";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import EditIcon from "@mui/icons-material/Edit";
 
 declare module "jspdf" {
   interface jsPDF {
@@ -19,7 +20,7 @@ declare module "jspdf" {
 }
 import * as XLSX from "xlsx";
 import { useAppDispatch, useAppSelector } from "@slices/store";
-import { getSingleShiftNoteByShiftID } from "@slices/shiftNoteSlice/shiftNote";
+import { getSingleShiftNoteByShiftID, updateShiftNotesPaymentStatus } from "@slices/shiftNoteSlice/shiftNote";
 
 function CustomToolbar({ onExportPDF, onExportExcel }: any) {
   return (
@@ -104,20 +105,98 @@ const TimeSheetTable = ({
       headerName: "Appointment Title",
       width: 100,
     },
+    // {
+    //   field: "shiftTitle",
+    //   headerName: "Shift Title",
+    //   width: 100,
+    // },
+    // {
+    //   field: "totalHours",
+    //   headerName: "System Hrs",
+    //   width: 150,
+    // },
+    // {
+    //   field: "recurrentAppointmentID",
+    //   headerName: "Recurrent Appointment ID",
+    //   width: 80,
+    // },
     {
-      field: "shiftTitle",
-      headerName: "Shift Title",
-      width: 100,
-    },
-    {
-      field: "totalHours",
-      headerName: "System Hrs",
-      width: 150,
-    },
-    {
-      field: "recurrentAppointmentID",
-      headerName: "Recurrent Appointment ID",
-      width: 80,
+      field: "status",
+      headerName: "Status",
+      width: 170,
+      renderCell: (params) => {
+        const [status, setStatus] = useState(params.value);
+        const [isDropdownOpen, setDropdownOpen] = useState(false);
+    
+        const handleChange = (event: any) => { 
+          let newStatus = event.target.value;
+          if (newStatus === "Approve") newStatus = "Approved";
+          if (newStatus === "Reject") newStatus = "Rejected";
+    
+          setStatus(newStatus);
+          setDropdownOpen(false);
+    
+          dispatch(updateShiftNotesPaymentStatus({ id: params?.row?.shiftNoteID, paymentState: newStatus,comment:params?.row?.comments }));
+        };
+    
+        let options: string[] = [];
+        if (status === "Pending") {
+          options = ["Approve", "Reject", "Paid"];
+        } else if (status === "Approved") {
+          options = ["Reject", "Paid"];
+        } else if (status === "Rejected") {
+          options = ["Paid"];
+        }
+    
+        const chipColor =
+          status === "Approved" ? "primary" :
+          status === "Rejected" ? "error" :
+          status === "Paid" ? "success" :
+          "warning";
+    
+        return (
+          <Tooltip title="Click to change status" arrow>
+            <Box
+              onClick={() => setDropdownOpen(true)}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                border: "1px solid transparent",
+                padding: "4px 8px",
+                borderRadius: "4px",
+                cursor: "pointer",
+                "&:hover": { borderColor: "#1976d2", backgroundColor: "#f0f8ff" },
+                width: "100%"
+              }}
+            >
+              {status === "Paid" ? (
+                <Chip label="Paid" size="small" color="success" />
+              ) : isDropdownOpen ? (
+                <Select
+                  value={status}
+                  onChange={handleChange}
+                  onClose={() => setDropdownOpen(false)}
+                  size="small"
+                  sx={{ width: "100%" }}
+                  autoFocus
+                >
+                  {options.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              ) : (
+                <>
+                  <Chip label={status} size="small" color={chipColor} />
+                  <EditIcon fontSize="small" sx={{ color: "#1976d2", opacity: 0.8 }} />
+                </>
+              )}
+            </Box>
+          </Tooltip>
+        );
+      },
     },
     {
       field: "shiftNotes",
@@ -182,7 +261,10 @@ const TimeSheetTable = ({
       shiftNotes: shiftNote?.shiftNoteDTO?.notes || "N/A",
       comments: shiftNote?.shiftNoteDTO?.comments || "N/A",
       totalWorkHrs:shiftNote?.shiftNoteDTO?.totalWorkHrs || 0,
+      status:shiftNote?.shiftNoteDTO?.paymentState || "N/A",
     }));
+    console.log("mappedRows",mappedRows);
+    
     setRows(mappedRows || []);
   }, [shiftNoteSlice?.timeSheets,shiftNoteSlice?.submitState, shiftNoteSlice?.updateState]);
 

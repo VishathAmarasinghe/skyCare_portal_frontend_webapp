@@ -66,6 +66,7 @@ export const themeSettings = (mode: PaletteMode) => {
             },
             background: {
               default: colors.grey[600],
+              cardColor:"#57ABCF"
             },
             header: {
               header: "#F1F7FF",

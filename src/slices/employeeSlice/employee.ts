@@ -7,6 +7,7 @@ import { enqueueSnackbarMessage } from "../commonSlice/common";
 import { SnackMessage } from "../../config/constant";
 import axios, { HttpStatusCode } from "axios";
 import { string } from "yup/lib/locale";
+import { Client } from "@slices/clientSlice/client";
 
 // Define types for Employee and Address
 export interface EmployeeAddress {
@@ -110,6 +111,36 @@ export const fetchMetaEmployees = createAsyncThunk(
       );
       throw error.response?.data;
     }
+  }
+);
+
+// fetch single Client
+export const fetchLoggedClients = createAsyncThunk(
+  "client/fetchLoggedClient",
+  async (clientID: string, { dispatch, rejectWithValue }) => {
+    return new Promise<Client>((resolve, reject) => {
+      APIService.getInstance()
+        .get(AppConfig.serviceUrls.clients + "/" + clientID)
+        .then((response) => {
+          resolve(response.data);
+        })
+        .catch((error) => {
+          if (axios.isCancel(error)) {
+            return rejectWithValue("Request canceled");
+          }
+          dispatch(
+            // dispatching the error message
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.fetchSingleClient
+                  : String(error.response?.data),
+              type: "error",
+            })
+          );
+          reject(error.response?.data);
+        });
+    });
   }
 );
 
@@ -319,6 +350,33 @@ export const fetchSingleEmployee = createAsyncThunk(
     try {
       const response = await APIService.getInstance().get(
         `${AppConfig.serviceUrls.employees}/${employeeID}`
+      );
+      return response.data;
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
+      }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.fetchSingleEmployee
+              : String(error.response?.data),
+          type: "error",
+        })
+      );
+      throw error.response?.data;
+    }
+  }
+);
+
+// Fetch a single employee
+export const fetchCareGiversAssignToClientID = createAsyncThunk(
+  "employee/fetchCareGiversAssignToClientID",
+  async (clientID: string, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await APIService.getInstance().get(
+        `${AppConfig.serviceUrls.employees}/clientAssignedCareGivers?clientID=${clientID}`
       );
       return response.data;
     } catch (error: any) {
@@ -558,6 +616,35 @@ const EmployeeSlice = createSlice({
         state.state = State.failed;
         state.stateMessage = "Failed to fetch meta employees!";
       })
+      .addCase(fetchLoggedClients.pending, (state) => {
+        state.state = State.loading;
+        state.stateMessage = "Fetching meta Client...";
+      })
+      .addCase(fetchLoggedClients.fulfilled, (state, action) => {
+        state.state = State.success;
+        state.stateMessage = "Fetching all meta Client!";
+        const temparyEmployeeActingClient:Employee = {
+          email: action.payload.email,
+          employeeID: action.payload.clientID,
+          firstName: action.payload.firstName,
+          lastName: action.payload.lastName,
+          password: "",
+          accessRole: "CLIENT",
+          joinDate: "",
+          profile_photo: "",
+          status: "",
+          employeeAddresses: [],
+          employeeJobRoles: [],
+          employeePhoneNo: [],
+          emergencyPhoneNo: "",
+          emergencyUser: ""
+        }
+        state.logedEMployee = temparyEmployeeActingClient;
+      })
+      .addCase(fetchLoggedClients.rejected, (state) => {
+        state.state = State.failed;
+        state.stateMessage = "Failed to fetch meta Client!";
+      })
       .addCase(updateEmployeeBasicInfo.pending, (state) => {
         state.updateState = State.loading;
         state.stateMessage = "Updating employee Basic Info...";
@@ -570,6 +657,19 @@ const EmployeeSlice = createSlice({
       .addCase(updateEmployeeBasicInfo.rejected, (state) => {
         state.updateState = State.failed;
         state.stateMessage = "Failed to update employees basic info!";
+      })
+      .addCase(fetchCareGiversAssignToClientID.pending, (state) => {
+        state.state = State.loading;
+        state.stateMessage = "Fetching employees assigned to client...";
+      })
+      .addCase(fetchCareGiversAssignToClientID.fulfilled, (state, action) => {
+        state.state = State.success;
+        state.stateMessage = "fetched employees assigned to client successfully!";
+        state.employees = action.payload;
+      })
+      .addCase(fetchCareGiversAssignToClientID.rejected, (state) => {
+        state.state = State.failed;
+        state.stateMessage = "Failed to fetch employees assigned to client!";
       });
   },
 });

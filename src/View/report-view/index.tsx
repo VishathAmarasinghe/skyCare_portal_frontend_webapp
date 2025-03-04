@@ -58,7 +58,6 @@ const ReportView = () => {
 
   useEffect(() => {
     dispatch(fetchEmployeesByRole("CareGiver"));
-    dispatch(fetchClients());
   }, [shiftModalOpen]);
 
   useEffect(() => {
@@ -71,9 +70,10 @@ const ReportView = () => {
         startDate: startDate,
         endDate: endDate,
         employeeID: selectedOption,
+        clientID: "",
       })
     );
-  }, [endDate, startDate, selectedOption,shiftModalOpen]);
+  }, [endDate, startDate, selectedOption,shiftModalOpen,shiftSlice?.updateState]);
 
   useEffect(() => {
     if (
@@ -87,6 +87,7 @@ const ReportView = () => {
         startDate: startDate,
         endDate: endDate,
         employeeID: selectedOption,
+        clientID: "",
       })
     }
   }, [shiftSlice?.submitState, shiftSlice?.updateState]) ;

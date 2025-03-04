@@ -40,9 +40,10 @@ import { State } from "../../../types/types";
 interface AddClientFormProps {
   activeStepper: number;
   setActiveStepper: React.Dispatch<React.SetStateAction<number>>;
+  status: "Deactivated"| "Activated";
 }
 
-const AddClientForm = ({ activeStepper,setActiveStepper }:AddClientFormProps) => {
+const AddClientForm = ({ activeStepper,setActiveStepper,status }:AddClientFormProps) => {
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
   const [currentStepper, setCurrentStepper] = useState<number>(activeStepper)
@@ -96,8 +97,9 @@ const AddClientForm = ({ activeStepper,setActiveStepper }:AddClientFormProps) =>
     dislikes: "",
     clientClassifications: [] as string[],
     referenceNo: "",
-    emergencyPhoneNo:"",
-    emergencyUser:""
+    emergencyPhoneNo: "",
+    emergencyUser: "",
+    status: status,
   });
   const [classifications, setClassifications] = useState<
     { label: string; value: string }[]
@@ -121,11 +123,11 @@ const AddClientForm = ({ activeStepper,setActiveStepper }:AddClientFormProps) =>
   }, [selector.submitState]);
 
   useEffect(() => {
-    console.log("Selected Client", client?.selectedClient);
 
     if (client?.selectedClient) {
       setInitialValues({
         ...client?.selectedClient,
+        status: status,
         clientLanguages: client?.selectedClient?.clientLanguages?.map(
           (lan) => languages?.filter((lang) => lang?.label == lan)[0]?.value
         ),
@@ -148,7 +150,6 @@ const AddClientForm = ({ activeStepper,setActiveStepper }:AddClientFormProps) =>
           : "",
         postalAddress: { ...client?.selectedClient?.postalAddress },
       });
-      console.log("postalAddress", client?.selectedClient?.postalAddress);
 
       if (
         client?.selectedClient?.physicalAddress?.address ===
@@ -203,7 +204,8 @@ const AddClientForm = ({ activeStepper,setActiveStepper }:AddClientFormProps) =>
         clientClassifications: [] as string[],
         referenceNo: "",
         emergencyPhoneNo:"",
-        emergencyUser:""
+        emergencyUser:"",
+        status: status,
       });
     }
   }, [
