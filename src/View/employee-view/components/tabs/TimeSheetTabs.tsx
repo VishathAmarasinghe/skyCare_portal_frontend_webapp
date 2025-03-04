@@ -44,6 +44,7 @@ const TimeSheetTabs = () => {
           startDate: startDate,
           endDate: endDate,
           employeeID: employeeID || '',
+          clientID:"",
         })
       );
     }, [endDate, startDate, employeeID]);
@@ -60,6 +61,7 @@ const TimeSheetTabs = () => {
           startDate: startDate,
           endDate: endDate,
           employeeID: selectedOption,
+          clientID:"",
         })
       }
     }, [shiftSlice?.submitState, shiftSlice?.updateState]);
