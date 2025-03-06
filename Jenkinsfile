@@ -54,6 +54,7 @@ pipeline {
                                     --build-arg VITE_APPLICATION_ADMIN=admin.skyCarePortal \
                                     --build-arg VITE_APPLICATION_SUPER_ADMIN=superadmin.skyCarePortal \
                                     --build-arg VITE_APPLICATION_CARE_GIVER=caregiver.skyCarePortal \
+                                    --build-arg VITE_APPLICATION_CLIENT=client.skyCarePortal \
                                     --build-arg VITE_FILE_DOWNLOAD_PATH=/file/download \
                                     --build-arg VITE_GOOGLE_MAP_API_KEY=$VITE_GOOGLE_MAP_API_KEY .
                                 """
@@ -121,6 +122,7 @@ pipeline {
                                     --build-arg VITE_APPLICATION_ADMIN=admin.skyCarePortal \
                                     --build-arg VITE_APPLICATION_SUPER_ADMIN=superadmin.skyCarePortal \
                                     --build-arg VITE_APPLICATION_CARE_GIVER=caregiver.skyCarePortal \
+                                    --build-arg VITE_APPLICATION_CLIENT=client.skyCarePortal \
                                     --build-arg VITE_FILE_DOWNLOAD_PATH=/file/download \
                                     --build-arg VITE_GOOGLE_MAP_API_KEY=$VITE_GOOGLE_MAP_API_KEY .
                                 """
