@@ -52,7 +52,8 @@ const validationSchema = (selectedShiftNote: updateShiftNote | null) =>
         is: () => !selectedShiftNote,
         then: Yup.string().required("Shift Start Time is required"),
       }),
-    clientID: Yup.string().required("Client is required"),
+      clientID: Yup.string().nullable()
+  .required("Client is required"),
     shiftEndDate: Yup.date()
       .nullable()
       .when(["shiftStartDate"], (shiftStartDate, schema) =>
@@ -566,7 +567,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
                   fullWidth
                   label="Client"
                   name="clientID"
-                  value={values.clientID}
+                  value={values.clientID?.toString()}
                   onChange={handleChange}
                   InputProps={{ readOnly: !isEditMode }}
                   error={touched.clientID && Boolean(errors.clientID)}
