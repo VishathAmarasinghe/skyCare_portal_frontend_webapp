@@ -47,6 +47,12 @@ const AddNewClientModal = ({
     }
   }, [client.submitState]);
 
+  useEffect(() => {
+    if (client.selectedClient?.status) {
+      setActivationStatus(client.selectedClient.status);
+    }
+  }, [client.selectedClient]);
+
   // Handle next step
   const handleNext = () => {
     document.getElementById("client-form-next")?.click();
@@ -89,7 +95,7 @@ const AddNewClientModal = ({
               <Button
                 variant="outlined"
                 sx={{ mx: 1 }}
-                color={activationStatus === "Activated" ? "success" : "error"}
+                color={activationStatus === "Activated" ? "error": "success"}
                 onClick={() =>
                   handleStatusChange(
                     activationStatus === "Activated"
@@ -100,7 +106,7 @@ const AddNewClientModal = ({
                   )
                 }
               >
-                {activationStatus == "Activated"
+                To {activationStatus == "Activated"
                   ? "Deactivate"
                   : activationStatus === "Deactivated"
                   ? "Activate"
