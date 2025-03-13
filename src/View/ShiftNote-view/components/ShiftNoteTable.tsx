@@ -62,7 +62,7 @@ const ShiftNoteTable = ({
   };
 
   const initialColumns: GridColDef[] = [
-    { field: "noteID", headerName: "Note ID", flex: 1, align: "left" },
+    // { field: "noteID", headerName: "Note ID", flex: 1, align: "left" },
     { field: "title", headerName: "Title", align: "left", flex: 2 },
     {
       field: "shiftStartDate",
@@ -73,12 +73,6 @@ const ShiftNoteTable = ({
     {
       field: "shiftStartTime",
       headerName: "Start Time",
-      align: "left",
-      flex: 1,
-    },
-    {
-      field: "shiftEndDate",
-      headerName: "End Date",
       align: "left",
       flex: 1,
     },

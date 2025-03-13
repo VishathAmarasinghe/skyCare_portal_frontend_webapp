@@ -52,11 +52,11 @@ const TimeSheetTable = ({
   setPureNew,
 }: TimeSheetTableProps) => {
   const [columns] = useState<GridColDef[]>([
-    {
-      field: "shiftNoteID",
-      headerName: "Shift Note ID",
-      flex: 1,
-    },
+    // {
+    //   field: "shiftNoteID",
+    //   headerName: "Shift Note ID",
+    //   flex: 1,
+    // },
     {
       field: "employeeName",
       headerName: "Employee Name",
@@ -72,11 +72,11 @@ const TimeSheetTable = ({
       headerName: "Start Time",
       width: 80,
     },
-    {
-      field: "endDate",
-      headerName: "End Date",
-      width: 180,
-    },
+    // {
+    //   field: "endDate",
+    //   headerName: "End Date",
+    //   width: 180,
+    // },
     {
       field: "endTime",
       headerName: "End Time",
@@ -100,11 +100,11 @@ const TimeSheetTable = ({
       headerName: "Client Name",
       width: 150,
     },
-    {
-      field: "appointmentTitle",
-      headerName: "Appointment Title",
-      width: 100,
-    },
+    // {
+    //   field: "appointmentTitle",
+    //   headerName: "Appointment Title",
+    //   width: 100,
+    // },
     // {
     //   field: "shiftTitle",
     //   headerName: "Shift Title",
