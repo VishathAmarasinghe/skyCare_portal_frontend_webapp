@@ -21,7 +21,7 @@ import { useSearchParams } from "react-router-dom";
 import dayjs from "dayjs";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { FILE_DOWNLOAD_BASE_URL } from "@config/config";
-import TimeSheetTable from "../../../ShiftNote-view/components/ShiftNoteTable";
+import TimeSheetTable from "../../../report-view/components/TimeSheetTable";
 import ShiftNoteModal from "../../../careGiver-dashboard-view/modal/ShiftNoteModal";
 import { Employee, fetchEmployeesByRole } from "@slices/employeeSlice/employee";
 import { fetchTimeSheets } from "@slices/shiftNoteSlice/shiftNote";
