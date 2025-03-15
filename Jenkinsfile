@@ -45,6 +45,7 @@ pipeline {
             stages {
                 stage('Build Staging Frontend') {
                     steps {
+                        echo 'Building frontend for staging with frontend jenkins...'
                         withCredentials([string(credentialsId: 'VITE_GOOGLE_MAP_API_KEY', variable: 'VITE_GOOGLE_MAP_API_KEY')]) {
                         dir('frontend-stg') {
                             script {
@@ -66,6 +67,7 @@ pipeline {
                 stage('Build Staging Backend') {
                     steps {
                         dir('backend-stg') {
+                            echo 'Building backend for staging with frontend jenkins...'
                             script {
                                 sh """
                                 docker build -t ${BACKEND_IMAGE} \
