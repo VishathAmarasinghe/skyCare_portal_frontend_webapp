@@ -22,6 +22,7 @@ const clientPastAppointmentView = lazy(()=>import("./client-pastAppointment-view
 const skyChatView  = lazy(()=>import("./communication-channel-view"));
 const clientPendingAppointments = lazy(()=>import("./client-pendingAppointment-view"));
 
+//views
 export const View = {
   dashboardView,
   clientView,
