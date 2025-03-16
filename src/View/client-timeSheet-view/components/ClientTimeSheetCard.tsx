@@ -97,7 +97,7 @@ const TimeSheetCard = ({ shiftNote }: TimeSheetCardProps) => {
             </Typography>
           </Grid>
 
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <Typography variant="body2" color="textSecondary">
               Shift Notes: {shiftNote.shiftNotes}
             </Typography>
@@ -107,7 +107,7 @@ const TimeSheetCard = ({ shiftNote }: TimeSheetCardProps) => {
             <Typography variant="body2" color="textSecondary">
               Comments: {shiftNote.comments}
             </Typography>
-          </Grid>
+          </Grid> */}
 
           <Grid item xs={12}>
             <Stack direction="row" spacing={1} marginTop={2}>

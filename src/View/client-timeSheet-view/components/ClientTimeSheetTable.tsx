@@ -93,16 +93,6 @@ const ClientTimeSheetTable = ({
       },
     },
     {
-      field: "shiftNotes",
-      headerName: "ShiftNotes",
-      flex: 1,
-    },
-    {
-      field: "comments",
-      headerName: "Comments",
-      width: 250,
-    },
-    {
       field: "status",
       headerName: "Status",
       width: 170,
