@@ -58,7 +58,7 @@ const ClientTimeSheetTable = ({
     {
       field: "shiftNoteID",
       headerName: "Shift Note ID",
-      width: 100,
+      flex: 1
     },
     {
       field: "employeeName",
