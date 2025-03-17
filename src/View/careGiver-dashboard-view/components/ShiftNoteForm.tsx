@@ -169,6 +169,8 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
       setInitialValues({
         ...shiftNoteStates.selectedShiftNote,
         clientID: shiftNoteStates?.selectedShiftNote?.clientID,
+        notes: shiftNoteStates?.selectedShiftNote?.notes!==null?shiftNoteStates?.selectedShiftNote?.notes:"",
+        comments:shiftNoteStates?.selectedShiftNote?.comments!==null?shiftNoteStates?.selectedShiftNote?.comments:"",
       });
 
       console.log("");
