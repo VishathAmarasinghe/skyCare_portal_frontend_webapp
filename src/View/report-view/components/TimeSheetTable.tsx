@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   DataGrid,
   GridColDef,
@@ -8,7 +8,7 @@ import {
   GridToolbarQuickFilter,
 } from "@mui/x-data-grid";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
-import { Box, IconButton, Stack, Button, useTheme, Chip, Select, MenuItem, Tooltip } from "@mui/material";
+import { Box, IconButton, Stack, Button, useTheme, Chip, Select, MenuItem, Tooltip, Menu } from "@mui/material";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import EditIcon from "@mui/icons-material/Edit";
@@ -52,11 +52,11 @@ const TimeSheetTable = ({
   setPureNew,
 }: TimeSheetTableProps) => {
   const [columns] = useState<GridColDef[]>([
-    // {
-    //   field: "shiftNoteID",
-    //   headerName: "Shift Note ID",
-    //   flex: 1,
-    // },
+    {
+      field: "shiftNoteID",
+      headerName: "Shift Note ID",
+      flex: 1,
+    },
     {
       field: "employeeName",
       headerName: "Employee Name",
@@ -126,78 +126,110 @@ const TimeSheetTable = ({
       width: 170,
       renderCell: (params) => {
         const [status, setStatus] = useState(params.value);
-        const [isDropdownOpen, setDropdownOpen] = useState(false);
+        const dropdownRef = useRef<HTMLDivElement>(null);
+        const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+        const dispatch = useAppDispatch();
     
-        const handleChange = (event: any) => { 
-          let newStatus = event.target.value;
+        // useEffect to update the status
+        useEffect(() => {
+          setStatus(params.value);
+        }, [params.value]);
+    
+        const handleChange = (event: string) => {
+          let newStatus = event
+          console.log('====================================');
+          console.log("newStatus",event);
+          console.log('====================================');
           if (newStatus === "Approve") newStatus = "Approved";
           if (newStatus === "Reject") newStatus = "Rejected";
     
           setStatus(newStatus);
-          setDropdownOpen(false);
     
-          dispatch(updateShiftNotesPaymentStatus({ id: params?.row?.shiftNoteID, paymentState: newStatus,comment:params?.row?.comments }));
+          dispatch(updateShiftNotesPaymentStatus({
+            id: params?.row?.shiftNoteID,
+            paymentState: newStatus,
+            comment: params?.row?.comments
+          }));
         };
     
         let options: string[] = [];
         if (status === "Pending") {
-          options = ["Approve", "Reject", "Paid"];
+          options = ["Pending", "Approve", "Reject", "Paid"];
         } else if (status === "Approved") {
-          options = ["Reject", "Paid"];
+          options = ["Approved", "Reject", "Paid"];
         } else if (status === "Rejected") {
+          options = ["Rejected", "Paid"];
+        } else if (status === "Paid") {
           options = ["Paid"];
         }
     
-        const chipColor =
-          status === "Approved" ? "primary" :
-          status === "Rejected" ? "error" :
-          status === "Paid" ? "success" :
-          "warning";
+        const findColor = (status: string) => {
+          if (status === "Approved") {
+            return "primary";
+          } else if (status === "Rejected") {
+            return "error";
+          } else if (status === "Paid") {
+            return "success";
+          } else {
+            return "warning";
+          }
+        };
+
+        const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+          setAnchorEl(event.currentTarget);
+        };
     
-        return (
-          <Tooltip title="Click to change status" arrow>
-            <Box
-              onClick={() => setDropdownOpen(true)}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                border: "1px solid transparent",
-                padding: "4px 8px",
-                borderRadius: "4px",
-                cursor: "pointer",
-                "&:hover": { borderColor: "#1976d2", backgroundColor: "#f0f8ff" },
-                width: "100%"
-              }}
+        const handleMenuClose = () => {
+          setAnchorEl(null);
+        };
+    
+    
+        // Render based on the status
+        if (status === "Paid") {
+          return (
+            <Tooltip title="Paid" placement="top">
+              <Chip label={status} size="small" sx={{ml:1}} color={findColor(status)} />
+            </Tooltip>
+          );
+        } else {
+          return ( 
+            <div>
+            {/* Chip with Edit Icon */}
+            <Stack flexDirection="row" width="100%" justifyContent="space-between" alignItems={"center"}>
+            <Chip
+              label={status}
+              size="small"
+              color={findColor(status)}
+              onClick={handleMenuOpen}
+              sx={{ cursor: 'pointer',mx:1 }}
+            />
+            <IconButton onClick={handleMenuOpen} size="small">
+              <EditIcon />
+            </IconButton>
+            </Stack>
+           
+    
+            {/* Menu for options */}
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
             >
-              {status === "Paid" ? (
-                <Chip label="Paid" size="small" color="success" />
-              ) : isDropdownOpen ? (
-                <Select
-                  value={status}
-                  onChange={handleChange}
-                  onClose={() => setDropdownOpen(false)}
-                  size="small"
-                  sx={{ width: "100%" }}
-                  autoFocus
-                >
-                  {options.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
-                    </MenuItem>
-                  ))}
-                </Select>
-              ) : (
-                <>
-                  <Chip label={status} size="small" color={chipColor} />
-                  <EditIcon fontSize="small" sx={{ color: "#1976d2", opacity: 0.8 }} />
-                </>
-              )}
-            </Box>
-          </Tooltip>
-        );
-      },
-    },
+              {options.map((option) => (
+                <MenuItem key={option} value={option} onClick={()=>handleChange(option)} disabled={option === status}>
+                  <Chip
+                    label={option}
+                    size="small"
+                    color={findColor(option === "Approve" ? "Approved" : option === "Reject" ? "Rejected" : option)}
+                  />
+                </MenuItem>
+              ))}
+            </Menu>
+          </div>
+          );
+        }
+      }
+    },    
     {
       field: "shiftNotes",
       headerName: "ShiftNotes",
