@@ -184,7 +184,6 @@ const TimeSheetTable = ({
         };
     
     
-        // Render based on the status
         if (status === "Paid") {
           return (
             <Tooltip title="Paid" placement="top">
