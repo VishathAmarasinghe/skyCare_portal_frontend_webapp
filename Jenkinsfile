@@ -45,6 +45,14 @@ pipeline {
             stages {
                 stage('Build Staging Frontend') {
                     steps {
+                        script {
+                    // Perform Docker login only once
+                    withCredentials([string(credentialsId: 'DOCKER_CREDENTIALS_ID', variable: 'dockerCredentials')]) {
+                        // Docker login to Docker Hub
+                        sh """
+                            echo ${dockerCredentials} | docker login -u vishathamarasinghe --password-stdin
+                            """
+                    }   }
                         echo 'Building frontend for staging with frontend jenkins...'
                         withCredentials([string(credentialsId: 'VITE_GOOGLE_MAP_API_KEY', variable: 'VITE_GOOGLE_MAP_API_KEY')]) {
                         dir('frontend-stg') {
