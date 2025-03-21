@@ -12,6 +12,7 @@ const Link = React.forwardRef<HTMLAnchorElement, RouterLinkProps>(function Link(
   return <RouterLink ref={ref} {...itemProps} role={undefined} />;
 });
 
+//error page
 export default function Error() {
   return (
     <Box
