@@ -1,5 +1,5 @@
 # Step 1: Build the React Vite app
-FROM node:18 AS build
+FROM gcr.io/cloud-builders/nodejs AS build
 
 WORKDIR /app
 
