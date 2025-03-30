@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   DataGrid,
   GridColDef,
@@ -8,9 +8,10 @@ import {
   GridToolbarQuickFilter,
 } from "@mui/x-data-grid";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
-import { Box, IconButton, Stack, Button, useTheme, Chip } from "@mui/material";
+import { Box, IconButton, Stack, Button, useTheme, Chip, Select, MenuItem, Tooltip, Menu } from "@mui/material";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import EditIcon from "@mui/icons-material/Edit";
 
 declare module "jspdf" {
   interface jsPDF {
@@ -19,7 +20,7 @@ declare module "jspdf" {
 }
 import * as XLSX from "xlsx";
 import { useAppDispatch, useAppSelector } from "@slices/store";
-import { getSingleShiftNoteByShiftID } from "@slices/shiftNoteSlice/shiftNote";
+import { getSingleShiftNoteByShiftID, updateShiftNotesPaymentStatus } from "@slices/shiftNoteSlice/shiftNote";
 
 function CustomToolbar({ onExportPDF, onExportExcel }: any) {
   return (
@@ -71,11 +72,11 @@ const TimeSheetTable = ({
       headerName: "Start Time",
       width: 80,
     },
-    {
-      field: "endDate",
-      headerName: "End Date",
-      width: 180,
-    },
+    // {
+    //   field: "endDate",
+    //   headerName: "End Date",
+    //   width: 180,
+    // },
     {
       field: "endTime",
       headerName: "End Time",
@@ -99,26 +100,135 @@ const TimeSheetTable = ({
       headerName: "Client Name",
       width: 150,
     },
+    // {
+    //   field: "appointmentTitle",
+    //   headerName: "Appointment Title",
+    //   width: 100,
+    // },
+    // {
+    //   field: "shiftTitle",
+    //   headerName: "Shift Title",
+    //   width: 100,
+    // },
+    // {
+    //   field: "totalHours",
+    //   headerName: "System Hrs",
+    //   width: 150,
+    // },
+    // {
+    //   field: "recurrentAppointmentID",
+    //   headerName: "Recurrent Appointment ID",
+    //   width: 80,
+    // },
     {
-      field: "appointmentTitle",
-      headerName: "Appointment Title",
-      width: 100,
-    },
-    {
-      field: "shiftTitle",
-      headerName: "Shift Title",
-      width: 100,
-    },
-    {
-      field: "totalHours",
-      headerName: "System Hrs",
-      width: 150,
-    },
-    {
-      field: "recurrentAppointmentID",
-      headerName: "Recurrent Appointment ID",
-      width: 80,
-    },
+      field: "status",
+      headerName: "Status",
+      width: 170,
+      renderCell: (params) => {
+        const [status, setStatus] = useState(params.value);
+        const dropdownRef = useRef<HTMLDivElement>(null);
+        const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+        const dispatch = useAppDispatch();
+    
+        // useEffect to update the status
+        useEffect(() => {
+          setStatus(params.value);
+        }, [params.value]);
+    
+        const handleChange = (event: string) => {
+          let newStatus = event
+          console.log('====================================');
+          console.log("newStatus",event);
+          console.log('====================================');
+          if (newStatus === "Approve") newStatus = "Approved";
+          if (newStatus === "Reject") newStatus = "Rejected";
+    
+          setStatus(newStatus);
+    
+          dispatch(updateShiftNotesPaymentStatus({
+            id: params?.row?.shiftNoteID,
+            paymentState: newStatus,
+            comment: params?.row?.comments
+          }));
+        };
+    
+        let options: string[] = [];
+        if (status === "Pending") {
+          options = ["Pending", "Approve", "Reject", "Paid"];
+        } else if (status === "Approved") {
+          options = ["Approved", "Reject", "Paid"];
+        } else if (status === "Rejected") {
+          options = ["Rejected", "Paid"];
+        } else if (status === "Paid") {
+          options = ["Paid"];
+        }
+    
+        const findColor = (status: string) => {
+          if (status === "Approved") {
+            return "primary";
+          } else if (status === "Rejected") {
+            return "error";
+          } else if (status === "Paid") {
+            return "success";
+          } else {
+            return "warning";
+          }
+        };
+
+        const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+          setAnchorEl(event.currentTarget);
+        };
+    
+        const handleMenuClose = () => {
+          setAnchorEl(null);
+        };
+    
+    
+        if (status === "Paid") {
+          return (
+            <Tooltip title="Paid" placement="top">
+              <Chip label={status} size="small" sx={{ml:1}} color={findColor(status)} />
+            </Tooltip>
+          );
+        } else {
+          return ( 
+            <div>
+            {/* Chip with Edit Icon */}
+            <Stack flexDirection="row" width="100%" justifyContent="space-between" alignItems={"center"}>
+            <Chip
+              label={status}
+              size="small"
+              color={findColor(status)}
+              onClick={handleMenuOpen}
+              sx={{ cursor: 'pointer',mx:1 }}
+            />
+            <IconButton onClick={handleMenuOpen} size="small">
+              <EditIcon />
+            </IconButton>
+            </Stack>
+           
+    
+            {/* Menu for options */}
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+            >
+              {options.map((option) => (
+                <MenuItem key={option} value={option} onClick={()=>handleChange(option)} disabled={option === status}>
+                  <Chip
+                    label={option}
+                    size="small"
+                    color={findColor(option === "Approve" ? "Approved" : option === "Reject" ? "Rejected" : option)}
+                  />
+                </MenuItem>
+              ))}
+            </Menu>
+          </div>
+          );
+        }
+      }
+    },    
     {
       field: "shiftNotes",
       headerName: "ShiftNotes",
@@ -182,7 +292,10 @@ const TimeSheetTable = ({
       shiftNotes: shiftNote?.shiftNoteDTO?.notes || "N/A",
       comments: shiftNote?.shiftNoteDTO?.comments || "N/A",
       totalWorkHrs:shiftNote?.shiftNoteDTO?.totalWorkHrs || 0,
+      status:shiftNote?.shiftNoteDTO?.paymentState || "N/A",
     }));
+    console.log("mappedRows",mappedRows);
+    
     setRows(mappedRows || []);
   }, [shiftNoteSlice?.timeSheets,shiftNoteSlice?.submitState, shiftNoteSlice?.updateState]);
 

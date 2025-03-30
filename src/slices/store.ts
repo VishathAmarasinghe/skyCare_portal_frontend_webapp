@@ -14,6 +14,7 @@ import ShiftNoteReducer from "./shiftNoteSlice/shiftNote";
 import OTPReducer from "./oTPSlice/oTP";
 import IncidentReducer from "./incidentSlice/incident";
 import DashboardReducer from "./dashboardSlice/dashboard";
+import ChatReducer from './chatSlice/chat';
 
 export const store = configureStore({
   reducer: {
@@ -31,6 +32,7 @@ export const store = configureStore({
     otp: OTPReducer,
     incident: IncidentReducer,
     dashboard: DashboardReducer,
+    chat: ChatReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

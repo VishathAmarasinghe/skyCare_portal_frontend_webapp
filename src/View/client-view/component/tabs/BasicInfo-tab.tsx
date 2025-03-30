@@ -102,6 +102,17 @@ const BasicInfoTab: React.FC = () => {
     },
     {
       key: "15",
+      label: "Status",
+      children: (
+        <Chip
+        size="small"
+          label={client?.status || "Unknown"}
+          color={client?.status === "Activated" ? "success" : client?.status === "Deactivated" ? "error" : "default"}
+        />
+      ),
+    },
+    {
+      key: "16",
       label: "Address",
       children: `${client?.physicalAddress?.address}`,
     },

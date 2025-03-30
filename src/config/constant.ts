@@ -1,3 +1,5 @@
+import { saveChatDocuments } from "@slices/chatSlice/chat";
+
 // snack messages
 export const SnackMessage = {
   success: {
@@ -41,6 +43,12 @@ export const SnackMessage = {
     saveClientDocuments: "Client documents saved successfully",
     deleteClientDocuments: "Document Deleted Successfully",
     deleteCarePlan: "Care Plan deleted successfully",
+    updateTimeSheetStatus: "Time sheet status updated successfully",
+    groupChatCreated: "Group chat created successfully",
+    chatCreated:"Chat created successfully",
+    deleteChatMessage:"Chat message deleted successfully",
+    clientActivation:"Client activation status updated successfully",
+    updateChat:"Chat updated successfully",
   },
   error: {
     fetchClients: "Failed to fetch clients",
@@ -124,6 +132,19 @@ export const SnackMessage = {
     deleteCarePlan: "Fail to delete care plan",
     fetchTimeSheets: "Fail to fetch time sheets",
     fetchCarePlanBillings: "Fail to fetch care plan billings",
+    updateTimeSheetStatus: "Fail to update time sheet status",
+    fetchChatUsers: "Fail to fetch chat users",
+    groupChatCreate: "Fail to create group chat",
+    chatCreated:"Fail to create chat",
+    fetchChatList:"Fail to fetch chat list",
+    fetchChatMessages:"Fail to fetch chat messages",
+    saveChatDocuments:"Fail to upload chat documents",
+    deleteChatMessage:"Fail to delete chat message",
+    fetchPastAppointments:"Fail to fetch past appointments",
+    clientActivation:"Fail to update client activation status",
+    fetchChatmembers:"Fail to fetch chat members",
+    updateChat:"Fail to update chat",
+    fetchUnseenMessageCount:"Fail to fetch message notifications",
   },
   warning: {},
 };

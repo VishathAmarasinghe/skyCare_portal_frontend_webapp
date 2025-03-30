@@ -11,9 +11,10 @@ import {
 } from "@mui/material";
 import { CREATE_CLIENT_STEPS } from "../../../constants/index";
 import AddClientForm from "../component/AddClientForm";
-import { useAppSelector } from "../../../slices/store";
+import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import { State } from "../../../types/types";
-import { resetSubmitSate } from "../../../slices/clientSlice/client";
+import { resetSubmitSate, updateActivationStatus } from "../../../slices/clientSlice/client";
+import { APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN } from "@config/config";
 
 interface AddNewClientModalProps {
   isClientAddModalVisible: boolean;
@@ -27,6 +28,11 @@ const AddNewClientModal = ({
   const [activeStep, setActiveStep] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const client = useAppSelector((state) => state.clients);
+  const authRole = useAppSelector((state) => state?.auth?.roles);
+  const dispatch = useAppDispatch();
+  const [activationStatus, setActivationStatus] = useState<
+    "Activated" | "Deactivated"
+  >(client?.selectedClient?.status || "Deactivated");
 
   useEffect(() => {
     if (client.submitState === State.success) {
@@ -41,9 +47,15 @@ const AddNewClientModal = ({
     }
   }, [client.submitState]);
 
+  useEffect(() => {
+    if (client.selectedClient?.status) {
+      setActivationStatus(client.selectedClient.status);
+    }
+  }, [client.selectedClient]);
+
   // Handle next step
   const handleNext = () => {
-    document.getElementById('client-form-next')?.click();
+    document.getElementById("client-form-next")?.click();
     // setActiveStep((prevStep) => prevStep + 1);
   };
 
@@ -55,6 +67,13 @@ const AddNewClientModal = ({
   // Handle save (final step)
   const handleSave = async () => {
     document.getElementById("submit-btn")?.click();
+  };
+
+  const handleStatusChange = (status: "Activated" | "Deactivated") => {
+    setActivationStatus(status);
+    if (client?.selectedClient?.clientID) {
+      dispatch(updateActivationStatus({ clientID: client.selectedClient.clientID, status: status }));
+    }
   };
 
   return (
@@ -69,6 +88,32 @@ const AddNewClientModal = ({
       footer={
         <Box display="flex" justifyContent="end" width="100%">
           {/* Back Button */}
+
+          {client?.selectedClient &&
+            (authRole?.includes(APPLICATION_ADMIN) ||
+              authRole?.includes(APPLICATION_SUPER_ADMIN)) && (
+              <Button
+                variant="outlined"
+                sx={{ mx: 1 }}
+                color={activationStatus === "Activated" ? "error": "success"}
+                onClick={() =>
+                  handleStatusChange(
+                    activationStatus === "Activated"
+                      ? "Deactivated"
+                      : activationStatus === "Deactivated"
+                      ? "Activated"
+                      : "Deactivated"
+                  )
+                }
+              >
+                To {activationStatus == "Activated"
+                  ? "Deactivate"
+                  : activationStatus === "Deactivated"
+                  ? "Activate"
+                  : "Pending"}
+              </Button>
+            )}
+
           <Button
             variant="outlined"
             onClick={handleBack}
@@ -111,7 +156,12 @@ const AddNewClientModal = ({
       </Stack>
 
       <Box sx={{ mt: 2 }} width="100%">
-        <AddClientForm activeStepper={activeStep} setActiveStepper={setActiveStep} key="client-form" />
+        <AddClientForm
+          status={activationStatus}
+          activeStepper={activeStep}
+          setActiveStepper={setActiveStep}
+          key="client-form"
+        />
       </Box>
     </Modal>
   );

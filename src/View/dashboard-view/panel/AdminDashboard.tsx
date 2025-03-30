@@ -7,12 +7,12 @@ import DashboardCard from "../Components/DashboardCard";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import { fetchAdminDashboard } from "../../../slices/dashboardSlice/dashboard";
 import { DashboardCardProps } from "../../../types/types";
-import AppointmentCard from "../Components/AppointmentCard";
 import AppointmentBarChart from "../Components/AppointmentBarChart";
 import AppointmentTypePieChart from "../Components/AppointmentTypePieChart";
 import AppointmentProgressChart from "../Components/AppointmentProgressChart";
 import { theme } from "antd";
 import { fetchAppointmentTypes } from "@slices/appointmentSlice/appointment";
+import AppointmentCard from "../Components/AppointmentCard";
 
 const AdminDashboard = () => {
   const dispatch = useAppDispatch();
@@ -26,7 +26,7 @@ const AdminDashboard = () => {
   const Item = ({ children }: { children: React.ReactNode }) => (
     <Paper
       sx={{
-        p: 2,
+        padding: 2,
         width: "100%",
         height: "100%",
         color: "text.secondary",
@@ -35,7 +35,7 @@ const AdminDashboard = () => {
         borderRadius: 2,
       }}
     >
-      <Typography>{children}</Typography>
+      {children}
     </Paper>
   );
 
@@ -71,6 +71,7 @@ const AdminDashboard = () => {
       <Stack
         width={"100%"}
         my={2}
+        height={"10%"}
         flexDirection="row"
         alignItems="center"
         justifyContent="space-between"
@@ -83,7 +84,7 @@ const AdminDashboard = () => {
           ))}
         </Grid>
       </Stack>
-      <Box
+      <Stack
         sx={{
           display: "grid",
           // border: "2px solid red",
@@ -98,7 +99,7 @@ const AdminDashboard = () => {
         }}
       >
         {/* Left Top Item */}
-        <Box
+        <Stack
           sx={{
             gridColumn: { md: "span 4", xs: "span 12" },
             // border: "2px solid green",
@@ -114,10 +115,11 @@ const AdminDashboard = () => {
                 dashboardSlice?.adminDashboard?.todayTotalCount ?? 0
               }
             />
+            
           </Item>
-        </Box>
+        </Stack>
 
-        <Box
+        <Stack
           sx={{
             gridColumn: { md: "span 4", xs: "span 12" },
             // border: "2px solid green",
@@ -131,7 +133,7 @@ const AdminDashboard = () => {
               }
             />
           </Item>
-        </Box>
+        </Stack>
 
         {/* Right Item */}
         <Box
@@ -149,15 +151,13 @@ const AdminDashboard = () => {
               </Typography>
               <Stack
                 width="100%"
-                // border="2px solid blue"
                 flexGrow={1}
                 height="100%"
                 flexDirection="column"
                 alignItems="center"
                 sx={{ overflowY: "auto", maxHeight: "100%" }}
               >
-                {(dashboardSlice.adminDashboard?.todayAppointments?.length ??
-                  0) > 0 ? (
+                {(dashboardSlice.adminDashboard?.todayAppointments?.length|| 0) > 0 ? (
                   <AppointmentCard
                     todayAppointments={
                       dashboardSlice.adminDashboard?.todayAppointments || []
@@ -167,6 +167,7 @@ const AdminDashboard = () => {
                   <Stack
                     width="100%"
                     height="100%"
+                    // border={"2px solid red"}
                     justifyContent="center"
                     alignItems="center"
                     sx={{
@@ -193,7 +194,7 @@ const AdminDashboard = () => {
         </Box>
 
         {/* Left Bottom Item */}
-        <Box
+        <Stack
           sx={{
             gridColumn: { md: "span 8", xs: "span 12" },
             // border: "2px solid pink",
@@ -207,8 +208,8 @@ const AdminDashboard = () => {
               }
             />
           </Item>
-        </Box>
-      </Box>
+        </Stack>
+      </Stack>
     </Stack>
   );
 };

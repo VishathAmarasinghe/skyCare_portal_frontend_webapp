@@ -45,6 +45,7 @@ export interface updateShiftNote {
   documents: ShiftNoteDocuments[];
   clientID:string | null;
   totalWorkHrs:number;
+  paymentState:string;
 }
 
 export interface currentShiftNoteState {
@@ -101,13 +102,13 @@ const initialState: ShiftNoteState = {
 export const fetchTimeSheets = createAsyncThunk(
   "shiftNote/fetchTimeSheets",
   async (
-    payload: { startDate: string; endDate: string; employeeID: string },
+    payload: { startDate: string; endDate: string; employeeID: string, clientID: string },
     { dispatch, rejectWithValue }
   ) => {
     try {
       const response = await APIService.getInstance().get(
         AppConfig.serviceUrls.shiftNotes +
-          `/time-sheets?startDate=${payload?.startDate}&endDate=${payload?.endDate}&careGiverID=${payload?.employeeID}`
+          `/time-sheets?startDate=${payload?.startDate}&endDate=${payload?.endDate}&careGiverID=${payload?.employeeID}&clientID=${payload?.clientID}`
       );
       return response.data;
     } catch (error) {
@@ -332,6 +333,48 @@ export const updatehiftNotes = createAsyncThunk(
 );
 
 // Save notes by clientID
+export const updateShiftNotesPaymentStatus = createAsyncThunk(
+  "note/updateShiftNotesPaymentStatus",
+  async (
+    payload: { id: string; paymentState: string,comment:string },
+    { dispatch, rejectWithValue }
+  ) => {
+    return new Promise<string>((resolve, reject) => {
+      APIService.getInstance()
+        .put(
+          AppConfig.serviceUrls.shiftNotes + `/time-sheets/status/${payload.id}?status=${payload.paymentState}`,
+          { comment: payload.comment }, // Send as JSON
+          { headers: { "Content-Type": "application/json" } } 
+        )
+        .then((response) => {
+          dispatch(
+            enqueueSnackbarMessage({
+              message: SnackMessage.success.updateTimeSheetStatus,
+              type: "success",
+            })
+          );
+          resolve(response.data);
+        })
+        .catch((error) => {
+          if (axios.isCancel(error)) {
+            return rejectWithValue("Request canceled");
+          }
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.updateTimeSheetStatus
+                  : String(error.response?.data),
+              type: "error",
+            })
+          );
+          reject(error.response?.data);
+        });
+    });
+  }
+);
+
+// Save notes by clientID
 export const saveNewShiftNotes = createAsyncThunk(
   "note/SaveNewShiftNotes",
   async (
@@ -537,6 +580,18 @@ const ShiftNoteSlice = createSlice({
       .addCase(fetchTimeSheets.rejected, (state) => {
         state.state = State.failed;
         state.stateMessage = "fail to fetch time sheets shiftNote!";
+      })
+      .addCase(updateShiftNotesPaymentStatus.pending, (state) => {
+        state.updateState = State.loading;
+        state.stateMessage = "updating Shift Note...";
+      })
+      .addCase(updateShiftNotesPaymentStatus.fulfilled, (state, action) => {
+        state.updateState = State.success;
+        state.stateMessage = "Shift note Updated Successfully!";
+      })
+      .addCase(updateShiftNotesPaymentStatus.rejected, (state) => {
+        state.updateState = State.failed;
+        state.stateMessage = "fail to update shiftNote!";
       });
   },
 });

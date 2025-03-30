@@ -17,4 +17,7 @@ export default defineConfig({
       "@types": resolve(__dirname, "src/types"),
     },
   },
+  define:{
+    global: "window"
+  }
 });

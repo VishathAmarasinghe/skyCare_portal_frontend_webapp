@@ -13,6 +13,7 @@ import AddNewClientModal from "../modal/AddNewClientModal";
 import { State } from "../../../types/types";
 import DocumentsTab from "../component/tabs/documents-tab";
 import CarePlanBillings from "../component/tabs/carePlanBillings-tab";
+import ClientTimeSheetTab from "../component/tabs/ClientTimeSheetTab";
 
 const ClientInfoPanel = () => {
   const theme = useTheme();
@@ -103,6 +104,7 @@ const ClientInfoPanel = () => {
               <Tab label="Appointments" value="5" />
               <Tab label="Care Plan Billings" value="8" />
               <Tab label="Documents" value="7" />
+              <Tab label="Time Sheets" value="9" />
             </TabList>
           </Box>
           <TabPanel sx={{height:"100%"}} value="1">
@@ -125,6 +127,9 @@ const ClientInfoPanel = () => {
           </TabPanel>
           <TabPanel sx={{height:"100%"}} value="8">
             <CarePlanBillings/>
+          </TabPanel>
+          <TabPanel sx={{height:"100%"}} value="9">
+            <ClientTimeSheetTab/>
           </TabPanel>
         </TabContext>
       </Stack>

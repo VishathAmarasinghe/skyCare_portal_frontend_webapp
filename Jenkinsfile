@@ -45,6 +45,15 @@ pipeline {
             stages {
                 stage('Build Staging Frontend') {
                     steps {
+                        script {
+                    // Perform Docker login only once
+                    withCredentials([string(credentialsId: 'DOCKER_CREDENTIALS_ID', variable: 'dockerCredentials')]) {
+                        // Docker login to Docker Hub
+                        sh """
+                            echo ${dockerCredentials} | docker login -u vishathamarasinghe --password-stdin
+                            """
+                    }   }
+                        echo 'Building frontend for staging with frontend jenkins...'
                         withCredentials([string(credentialsId: 'VITE_GOOGLE_MAP_API_KEY', variable: 'VITE_GOOGLE_MAP_API_KEY')]) {
                         dir('frontend-stg') {
                             script {
@@ -54,6 +63,7 @@ pipeline {
                                     --build-arg VITE_APPLICATION_ADMIN=admin.skyCarePortal \
                                     --build-arg VITE_APPLICATION_SUPER_ADMIN=superadmin.skyCarePortal \
                                     --build-arg VITE_APPLICATION_CARE_GIVER=caregiver.skyCarePortal \
+                                    --build-arg VITE_APPLICATION_CLIENT=client.skyCarePortal \
                                     --build-arg VITE_FILE_DOWNLOAD_PATH=/file/download \
                                     --build-arg VITE_GOOGLE_MAP_API_KEY=$VITE_GOOGLE_MAP_API_KEY .
                                 """
@@ -65,6 +75,7 @@ pipeline {
                 stage('Build Staging Backend') {
                     steps {
                         dir('backend-stg') {
+                            echo 'Building backend for staging with frontend jenkins...'
                             script {
                                 sh """
                                 docker build -t ${BACKEND_IMAGE} \
@@ -121,6 +132,7 @@ pipeline {
                                     --build-arg VITE_APPLICATION_ADMIN=admin.skyCarePortal \
                                     --build-arg VITE_APPLICATION_SUPER_ADMIN=superadmin.skyCarePortal \
                                     --build-arg VITE_APPLICATION_CARE_GIVER=caregiver.skyCarePortal \
+                                    --build-arg VITE_APPLICATION_CLIENT=client.skyCarePortal \
                                     --build-arg VITE_FILE_DOWNLOAD_PATH=/file/download \
                                     --build-arg VITE_GOOGLE_MAP_API_KEY=$VITE_GOOGLE_MAP_API_KEY .
                                 """

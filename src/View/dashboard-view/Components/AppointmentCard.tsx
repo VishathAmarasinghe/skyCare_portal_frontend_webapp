@@ -19,13 +19,12 @@ const AppointmentCard = ({
   const theme = useTheme();
 
   return (
-    <Box
+    <Stack
       sx={{
         display: "flex",
-        width: "95%",
-        // border:"2px solid red",
+        width: "100%",
         flexDirection: "column",
-        maxHeight: 347,
+        height: "100%",
         overflowY: "auto", // Enable vertical scrolling
       }}
     >
@@ -33,13 +32,15 @@ const AppointmentCard = ({
         {todayAppointments?.map((appointment) => {
           const formattedStartTime = dayjs(appointment.startDateAndTime).format(
             "HH:mm"
-          ); // Format to time only
+          );
           const formattedEndTime = dayjs(appointment.endDateAndTime).format(
             "HH:mm"
-          ); // Format to time only
+          );
 
           return (
-            <Grid item xs={12} key={appointment.appointmentID}>
+            <Grid item key={appointment.appointmentID}>
+              {" "}
+              {/* Ensures it takes full width */}
               <Card
                 sx={{
                   boxShadow: 1,
@@ -74,7 +75,7 @@ const AppointmentCard = ({
           );
         })}
       </Grid>
-    </Box>
+    </Stack>
   );
 };
 

@@ -82,7 +82,7 @@ export interface Client {
   referenceNo:string;
   emergencyPhoneNo:string;
   emergencyUser:string;
-
+  status: "Activated"| "Deactivated";
 }
 
 export const deleteClientDocument = createAsyncThunk(
@@ -155,6 +155,43 @@ export const saveClientDocuments = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.saveClientDocuments
+                  : String(error.response?.data),
+              type: "error",
+            })
+          );
+          reject(error.response?.data);
+        });
+    });
+  }
+);
+
+
+export const updateActivationStatus = createAsyncThunk(
+  "client/updateActivationStatus",
+  async (payload:{clientID:string,status:string} ,{ dispatch, rejectWithValue }) => {
+    return new Promise<String>((resolve, reject) => {
+      APIService.getInstance()
+        .put(AppConfig.serviceUrls.clients + `/status/${payload.clientID}?status=${payload.status}`)
+        .then((response) => {
+          dispatch(
+            // dispatching the error message
+            enqueueSnackbarMessage({
+              message:SnackMessage.success.clientActivation,
+              type:"success",
+            })
+          );
+          resolve(response.data);
+        })
+        .catch((error) => {
+          if (axios.isCancel(error)) {
+            return rejectWithValue("Request canceled");
+          }
+          dispatch(
+            // dispatching the error message
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.clientActivation
                   : String(error.response?.data),
               type: "error",
             })
@@ -267,7 +304,6 @@ export const fetchSingleClients = createAsyncThunk(
       APIService.getInstance()
         .get(AppConfig.serviceUrls.clients + "/" + clientID)
         .then((response) => {
-          console.log("response", response);
           resolve(response.data);
         })
         .catch((error) => {
@@ -495,6 +531,18 @@ const ClientSlice = createSlice({
       .addCase(deleteClientDocument.rejected, (state) => {
         state.updateState = State.failed;
         state.stateMessage = "Failed to delete client documents";
+      })
+      .addCase(updateActivationStatus.pending, (state) => {
+        state.updateState = State.loading;
+        state.stateMessage = "updating client activation status...";
+      })
+      .addCase(updateActivationStatus.fulfilled, (state, action) => {
+        state.updateState = State.success;
+        state.stateMessage = "Successfully updated client activation status!";
+      })
+      .addCase(updateActivationStatus.rejected, (state) => {
+        state.updateState = State.failed;
+        state.stateMessage = "Failed to update client activation status";
       });
   },
 });

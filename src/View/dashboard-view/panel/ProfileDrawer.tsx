@@ -16,6 +16,7 @@ import {
   updateUserPassword,
 } from "../../../slices/employeeSlice/employee";
 import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
+import { authSlice } from "@slices/authSlice/auth";
 
 interface ProfileDrawerProps {
   open: boolean;
@@ -148,7 +149,7 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ open, setOpen }) => {
     if (!passwordUpdater.newPassword) {
       errors.newPassword = "New password is required.";
     }
-    if(passwordUpdater?.newPassword.length<6){
+    if (passwordUpdater?.newPassword.length < 6) {
       errors.newPassword = "Password must be at least 6 characters long.";
     }
 
@@ -171,22 +172,26 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ open, setOpen }) => {
       }
       // Log password payload without confirmPassword
       const { currentPassword, newPassword } = passwordUpdater;
-
     }
     const updatedUserInfoPayload = {
       ...updatedUserInfo,
       employeeID: currentUserInfo?.employeeID || "",
     };
 
-    if (updatedUserInfoPayload?.firstName!=""  && updatedUserInfoPayload?.lastName!="" && updatedUserInfoPayload?.email!="") {
+    if (
+      updatedUserInfoPayload?.firstName != "" &&
+      updatedUserInfoPayload?.lastName != "" &&
+      updatedUserInfoPayload?.email != ""
+    ) {
       dispatch(
         updateEmployeeBasicInfo({
-          employeeData: {employeeID: currentUserInfo?.employeeID || "", 
-            firstName: updatedUserInfoPayload?.firstName!, 
-            lastName: updatedUserInfoPayload?.lastName!, 
+          employeeData: {
+            employeeID: currentUserInfo?.employeeID || "",
+            firstName: updatedUserInfoPayload?.firstName!,
+            lastName: updatedUserInfoPayload?.lastName!,
             email: updatedUserInfoPayload?.email!,
-            currentPassword:"",
-            newPassword:""
+            currentPassword: "",
+            newPassword: "",
           },
           profilePhoto: uploadedProfilePhoto,
         })
@@ -197,6 +202,7 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ open, setOpen }) => {
     setIsEditMode(false);
     setShowPasswordFields(false);
   };
+  
 
   return (
     <Drawer anchor="right" open={open} onClose={toggleDrawer(false)}>
@@ -223,38 +229,40 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ open, setOpen }) => {
         </Box>
 
         {/* Profile Picture */}
-        <Box sx={{ textAlign: "center", mb: 2 }}>
-          <label htmlFor="upload-photo">
-            <Avatar
-              sx={{
-                width: 120,
-                height: 120,
-                margin: "auto",
-                bgcolor: "grey.300",
-                cursor: isEditMode ? "pointer" : "default",
-              }}
-              src={
-                profilePhotoPreview ||
-                (currentUserInfo?.profile_photo
-                  ? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(
-                      currentUserInfo.profile_photo
-                    )}`
-                  : undefined)
-              }
-            />
-          </label>
-          {isEditMode && (
-            <UploadInput
-              accept="image/*"
-              id="upload-photo"
-              type="file"
-              onChange={handleFileUpload}
-            />
-          )}
-          <Typography variant="body2" sx={{ mt: 1 }}>
-            {isEditMode ? "Click to upload photo" : "Profile Picture"}
-          </Typography>
-        </Box>
+        {employeeSlice?.logedEMployee?.accessRole != "CLIENT" && (
+          <Box sx={{ textAlign: "center", mb: 2 }}>
+            <label htmlFor="upload-photo">
+              <Avatar
+                sx={{
+                  width: 120,
+                  height: 120,
+                  margin: "auto",
+                  bgcolor: "grey.300",
+                  cursor: isEditMode ? "pointer" : "default",
+                }}
+                src={
+                  profilePhotoPreview ||
+                  (currentUserInfo?.profile_photo
+                    ? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(
+                        currentUserInfo.profile_photo
+                      )}`
+                    : undefined)
+                }
+              />
+            </label>
+            {isEditMode && (
+              <UploadInput
+                accept="image/*"
+                id="upload-photo"
+                type="file"
+                onChange={handleFileUpload}
+              />
+            )}
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              {isEditMode ? "Click to upload photo" : "Profile Picture"}
+            </Typography>
+          </Box>
+        )}
 
         {/* Editable Fields */}
         <Box component="form" sx={{ "& .MuiTextField-root": { mb: 2 } }}>

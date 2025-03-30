@@ -85,6 +85,16 @@ export interface PendingAppointments {
   endTime: string;
 }
 
+export interface PendingClientAppointments {
+  recurrentAppointmentID: string;
+  appointmentData: Appointment;
+  startDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
+  careGiverNames:string[];
+}
+
 export interface JobAssigner {
   jobAssignData: JobAssignerDTO;
   recurrentAppointmentData: RecurrentAppointmentDTO;
@@ -186,6 +196,8 @@ export interface AppointmentState {
   pendingAppointments: PendingAppointments[];
   selectedRecurrentAppointment: PendingAppointments | null;
   JobAssignToCareGiverViewList: JobAssignCareGiverView[];
+  PendingAppointmentsToClient: PendingClientAppointments[];
+  pastAppointmentToClient: PendingClientAppointments[];
   errorMessage: string | null;
   stateMessage: string | null;
   backgroundProcess: boolean;
@@ -208,6 +220,8 @@ const initialState: AppointmentState = {
   pendingAppointments: [],
   selectedRecurrentAppointment: null,
   JobAssignToCareGiverViewList: [],
+  pastAppointmentToClient: [],
+  PendingAppointmentsToClient: [],
   selectedAppointment: null,
   errorMessage: null,
   stateMessage: null,
@@ -504,6 +518,57 @@ export const fetchPendingAppointmentsWithUser = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.pendingAppointments
+                  : String(error.response?.data),
+              type: "error",
+            })
+          );
+          rejectWithValue(error.response?.data);
+        });
+    });
+  }
+);
+
+export const fetchPendingAppointmentsWithClient = createAsyncThunk(
+  "appointments/fetchPendingAppointmentsWithClient",
+  async (payload: { clientID: string }, { dispatch, rejectWithValue }) => {
+    return new Promise<PendingClientAppointments[]>((resolve, reject) => {
+      APIService.getInstance()
+        .get(
+          AppConfig.serviceUrls.appointments + `/pending/client/${payload.clientID}`
+        )
+        .then((response) => resolve(response.data))
+        .catch((error) => {
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.pendingAppointments
+                  : String(error.response?.data),
+              type: "error",
+            })
+          );
+          rejectWithValue(error.response?.data);
+        });
+    });
+  }
+);
+
+
+export const fetchPastAppointmentsWithClient = createAsyncThunk(
+  "appointments/fetchPastAppointmentsWithClient",
+  async (payload: { clientID: string,startDate:string,endDate:string,careGiver:string }, { dispatch, rejectWithValue }) => {
+    return new Promise<PendingClientAppointments[]>((resolve, reject) => {
+      APIService.getInstance()
+        .get(
+          AppConfig.serviceUrls.appointments + `/past/client/${payload.clientID}?startDate=${payload.startDate}&endDate=${payload.endDate}&careGiver=${payload.careGiver}`
+        )
+        .then((response) => resolve(response.data))
+        .catch((error) => {
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.fetchPastAppointments
                   : String(error.response?.data),
               type: "error",
             })
@@ -1032,6 +1097,26 @@ const appointmentSlice = createSlice({
         state.JobAssignToCareGiverViewList = action.payload;
       })
       .addCase(fetchCareGiverAllJobAssignViews.rejected, (state) => {
+        state.state = State.failed;
+      })
+      .addCase(fetchPendingAppointmentsWithClient.pending, (state) => {
+        state.state = State.loading;
+      })
+      .addCase(fetchPendingAppointmentsWithClient.fulfilled, (state, action) => {
+        state.state = State.success;
+        state.PendingAppointmentsToClient = action.payload;
+      })
+      .addCase(fetchPendingAppointmentsWithClient.rejected, (state) => {
+        state.state = State.failed;
+      })
+      .addCase(fetchPastAppointmentsWithClient.pending, (state) => {
+        state.state = State.loading;
+      })
+      .addCase(fetchPastAppointmentsWithClient.fulfilled, (state, action) => {
+        state.state = State.success;
+        state.pastAppointmentToClient = action.payload;
+      })
+      .addCase(fetchPastAppointmentsWithClient.rejected, (state) => {
         state.state = State.failed;
       });
   },
