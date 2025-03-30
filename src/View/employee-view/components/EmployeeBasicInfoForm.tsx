@@ -26,7 +26,8 @@ const validationSchema = Yup.object({
   // profilePhoto: Yup.mixed().required("Profile photo is required"),
   employeePhoneNo: Yup.array()
     .of(
-      Yup.string()
+      Yup.string().trim()
+        .transform((value) => value.replace(/\s+/g, ""))
         .test(
           "phone-format",
           "Invalid phone number format. Use either international format like +1234567890 or normal format like 0123456789.",
@@ -289,15 +290,6 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
             );
           }
         }, [addressDetails]);
-
-        //  useEffect(()=>{
-        //   console.log("triggered modal open ",modalOpenState);
-        //   if(!modalOpenState){
-        //     resetForm();
-        //     setProfilePhotoPreview(null);
-        //     setProfilePic(null);
-        //   }
-        //  },[modalOpenState])
 
         useEffect(() => {
           console.log("errors ",errors);
