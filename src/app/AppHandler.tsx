@@ -7,11 +7,6 @@ import PreLoader from "../component/common/PreLoader";
 import ErrorHandler from "../component/common/ErrorHandler";
 import LoginPage from "../layout/pages/LoginPage";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import {
-  APPLICATION_ADMIN,
-  APPLICATION_CARE_GIVER,
-  APPLICATION_SUPER_ADMIN,
-} from "../config/config";
 import { useSnackbar } from "notistack";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
@@ -24,7 +19,6 @@ const AppHandler = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { message, type, timestamp } = useAppSelector((state) => state?.common);
   const auth = useAppSelector((state) => state?.auth);
-
 
   const dispatch = useDispatch();
 
@@ -57,7 +51,7 @@ const AppHandler = () => {
       errorElement: <Error />,
     },
     {
-      path: "/registration-caregiver",
+      path: "/register",
       element: <CareGiverRegistrationPage />,
     },
     {

@@ -6,6 +6,7 @@ import {
   Step,
   StepLabel,
   Stepper,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import {
@@ -14,6 +15,7 @@ import {
   fetchDocumentTypes,
   saveCareGiver,
 } from "../../slices/careGiverSlice/careGiver";
+import appLogo from '../../assets/images/app_logo.png';
 import { enqueueSnackbarMessage } from "../../slices/commonSlice/common";
 import { Employee } from "../../slices/employeeSlice/employee";
 import { useAppDispatch, useAppSelector } from "../../slices/store";
@@ -22,6 +24,8 @@ import { CREATE_CARE_GIVER_OUTSIDE_REGISTRATION } from "../../constants/index";
 import AgreementComponent from "../../component/common/AgreementComponent";
 import EmployeeBasicInfoForm from "../../View/employee-view/components/EmployeeBasicInfoForm";
 import CareGiverFileUploader from "../../View/employee-view/components/CareGiverFileUploader";
+import { State } from "../../types/types";
+import { useNavigate } from "react-router-dom";
 
 const CareGiverRegistrationPage = () => {
   const theme = useTheme();
@@ -30,6 +34,7 @@ const CareGiverRegistrationPage = () => {
   const [careGiverDocuments, setCareGiverDocuments] = useState<
     CareGiverDocuments[]
   >([]);
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [uploadFiles, setUploadFiles] = useState<File[]>([]);
   const [profilePic, setProfilePic] = useState<File | null>(null);
   const careGiverStatus = useAppSelector((state) => state.careGivers);
@@ -41,6 +46,7 @@ const CareGiverRegistrationPage = () => {
   const [isEditMode, setIsEditMode] = useState<boolean>(true);
   const dispatch = useAppDispatch();
   const [isAgreed, setIsAgreed] = useState<boolean>(false);
+  const navigate = useNavigate();
   const [employeeBasicInformation, setEmployeeBasicInformation] =
     useState<Employee>({
       employeeID: "",
@@ -78,8 +84,16 @@ const CareGiverRegistrationPage = () => {
   }, []);
 
   useEffect(() => {
-    if (careGiverStatus.submitState === "success") {
+    if (careGiverStatus.submitState === State.success) {
       setIsCareGiverAddModalVisible(false);
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            "You will receive an email, once admin approved!",
+          type: "success",
+        })
+      );
+      window.location.href = 'https://skycaresolutions.com.au';
     }
   }, [careGiverStatus.submitState]);
 
@@ -93,11 +107,12 @@ const CareGiverRegistrationPage = () => {
     const allRequiredFilesUploaded = requiredFiles?.every((doc) =>
       careGiverDocuments.some(
         (file) =>
-          file.documentTypeID === doc?.documentName &&
+          file.documentTypeID === doc?.documentTypeID &&
           file?.document != null &&
           file?.document != ""
       )
     );
+    
     if (careGiverStatus?.selectedCareGiver) {
       if (allRequiredFilesUploaded) {
         return true;
@@ -118,6 +133,7 @@ const CareGiverRegistrationPage = () => {
 
   useEffect(() => {
     if (errorState === "Validated") {
+      
       if (checkIsRequiredFilesUploaded()) {
         const careGiverPayload: CareGiver = {
           careGiverDocuments: careGiverDocuments,
@@ -142,6 +158,7 @@ const CareGiverRegistrationPage = () => {
             type: "error",
           })
         );
+        setErrorState("Pending");
       }
     }
   }, [errorState]);
@@ -159,8 +176,9 @@ const CareGiverRegistrationPage = () => {
       justifyContent="center"
       sx={{ backgroundColor: theme.palette.background.default }}
     >
+     
       <Stack
-        width="70%"
+        width={isMobile?"90%":"70%"}
         sx={{
           backgroundColor: "white",
           padding: 2,
@@ -170,6 +188,20 @@ const CareGiverRegistrationPage = () => {
           maxHeight: "90vh", // Set a max height to allow scrolling if needed
         }}
       >
+         <Stack
+          width="100%"
+          alignItems="center"
+          justifyContent="center"
+          >
+          <img
+            src={appLogo}
+            alt="logo"
+            style={{ width: isMobile ? "50%" : "20%" }}
+          />
+          <h2 style={{ color: theme.palette.primary.main }}>
+            Care Giver Registration
+          </h2>
+          </Stack>
         <Stack width="100%">
           <Stepper activeStep={activeStep}>
             {CREATE_CARE_GIVER_OUTSIDE_REGISTRATION.map((label, index) => (
@@ -180,7 +212,7 @@ const CareGiverRegistrationPage = () => {
           </Stepper>
         </Stack>
 
-        <Box sx={{ mt: 2 }} width="100%">
+        <Box sx={{ mt: 2,mb:2 }} width="100%">
           <Stack sx={{ display: activeStep === 0 ? "flex" : "none" }}>
             <EmployeeBasicInfoForm
               profilePic={profilePic}
@@ -207,7 +239,7 @@ const CareGiverRegistrationPage = () => {
             <AgreementComponent isAgreed={isAgreed} setIsAgreed={setIsAgreed} />
           </Stack>
         </Box>
-        <Box display="flex" justifyContent="end" width="100%">
+        <Box display="flex" justifyContent="end" mt={2} width="100%">
           {/* Back Button */}
           <Button
             variant="outlined"

@@ -41,7 +41,6 @@ const EmployeeView = () => {
   const [searchParams] = useSearchParams();
   const [selectedCUser, setSelectedCUser] = useState<string | null>(null);
 
-  
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -54,7 +53,7 @@ const EmployeeView = () => {
     if (employeeSlice?.selectedEmployee) {
       if (selectedEmployee?.accessRole === "Admin") {
         setIsEmployeeAddModalVisible(true);
-        setIsEditMode(false);
+        setIsEditMode(false); 
       } else if (selectedEmployee?.accessRole === "CareGiver") {
         dispatch(
           fetchSingleCareGiverByEmployeeID(selectedEmployee?.employeeID)
