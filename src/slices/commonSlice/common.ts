@@ -1,6 +1,6 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { VariantType } from 'notistack'
+import { VariantType,enqueueSnackbar } from 'notistack'
 import { AppDispatch } from '../store'
 
 export interface CommonState {

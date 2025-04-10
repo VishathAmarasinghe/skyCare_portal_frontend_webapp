@@ -16,6 +16,7 @@ import { State } from "../../../types/types";
 import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
 import { Autocomplete } from "@react-google-maps/api";
 import { set } from "date-fns";
+import dayjs from "dayjs";
 
 // Validation schema using Yup
 const validationSchema = Yup.object({
@@ -137,7 +138,7 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
         lastName: "",
         email: "",
         accessRole: "",
-        joinDate: "",
+        joinDate: dayjs().format("YYYY-MM-DD"),
         profile_photo: "",
         employeeAddresses: [
           {
@@ -339,6 +340,7 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                       as={TextField}
                       label="First Name"
                       name="firstName"
+                      FormHelperTextProps={{ style: { marginLeft: 0 } }}
                       fullWidth
                       InputProps={{
                         readOnly: !isEditMode, 
@@ -356,6 +358,7 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                       InputProps={{
                         readOnly: !isEditMode, 
                       }}
+                      FormHelperTextProps={{ style: { marginLeft: 0 } }}
                       error={touched.lastName && Boolean(errors.lastName)}
                       helperText={touched.lastName && errors.lastName}
                     />
@@ -369,6 +372,7 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                       InputProps={{
                         readOnly: !isEditMode, 
                       }}
+                      FormHelperTextProps={{ style: { marginLeft: 0 } }}
                       error={touched.email && Boolean(errors.email)}
                       helperText={touched.email && errors.email}
                     />
@@ -382,6 +386,7 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                       InputProps={{
                         readOnly: !isEditMode, 
                       }}
+                      FormHelperTextProps={{ style: { marginLeft: 0 } }}
                       error={
                         touched.employeePhoneNo &&
                         Boolean(errors.employeePhoneNo?.[1])
@@ -397,6 +402,7 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                       label="Emergency Phone No"
                       name="emergencyPhoneNo"
                       fullWidth
+                      FormHelperTextProps={{ style: { marginLeft: 0 } }}
                       InputProps={{
                         readOnly: !isEditMode, 
                       }}
@@ -415,6 +421,7 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                       label="Emergency Contact Person"
                       name="emergencyUser"
                       fullWidth
+                      FormHelperTextProps={{ style: { marginLeft: 0 } }}
                       InputProps={{
                         readOnly: !isEditMode, 
                       }}
@@ -433,6 +440,7 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                       label="Join Date"
                       type="date"
                       name="joinDate"
+                      FormHelperTextProps={{ style: { marginLeft: 0 } }}
                       InputProps={{
                         readOnly: !isEditMode, 
                       }}
@@ -482,6 +490,8 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                         label="Search Address"
                         variant="outlined"
                         fullWidth
+                        FormHelperTextProps={{ style: { marginLeft: 0 } }}
+                        disabled
                         InputProps={{ readOnly: !isEditMode }}
                         name="search"
                         value={searchInput}
@@ -495,6 +505,7 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                       label="Address"
                       name="employeeAddresses[0].address"
                       fullWidth
+                      FormHelperTextProps={{ style: { marginLeft: 0 } }}
                       InputProps={{
                         readOnly: !isEditMode, 
                       }}
@@ -516,6 +527,7 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                       label="City"
                       name="employeeAddresses[0].city"
                       fullWidth
+                      FormHelperTextProps={{ style: { marginLeft: 0 } }}
                       InputProps={{
                         readOnly: !isEditMode, 
                       }}
@@ -537,6 +549,7 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                       label="State"
                       name="employeeAddresses[0].state"
                       fullWidth
+                      FormHelperTextProps={{ style: { marginLeft: 0 } }}
                       InputProps={{
                         readOnly: !isEditMode, 
                       }}
@@ -558,6 +571,7 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                       label="Postal Code"
                       name="employeeAddresses[0].postal_code"
                       fullWidth
+                      FormHelperTextProps={{ style: { marginLeft: 0 } }}
                       InputProps={{
                         readOnly: !isEditMode, 
                       }}
