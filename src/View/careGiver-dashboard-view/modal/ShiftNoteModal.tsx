@@ -52,9 +52,10 @@ const ShiftNoteModal = ({
         if (authDate?.userInfo?.userID) {
           dispatch(fetchClientsAssociatedToCareGiver(authDate.userInfo.userID));
         }else{
-          dispatch(fetchClients());
+          
         }
       }
+      dispatch(fetchClients());
       dispatch(fetchCareGivers());
     }
   },[authDate,isNoteModalVisible])
