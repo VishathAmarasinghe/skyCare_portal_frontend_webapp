@@ -31,6 +31,7 @@ import {
 } from "../../../slices/shiftNoteSlice/shiftNote";
 import {
   APPLICATION_ADMIN,
+  APPLICATION_CARE_GIVER,
   APPLICATION_SUPER_ADMIN,
 } from "../../../config/config";
 import { Client } from "@slices/clientSlice/client";
@@ -145,7 +146,8 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
     documents: [],
     clientID: null,
     totalWorkHrs: 0,
-    paymentState:"Pending"
+    paymentState:"Pending",
+    createdAt: ""
   });
 
   const [clientAppointmentAndTask, setClientAppointmentAndTask] = useState<{
@@ -205,7 +207,8 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
         documents: [],
         clientID: null,
         totalWorkHrs: 0,
-        paymentState:"Pending"
+        paymentState:"Pending",
+        createdAt: ""
       });
       setUploadedFiles([]);
     }
@@ -686,7 +689,11 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
                   name="comments"
                   InputProps={{ readOnly: !isEditMode }}
                   label="Comments"
-                  value={values.comments}
+                  value={
+                    authRoles?.includes(APPLICATION_CARE_GIVER)
+                      ? (values.comments?.replace(/CLIENT:.*$/, "").trim() || "")
+                      : values.comments
+                  }
                   onChange={handleChange}
                   onBlur={handleBlur}
                   error={touched.comments && Boolean(errors.comments)}
