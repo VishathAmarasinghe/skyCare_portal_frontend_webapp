@@ -46,6 +46,7 @@ export interface updateShiftNote {
   clientID:string | null;
   totalWorkHrs:number;
   paymentState:string;
+  createdAt?: string;
 }
 
 export interface currentShiftNoteState {

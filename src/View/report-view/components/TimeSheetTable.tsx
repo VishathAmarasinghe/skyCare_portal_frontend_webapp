@@ -63,6 +63,20 @@ const TimeSheetTable = ({
       width: 200,
     },
     {
+      field: "createdAt",
+      headerName: "Submitted At",
+      width: 200,
+      renderCell: (params) => {
+        const date = new Date(params.value);
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        const hh = String(date.getHours()).padStart(2, '0');
+        const min = String(date.getMinutes()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+      },
+    },
+    {
       field: "startDate",
       headerName: "Start Date",
       width: 180,
@@ -137,9 +151,6 @@ const TimeSheetTable = ({
     
         const handleChange = (event: string) => {
           let newStatus = event
-          console.log('====================================');
-          console.log("newStatus",event);
-          console.log('====================================');
           if (newStatus === "Approve") newStatus = "Approved";
           if (newStatus === "Reject") newStatus = "Rejected";
     
@@ -293,6 +304,7 @@ const TimeSheetTable = ({
       comments: shiftNote?.shiftNoteDTO?.comments || "N/A",
       totalWorkHrs:shiftNote?.shiftNoteDTO?.totalWorkHrs || 0,
       status:shiftNote?.shiftNoteDTO?.paymentState || "N/A",
+      createdAt: shiftNote?.shiftNoteDTO?.createdAt || "N/A",
     }));
     console.log("mappedRows",mappedRows);
     
