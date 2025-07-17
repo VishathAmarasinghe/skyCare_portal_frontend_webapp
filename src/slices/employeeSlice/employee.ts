@@ -461,7 +461,7 @@ export const updateEmployee = createAsyncThunk(
       const formData = new FormData();
       formData.append("employeeData", JSON.stringify(payload.employeeData));
       if (payload.profilePhoto) {
-        formData.append("profile_photo", payload.profilePhoto);
+        formData.append("profile_photo", payload.profilePhoto); 
       }
 
       const response = await APIService.getInstance().patch(
