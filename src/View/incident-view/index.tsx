@@ -1,7 +1,9 @@
-import { Button, Stack, Typography, useTheme } from "@mui/material";
+import { Button, Stack, Typography, useTheme, Dialog, DialogTitle, DialogContent, IconButton } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import IncidentTable from "./components/IncidentTable";
 import IncidentModal from "./modal/IncidentModal";
+import IncidentReport from "./components/IncidentReport";
+import { Close } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../slices/store";
 import { APPLICATION_CARE_GIVER } from "../../config/config";
 import {
@@ -9,13 +11,20 @@ import {
   fetchAllIncidentsByEmployeeId,
   fetchAllIncidentStatus,
   fetchAllIncidentTypes,
+  fetchAllIncidentActionTypeQuestions,
+  Incidents,
+  fetchSingleIncident,
 } from "../../slices/incidentSlice/incident";
+import { fetchClients } from "../../slices/clientSlice/client";
+import { fetchMetaEmployees } from "../../slices/employeeSlice/employee";
 
 const IncidentView = () => {
   const theme = useTheme();
   const [isIncidentModalOpen, setIsIncidentModalOpen] =
     useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [showReport, setShowReport] = useState<boolean>(false);
+  const [selectedIncident, setSelectedIncident] = useState<Incidents | null>(null);
   const incidentSlice = useAppSelector((state) => state?.incident);
   const authRoles = useAppSelector((State) => State?.auth?.roles);
   const authUserInfo = useAppSelector((state) => state?.auth?.userInfo);
@@ -24,7 +33,10 @@ const IncidentView = () => {
   useEffect(() => {
     dispatch(fetchAllIncidentTypes());
     dispatch(fetchAllIncidentStatus());
-  }, []);
+    dispatch(fetchAllIncidentActionTypeQuestions());
+    dispatch(fetchClients()); // Fetch all clients to populate client data
+    dispatch(fetchMetaEmployees()); // Fetch all employees to populate employee data
+  }, [dispatch]);
 
   useEffect(() => {
     if (authRoles?.includes(APPLICATION_CARE_GIVER)) {
@@ -34,7 +46,18 @@ const IncidentView = () => {
     } else {
       dispatch(fetchAllIncidents());
     }
-  }, [authRoles, incidentSlice?.submitState, incidentSlice?.updateState]);
+  }, [authRoles, incidentSlice?.submitState, incidentSlice?.updateState, dispatch, authUserInfo?.userID]);
+
+  const handleViewReport = (incident: Incidents) => {
+    setSelectedIncident(incident);
+    setShowReport(true);
+    dispatch(fetchSingleIncident(incident?.incidentID));
+  };
+
+  const handleCloseReport = () => {
+    setShowReport(false);
+    setSelectedIncident(null);
+  };
 
   return (
     <Stack
@@ -72,7 +95,8 @@ const IncidentView = () => {
         <Button
           variant="contained"
           onClick={() => {
-            setIsIncidentModalOpen(true), setIsEditing(true);
+            setIsIncidentModalOpen(true);
+            setIsEditing(true);
           }}
         >
           New Incident
@@ -80,10 +104,38 @@ const IncidentView = () => {
       </Stack>
       <Stack width="100%" height="100%">
         <IncidentTable
-          isIncidentModalVisible={isIncidentModalOpen}
           setIsIncidentModalOpen={setIsIncidentModalOpen}
+          onViewReport={handleViewReport}
         />
       </Stack>
+
+      {/* Report Modal */}
+      <Dialog
+        open={showReport}
+        onClose={handleCloseReport}
+        maxWidth="xl"
+        fullWidth
+        PaperProps={{
+          sx: { minHeight: '80vh' }
+        }}
+      >
+        <DialogTitle>
+          <IconButton
+            onClick={handleCloseReport}
+            sx={{ position: 'absolute', right: 8, top: 8 }}
+          >
+            <Close />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          {selectedIncident && incidentSlice?.selectedIncident && (
+            <IncidentReport 
+              incident={incidentSlice?.selectedIncident} 
+              onClose={handleCloseReport}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </Stack>
   );
 };

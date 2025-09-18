@@ -36,11 +36,12 @@ import {
 } from "../../../config/config";
 import { Client } from "@slices/clientSlice/client";
 import { CareGiver } from "@slices/careGiverSlice/careGiver";
+import { fetchAppointmentTypes } from "../../../slices/appointmentSlice/appointment";
 
 // Validation schema using Yup
 const validationSchema = (selectedShiftNote: updateShiftNote | null) =>
   Yup.object({
-    title: Yup.string().required("Title is required"),
+    title: Yup.string().required("Shift Type is required"),
     shiftStartDate: Yup.date()
       .nullable()
       .when([], {
@@ -55,18 +56,6 @@ const validationSchema = (selectedShiftNote: updateShiftNote | null) =>
       }),
       clientID: Yup.string().nullable()
   .required("Client is required"),
-    shiftEndDate: Yup.date()
-      .nullable()
-      .when(["shiftStartDate"], (shiftStartDate, schema) =>
-        selectedShiftNote
-          ? schema
-          : schema
-              .min(
-                Yup.ref("shiftStartDate"),
-                "Shift End Date cannot be before Shift Start Date"
-              )
-              .required("Shift End Date is required")
-      ),
     shiftEndTime: Yup.string()
       .nullable()
       .when([], {
@@ -155,6 +144,10 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
     tasks: string[];
   }>({ appointments: [], tasks: [] });
 
+  // Add appointment types state
+  const [appointmentTypes, setAppointmentTypes] = useState<Array<{ appointmentTypeID: string; name: string; status: string; color: string }>>([]);
+  const appointmentSlice = useAppSelector((state) => state.appointments);
+
   useEffect(() => {}, [UIShowingFile, uploadedFils, previouslyUploadedFiles]);
 
   useEffect(() => {
@@ -168,6 +161,22 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
       setCareGiverList(careGiverSlice?.careGivers);
     }
   }, [careGiverSlice?.state]);
+
+  // Fetch appointment types when component mounts
+  useEffect(() => {
+    dispatch(fetchAppointmentTypes());
+  }, [dispatch]);
+
+  // Update appointment types when data is fetched
+  useEffect(() => {
+    if (appointmentSlice?.appointmentTypes?.length > 0) {
+      setAppointmentTypes(
+        appointmentSlice.appointmentTypes.filter(
+          (type) => type.status === "Active"
+        )
+      );
+    }
+  }, [appointmentSlice?.appointmentTypes]);
 
   useEffect(() => {
     if (shiftNoteStates.selectedShiftNote != null) {
@@ -347,19 +356,35 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
             <Grid container spacing={3}>
               {/* Note Type */}
               <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  InputProps={{ readOnly: !isEditMode }}
-                  type="text"
-                  name="title"
-                  label="Note Title"
-                  value={values.title}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  error={touched.title && Boolean(errors.title)}
-                  helperText={touched.title && errors.title}
-                  InputLabelProps={{ shrink: true }}
-                />
+                <FormControl fullWidth error={touched.title && Boolean(errors.title)}>
+                  <InputLabel id="appointment-type-label">Appointment Type</InputLabel>
+                  <Select
+                    labelId="appointment-type-label"
+                    name="appointmentTypeID"
+                    value={appointmentTypes.find(type => type.name === values.title)?.appointmentTypeID || ""}
+                    onChange={(e) => {
+                      const selectedType = appointmentTypes.find(
+                        (type) => type.appointmentTypeID === e.target.value
+                      );
+                      if (selectedType) {
+                        // Auto-assign the appointment type name as the title
+                        setFieldValue("title", selectedType.name);
+                      }
+                    }}
+                    onBlur={handleBlur}
+                    disabled={!isEditMode}
+                    label="Shift Type"
+                  >
+                    {appointmentTypes.map((type) => (
+                      <MenuItem key={type.appointmentTypeID} value={type.appointmentTypeID}>
+                        {type.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {touched.title && errors.title && (
+                    <FormHelperText>{errors.title}</FormHelperText>
+                  )}
+                </FormControl>
               </Grid>
               <Grid item xs={12} sm={3}>
                 <TextField
@@ -399,7 +424,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
               </Grid>
 
               {/* Shift End Date */}
-              <Grid item xs={12} sm={3}>
+              {/* <Grid item xs={12} sm={3}>
                 <TextField
                   fullWidth
                   InputProps={{ readOnly: !isEditMode }}
@@ -413,7 +438,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
                   helperText={touched.shiftEndDate && errors.shiftEndDate}
                   InputLabelProps={{ shrink: true }}
                 />
-              </Grid>
+              </Grid> */}
 
               {/* Shift End Time */}
               <Grid item xs={12} sm={3}>
@@ -683,6 +708,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
               </Grid>
 
               {/* Comments */}
+              {authRoles?.includes(APPLICATION_ADMIN) && 
               <Grid item xs={12}>
                 <TextField
                   fullWidth
@@ -702,6 +728,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
                   rows={2}
                 />
               </Grid>
+      }
               <button
                 id="note-submit-button"
                 style={{ display: "none" }}

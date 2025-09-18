@@ -39,43 +39,6 @@ function CustomToolbar() {
   );
 }
 
-const sampleEmployees = [
-  {
-    employeeID: "EMP001",
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@company.com",
-    occupation: "admin",
-  },
-  {
-    employeeID: "EMP002",
-    firstName: "Jane",
-    lastName: "Smith",
-    email: "jane.smith@company.com",
-    occupation: "staff",
-  },
-  {
-    employeeID: "EMP003",
-    firstName: "Michael",
-    lastName: "Chen",
-    email: "michael.chen@company.com",
-    occupation: "admin",
-  },
-  {
-    employeeID: "EMP004",
-    lastName: "Garcia",
-    email: "olivia.garcia@company.com",
-    occupation: "staff",
-  },
-  {
-    employeeID: "EMP005",
-    firstName: "David",
-    lastName: "Miller",
-    email: "david.miller@company.com",
-    occupation: "staff",
-  },
-];
-
 interface ClientTableProps {}
 
 const EmployeeTable = ({}: ClientTableProps) => {
@@ -91,12 +54,12 @@ const EmployeeTable = ({}: ClientTableProps) => {
   const handlePageChange = (newPage: number) => {};
 
   const initialColumns: GridColDef[] = [
-    {
-      field: "employeeID",
-      headerName: "Employee ID",
-      width: 100,
-      align: "center",
-    },
+    // {
+    //   field: "employeeID",
+    //   headerName: "Employee ID",
+    //   width: 100,
+    //   align: "center",
+    // },
     { field: "firstName", headerName: "First Name", width: 130 },
     { field: "lastName", headerName: "Last Name", width: 130 },
     {

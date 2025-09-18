@@ -29,7 +29,7 @@ function CustomToolbar() {
 }
 
 const initialColumns: GridColDef[] = [
-  { field: "clientID", headerName: "Client ID", width:100, align: "left" },
+  // { field: "clientID", headerName: "Client ID", width:100, align: "left" },
   {
     field:"referenceNo",headerName:"Reference No",width:180,align:"left"
   },

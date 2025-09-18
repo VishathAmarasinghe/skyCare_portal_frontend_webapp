@@ -77,13 +77,12 @@ const CarePlanMainTable = ({
   };
 
   const initialColumns: GridColDef[] = [
-    {
-      field: "careplanID",
-      headerName: "Care Plan ID",
-      width: 100,
-      align: "left",
-    },
-    { field: "clientID", headerName: "CLient ID", width: 100, align: "left" },
+    // {
+    //   field: "careplanID",
+    //   headerName: "Care Plan ID",
+    //   width: 100,
+    //   align: "left",
+    // },
     {
       field: "clientIDd",
       headerName: "Client",
@@ -110,7 +109,7 @@ const CarePlanMainTable = ({
       field: "title",
       headerName: "Title",
       flex: 2,
-      headerAlign: "center",
+      headerAlign: "left",
       align: "left",
     },
     {

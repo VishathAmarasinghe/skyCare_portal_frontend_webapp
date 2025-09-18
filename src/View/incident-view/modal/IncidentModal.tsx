@@ -140,6 +140,12 @@ const IncidentModal = ({
         setIsIncidentModalVisible(false);
         dispatch(resetSelectedIncident());
       }}
+      style={{ height: '80vh' }}
+      bodyStyle={{ 
+        height: 'calc(80vh - 120px)', 
+        overflowY: 'auto',
+        padding: '20px'
+      }}
       footer={
         <Box display="flex" justifyContent="end" width="100%">
           {/* Cancel Button */}
@@ -185,7 +191,7 @@ const IncidentModal = ({
         </Box>
       }
     >
-      <Stack>
+      <Stack sx={{ height: '100%' }}>
         {!isMobile && (
           <Stack width="100%">
             {/* Stepper */}
@@ -199,7 +205,7 @@ const IncidentModal = ({
           </Stack>
         )}
 
-        <Box sx={{ mt: 2 }} width="100%">
+        <Box sx={{ mt: 2, flex: 1, overflow: 'auto' }} width="100%">
           <IncidentForm
             activeStep={activeStep}
             isEditMode={isEditMode}

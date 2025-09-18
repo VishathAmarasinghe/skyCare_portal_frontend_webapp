@@ -109,3 +109,62 @@
     }
   }
 }
+
+/* Print styles for incident reports */
+@media print {
+  .incident-report {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  .incident-report .MuiButton-root {
+    display: none !important;
+  }
+  
+  .incident-report .MuiCard-root {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    break-inside: avoid;
+    margin-bottom: 15px !important;
+  }
+  
+  .incident-report .MuiTypography-h4,
+  .incident-report .MuiTypography-h5,
+  .incident-report .MuiTypography-h6 {
+    color: #000 !important;
+  }
+  
+  .incident-report .MuiChip-root {
+    border: 1px solid #000 !important;
+    color: #000 !important;
+  }
+
+  .incident-report .MuiTableContainer-root {
+    break-inside: avoid;
+  }
+
+  .incident-report .MuiDialog-root {
+    position: static !important;
+  }
+
+  .incident-report .MuiDialogTitle-root {
+    display: none !important;
+  }
+
+  /* Ensure page breaks work correctly */
+  .incident-report .MuiGrid-item {
+    break-inside: avoid;
+  }
+
+  /* Hide action buttons in print */
+  .incident-report button,
+  .incident-report .MuiIconButton-root {
+    display: none !important;
+  }
+
+  /* Ensure proper spacing for signatures */
+  .incident-report .signature-section {
+    page-break-inside: avoid;
+    margin-top: 20px;
+  }
+}

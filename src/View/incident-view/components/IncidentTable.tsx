@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   DataGrid,
   GridColDef,
-  GridToolbar,
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarFilterButton,
@@ -14,17 +13,15 @@ import {
   Chip,
   IconButton,
   Stack,
-  Typography,
   useMediaQuery,
   useTheme,
+  Tooltip,
 } from "@mui/material";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
-import { useNavigate } from "react-router-dom";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import AssessmentIcon from "@mui/icons-material/Assessment";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import { Employee } from "../../../slices/employeeSlice/employee";
-import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
+import { APPLICATION_ADMIN, FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
 import {
   fetchSingleIncident,
   Incidents,
@@ -42,18 +39,19 @@ function CustomToolbar() {
 }
 
 interface ClientTableProps {
-  isIncidentModalVisible: boolean;
   setIsIncidentModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  onViewReport: (incident: Incidents) => void;
 }
 
 const IncidentTable = ({
-  isIncidentModalVisible,
   setIsIncidentModalOpen,
+  onViewReport,
 }: ClientTableProps) => {
   const theme = useTheme();
   const incidentSlice = useAppSelector((state) => state?.incident);
   const employeeSlice = useAppSelector((state) => state?.employees);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const authSlice = useAppSelector((state)=>state?.auth);
   const [incidents, setIncidents] = useState<Incidents[]>([]);
   const dispatch = useAppDispatch();
 
@@ -82,17 +80,16 @@ const IncidentTable = ({
     setIncidents(incidentSlice.incidents);
   }, [incidentSlice.incidents]);
 
-  const handlePageChange = (newPage: number) => {};
 
   const initialColumns: GridColDef[] = [
-    {
-      field: "incidentID",
-      headerName: "Incident ID",
-      width: 50,
-      align: "center",
+    // {
+    //   field: "incidentID",
+    //   headerName: "Incident ID",
+    //   width: 50,
+    //   align: "center",
       
-    },
-    { field: "title", headerName: "title", flex: 1 },
+    // },
+    // { field: "title", headerName: "title", flex: 1 },
     {
       field: "incidentTypeID",
       headerName: "Incident type",
@@ -176,19 +173,34 @@ const IncidentTable = ({
     {
       field: "action",
       headerName: "Action",
-      width: 150,
+      width: 200,
       renderCell: (params) => {
         return (
           <Stack flexDirection="row">
-            <IconButton
-              aria-label="view"
-              onClick={() => {
-                dispatch(fetchSingleIncident(params.row?.incidentID));
-                setIsIncidentModalOpen(true);
-              }}
-            >
-              <RemoveRedEyeOutlinedIcon />
-            </IconButton>
+            <Tooltip title="View Incident">
+              <IconButton
+                aria-label="view"
+                onClick={() => {
+                  dispatch(fetchSingleIncident(params.row?.incidentID));
+                  setIsIncidentModalOpen(true);
+                }}
+              >
+                <RemoveRedEyeOutlinedIcon />
+              </IconButton>
+            </Tooltip>
+            {
+              authSlice?.roles?.includes(APPLICATION_ADMIN)?
+        <Tooltip title="View Report">
+              <IconButton
+                aria-label="report"
+                onClick={() => {
+                  onViewReport(params.row);
+                }}
+              >
+                <AssessmentIcon />
+              </IconButton>
+            </Tooltip>:<></>
+            }
           </Stack>
         );
       },
@@ -207,19 +219,34 @@ const IncidentTable = ({
     {
       field: "action",
       headerName: "Action",
-      width: 150,
+      width: 200,
       renderCell: (params) => {
         return (
           <Stack flexDirection="row">
-            <IconButton
-              aria-label="view"
-              onClick={() => {
-                dispatch(fetchSingleIncident(params.row?.incidentID));
-                setIsIncidentModalOpen(true);
-              }}
-            >
-              <RemoveRedEyeOutlinedIcon />
-            </IconButton>
+            <Tooltip title="View Incident">
+              <IconButton
+                aria-label="view"
+                onClick={() => {
+                  dispatch(fetchSingleIncident(params.row?.incidentID));
+                  setIsIncidentModalOpen(true);
+                }}
+              >
+                <RemoveRedEyeOutlinedIcon />
+              </IconButton>
+            </Tooltip>
+            {
+              authSlice?.roles?.includes(APPLICATION_ADMIN) && 
+              <Tooltip title="View Report">
+                <IconButton
+                  aria-label="report"
+                  onClick={() => {
+                  onViewReport(params.row);
+                }}
+                >
+                <AssessmentIcon />
+              </IconButton>
+            </Tooltip>
+            }
           </Stack>
         );
       },
