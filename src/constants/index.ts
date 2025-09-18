@@ -41,7 +41,6 @@ export const CREATE_CARE_GIVER_INTERNAL_UPDATE = ["Basic Info", "File Uploads"];
 
 export const CREATE_INCIDENT_STEPS = [
   "Basic Info",
-  "More Info",
   "Questions",
   "Documents",
   "Involved Parties",

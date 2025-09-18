@@ -53,9 +53,26 @@ const TimeSheetTable = ({
 }: TimeSheetTableProps) => {
   const [columns] = useState<GridColDef[]>([
     {
-      field: "shiftNoteID",
-      headerName: "Shift Note ID",
-      flex: 1,
+      field: "shiftTitle",
+      headerName: "Shift Type",
+      width: 150,
+      renderCell: (params) => {
+        const title = params.value || "N/A";
+        return (
+          <Tooltip title={title} placement="top">
+            <Box
+              sx={{
+                maxWidth: '100%',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {title}
+            </Box>
+          </Tooltip>
+        );
+      },
     },
     {
       field: "employeeName",
@@ -114,26 +131,6 @@ const TimeSheetTable = ({
       headerName: "Client Name",
       width: 150,
     },
-    // {
-    //   field: "appointmentTitle",
-    //   headerName: "Appointment Title",
-    //   width: 100,
-    // },
-    // {
-    //   field: "shiftTitle",
-    //   headerName: "Shift Title",
-    //   width: 100,
-    // },
-    // {
-    //   field: "totalHours",
-    //   headerName: "System Hrs",
-    //   width: 150,
-    // },
-    // {
-    //   field: "recurrentAppointmentID",
-    //   headerName: "Recurrent Appointment ID",
-    //   width: 80,
-    // },
     {
       field: "status",
       headerName: "Status",

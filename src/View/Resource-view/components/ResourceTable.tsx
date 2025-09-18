@@ -82,12 +82,12 @@ const ResourceTable = ({}: ResourceTableProps) => {
   };
 
   const initialColumns: GridColDef[] = [
-    {
-      field: "resourceId",
-      headerName: "Resource ID",
-      width: 100,
-      align: "center",
-    },
+    // {
+    //   field: "resourceId",
+    //   headerName: "Resource ID",
+    //   width: 100,
+    //   align: "center",
+    // },
     { field: "resourceName", headerName: "Resource Name", flex: 1 },
     {
       field: "validFrom",

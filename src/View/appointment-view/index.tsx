@@ -1,5 +1,5 @@
 import { Button, Stack, Typography, useTheme } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AppointmentCalender from "./components/AppointmentCalender";
 import { useAppDispatch, useAppSelector } from "../../slices/store";
 import { resetSelectedAppointment } from "../../slices/appointmentSlice/appointment";
@@ -9,7 +9,7 @@ import {
 } from "../../config/config";
 import RecurrentAppointmentDetailsModal from "../careGiver-dashboard-view/modal/RecurrentAppointmentDetailsModal";
 import AddNewAppointmentModal from "../client-view/modal/AddNewAppointmentModal";
-import { AppointmentTimeFrame } from "../../types/types";
+import { AppointmentTimeFrame, State } from "../../types/types";
 
 const AppointmentView = () => {
   const theme = useTheme();
@@ -18,6 +18,7 @@ const AppointmentView = () => {
     useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const authRole = useAppSelector((State) => State?.auth?.roles);
+  const appointmentSlice = useAppSelector((state) => state?.appointments);
   const [recurrentAppointmentVisible, setRecurrentAppointmentVisible] =
     useState<boolean>(false);
   const [selectedTimeFram, setSelectedTimeFrame] =
@@ -27,6 +28,12 @@ const AppointmentView = () => {
       startDate: "",
       startTime: "",
     });
+
+    useEffect(() => {
+        if (appointmentSlice?.submitState === State.success || appointmentSlice?.updateState === State.success) {
+            setIsAppointmentAddModalVisible(false);
+        }
+    }, [appointmentSlice?.submitState, appointmentSlice?.updateState]);
 
   const handleOpenAddNewAppointmentModal = () => {
     setIsAppointmentAddModalVisible(true);

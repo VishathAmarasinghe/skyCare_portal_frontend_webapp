@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Formik, Field, Form, FormikProps, FormikHelpers } from "formik";
+import { Formik, Form, FormikProps, FormikHelpers } from "formik";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import IncidentInvolvedPartiesComponent from "../components/IncidentInvolvedPartiesComponent";
 import * as Yup from "yup";
@@ -12,10 +12,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import AppointmentParticipantTable from "../../../component/common/AppointmentParticipantTable";
 
-import { useSearchParams } from "react-router-dom";
-import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import { Autocomplete, LoadScript } from "@react-google-maps/api";
@@ -37,6 +34,8 @@ import FileListTable from "../../../component/common/FileListTable";
 import { State } from "../../../types/types";
 import { UIShowingFile } from "../../client-view/component/AddNoteForm";
 import { Client } from "@slices/clientSlice/client";
+import { authSlice } from "@slices/authSlice/auth";
+import { APPLICATION_ADMIN } from "@config/config";
 
 dayjs.extend(isSameOrAfter);
 
@@ -60,6 +59,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
   const [answers, setAnswers] = useState<IncidentActionTypeAllAnswers[]>([]);
   const [uploadedFils, setUploadedFiles] = useState<File[]>([]);
   const authUserInfo = useAppSelector((state) => state.auth.userInfo);
+  const authSlice = useAppSelector((state)=>state?.auth);
   const dispatch = useAppDispatch();
   const [previouslyUploadedFiles, setPreviouslyUploadedFiles] = useState<
     IncidentDocuments[]
@@ -110,9 +110,6 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
 
   // Validation schema using Yup
   const validationSchema = Yup.object({
-    title: Yup.string()
-      .required("Title is required")
-      .max(100, "Title must be 100 characters or less"),
     reportDate: Yup.date()
       .required("Reporting Date is required")
       .max(new Date(), "Reporting Date cannot be in the future"),
@@ -130,9 +127,6 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
     //     .required("Postal Code is required")
     //     .matches(/^\d{5}(-\d{4})?$/, "Enter a valid postal code"),
     // }),
-    issue: Yup.string()
-      .required("Issue is required")
-      .max(1000, "Issue description must be 1000 characters or less"),
     description: Yup.string()
       .required("Description is required")
       .max(2000, "Description must be 2000 characters or less"),
@@ -375,7 +369,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
               {/* Title */}
               {activeStep === 0 && (
                 <>
-                  <Grid item xs={12}>
+                  {/* <Grid item xs={12}>
                     <TextField
                       fullWidth
                       label="Title"
@@ -386,8 +380,8 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                       helperText={touched.title && errors.title}
                       InputProps={{ readOnly: !isEditMode }}
                     />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
+                  </Grid> */}
+                  {/* <Grid item xs={12} md={4}>
                     <TextField
                       fullWidth
                       label="Reporting Date"
@@ -399,7 +393,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                       helperText={touched.reportDate && errors.reportDate}
                       InputProps={{ readOnly: !isEditMode }}
                     />
-                  </Grid>
+                  </Grid> */}
                   <Grid item xs={12} md={4}>
                     <TextField
                       fullWidth
@@ -496,7 +490,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                       ))}
                     </TextField>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  {/* <Grid item xs={12} sm={6}>
                     <Autocomplete
                       onLoad={(autocompleteInstance) =>
                         setAutocomplete(autocompleteInstance)
@@ -519,12 +513,12 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                         onChange={(e) => setSearchInput(e.target.value)}
                       />
                     </Autocomplete>
-                  </Grid>
+                  </Grid> */}
 
                   {/* Address */}
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={12}>
                     <TextField
-                      label="Address"
+                      label="Location"
                       variant="outlined"
                       fullWidth
                       required
@@ -542,80 +536,8 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                       }
                     />
                   </Grid>
-
-                  {/* City, State, PostalCode */}
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      label="City"
-                      variant="outlined"
-                      fullWidth
-                      onBlur={handleBlur}
-                      name="address.city"
-                      value={values?.address?.city}
-                      InputProps={{ readOnly: !isEditMode }}
-                      onChange={handleChange}
-                      error={
-                        touched.address?.city && Boolean(errors.address?.city)
-                      }
-                      helperText={touched.address?.city && errors.address?.city}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      label="State"
-                      variant="outlined"
-                      fullWidth
-                      name="appointmentAddress.state"
-                      onBlur={handleBlur}
-                      value={values?.address?.state}
-                      InputProps={{ readOnly: !isEditMode }}
-                      onChange={handleChange}
-                      error={
-                        touched.address?.state && Boolean(errors.address?.state)
-                      }
-                      helperText={
-                        touched.address?.state && errors.address?.state
-                      }
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      label="Postal Code"
-                      variant="outlined"
-                      fullWidth
-                      onBlur={handleBlur}
-                      name="address.postalCode"
-                      value={values?.address?.postalCode}
-                      onChange={handleChange}
-                      InputProps={{ readOnly: !isEditMode }}
-                      error={
-                        touched.address?.postalCode &&
-                        Boolean(errors.address?.postalCode)
-                      }
-                      helperText={
-                        touched.address?.postalCode &&
-                        errors.address?.postalCode
-                      }
-                    />
-                  </Grid>
-                </>
-              )}
-              {activeStep === 1 && (
-                <>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="Issue"
-                      name="issue"
-                      value={values.issue}
-                      onChange={handleChange}
-                      error={touched.issue && Boolean(errors.issue)}
-                      helperText={touched.issue && errors.issue}
-                      InputProps={{ readOnly: !isEditMode }}
-                      multiline
-                      rows={3}
-                    />
-                  </Grid>
+                  
+                  {/* Description */}
                   <Grid item xs={12}>
                     <TextField
                       fullWidth
@@ -627,40 +549,64 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                       helperText={touched.description && errors.description}
                       InputProps={{ readOnly: !isEditMode }}
                       multiline
-                      rows={4}
+                      rows={10}
                     />
                   </Grid>
+                  
+                  {/* Action Taken */}
                   <Grid item xs={12}>
                     <TextField
                       fullWidth
-                      label="Follow Up"
-                      name="followUp"
-                      value={values.followUp}
+                      label="Action Taken"
+                      name="issue"
+                      value={values.issue}
                       onChange={handleChange}
-                      error={touched.followUp && Boolean(errors.followUp)}
-                      helperText={touched.followUp && errors.followUp}
+                      error={touched.issue && Boolean(errors.issue)}
+                      helperText={touched.issue && errors.issue}
                       InputProps={{ readOnly: !isEditMode }}
                       multiline
                       rows={3}
                     />
                   </Grid>
+                  
+                  {/* Follow Up - Admin Only */}
+                  {authSlice?.roles?.includes(APPLICATION_ADMIN) && (
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Follow Up"
+                        name="followUp"
+                        value={values.followUp}
+                        onChange={handleChange}
+                        error={touched.followUp && Boolean(errors.followUp)}
+                        helperText={touched.followUp && errors.followUp}
+                        InputProps={{ readOnly: !isEditMode }}
+                        multiline
+                        rows={3}
+                      />
+                    </Grid>
+                  )}
+                  
+                  {/* Notes - Admin Only */}
                   <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="Notes"
-                      name="notes"
-                      value={values.notes}
-                      onChange={handleChange}
-                      error={touched.notes && Boolean(errors.notes)}
-                      helperText={touched.notes && errors.notes}
-                      InputProps={{ readOnly: !isEditMode }}
-                      multiline
-                      rows={3}
-                    />
+                    {authSlice?.roles?.includes(APPLICATION_ADMIN) && (
+                      <TextField
+                        fullWidth
+                        label="Notes"
+                        name="notes"
+                        value={values.notes}
+                        onChange={handleChange}
+                        error={touched.notes && Boolean(errors.notes)}
+                        helperText={touched.notes && errors.notes}
+                        InputProps={{ readOnly: !isEditMode }}
+                        multiline
+                        rows={3}
+                      />
+                    )}
                   </Grid>
                 </>
               )}
-              {activeStep === 2 && (
+              {activeStep === 1 && (
                 <DynamicQuestionsForm
                   answers={answers}
                   setAnswers={setAnswers}
@@ -668,13 +614,13 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                   key={"dynamic questions"}
                 />
               )}
-              {activeStep === 3 && (
+              {activeStep === 2 && (
                 <Stack
                   width="100%"
                   border="1px solid #ccc"
                   bgcolor={theme.palette.background.default}
                   borderRadius={1}
-                  sx={{ p: 1, my: 1 }}
+                  sx={{ p: 5, my: 1 }}
                 >
                   <Typography variant="h6" my={1}>
                     Upload Notes
@@ -713,7 +659,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                   </Stack>
                 </Stack>
               )}
-              {activeStep === 4 && (
+              {activeStep === 3 && (
                 <IncidentInvolvedPartiesComponent
                   rows={involvedPartiesRows}
                   setRows={setInvolvedPartiesRows}

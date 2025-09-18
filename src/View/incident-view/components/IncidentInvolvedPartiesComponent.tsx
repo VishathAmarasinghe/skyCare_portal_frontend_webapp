@@ -122,7 +122,7 @@ const IncidentInvolvedPartiesComponent: React.FC<
   ];
 
   return (
-    <Stack width="100%">
+    <Stack width="100%" p={2}>
       <Stack flexDirection="column" alignItems="flex-end" mt={2}>
         <Button variant="contained" color="primary" onClick={handleAdd}>
           Add Party
