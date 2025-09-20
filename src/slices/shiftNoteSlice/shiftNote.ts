@@ -104,28 +104,48 @@ export const fetchTimeSheets = createAsyncThunk(
   "shiftNote/fetchTimeSheets",
   async (
     payload: { startDate: string; endDate: string; employeeID: string, clientID: string },
-    { dispatch, rejectWithValue }
+    { dispatch, rejectWithValue, signal }
   ) => {
     try {
       const response = await APIService.getInstance().get(
         AppConfig.serviceUrls.shiftNotes +
-          `/time-sheets?startDate=${payload?.startDate}&endDate=${payload?.endDate}&careGiverID=${payload?.employeeID}&clientID=${payload?.clientID}`
+          `/time-sheets?startDate=${payload?.startDate}&endDate=${payload?.endDate}&careGiverID=${payload?.employeeID}&clientID=${payload?.clientID}`,
+        { 
+          signal,
+          timeout: 30000 // 30 seconds timeout for timesheet requests
+        }
       );
       return response.data;
     } catch (error) {
-      if (axios.isCancel(error)) {
-        return rejectWithValue("Request canceled");
+      // Check if the request was aborted
+      if (signal?.aborted || (error as any)?.name === 'AbortError') {
+        return rejectWithValue("Request aborted");
       }
-      dispatch(
-        enqueueSnackbarMessage({
-          message:
-            axios.isAxiosError(error) &&
-            error.response?.status === HttpStatusCode.InternalServerError
-              ? SnackMessage.error.shiftStarted
-              : String((error as any).response?.data),
-          type: "error",
-        })
-      );
+      
+      console.log("Request error:", error);
+      
+      // Only show error message if it's not an abort error
+      if (!signal?.aborted && (error as any)?.name !== 'AbortError') {
+        let errorMessage = "An error occurred while fetching time sheets";
+        
+        if (axios.isAxiosError(error)) {
+          if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+            errorMessage = "Request timed out. Please try again or check your connection.";
+          } else if (error.response?.status === HttpStatusCode.InternalServerError) {
+            errorMessage = SnackMessage.error.shiftStarted;
+          } else if (error.response?.data) {
+            errorMessage = String(error.response.data);
+          }
+        }
+        
+        dispatch(
+          enqueueSnackbarMessage({
+            message: errorMessage,
+            type: "error",
+          })
+        );
+      }
+      
       throw error;
     }
   }
@@ -578,9 +598,12 @@ const ShiftNoteSlice = createSlice({
         state.timeSheets = action.payload;
         state.stateMessage = "time sheets fetched Successfully!";
       })
-      .addCase(fetchTimeSheets.rejected, (state) => {
-        state.state = State.failed;
-        state.stateMessage = "fail to fetch time sheets shiftNote!";
+      .addCase(fetchTimeSheets.rejected, (state, action) => {
+        // Only update state if it's not an aborted request
+        if (action.payload !== "Request aborted") {
+          state.state = State.failed;
+          state.stateMessage = "fail to fetch time sheets shiftNote!";
+        }
       })
       .addCase(updateShiftNotesPaymentStatus.pending, (state) => {
         state.updateState = State.loading;

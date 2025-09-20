@@ -71,7 +71,7 @@ export class APIService {
     if (!APIService._instance) {
       APIService._instance = axios.create({
         baseURL: baseURL,
-        timeout: 5000, // Optional timeout
+        timeout: 10000, // Increased default timeout to 10 seconds
       });
     }
   }
@@ -82,5 +82,16 @@ export class APIService {
       throw new Error('APIService not initialized. Call initialize() first.');
     }
     return APIService._instance;
+  }
+
+  // Helper method to create requests with custom timeout
+  public static createRequestWithTimeout(timeout: number = 10000) {
+    const instance = APIService.getInstance();
+    return {
+      get: (url: string, config?: any) => instance.get(url, { ...config, timeout }),
+      post: (url: string, data?: any, config?: any) => instance.post(url, data, { ...config, timeout }),
+      put: (url: string, data?: any, config?: any) => instance.put(url, data, { ...config, timeout }),
+      delete: (url: string, config?: any) => instance.delete(url, { ...config, timeout }),
+    };
   }
 }
