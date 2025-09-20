@@ -11,6 +11,8 @@ interface ReportMetadata {
   client: Client | null;
   employee: Employee | null;
   questions: IncidentActionTypesQuestions[];
+  signatureData?: string | null;
+  signatureType?: 'draw' | 'upload' | null;
 }
 
 // Helper function to convert image to base64 and get dimensions
@@ -42,6 +44,11 @@ export const generateIncidentPDF = async (
   incident: Incidents,
   metadata: ReportMetadata
 ): Promise<void> => {
+  console.log('PDF Generation - Starting with metadata:', metadata);
+  console.log('PDF Generation - Signature data present:', !!metadata.signatureData);
+  console.log('PDF Generation - Signature type:', metadata.signatureType);
+  console.log('PDF Generation - Signature data length:', metadata.signatureData?.length || 0);
+  
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.width;
   const pageHeight = doc.internal.pageSize.height;
@@ -350,10 +357,6 @@ export const generateIncidentPDF = async (
   doc.text(`Date: ${dayjs(incident.reportDate).format('MMMM DD, YYYY')}`, margin, yPosition);
   yPosition += 15;
   
-  // Signature line for reported by
-  doc.setTextColor(0, 0, 0); // Black color
-  doc.text('Signature:', margin, yPosition);
-  doc.line(margin + 25, yPosition + 2, margin + 100, yPosition + 2);
   yPosition += 15;
 
   // Manager Review Section
@@ -395,7 +398,64 @@ export const generateIncidentPDF = async (
   // Signature line for manager
   doc.setTextColor(0, 0, 0); // Black color
   doc.text('Signature:', margin, yPosition);
-  doc.line(margin + 25, yPosition + 2, margin + 100, yPosition + 2);
+
+  if (metadata.signatureData && metadata.signatureType) {
+    console.log('PDF Generation - Adding manager signature to PDF...');
+    try {
+      // Calculate signature dimensions (maintain aspect ratio)
+      const signatureMaxWidth = 75; // Max width for signature
+      const signatureMaxHeight = 20; // Max height for signature
+      
+      // Create a temporary image to get dimensions synchronously
+      const img = new Image();
+      
+      // Use a promise to handle the async image loading
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => {
+          try {
+            console.log('PDF Generation - Manager signature image loaded, dimensions:', img.width, 'x', img.height);
+            const aspectRatio = img.width / img.height;
+            let signatureWidth = signatureMaxWidth;
+            let signatureHeight = signatureMaxWidth / aspectRatio;
+            
+            // If height exceeds max, scale down by height
+            if (signatureHeight > signatureMaxHeight) {
+              signatureHeight = signatureMaxHeight;
+              signatureWidth = signatureMaxHeight * aspectRatio;
+            }
+            
+            console.log('PDF Generation - Adding manager signature with dimensions:', signatureWidth, 'x', signatureHeight);
+            console.log('PDF Generation - Manager signature position:', margin + 25, yPosition - 2);
+            
+            // Add signature image
+            doc.addImage(metadata.signatureData!, 'PNG', margin + 25, yPosition - 2, signatureWidth, signatureHeight);
+            console.log('PDF Generation - Manager signature added to PDF successfully');
+            resolve();
+          } catch (error) {
+            console.error('PDF Generation - Error adding manager signature to PDF:', error);
+            reject(error);
+          }
+        };
+        
+        img.onerror = () => {
+          console.error('PDF Generation - Failed to load manager signature image');
+          reject(new Error('Failed to load manager signature image'));
+        };
+        
+        console.log('PDF Generation - Setting manager signature image source...');
+        img.src = metadata.signatureData!;
+      });
+    } catch (error) {
+      console.error('PDF Generation - Could not add manager signature to PDF:', error);
+      // Fallback to line if signature fails
+      doc.line(margin + 25, yPosition + 2, margin + 100, yPosition + 2);
+    }
+  } else {
+    console.log('PDF Generation - No signature provided for manager, drawing line');
+    // No signature provided, draw line
+    doc.line(margin + 25, yPosition + 2, margin + 100, yPosition + 2);
+  }
+  
   yPosition += 20;
 
   // Footer

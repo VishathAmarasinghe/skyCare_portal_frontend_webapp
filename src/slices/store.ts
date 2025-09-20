@@ -15,6 +15,7 @@ import OTPReducer from "./oTPSlice/oTP";
 import IncidentReducer from "./incidentSlice/incident";
 import DashboardReducer from "./dashboardSlice/dashboard";
 import ChatReducer from './chatSlice/chat';
+import SignatureReducer from './signatureSlice/signature';
 
 export const store = configureStore({
   reducer: {
@@ -33,6 +34,7 @@ export const store = configureStore({
     incident: IncidentReducer,
     dashboard: DashboardReducer,
     chat: ChatReducer,
+    signature: SignatureReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

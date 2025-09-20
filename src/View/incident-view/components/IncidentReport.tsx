@@ -21,6 +21,7 @@ import { Incidents } from '../../../slices/incidentSlice/incident';
 import { Client } from '../../../slices/clientSlice/client';
 import { Employee } from '../../../slices/employeeSlice/employee';
 import { generateIncidentPDF } from './IncidentReportPDF';
+import SignatureModal from './SignatureModal';
 import dayjs from 'dayjs';
 
 interface IncidentReportProps {
@@ -30,6 +31,7 @@ interface IncidentReportProps {
 
 const IncidentReport: React.FC<IncidentReportProps> = ({ incident }) => {
   const [loading, setLoading] = useState(false);
+  const [signatureModalOpen, setSignatureModalOpen] = useState(false);
   
   const incidentSlice = useAppSelector((state) => state.incident);
   const clientSlice = useAppSelector((state) => state.clients);
@@ -81,12 +83,20 @@ const IncidentReport: React.FC<IncidentReportProps> = ({ incident }) => {
     }
   }, [incident.clientID, client, clientSlice?.clients]);
 
-  const handleDownloadPDF = async () => {
+  const handleDownloadPDF = () => {
+    setSignatureModalOpen(true);
+  };
+
+  const handleSignatureComplete = async (signatureData: string | null, signatureType: 'draw' | 'upload' | null) => {
+    setSignatureModalOpen(false);
     setLoading(true);
+    
     try {
       console.log('Incident data:', incident);
       console.log('Incident answers:', incident.answers);
       console.log('Questions from slice:', incidentSlice?.incidentActionTypesQuestions);
+      console.log('Signature data:', signatureData ? 'Provided' : 'Not provided');
+      console.log('Signature type:', signatureType);
       
       const metadata = {
         incidentType: getIncidentType(incident.incidentTypeID),
@@ -94,6 +104,8 @@ const IncidentReport: React.FC<IncidentReportProps> = ({ incident }) => {
         client,
         employee,
         questions: incidentSlice?.incidentActionTypesQuestions || [],
+        signatureData,
+        signatureType,
       };
       
       console.log('Metadata being passed to PDF:', metadata);
@@ -455,6 +467,14 @@ const IncidentReport: React.FC<IncidentReportProps> = ({ incident }) => {
           </Typography>
         </Box>
       </Box>
+
+      {/* Signature Modal */}
+      <SignatureModal
+        open={signatureModalOpen}
+        onClose={() => setSignatureModalOpen(false)}
+        onSignature={handleSignatureComplete}
+        title="Add Signature to PDF Report"
+      />
     </Box>
   );
 };

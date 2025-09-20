@@ -42,6 +42,7 @@ export const AppConfig = {
     clientDocuments: `${ServiceBaseUrl}/client-documents`,
     carePlanBillings: `${ServiceBaseUrl}/care-plan-bills`,
     chat:`${ServiceBaseUrl}/chats`,
+    signatures: `${ServiceBaseUrl}/signatures`,
   },
   webSocketUrl:`${ServiceBaseUrl}/ws`,
 };
