@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import {
   Stack,
   Typography,
@@ -11,6 +11,7 @@ import {
   Autocomplete,
   Box,
   IconButton,
+  CircularProgress,
 } from "@mui/material";
 import { Clear } from "@mui/icons-material";
 import {
@@ -53,6 +54,9 @@ const ReportView = () => {
   const shiftSlice = useAppSelector((state) => state?.shiftNotes);
   const employeeSlice = useAppSelector((state) => state?.employees);
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const requestIdRef = useRef<number>(0);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -90,15 +94,38 @@ const ReportView = () => {
   }, [employees]);
 
   useEffect(() => {
-    dispatch(
-      fetchTimeSheets({
-        startDate: startDate,
-        endDate: endDate,
-        employeeID: selectedOption?.employeeID || "all",
-        clientID: "",
-      })
-    );
-  }, [endDate, startDate, selectedOption,shiftModalOpen,shiftSlice?.updateState]);
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Add a small delay to prevent rapid successive calls
+    timeoutRef.current = setTimeout(() => {
+      const currentRequestId = ++requestIdRef.current;
+      setIsLoading(true);
+      
+      dispatch(
+        fetchTimeSheets({
+          startDate: startDate,
+          endDate: endDate,
+          employeeID: selectedOption?.employeeID || "all",
+          clientID: "",
+        })
+      ).finally(() => {
+        // Only update loading state if this is still the latest request
+        if (currentRequestId === requestIdRef.current) {
+          setIsLoading(false);
+        }
+      });
+    }, 100); // 100ms delay
+
+    // Cleanup timeout on unmount or dependency change
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [endDate, startDate, selectedOption, shiftModalOpen, shiftSlice?.updateState, dispatch]);
 
   useEffect(() => {
     if (
@@ -108,14 +135,23 @@ const ReportView = () => {
       setShiftModalOpen(false);
       setSelectedShiftNote({ shiftNoteID: null });
       setShiftIsEditMode(false);
-      fetchTimeSheets({
+      
+      // Trigger a refresh of time sheets after successful operations
+      const currentRequestId = ++requestIdRef.current;
+      setIsLoading(true);
+      
+      dispatch(fetchTimeSheets({
         startDate: startDate,
         endDate: endDate,
         employeeID: selectedOption?.employeeID || "all",
         clientID: "",
-      })
+      })).finally(() => {
+        if (currentRequestId === requestIdRef.current) {
+          setIsLoading(false);
+        }
+      });
     }
-  }, [shiftSlice?.submitState, shiftSlice?.updateState]) ;
+  }, [shiftSlice?.submitState, shiftSlice?.updateState, dispatch, startDate, endDate, selectedOption]);
 
   // Handlers
   const handleOptionChange = (event: any, newValue: Employee | null) => {
@@ -285,12 +321,35 @@ const ReportView = () => {
             />
           </Grid>
         </Grid>
-        <Stack width={"100%"} height={"100%"}>
-        <TimeSheetTable
-          setPureNew={setPureNew}
-          isNoteModalVisible={shiftModalOpen}
-          setIsNoteModalVisible={setShiftModalOpen}
-        />
+        <Stack width={"100%"} height={"100%"} position="relative">
+          {isLoading && (
+            <Box
+              sx={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "rgba(255, 255, 255, 0.8)",
+                zIndex: 1000,
+              }}
+            >
+              <Stack alignItems="center" spacing={2}>
+                <CircularProgress size={40} />
+                <Box sx={{ color: "text.secondary", fontSize: "0.875rem" }}>
+                  Loading time sheets...
+                </Box>
+              </Stack>
+            </Box>
+          )}
+          <TimeSheetTable
+            setPureNew={setPureNew}
+            isNoteModalVisible={shiftModalOpen}
+            setIsNoteModalVisible={setShiftModalOpen}
+          />
         </Stack>
         
       </Stack>

@@ -67,8 +67,8 @@ const ClientTimeSheetTab = () => {
       clearTimeout(timeoutRef.current);
     }
 
-    // Only fetch if we have a valid clientID and not already loading
-    if (clientID && !isLoading) {
+    // Only fetch if we have a valid clientID
+    if (clientID) {
       // Add a small delay to prevent rapid successive calls
       timeoutRef.current = setTimeout(() => {
         const currentRequestId = ++requestIdRef.current;
@@ -103,6 +103,7 @@ const ClientTimeSheetTab = () => {
     clientID,
     shiftModalOpen,
     shiftSlice?.updateState,
+    dispatch,
   ]);
 
   useEffect(() => {
