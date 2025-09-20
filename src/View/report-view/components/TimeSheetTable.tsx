@@ -53,6 +53,11 @@ const TimeSheetTable = ({
 }: TimeSheetTableProps) => {
   const [columns] = useState<GridColDef[]>([
     {
+      field: "shiftNoteID",
+      headerName: "Shift Note ID",
+      width: 150,
+    },
+    {
       field: "shiftTitle",
       headerName: "Shift Type",
       width: 150,
