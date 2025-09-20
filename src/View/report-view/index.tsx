@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   Stack,
   Typography,
   useTheme,
-  MenuItem,
-  Select,
   TextField,
-  SelectChangeEvent,
   Avatar,
   Chip,
   Grid,
-  FormControl,
-  InputLabel,
   Button,
+  Autocomplete,
+  Box,
+  IconButton,
 } from "@mui/material";
+import { Clear } from "@mui/icons-material";
 import {
   APPLICATION_ADMIN,
   APPLICATION_CARE_GIVER,
@@ -43,7 +42,7 @@ const ReportView = () => {
   const [pureNew, setPureNew] = useState<boolean>(false);
 
   // State for filters
-  const [selectedOption, setSelectedOption] = useState<string>("all");
+  const [selectedOption, setSelectedOption] = useState<Employee | null>(null);
   const [startDate, setStartDate] = useState<string>(
     dayjs().subtract(7, "day").format("YYYY-MM-DD")
   );
@@ -64,12 +63,38 @@ const ReportView = () => {
     setEmployees(employeeSlice?.employees);
   }, [employeeSlice?.employees]);
 
+  // Sort employees in ascending order by first name and add "All" option
+  const sortedEmployees = useMemo(() => {
+    if (!employees) return [];
+    const sorted = [...employees].sort((a, b) => 
+      (a?.firstName || "").localeCompare(b?.firstName || "")
+    );
+    // Add "All" option at the beginning
+    const allOption: Employee = {
+      employeeID: "all",
+      firstName: "All",
+      lastName: "",
+      email: "",
+      password: "",
+      accessRole: "",
+      joinDate: "",
+      profile_photo: "",
+      status: "",
+      employeeAddresses: [],
+      employeeJobRoles: [],
+      employeePhoneNo: [],
+      emergencyPhoneNo: "",
+      emergencyUser: ""
+    };
+    return [allOption, ...sorted];
+  }, [employees]);
+
   useEffect(() => {
     dispatch(
       fetchTimeSheets({
         startDate: startDate,
         endDate: endDate,
-        employeeID: selectedOption,
+        employeeID: selectedOption?.employeeID || "all",
         clientID: "",
       })
     );
@@ -86,15 +111,19 @@ const ReportView = () => {
       fetchTimeSheets({
         startDate: startDate,
         endDate: endDate,
-        employeeID: selectedOption,
+        employeeID: selectedOption?.employeeID || "all",
         clientID: "",
       })
     }
   }, [shiftSlice?.submitState, shiftSlice?.updateState]) ;
 
   // Handlers
-  const handleOptionChange = (event: SelectChangeEvent<string>) => {
-    setSelectedOption(event.target.value as string);
+  const handleOptionChange = (event: any, newValue: Employee | null) => {
+    setSelectedOption(newValue);
+  };
+
+  const handleClearSelection = () => {
+    setSelectedOption(null);
   };
 
   const handleStartDateChange = (
@@ -160,41 +189,68 @@ const ReportView = () => {
         <Grid container width={"100%"} height="10%" spacing={2} alignItems="center">
           {/* Selector */}
           <Grid item xs={12} sm={4} md={6}>
-            <FormControl fullWidth>
-              <InputLabel>Select Care Giver</InputLabel>
-              <Select
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              <Autocomplete
+                fullWidth
+                size="small"
+                options={sortedEmployees}
                 value={selectedOption}
                 onChange={handleOptionChange}
-                displayEmpty
-                variant="outlined"
-                size="small"
-                sx={{ minWidth: 120 }}
-              >
-                <MenuItem value="all">All</MenuItem>
-                {employees?.map((emp) => (
-                  <MenuItem key={emp?.employeeID} value={emp?.employeeID}>
-                    <Chip
-                      avatar={
-                        <Avatar
-                          src={
-                            emp?.profile_photo
-                              ? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(
-                                  emp?.profile_photo
-                                )}`
-                              : ""
-                          } // Replace with your avatar URL logic
-                          alt={emp?.firstName}
-                        >
-                          {emp.email?.charAt(0).toUpperCase()}
-                        </Avatar>
-                      }
-                      label={`${emp?.firstName} ${emp?.lastName}`}
-                      variant="outlined"
-                    />
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+                getOptionLabel={(option) => `${option?.firstName} ${option?.lastName}`}
+                isOptionEqualToValue={(option, value) => option?.employeeID === value?.employeeID}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Select Care Giver"
+                    placeholder="Search care givers..."
+                  />
+                )}
+                renderOption={(props, option) => (
+                  <Box component="li" {...props}>
+                    {option.employeeID === "all" ? (
+                      <Chip
+                        label="All Care Givers"
+                        variant="outlined"
+                        color="primary"
+                      />
+                    ) : (
+                      <Chip
+                        avatar={
+                          <Avatar
+                            src={
+                              option?.profile_photo
+                                ? `${FILE_DOWNLOAD_BASE_URL}${encodeURIComponent(
+                                    option?.profile_photo
+                                  )}`
+                                : ""
+                            }
+                            alt={option?.firstName}
+                          >
+                            {option.email?.charAt(0).toUpperCase()}
+                          </Avatar>
+                        }
+                        label={`${option?.firstName} ${option?.lastName}`}
+                        variant="outlined"
+                      />
+                    )}
+                  </Box>
+                )}
+                noOptionsText="No care givers found"
+                clearOnEscape
+                selectOnFocus
+                handleHomeEndKeys
+              />
+              {selectedOption && (
+                <IconButton
+                  aria-label="clear selection"
+                  onClick={handleClearSelection}
+                  size="small"
+                  color="primary"
+                >
+                  <Clear />
+                </IconButton>
+              )}
+            </Box>
           </Grid>
 
           {/* Start Date */}

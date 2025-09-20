@@ -10,8 +10,10 @@ import {
   SelectChangeEvent,
   Stack,
   TextField,
+  CircularProgress,
+  Box,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   ClientDocuments,
   fetchClientDocuments,
@@ -47,6 +49,9 @@ const ClientTimeSheetTab = () => {
   );
   const [endDate, setEndDate] = useState<string>(dayjs().format("YYYY-MM-DD"));
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const requestIdRef = useRef<number>(0);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     dispatch(fetchEmployeesByRole("CareGiver"));
@@ -57,18 +62,45 @@ const ClientTimeSheetTab = () => {
   }, [employeeSlice?.employees]);
 
   useEffect(() => {
-    dispatch(
-      fetchTimeSheets({
-        startDate: startDate,
-        endDate: endDate,
-        employeeID: selectedOption,
-        clientID: clientID || "",
-      })
-    );
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Only fetch if we have a valid clientID and not already loading
+    if (clientID && !isLoading) {
+      // Add a small delay to prevent rapid successive calls
+      timeoutRef.current = setTimeout(() => {
+        const currentRequestId = ++requestIdRef.current;
+        setIsLoading(true);
+        
+        dispatch(
+          fetchTimeSheets({
+            startDate: startDate,
+            endDate: endDate,
+            employeeID: selectedOption,
+            clientID: clientID,
+          })
+        ).finally(() => {
+          // Only update loading state if this is still the latest request
+          if (currentRequestId === requestIdRef.current) {
+            setIsLoading(false);
+          }
+        });
+      }, 100); // 100ms delay
+    }
+
+    // Cleanup timeout on unmount or dependency change
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, [
     endDate,
     startDate,
     selectedOption,
+    clientID,
     shiftModalOpen,
     shiftSlice?.updateState,
   ]);
@@ -185,7 +217,30 @@ const ClientTimeSheetTab = () => {
             />
           </Grid>
         </Grid>
-        <Stack width={"100%"} height={"100%"}>
+        <Stack width={"100%"} height={"100%"} position="relative">
+          {isLoading && (
+            <Box
+              sx={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "rgba(255, 255, 255, 0.8)",
+                zIndex: 1000,
+              }}
+            >
+              <Stack alignItems="center" spacing={2}>
+                <CircularProgress size={40} />
+                <Box sx={{ color: "text.secondary", fontSize: "0.875rem" }}>
+                  Loading time sheets...
+                </Box>
+              </Stack>
+            </Box>
+          )}
           <TimeSheetTable
             setPureNew={setPureNew}
             isNoteModalVisible={shiftModalOpen}
