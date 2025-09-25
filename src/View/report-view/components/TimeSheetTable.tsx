@@ -102,6 +102,50 @@ const TimeSheetTable = ({
       field: "startDate",
       headerName: "Start Date",
       width: 180,
+      renderCell: (params) => {
+        const startDate = params.value;
+        const submittedDate = params.row.createdAt;
+        
+        // Check if submission is late (submitted date is in range but start date is not)
+        const isLateSubmission = () => {
+          if (!startDate || !submittedDate) return false;
+          
+          const start = new Date(startDate);
+          const submitted = new Date(submittedDate);
+          
+          // This is a simplified check - you might need to adjust based on your date range logic
+          // For now, checking if submitted date is after start date by more than 1 day
+          const diffInDays = Math.floor((submitted.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+          return diffInDays > 1;
+        };
+        
+        return (
+          <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
+            <Box>{startDate}</Box>
+            {isLateSubmission() && (
+              <Chip
+                label="Late"
+                size="small"
+                color="warning"
+                variant="filled"
+              />
+            )}
+          </Stack>
+        );
+      },
+    },
+    {
+      field: "dayOfWeek",
+      headerName: "Day",
+      width: 80,
+      renderCell: (params) => {
+        const startDate = params.value;
+        if (!startDate) return "N/A";
+        
+        const date = new Date(startDate);
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        return days[date.getDay()];
+      },
     },
     {
       field: "startTime",
@@ -291,6 +335,7 @@ const TimeSheetTable = ({
       }`,
       employeeEmail: shiftNote?.employeeDTO?.email || "",
       startDate: shiftNote?.shiftNoteDTO?.shiftStartDate || "",
+      dayOfWeek: shiftNote?.shiftNoteDTO?.shiftStartDate || "",
       startTime: shiftNote?.shiftNoteDTO?.shiftStartTime || "",
       endDate: shiftNote?.shiftNoteDTO?.shiftEndDate || "",
       endTime: shiftNote?.shiftNoteDTO?.shiftEndTime || "",
@@ -328,7 +373,74 @@ const TimeSheetTable = ({
   };
 
   const handleExportExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(rows);
+    // Process rows to include additional columns for Excel export
+    const processedRows = rows.map((row) => {
+      // Calculate day of week
+      const getDayOfWeek = (dateString: string) => {
+        if (!dateString) return "N/A";
+        const date = new Date(dateString);
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        return days[date.getDay()];
+      };
+
+      // Check if submission is late
+      const isLateSubmission = () => {
+        if (!row.startDate || !row.createdAt) return "No";
+        
+        const start = new Date(row.startDate);
+        const submitted = new Date(row.createdAt);
+        
+        // Check if submitted date is after start date by more than 1 day
+        const diffInDays = Math.floor((submitted.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+        return diffInDays > 1 ? "Yes" : "No";
+      };
+
+      // Format total work hours for better readability
+      const formatWorkHours = (totalWorkHrs: number) => {
+        if (!totalWorkHrs) return "0 hrs 0 mins";
+        const hours = Math.floor(totalWorkHrs);
+        const minutes = Math.round((totalWorkHrs % 1) * 60);
+        return `${hours} hrs ${minutes} mins`;
+      };
+
+      return {
+        ...row,
+        dayOfWeek: getDayOfWeek(row.startDate),
+        isLateSubmission: isLateSubmission(),
+        totalWorkHrsFormatted: formatWorkHours(row.totalWorkHrs),
+        // Include all API data that might not be visible in the table
+        employeeEmail: row.employeeEmail || "N/A",
+        appointmentTitle: row.appointmentTitle || "N/A",
+        recurrentAppointmentID: row.recurrentAppointmentID || "N/A",
+        endDate: row.endDate || "N/A",
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(processedRows);
+    
+    // Set column widths for better readability
+    const columnWidths = [
+      { wch: 15 }, // shiftNoteID
+      { wch: 20 }, // shiftTitle
+      { wch: 25 }, // employeeName
+      { wch: 20 }, // createdAt
+      { wch: 15 }, // startDate
+      { wch: 12 }, // dayOfWeek
+      { wch: 12 }, // startTime
+      { wch: 12 }, // endTime
+      { wch: 25 }, // totalWorkHrsFormatted
+      { wch: 20 }, // clientName
+      { wch: 15 }, // status
+      { wch: 30 }, // shiftNotes
+      { wch: 30 }, // comments
+      { wch: 15 }, // isLateSubmission
+      { wch: 25 }, // employeeEmail
+      { wch: 20 }, // appointmentTitle
+      { wch: 20 }, // recurrentAppointmentID
+      { wch: 15 }, // endDate
+    ];
+    worksheet['!cols'] = columnWidths;
+
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "TimeSheets");
     XLSX.writeFile(workbook, "timesheet_report.xlsx");
