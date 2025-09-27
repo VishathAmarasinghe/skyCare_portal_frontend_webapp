@@ -122,14 +122,14 @@ const TimeSheetTable = ({
         return (
           <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
             <Box>{startDate}</Box>
-            {isLateSubmission() && (
+            {/* {isLateSubmission() && (
               <Chip
                 label="Late"
                 size="small"
                 color="warning"
                 variant="filled"
               />
-            )}
+            )} */}
           </Stack>
         );
       },
