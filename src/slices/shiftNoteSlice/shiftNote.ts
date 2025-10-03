@@ -47,6 +47,7 @@ export interface updateShiftNote {
   totalWorkHrs:number;
   paymentState:string;
   createdAt?: string;
+  exportCount?: number;
 }
 
 export interface currentShiftNoteState {
@@ -147,6 +148,76 @@ export const fetchTimeSheets = createAsyncThunk(
       }
       
       throw error;
+    }
+  }
+);
+
+export const fetchExportTimeSheets = createAsyncThunk(
+  "shiftNote/fetchExportTimeSheets",
+  async (
+    payload: { startDate: string; endDate: string; employeeID: string, clientID: string },
+    { dispatch, rejectWithValue, signal }
+  ) => {
+    try {
+      const response = await APIService.getInstance().get(
+        AppConfig.serviceUrls.shiftNotes +
+          `/export/time-sheets?startDate=${payload?.startDate}&endDate=${payload?.endDate}&careGiverID=${payload?.employeeID}&clientID=${payload?.clientID}`,
+        {
+          signal,
+          timeout: 30000
+        }
+      );
+      return response.data;
+    } catch (error) {
+      if (signal?.aborted || (error as any)?.name === 'AbortError') {
+        return rejectWithValue("Request aborted");
+      }
+      let errorMessage = "An error occurred while fetching export time sheets";
+      if (axios.isAxiosError(error)) {
+        if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+          errorMessage = "Request timed out. Please try again or check your connection.";
+        } else if (error.response?.data) {
+          errorMessage = String(error.response.data);
+        }
+      }
+      dispatch(
+        enqueueSnackbarMessage({
+          message: errorMessage,
+          type: "error",
+        })
+      );
+      throw error;
+    }
+  }
+);
+
+export const incrementExportCounts = createAsyncThunk(
+  "shiftNote/incrementExportCounts",
+  async (
+    payload: { noteIds: string[] },
+    { dispatch, rejectWithValue }
+  ) => {
+    try {
+      const response = await APIService.getInstance().post(
+        AppConfig.serviceUrls.shiftNotes + `/export/increment`,
+        payload.noteIds,
+        { headers: { "Content-Type": "application/json" } }
+      );
+      dispatch(
+        enqueueSnackbarMessage({
+          message: `Marked ${payload.noteIds.length} time sheet(s) as paid`,
+          type: "success",
+        })
+      );
+      return response.data as number;
+    } catch (error) {
+      dispatch(
+        enqueueSnackbarMessage({
+          message: "Failed to mark time sheets as paid",
+          type: "error",
+        })
+      );
+      return rejectWithValue(error);
     }
   }
 );
@@ -605,6 +676,21 @@ const ShiftNoteSlice = createSlice({
           state.stateMessage = "fail to fetch time sheets shiftNote!";
         }
       })
+      .addCase(fetchExportTimeSheets.pending, (state) => {
+        state.state = State.loading;
+        state.stateMessage = "loading exportable timesheets...";
+      })
+      .addCase(fetchExportTimeSheets.fulfilled, (state, action) => {
+        state.state = State.success;
+        state.timeSheets = action.payload;
+        state.stateMessage = "exportable time sheets fetched Successfully!";
+      })
+      .addCase(fetchExportTimeSheets.rejected, (state, action) => {
+        if (action.payload !== "Request aborted") {
+          state.state = State.failed;
+          state.stateMessage = "fail to fetch exportable time sheets!";
+        }
+      })
       .addCase(updateShiftNotesPaymentStatus.pending, (state) => {
         state.updateState = State.loading;
         state.stateMessage = "updating Shift Note...";
@@ -616,6 +702,18 @@ const ShiftNoteSlice = createSlice({
       .addCase(updateShiftNotesPaymentStatus.rejected, (state) => {
         state.updateState = State.failed;
         state.stateMessage = "fail to update shiftNote!";
+      })
+      .addCase(incrementExportCounts.pending, (state) => {
+        state.backgroundProcess = true;
+        state.backgroundProcessMessage = "Updating export counts...";
+      })
+      .addCase(incrementExportCounts.fulfilled, (state) => {
+        state.backgroundProcess = false;
+        state.backgroundProcessMessage = null;
+      })
+      .addCase(incrementExportCounts.rejected, (state) => {
+        state.backgroundProcess = false;
+        state.backgroundProcessMessage = null;
       });
   },
 });

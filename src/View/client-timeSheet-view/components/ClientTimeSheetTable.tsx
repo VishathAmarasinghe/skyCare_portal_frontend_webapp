@@ -27,20 +27,22 @@ import { useConfirmationModalContext } from "@context/DialogContext";
 import { ConfirmationType } from "../../../types/types";
 import RejectModal from "./RejectModal";
 
-function CustomToolbar({ onExportPDF, onExportExcel }: any) {
+function CustomToolbar({ onExportPDF, onExportExcel, showExportButton }: any) {
   return (
     <GridToolbarContainer>
       <GridToolbarColumnsButton />
       <GridToolbarFilterButton />
       <GridToolbarQuickFilter placeholder="Search" />
-      <Chip
-        size="small"
-        variant="outlined"
-        color="secondary"
-        onClick={onExportExcel}
-        sx={{ ml: 1 }}
-        label="Export EXCEL"
-      ></Chip>
+      {showExportButton && (
+        <Chip
+          size="small"
+          variant="outlined"
+          color="secondary"
+          onClick={onExportExcel}
+          sx={{ ml: 1 }}
+          label="Export EXCEL"
+        />
+      )}
     </GridToolbarContainer>
   );
 }
@@ -48,11 +50,13 @@ function CustomToolbar({ onExportPDF, onExportExcel }: any) {
 interface TimeSheetTableProps {
   isNoteModalVisible: boolean;
   setIsNoteModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  showExportButton?: boolean;
 }
 
 const ClientTimeSheetTable = ({
   isNoteModalVisible,
   setIsNoteModalVisible,
+  showExportButton = false,
 }: TimeSheetTableProps) => {
   const [columns] = useState<GridColDef[]>([
     {
@@ -214,7 +218,11 @@ const ClientTimeSheetTable = ({
       comments: shiftNote?.shiftNoteDTO?.comments || "N/A",
       totalWorkHrs: shiftNote?.shiftNoteDTO?.totalWorkHrs || 0,
       status: shiftNote?.shiftNoteDTO?.paymentState || "N/A",
-    }));
+    }))?.sort((a, b) => {
+      const aDate = new Date(a.startDate).getTime();
+      const bDate = new Date(b.startDate).getTime();
+      return aDate - bDate;
+    });
     setRows(mappedRows || []);
   }, [
     shiftNoteSlice?.timeSheets,
@@ -237,7 +245,40 @@ const ClientTimeSheetTable = ({
   };
 
   const handleExportExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(rows);
+    const processedRows = rows.map((row) => ({
+      appointmentType: row.shiftTitle || "N/A",
+      totalhours_system: row.totalHours || 0,
+      employeeName: row.employeeName || "N/A",
+      createdAt: row.createdAt || "N/A",
+      startDate: row.startDate || "N/A",
+      dayOfWeek: (() => {
+        if (!row.startDate) return "N/A";
+        const date = new Date(row.startDate);
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        return days[date.getDay()];
+      })(),
+      startTime: row.startTime || "N/A",
+      endTime: row.endTime || "N/A",
+      clientName: row.clientName || "N/A",
+      shiftNotes: row.shiftNotes || "N/A",
+      comments: row.comments || "N/A",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(processedRows);
+    worksheet['!cols'] = [
+      { wch: 20 }, // appointmentType
+      { wch: 18 }, // totalhours_system
+      { wch: 25 }, // employeeName
+      { wch: 20 }, // createdAt
+      { wch: 15 }, // startDate
+      { wch: 12 }, // dayOfWeek
+      { wch: 12 }, // startTime
+      { wch: 12 }, // endTime
+      { wch: 20 }, // clientName
+      { wch: 30 }, // shiftNotes
+      { wch: 30 }, // comments
+    ];
+
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "TimeSheets");
     XLSX.writeFile(workbook, "timesheet_report.xlsx");
@@ -256,9 +297,7 @@ const ClientTimeSheetTable = ({
       <DataGrid
         rows={rows}
         columns={columns}
-        getRowId={(row) =>
-          row?.shiftNoteDTO?.noteID ?? Math.random().toString(36).substr(2, 9)
-        }
+        getRowId={(row) => row?.shiftNoteID ?? Math.random().toString(36).substr(2, 9)}
         density="compact"
         pagination
         pageSizeOptions={[5, 10, 15]}
@@ -272,6 +311,7 @@ const ClientTimeSheetTable = ({
             <CustomToolbar
               onExportPDF={handleExportPDF}
               onExportExcel={handleExportExcel}
+              showExportButton={showExportButton}
             />
           ),
         }}
