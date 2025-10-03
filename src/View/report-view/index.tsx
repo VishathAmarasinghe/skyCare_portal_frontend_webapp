@@ -12,6 +12,12 @@ import {
   Box,
   IconButton,
   CircularProgress,
+  Checkbox,
+  FormControlLabel,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import { Clear } from "@mui/icons-material";
 import {
@@ -24,6 +30,8 @@ import {
   fetchTimeSheets,
   getAllShiftNotes,
   getAllShiftNotesByEmployeeID,
+  fetchExportTimeSheets,
+  incrementExportCounts,
 } from "@slices/shiftNoteSlice/shiftNote";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { State } from "../../types/types";
@@ -48,6 +56,7 @@ const ReportView = () => {
     dayjs().subtract(7, "day").format("YYYY-MM-DD")
   );
   const [endDate, setEndDate] = useState<string>(dayjs().format("YYYY-MM-DD"));
+  const [pendingOnly, setPendingOnly] = useState<boolean>(false);
 
   const authRoles = useAppSelector((state) => state?.auth?.roles);
   const authUser = useAppSelector((state) => state?.auth?.userInfo);
@@ -57,6 +66,8 @@ const ReportView = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const requestIdRef = useRef<number>(0);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState<boolean>(false);
+  const [confirmText, setConfirmText] = useState<string>("");
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -104,8 +115,9 @@ const ReportView = () => {
       const currentRequestId = ++requestIdRef.current;
       setIsLoading(true);
       
+      const thunk = pendingOnly ? fetchExportTimeSheets : fetchTimeSheets;
       dispatch(
-        fetchTimeSheets({
+        thunk({
           startDate: startDate,
           endDate: endDate,
           employeeID: selectedOption?.employeeID || "all",
@@ -125,7 +137,7 @@ const ReportView = () => {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [endDate, startDate, selectedOption, shiftModalOpen, shiftSlice?.updateState, dispatch]);
+  }, [endDate, startDate, selectedOption, shiftModalOpen, shiftSlice?.updateState, dispatch, pendingOnly]);
 
   useEffect(() => {
     if (
@@ -140,7 +152,8 @@ const ReportView = () => {
       const currentRequestId = ++requestIdRef.current;
       setIsLoading(true);
       
-      dispatch(fetchTimeSheets({
+      const thunk = pendingOnly ? fetchExportTimeSheets : fetchTimeSheets;
+      dispatch(thunk({
         startDate: startDate,
         endDate: endDate,
         employeeID: selectedOption?.employeeID || "all",
@@ -151,7 +164,7 @@ const ReportView = () => {
         }
       });
     }
-  }, [shiftSlice?.submitState, shiftSlice?.updateState, dispatch, startDate, endDate, selectedOption]);
+  }, [shiftSlice?.submitState, shiftSlice?.updateState, dispatch, startDate, endDate, selectedOption, pendingOnly]);
 
   // Handlers
   const handleOptionChange = (event: any, newValue: Employee | null) => {
@@ -321,6 +334,48 @@ const ReportView = () => {
             />
           </Grid>
         </Grid>
+        
+        {/* Important Section for Pending Payment Processing */}
+        <Box
+          sx={{
+            mt: 2,
+            p: 2,
+            border: `2px solid ${theme.palette.warning.main}`,
+            borderRadius: 2,
+            backgroundColor: theme.palette.warning.light + '20',
+          }}
+        >
+          <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
+            <FormControlLabel
+              control={
+                <Checkbox 
+                  checked={pendingOnly} 
+                  onChange={(e) => setPendingOnly(e.target.checked)}
+                  color="warning"
+                />
+              }
+              label={
+                <Typography variant="subtitle2" fontWeight={600} color="warning.dark">
+                  Get only pending payment timesheets
+                </Typography>
+              }
+            />
+            {pendingOnly && (
+              <Button
+                variant="contained"
+                color="warning"
+                onClick={() => setConfirmDialogOpen(true)}
+                sx={{ fontWeight: 600 }}
+              >
+                Change state as Paid
+              </Button>
+            )}
+          </Stack>
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+            <strong>Important:</strong> When you click this checkbox, you will receive all pending timesheets submitted within the given date range and also past timesheets that were submitted later. 
+            Once you are done with the payment, please update them as paid to avoid them showing again when you select pending timesheets.
+          </Typography>
+        </Box>
         <Stack width={"100%"} height={"100%"} position="relative">
           {isLoading && (
             <Box
@@ -349,8 +404,60 @@ const ReportView = () => {
             setPureNew={setPureNew}
             isNoteModalVisible={shiftModalOpen}
             setIsNoteModalVisible={setShiftModalOpen}
+            showExportButton={pendingOnly}
           />
         </Stack>
+        <Dialog
+          open={confirmDialogOpen}
+          onClose={() => { setConfirmDialogOpen(false); setConfirmText(""); }}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>Confirm payment processing</DialogTitle>
+          <DialogContent>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Are you sure that you are going to confirm that these selected time sheets ({shiftSlice?.timeSheets?.length || 0}) are proceeded for the payment one time. Please note that you cannot view these time sheets again in pending mode.
+            </Typography>
+            <TextField
+              fullWidth
+              size="small"
+              label="Type: confirm"
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button 
+              variant="text" 
+              onClick={() => { setConfirmDialogOpen(false); setConfirmText(""); }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              disabled={confirmText.trim().toLowerCase() !== "confirm" || (shiftSlice?.timeSheets?.length || 0) === 0}
+              onClick={async () => {
+                const ids = (shiftSlice?.timeSheets || []).map(ts => ts?.shiftNoteDTO?.noteID).filter(Boolean);
+                try {
+                  await dispatch(incrementExportCounts({ noteIds: ids as string[] }));
+                } finally {
+                  setConfirmDialogOpen(false);
+                  setConfirmText("");
+                  // Refresh list
+                  const thunk = pendingOnly ? fetchExportTimeSheets : fetchTimeSheets;
+                  dispatch(thunk({
+                    startDate,
+                    endDate,
+                    employeeID: selectedOption?.employeeID || "all",
+                    clientID: "",
+                  }));
+                }
+              }}
+            >
+              OK
+            </Button>
+          </DialogActions>
+        </Dialog>
         
       </Stack>
     </Stack>

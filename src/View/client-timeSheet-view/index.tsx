@@ -12,6 +12,8 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
 import {
   Employee,
@@ -22,7 +24,7 @@ import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import ClientTimeSheetTable from "./components/ClientTimeSheetTable";
 import { useAppDispatch, useAppSelector } from "@slices/store";
-import { fetchTimeSheets } from "@slices/shiftNoteSlice/shiftNote";
+import { fetchExportTimeSheets, fetchTimeSheets } from "@slices/shiftNoteSlice/shiftNote";
 import ClientTimeSheetCardList from "./components/ClientTimeSheetCard";
 
 const ClientTimeSheetView = () => {
@@ -39,6 +41,7 @@ const ClientTimeSheetView = () => {
     dayjs().subtract(7, "day").format("YYYY-MM-DD")
   );
   const [endDate, setEndDate] = useState<string>(dayjs().format("YYYY-MM-DD"));
+  const [pendingOnly, setPendingOnly] = useState<boolean>(false);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
@@ -54,8 +57,9 @@ const ClientTimeSheetView = () => {
   }, [employeeSlice?.employees]);
 
   useEffect(() => {
+    const thunk = pendingOnly ? fetchExportTimeSheets : fetchTimeSheets;
     dispatch(
-      fetchTimeSheets({
+      thunk({
         startDate: startDate,
         endDate: endDate,
         employeeID: selectedOption,
@@ -68,6 +72,7 @@ const ClientTimeSheetView = () => {
     selectedOption,
     shiftModalOpen,
     shiftSlice?.updateState,
+    pendingOnly,
   ]);
 
   // Handlers
@@ -191,6 +196,14 @@ const ClientTimeSheetView = () => {
             />
           </Grid>
         </Grid>
+        <Grid container width={"100%"} spacing={2} alignItems="center" mt={1}>
+          <Grid item>
+            <FormControlLabel
+              control={<Checkbox checked={pendingOnly} onChange={(e) => setPendingOnly(e.target.checked)} />}
+              label="Get only pending payment timesheets"
+            />
+          </Grid>
+        </Grid>
         <Stack width={"100%"} height={"90%"}>
         {isMobile ? (
             <Stack width={"100%"} sx={{ overflowY: "auto",height:"90%",mt:13 }}>
@@ -200,6 +213,7 @@ const ClientTimeSheetView = () => {
             <ClientTimeSheetTable
               isNoteModalVisible={shiftModalOpen}
               setIsNoteModalVisible={setShiftModalOpen}
+              showExportButton={pendingOnly}
             />
           )}
          

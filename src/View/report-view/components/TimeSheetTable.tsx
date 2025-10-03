@@ -9,6 +9,8 @@ import {
 } from "@mui/x-data-grid";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import { Box, IconButton, Stack, Button, useTheme, Chip, Select, MenuItem, Tooltip, Menu } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import EditIcon from "@mui/icons-material/Edit";
@@ -22,20 +24,22 @@ import * as XLSX from "xlsx";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { getSingleShiftNoteByShiftID, updateShiftNotesPaymentStatus } from "@slices/shiftNoteSlice/shiftNote";
 
-function CustomToolbar({ onExportPDF, onExportExcel }: any) {
+function CustomToolbar({ onExportPDF, onExportExcel, showExportButton }: any) {
   return (
     <GridToolbarContainer>
       <GridToolbarColumnsButton />
       <GridToolbarFilterButton />
       <GridToolbarQuickFilter placeholder="Search" />
-      <Chip
-        size="small"
-        variant="outlined"
-        color="secondary"
-        onClick={onExportExcel}
-        sx={{ ml: 1 }}
-        label="Export EXCEL"
-      ></Chip>
+      {showExportButton && (
+        <Chip
+          size="small"
+          variant="outlined"
+          color="secondary"
+          onClick={onExportExcel}
+          sx={{ ml: 1 }}
+          label="Export EXCEL"
+        />
+      )}
     </GridToolbarContainer>
   );
 }
@@ -44,12 +48,14 @@ interface TimeSheetTableProps {
   isNoteModalVisible: boolean;
   setIsNoteModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setPureNew: React.Dispatch<React.SetStateAction<boolean>>;
+  showExportButton?: boolean;
 }
 
 const TimeSheetTable = ({
   isNoteModalVisible,
   setIsNoteModalVisible,
   setPureNew,
+  showExportButton = false,
 }: TimeSheetTableProps) => {
   const [columns] = useState<GridColDef[]>([
     // {
@@ -57,6 +63,23 @@ const TimeSheetTable = ({
     //   headerName: "Shift Note ID",
     //   width: 150,
     // },
+    {
+      field: "exportStatus",
+      headerName: "Exported",
+      width: 100,
+       renderCell: (params) => {
+         const exportCount = params.row.shiftNoteDTO?.exportCount || 0;
+         return exportCount > 0 ? (
+           <Tooltip title={`Exported ${exportCount} time(s)`}>
+             <CheckCircleIcon color="success" fontSize="small" />
+           </Tooltip>
+         ) : (
+           <Tooltip title="Pending export">
+             <HourglassBottomIcon color="primary" fontSize="small" />
+           </Tooltip>
+         );
+       },
+    },
     {
       field: "shiftTitle",
       headerName: "Shift Type",
@@ -352,7 +375,12 @@ const TimeSheetTable = ({
       totalWorkHrs:shiftNote?.shiftNoteDTO?.totalWorkHrs || 0,
       status:shiftNote?.shiftNoteDTO?.paymentState || "N/A",
       createdAt: shiftNote?.shiftNoteDTO?.createdAt || "N/A",
-    }));
+      shiftNoteDTO: shiftNote?.shiftNoteDTO, // Add the full shiftNoteDTO object
+    }))?.sort((a, b) => {
+      const aDate = new Date(a.startDate).getTime();
+      const bDate = new Date(b.startDate).getTime();
+      return aDate - bDate;
+    });
     console.log("mappedRows",mappedRows);
     
     setRows(mappedRows || []);
@@ -403,41 +431,41 @@ const TimeSheetTable = ({
         return `${hours} hrs ${minutes} mins`;
       };
 
-      return {
-        ...row,
+      // Build the exact set of fields for export
+      const exportRow: any = {
+        // renamed fields
+        appointmentType: row.shiftTitle || "N/A", // shiftTitle -> appointment type
+        totalhours_system: row.totalHours || 0, // totalHours -> totalhours(system)
+        // kept fields
+        employeeName: row.employeeName || "N/A",
+        createdAt: row.createdAt || "N/A",
+        startDate: row.startDate || "N/A",
         dayOfWeek: getDayOfWeek(row.startDate),
-        isLateSubmission: isLateSubmission(),
-        totalWorkHrsFormatted: formatWorkHours(row.totalWorkHrs),
-        // Include all API data that might not be visible in the table
-        employeeEmail: row.employeeEmail || "N/A",
-        appointmentTitle: row.appointmentTitle || "N/A",
-        recurrentAppointmentID: row.recurrentAppointmentID || "N/A",
-        endDate: row.endDate || "N/A",
+        startTime: row.startTime || "N/A",
+        endTime: row.endTime || "N/A",
+        clientName: row.clientName || "N/A",
+        shiftNotes: row.shiftNotes || "N/A",
+        comments: row.comments || "N/A",
       };
+
+      return exportRow;
     });
 
     const worksheet = XLSX.utils.json_to_sheet(processedRows);
     
     // Set column widths for better readability
     const columnWidths = [
-      { wch: 15 }, // shiftNoteID
-      { wch: 20 }, // shiftTitle
+      { wch: 20 }, // appointmentType
+      { wch: 18 }, // totalhours_system
       { wch: 25 }, // employeeName
       { wch: 20 }, // createdAt
       { wch: 15 }, // startDate
       { wch: 12 }, // dayOfWeek
       { wch: 12 }, // startTime
       { wch: 12 }, // endTime
-      { wch: 25 }, // totalWorkHrsFormatted
       { wch: 20 }, // clientName
-      { wch: 15 }, // status
       { wch: 30 }, // shiftNotes
       { wch: 30 }, // comments
-      { wch: 15 }, // isLateSubmission
-      { wch: 25 }, // employeeEmail
-      { wch: 20 }, // appointmentTitle
-      { wch: 20 }, // recurrentAppointmentID
-      { wch: 15 }, // endDate
     ];
     worksheet['!cols'] = columnWidths;
 
@@ -475,6 +503,7 @@ const TimeSheetTable = ({
             <CustomToolbar
               onExportPDF={handleExportPDF}
               onExportExcel={handleExportExcel}
+              showExportButton={showExportButton}
             />
           ),
         }}
