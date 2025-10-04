@@ -6,6 +6,7 @@ import {
   GridToolbarColumnsButton,
   GridToolbarFilterButton,
   GridToolbarQuickFilter,
+  useGridApiRef,
 } from "@mui/x-data-grid";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import { Box, IconButton, Stack, Button, useTheme, Chip, Select, MenuItem, Tooltip, Menu } from "@mui/material";
@@ -24,22 +25,31 @@ import * as XLSX from "xlsx";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { getSingleShiftNoteByShiftID, updateShiftNotesPaymentStatus } from "@slices/shiftNoteSlice/shiftNote";
 
-function CustomToolbar({ onExportPDF, onExportExcel, showExportButton }: any) {
+function CustomToolbar({ onExportPDF, onExportExcel, showExportButton, onSelectAll, selectedCount, totalCount }: any) {
+  const isAllSelected = selectedCount === totalCount && totalCount > 0;
+  const buttonText = isAllSelected ? "Deselect All" : "Select All";
+  
   return (
     <GridToolbarContainer>
       <GridToolbarColumnsButton />
       <GridToolbarFilterButton />
       <GridToolbarQuickFilter placeholder="Search" />
-      {showExportButton && (
-        <Chip
-          size="small"
-          variant="outlined"
-          color="secondary"
-          onClick={onExportExcel}
-          sx={{ ml: 1 }}
-          label="Export EXCEL"
-        />
-      )}
+      <Chip
+        size="small"
+        variant="outlined"
+        color={isAllSelected ? "error" : "primary"}
+        onClick={onSelectAll}
+        sx={{ ml: 1 }}
+        label={`${buttonText} (${selectedCount}/${totalCount})`}
+      />
+      <Chip
+        size="small"
+        variant="outlined"
+        color="secondary"
+        onClick={onExportExcel}
+        sx={{ ml: 1 }}
+        label="Export EXCEL"
+      />
     </GridToolbarContainer>
   );
 }
@@ -49,6 +59,8 @@ interface TimeSheetTableProps {
   setIsNoteModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setPureNew: React.Dispatch<React.SetStateAction<boolean>>;
   showExportButton?: boolean;
+  onSelectionChange?: (selectedRows: string[]) => void;
+  externalSelectedRows?: string[];
 }
 
 const TimeSheetTable = ({
@@ -56,7 +68,30 @@ const TimeSheetTable = ({
   setIsNoteModalVisible,
   setPureNew,
   showExportButton = false,
+  onSelectionChange,
+  externalSelectedRows,
 }: TimeSheetTableProps) => {
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const apiRef = useGridApiRef();
+
+  // Sync with external selected rows
+  useEffect(() => {
+    if (externalSelectedRows) {
+      setSelectedRows(externalSelectedRows);
+    }
+  }, [externalSelectedRows]);
+  
+  const handleSelectAll = () => {
+    const allRowIds = rows.map(row => row?.shiftNoteDTO?.noteID ?? Math.random().toString(36).substr(2, 9));
+    
+    // If all rows are selected, deselect all. Otherwise, select all.
+    if (selectedRows.length === allRowIds.length && allRowIds.every(id => selectedRows.includes(id))) {
+      setSelectedRows([]);
+    } else {
+      setSelectedRows(allRowIds);
+    }
+  };
+
   const [columns] = useState<GridColDef[]>([
     // {
     //   field: "shiftNoteID",
@@ -493,6 +528,15 @@ const TimeSheetTable = ({
         density="compact"
         pagination
         pageSizeOptions={[5, 10, 15]}
+        checkboxSelection
+        rowSelectionModel={selectedRows}
+        onRowSelectionModelChange={(newSelection) => {
+          const newSelectedRows = newSelection as string[];
+          console.log("TimeSheetTable selection changed:", newSelectedRows);
+          setSelectedRows(newSelectedRows);
+          onSelectionChange?.(newSelectedRows);
+        }}
+        apiRef={apiRef}
         initialState={{
           pagination: {
             paginationModel: { pageSize: 10 },
@@ -504,6 +548,9 @@ const TimeSheetTable = ({
               onExportPDF={handleExportPDF}
               onExportExcel={handleExportExcel}
               showExportButton={showExportButton}
+              onSelectAll={handleSelectAll}
+              selectedCount={selectedRows.length}
+              totalCount={rows.length}
             />
           ),
         }}

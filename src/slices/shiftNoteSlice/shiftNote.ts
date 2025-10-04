@@ -222,6 +222,51 @@ export const incrementExportCounts = createAsyncThunk(
   }
 );
 
+export const bulkUpdateExportCounts = createAsyncThunk(
+  "shiftNote/bulkUpdateExportCounts",
+  async (
+    payload: { noteIds: string[]; action: string },
+    { dispatch, rejectWithValue }
+  ) => {
+    try {
+      const response = await APIService.getInstance().post(
+        AppConfig.serviceUrls.shiftNotes + `/export/bulk-update`,
+        { noteIds: payload.noteIds, action: payload.action },
+        { headers: { "Content-Type": "application/json" } }
+      );
+      
+      const result = response.data as { incremented: number; decremented: number };
+      let message = "";
+      
+      if (result.incremented > 0 && result.decremented > 0) {
+        message = `Updated ${result.incremented} timesheets exported and ${result.decremented} timesheets reversed`;
+      } else if (result.incremented > 0) {
+        message = `Marked ${result.incremented} timesheet(s) as exported`;
+      } else if (result.decremented > 0) {
+        message = `Reversed ${result.decremented} timesheet(s) to unexported`;
+      } else {
+        message = "No timesheets were updated";
+      }
+      
+      dispatch(
+        enqueueSnackbarMessage({
+          message,
+          type: "success",
+        })
+      );
+      return result;
+    } catch (error) {
+      dispatch(
+        enqueueSnackbarMessage({
+          message: "Failed to update timesheets",
+          type: "error",
+        })
+      );
+      return rejectWithValue(error);
+    }
+  }
+);
+
 // Fetch single resources
 export const submitStartShiftNote = createAsyncThunk(
   "shiftNote/submitStartShiftNote",
