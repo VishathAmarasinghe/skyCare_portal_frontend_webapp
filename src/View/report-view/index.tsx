@@ -32,6 +32,7 @@ import {
   getAllShiftNotesByEmployeeID,
   fetchExportTimeSheets,
   incrementExportCounts,
+  bulkUpdateExportCounts,
 } from "@slices/shiftNoteSlice/shiftNote";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { State } from "../../types/types";
@@ -68,6 +69,27 @@ const ReportView = () => {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState<boolean>(false);
   const [confirmText, setConfirmText] = useState<string>("");
+  const [bulkUpdateDialogOpen, setBulkUpdateDialogOpen] = useState<boolean>(false);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  
+  // Debug logging
+  useEffect(() => {
+    console.log("Selected rows updated:", selectedRows);
+  }, [selectedRows]);
+
+  // Auto-select all timesheets when pendingOnly checkbox is checked
+  useEffect(() => {
+    if (pendingOnly && shiftSlice?.timeSheets) {
+      const allTimesheetIds = shiftSlice.timeSheets
+        .map(ts => ts?.shiftNoteDTO?.noteID)
+        .filter(Boolean) as string[];
+      setSelectedRows(allTimesheetIds);
+    } else if (!pendingOnly) {
+      setSelectedRows([]);
+    }
+  }, [pendingOnly, shiftSlice?.timeSheets]);
+  const [bulkConfirmText, setBulkConfirmText] = useState<string>("");
+  const [selectedAction, setSelectedAction] = useState<string>("");
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -360,16 +382,29 @@ const ReportView = () => {
                 </Typography>
               }
             />
-            {pendingOnly && (
-              <Button
-                variant="contained"
-                color="warning"
-                onClick={() => setConfirmDialogOpen(true)}
-                sx={{ fontWeight: 600 }}
-              >
-                Change state as Paid
-              </Button>
-            )}
+            <Stack direction="row" spacing={1} alignItems="center">
+              {pendingOnly && selectedRows.length === (shiftSlice?.timeSheets?.length || 0) && selectedRows.length > 0 && (
+                <Button
+                  variant="contained"
+                  color="warning"
+                  onClick={() => setConfirmDialogOpen(true)}
+                  sx={{ fontWeight: 600 }}
+                >
+                  Change state as Paid (Bulk)
+                </Button>
+              )}
+              {selectedRows.length > 0 && !(pendingOnly && selectedRows.length === (shiftSlice?.timeSheets?.length || 0) && selectedRows.length > 0) && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setBulkUpdateDialogOpen(true)}
+                  sx={{ fontWeight: 600 }}
+                >
+                  Update Selected ({selectedRows.length})
+                </Button>
+              )}
+              {/* Debug info */}
+            </Stack>
           </Stack>
           <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
             <strong>Important:</strong> When you click this checkbox, you will receive all pending timesheets submitted within the given date range and also past timesheets that were submitted later. 
@@ -405,6 +440,8 @@ const ReportView = () => {
             isNoteModalVisible={shiftModalOpen}
             setIsNoteModalVisible={setShiftModalOpen}
             showExportButton={pendingOnly}
+            onSelectionChange={setSelectedRows}
+            externalSelectedRows={selectedRows}
           />
         </Stack>
         <Dialog
@@ -455,6 +492,189 @@ const ReportView = () => {
               }}
             >
               OK
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Bulk Update Dialog */}
+        <Dialog
+          open={bulkUpdateDialogOpen}
+          onClose={() => { 
+            setBulkUpdateDialogOpen(false); 
+            setBulkConfirmText(""); 
+            setSelectedAction("");
+          }}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle sx={{ textAlign: 'center', pb: 1 }}>
+            <Typography variant="h5" fontWeight={600}>
+              Bulk Update Action
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {selectedRows.length} timesheet{selectedRows.length !== 1 ? 's' : ''} selected
+            </Typography>
+          </DialogTitle>
+          <DialogContent sx={{ pt: 2 }}>
+            {(() => {
+              const selectedTimesheets = (shiftSlice?.timeSheets || []).filter(ts => 
+                selectedRows.includes(ts?.shiftNoteDTO?.noteID)
+              );
+              const exportedCount = selectedTimesheets.filter(ts => 
+                (ts?.shiftNoteDTO?.exportCount || 0) > 0
+              ).length;
+              const unexportedCount = selectedTimesheets.length - exportedCount;
+
+              return (
+                <Stack spacing={3}>
+                  <Typography variant="h6" textAlign="center" color="primary">
+                    Choose Action
+                  </Typography>
+                  
+                  <Stack spacing={2}>
+                    <Button
+                      variant={selectedAction === "export" ? "contained" : "outlined"}
+                      color="primary"
+                      onClick={() => setSelectedAction("export")}
+                      disabled={unexportedCount === 0}
+                      size="large"
+                      sx={{ 
+                        py: 2,
+                        fontSize: '1rem',
+                        fontWeight: 600,
+                        borderRadius: 2,
+                        boxShadow: selectedAction === "export" ? 3 : 1,
+                        '&:hover': {
+                          boxShadow: 4,
+                        }
+                      }}
+                    >
+                      <Stack alignItems="center" spacing={1}>
+                        <Typography variant="h6">
+                          Export Unexported Timesheets
+                        </Typography>
+                        <Typography variant="body2" color="inherit">
+                          {unexportedCount} timesheet{unexportedCount !== 1 ? 's' : ''} will be exported
+                        </Typography>
+                      </Stack>
+                    </Button>
+                    
+                    <Button
+                      variant={selectedAction === "reverse" ? "contained" : "outlined"}
+                      color="warning"
+                      onClick={() => setSelectedAction("reverse")}
+                      disabled={exportedCount === 0}
+                      size="large"
+                      sx={{ 
+                        py: 2,
+                        fontSize: '1rem',
+                        fontWeight: 600,
+                        borderRadius: 2,
+                        boxShadow: selectedAction === "reverse" ? 3 : 1,
+                        '&:hover': {
+                          boxShadow: 4,
+                        }
+                      }}
+                    >
+                      <Stack alignItems="center" spacing={1}>
+                        <Typography variant="h6">
+                          Reverse to Unexported
+                        </Typography>
+                        <Typography variant="body2" color="inherit">
+                          {exportedCount} timesheet{exportedCount !== 1 ? 's' : ''} will be reversed
+                        </Typography>
+                      </Stack>
+                    </Button>
+                    
+                    <Button
+                      variant={selectedAction === "both" ? "contained" : "outlined"}
+                      color="secondary"
+                      onClick={() => setSelectedAction("both")}
+                      disabled={unexportedCount === 0 || exportedCount === 0}
+                      size="large"
+                      sx={{ 
+                        py: 2,
+                        fontSize: '1rem',
+                        fontWeight: 600,
+                        borderRadius: 2,
+                        boxShadow: selectedAction === "both" ? 3 : 1,
+                        '&:hover': {
+                          boxShadow: 4,
+                        }
+                      }}
+                    >
+                      <Stack alignItems="center" spacing={1}>
+                        <Typography variant="h6">
+                          Perform Both Actions
+                        </Typography>
+                        <Typography variant="body2" color="inherit">
+                          Export unexported and reverse exported timesheets
+                        </Typography>
+                      </Stack>
+                    </Button>
+                  </Stack>
+
+                  {selectedAction && (
+                    <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                        Type "confirm" to proceed:
+                      </Typography>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        placeholder="Type: confirm"
+                        value={bulkConfirmText}
+                        onChange={(e) => setBulkConfirmText(e.target.value)}
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                          }
+                        }}
+                      />
+                    </Box>
+                  )}
+                </Stack>
+              );
+            })()}
+          </DialogContent>
+          <DialogActions sx={{ p: 3, pt: 1 }}>
+            <Button
+              variant="outlined"
+              onClick={() => { 
+                setBulkUpdateDialogOpen(false); 
+                setBulkConfirmText(""); 
+                setSelectedAction("");
+              }}
+              sx={{ minWidth: 100 }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              disabled={!selectedAction || bulkConfirmText.trim().toLowerCase() !== "confirm"}
+              onClick={async () => {
+                try {
+                  await dispatch(bulkUpdateExportCounts({
+                    noteIds: selectedRows,
+                    action: selectedAction
+                  }));
+                } finally {
+                  setBulkUpdateDialogOpen(false);
+                  setBulkConfirmText("");
+                  setSelectedAction("");
+                  // Refresh data with same parameters
+                  const thunk = pendingOnly ? fetchExportTimeSheets : fetchTimeSheets;
+                  dispatch(thunk({
+                    startDate,
+                    endDate,
+                    employeeID: selectedOption?.employeeID || "all",
+                    clientID: "",
+                  }));
+                }
+              }}
+              sx={{ minWidth: 100 }}
+            >
+              Execute
             </Button>
           </DialogActions>
         </Dialog>
