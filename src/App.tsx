@@ -72,7 +72,7 @@ function App() {
 
   return (
     <ColorModeContext.Provider value={colorMode}>
-      <SnackbarProvider maxSnack={3} preventDuplicate autoHideDuration={2000}>
+      <SnackbarProvider maxSnack={3} preventDuplicate autoHideDuration={1000}>
         <LoadScript
           googleMapsApiKey={GOOGLE_MAPS_API_KEY}
           libraries={["places"]}
