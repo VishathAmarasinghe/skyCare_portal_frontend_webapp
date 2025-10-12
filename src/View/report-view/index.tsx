@@ -33,6 +33,7 @@ import {
   fetchExportTimeSheets,
   incrementExportCounts,
   bulkUpdateExportCounts,
+  bulkUpdatePaymentStatus,
 } from "@slices/shiftNoteSlice/shiftNote";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { State } from "../../types/types";
@@ -90,6 +91,13 @@ const ReportView = () => {
   }, [pendingOnly, shiftSlice?.timeSheets]);
   const [bulkConfirmText, setBulkConfirmText] = useState<string>("");
   const [selectedAction, setSelectedAction] = useState<string>("");
+  
+  // Bulk status update states
+  const [bulkStatusDialogOpen, setBulkStatusDialogOpen] = useState<boolean>(false);
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
+  const [statusComment, setStatusComment] = useState<string>("");
+  const [bulkStatusConfirmText, setBulkStatusConfirmText] = useState<string>("");
+  
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -400,7 +408,17 @@ const ReportView = () => {
                   onClick={() => setBulkUpdateDialogOpen(true)}
                   sx={{ fontWeight: 600 }}
                 >
-                  Update Selected ({selectedRows.length})
+                  Bulk Export Update ({selectedRows.length})
+                </Button>
+              )}
+              {selectedRows.length > 0 && (authRoles?.includes(APPLICATION_ADMIN) || authRoles?.includes(APPLICATION_SUPER_ADMIN)) && (
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => setBulkStatusDialogOpen(true)}
+                  sx={{ fontWeight: 600 }}
+                >
+                  Bulk Status Update ({selectedRows.length})
                 </Button>
               )}
               {/* Debug info */}
@@ -675,6 +693,226 @@ const ReportView = () => {
               sx={{ minWidth: 100 }}
             >
               Execute
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Bulk Status Update Dialog */}
+        <Dialog
+          open={bulkStatusDialogOpen}
+          onClose={() => { 
+            setBulkStatusDialogOpen(false); 
+            setSelectedStatus("");
+            setStatusComment("");
+            setBulkStatusConfirmText("");
+          }}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle sx={{ textAlign: 'center', pb: 1 }}>
+            <Typography variant="h5" fontWeight={600}>
+              Bulk Status Update
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {selectedRows.length} timesheet{selectedRows.length !== 1 ? 's' : ''} selected
+            </Typography>
+          </DialogTitle>
+          <DialogContent sx={{ pt: 2 }}>
+            <Stack spacing={3}>
+              <Typography variant="h6" textAlign="center" color="primary">
+                Select New Status
+              </Typography>
+              
+              <Stack spacing={2}>
+                <Button
+                  variant={selectedStatus === "Pending" ? "contained" : "outlined"}
+                  color="warning"
+                  onClick={() => setSelectedStatus("Pending")}
+                  size="large"
+                  sx={{ 
+                    py: 2,
+                    fontSize: '1rem',
+                    fontWeight: 600,
+                    borderRadius: 2,
+                    boxShadow: selectedStatus === "Pending" ? 3 : 1,
+                    '&:hover': {
+                      boxShadow: 4,
+                    }
+                  }}
+                >
+                  <Stack alignItems="center" spacing={1}>
+                    <Typography variant="h6">
+                      Pending
+                    </Typography>
+                    <Typography variant="body2" color="inherit">
+                      Mark as pending for review
+                    </Typography>
+                  </Stack>
+                </Button>
+                
+                <Button
+                  variant={selectedStatus === "Approved" ? "contained" : "outlined"}
+                  color="primary"
+                  onClick={() => setSelectedStatus("Approved")}
+                  size="large"
+                  sx={{ 
+                    py: 2,
+                    fontSize: '1rem',
+                    fontWeight: 600,
+                    borderRadius: 2,
+                    boxShadow: selectedStatus === "Approved" ? 3 : 1,
+                    '&:hover': {
+                      boxShadow: 4,
+                    }
+                  }}
+                >
+                  <Stack alignItems="center" spacing={1}>
+                    <Typography variant="h6">
+                      Approved
+                    </Typography>
+                    <Typography variant="body2" color="inherit">
+                      Approve selected timesheets
+                    </Typography>
+                  </Stack>
+                </Button>
+                
+                <Button
+                  variant={selectedStatus === "Rejected" ? "contained" : "outlined"}
+                  color="error"
+                  onClick={() => setSelectedStatus("Rejected")}
+                  size="large"
+                  sx={{ 
+                    py: 2,
+                    fontSize: '1rem',
+                    fontWeight: 600,
+                    borderRadius: 2,
+                    boxShadow: selectedStatus === "Rejected" ? 3 : 1,
+                    '&:hover': {
+                      boxShadow: 4,
+                    }
+                  }}
+                >
+                  <Stack alignItems="center" spacing={1}>
+                    <Typography variant="h6">
+                      Rejected
+                    </Typography>
+                    <Typography variant="body2" color="inherit">
+                      Reject selected timesheets
+                    </Typography>
+                  </Stack>
+                </Button>
+
+                <Button
+                  variant={selectedStatus === "Paid" ? "contained" : "outlined"}
+                  color="success"
+                  onClick={() => setSelectedStatus("Paid")}
+                  size="large"
+                  sx={{ 
+                    py: 2,
+                    fontSize: '1rem',
+                    fontWeight: 600,
+                    borderRadius: 2,
+                    boxShadow: selectedStatus === "Paid" ? 3 : 1,
+                    '&:hover': {
+                      boxShadow: 4,
+                    }
+                  }}
+                >
+                  <Stack alignItems="center" spacing={1}>
+                    <Typography variant="h6">
+                      Paid
+                    </Typography>
+                    <Typography variant="body2" color="inherit">
+                      Mark as paid
+                    </Typography>
+                  </Stack>
+                </Button>
+              </Stack>
+
+              {selectedStatus && (
+                <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
+                  {selectedStatus === "Rejected" && (
+                    <>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                        Rejection comment:
+                      </Typography>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        placeholder="Add a comment for rejection"
+                        value={statusComment}
+                        onChange={(e) => setStatusComment(e.target.value)}
+                        multiline
+                        rows={2}
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                          },
+                          mb: 2
+                        }}
+                      />
+                    </>
+                  )}
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                    Type "confirm" to proceed:
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    placeholder="Type: confirm"
+                    value={bulkStatusConfirmText}
+                    onChange={(e) => setBulkStatusConfirmText(e.target.value)}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: 2,
+                      }
+                    }}
+                  />
+                </Box>
+              )}
+            </Stack>
+          </DialogContent>
+          <DialogActions sx={{ p: 3, pt: 1 }}>
+            <Button
+              variant="outlined"
+              onClick={() => { 
+                setBulkStatusDialogOpen(false); 
+                setSelectedStatus("");
+                setStatusComment("");
+                setBulkStatusConfirmText("");
+              }}
+              sx={{ minWidth: 100 }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              disabled={!selectedStatus || bulkStatusConfirmText.trim().toLowerCase() !== "confirm"}
+              onClick={async () => {
+                try {
+                  await dispatch(bulkUpdatePaymentStatus({
+                    noteIds: selectedRows,
+                    status: selectedStatus,
+                    comment: statusComment
+                  }));
+                } finally {
+                  setBulkStatusDialogOpen(false);
+                  setSelectedStatus("");
+                  setStatusComment("");
+                  setBulkStatusConfirmText("");
+                  // Refresh data with same parameters
+                  const thunk = pendingOnly ? fetchExportTimeSheets : fetchTimeSheets;
+                  dispatch(thunk({
+                    startDate,
+                    endDate,
+                    employeeID: selectedOption?.employeeID || "all",
+                    clientID: "",
+                  }));
+                }
+              }}
+              sx={{ minWidth: 100 }}
+            >
+              Update Status
             </Button>
           </DialogActions>
         </Dialog>
