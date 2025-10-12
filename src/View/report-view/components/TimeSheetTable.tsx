@@ -72,7 +72,58 @@ const TimeSheetTable = ({
   externalSelectedRows,
 }: TimeSheetTableProps) => {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [page, setPage] = useState<number>(0);
   const apiRef = useGridApiRef();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Calculate dynamic page size based on available screen height
+  useEffect(() => {
+    const calculatePageSize = () => {
+      if (containerRef.current) {
+        const containerHeight = containerRef.current.clientHeight;
+        // Subtract toolbar (~56px), header (~56px), and pagination footer (~52px)
+        const availableHeight = containerHeight - 164;
+        
+        // Compact density row height is approximately 36-38px
+        const rowHeight = 38;
+        const calculatedRows = Math.floor(availableHeight / rowHeight);
+        
+        // Set minimum of 5 rows and maximum of 100 rows
+        const optimalPageSize = Math.max(5, Math.min(calculatedRows, 100));
+        setPageSize(optimalPageSize);
+      }
+    };
+
+    // Calculate on mount
+    calculatePageSize();
+
+    // Recalculate on window resize
+    const handleResize = () => {
+      calculatePageSize();
+    };
+
+    window.addEventListener('resize', handleResize);
+    
+    // Use ResizeObserver for container size changes
+    const resizeObserver = new ResizeObserver(() => {
+      calculatePageSize();
+    });
+    
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  // Reset to first page when page size changes due to resize
+  useEffect(() => {
+    setPage(0);
+  }, [pageSize]);
 
   // Sync with external selected rows
   useEffect(() => {
@@ -505,6 +556,7 @@ const TimeSheetTable = ({
 
   return (
     <Box
+      ref={containerRef}
       sx={{
         height: "100%",
         width: "100%",
@@ -521,7 +573,7 @@ const TimeSheetTable = ({
         }
         density="compact"
         pagination
-        pageSizeOptions={[5, 10, 15]}
+        pageSizeOptions={[5, 10, 15, 25, 50, 100]}
         checkboxSelection
         rowSelectionModel={selectedRows}
         onRowSelectionModelChange={(newSelection) => {
@@ -533,8 +585,16 @@ const TimeSheetTable = ({
         apiRef={apiRef}
         initialState={{
           pagination: {
-            paginationModel: { pageSize: 10 },
+            paginationModel: { pageSize: pageSize, page: 0 },
           },
+        }}
+        paginationModel={{
+          pageSize: pageSize,
+          page: page,
+        }}
+        onPaginationModelChange={(model) => {
+          setPageSize(model.pageSize);
+          setPage(model.page);
         }}
         slots={{
           toolbar: () => (
