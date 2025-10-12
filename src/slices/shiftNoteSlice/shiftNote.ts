@@ -267,6 +267,44 @@ export const bulkUpdateExportCounts = createAsyncThunk(
   }
 );
 
+export const bulkUpdatePaymentStatus = createAsyncThunk(
+  "shiftNote/bulkUpdatePaymentStatus",
+  async (
+    payload: { noteIds: string[]; status: string; comment?: string },
+    { dispatch, rejectWithValue }
+  ) => {
+    try {
+      const response = await APIService.getInstance().post(
+        AppConfig.serviceUrls.shiftNotes + `/time-sheets/bulk-status-update`,
+        { 
+          noteIds: payload.noteIds, 
+          status: payload.status,
+          comment: payload.comment || ""
+        },
+        { headers: { "Content-Type": "application/json" } }
+      );
+      
+      const result = response.data as { updated: number };
+      
+      dispatch(
+        enqueueSnackbarMessage({
+          message: `Successfully updated ${result.updated} timesheet(s) to ${payload.status}`,
+          type: "success",
+        })
+      );
+      return result;
+    } catch (error) {
+      dispatch(
+        enqueueSnackbarMessage({
+          message: "Failed to update timesheet status",
+          type: "error",
+        })
+      );
+      return rejectWithValue(error);
+    }
+  }
+);
+
 // Fetch single resources
 export const submitStartShiftNote = createAsyncThunk(
   "shiftNote/submitStartShiftNote",
@@ -759,6 +797,18 @@ const ShiftNoteSlice = createSlice({
       .addCase(incrementExportCounts.rejected, (state) => {
         state.backgroundProcess = false;
         state.backgroundProcessMessage = null;
+      })
+      .addCase(bulkUpdatePaymentStatus.pending, (state) => {
+        state.updateState = State.loading;
+        state.stateMessage = "Updating payment status...";
+      })
+      .addCase(bulkUpdatePaymentStatus.fulfilled, (state) => {
+        state.updateState = State.success;
+        state.stateMessage = "Payment status updated successfully!";
+      })
+      .addCase(bulkUpdatePaymentStatus.rejected, (state) => {
+        state.updateState = State.failed;
+        state.stateMessage = "Failed to update payment status!";
       });
   },
 });

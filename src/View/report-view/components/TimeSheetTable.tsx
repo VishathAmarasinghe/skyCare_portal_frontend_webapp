@@ -273,9 +273,9 @@ const TimeSheetTable = ({
         } else if (status === "Approved") {
           options = ["Approved", "Reject", "Paid"];
         } else if (status === "Rejected") {
-          options = ["Rejected", "Paid"];
+          options = ["Rejected", "Approve", "Paid"];
         } else if (status === "Paid") {
-          options = ["Paid"];
+          options = ["Paid", "Pending", "Approve", "Reject"];
         }
     
         const findColor = (status: string) => {
@@ -299,49 +299,41 @@ const TimeSheetTable = ({
         };
     
     
-        if (status === "Paid") {
-          return (
-            <Tooltip title="Paid" placement="top">
-              <Chip label={status} size="small" sx={{ml:1}} color={findColor(status)} />
-            </Tooltip>
-          );
-        } else {
-          return ( 
-            <div>
-            {/* Chip with Edit Icon */}
-            <Stack flexDirection="row" width="100%" justifyContent="space-between" alignItems={"center"}>
-            <Chip
-              label={status}
-              size="small"
-              color={findColor(status)}
-              onClick={handleMenuOpen}
-              sx={{ cursor: 'pointer',mx:1 }}
-            />
-            <IconButton onClick={handleMenuOpen} size="small">
-              <EditIcon />
-            </IconButton>
-            </Stack>
-           
-    
-            {/* Menu for options */}
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleMenuClose}
-            >
-              {options.map((option) => (
-                <MenuItem key={option} value={option} onClick={()=>handleChange(option)} disabled={option === status}>
-                  <Chip
-                    label={option}
-                    size="small"
-                    color={findColor(option === "Approve" ? "Approved" : option === "Reject" ? "Rejected" : option)}
-                  />
-                </MenuItem>
-              ))}
-            </Menu>
-          </div>
-          );
-        }
+        return ( 
+          <div>
+          {/* Chip with Edit Icon */}
+          <Stack flexDirection="row" width="100%" justifyContent="space-between" alignItems={"center"}>
+          <Chip
+            label={status}
+            size="small"
+            color={findColor(status)}
+            onClick={handleMenuOpen}
+            sx={{ cursor: 'pointer',mx:1 }}
+          />
+          <IconButton onClick={handleMenuOpen} size="small">
+            <EditIcon />
+          </IconButton>
+          </Stack>
+         
+  
+          {/* Menu for options */}
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            {options.map((option) => (
+              <MenuItem key={option} value={option} onClick={()=>handleChange(option)} disabled={option === status}>
+                <Chip
+                  label={option}
+                  size="small"
+                  color={findColor(option === "Approve" ? "Approved" : option === "Reject" ? "Rejected" : option)}
+                />
+              </MenuItem>
+            ))}
+          </Menu>
+        </div>
+        );
       }
     },    
     {
@@ -436,36 +428,16 @@ const TimeSheetTable = ({
   };
 
   const handleExportExcel = () => {
+    // Calculate day of week helper function
+    const getDayOfWeek = (dateString: string) => {
+      if (!dateString) return "N/A";
+      const date = new Date(dateString);
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      return days[date.getDay()];
+    };
+
     // Process rows to include additional columns for Excel export
     const processedRows = rows.map((row) => {
-      // Calculate day of week
-      const getDayOfWeek = (dateString: string) => {
-        if (!dateString) return "N/A";
-        const date = new Date(dateString);
-        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        return days[date.getDay()];
-      };
-
-      // Check if submission is late
-      const isLateSubmission = () => {
-        if (!row.startDate || !row.createdAt) return "No";
-        
-        const start = new Date(row.startDate);
-        const submitted = new Date(row.createdAt);
-        
-        // Check if submitted date is after start date by more than 1 day
-        const diffInDays = Math.floor((submitted.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-        return diffInDays > 1 ? "Yes" : "No";
-      };
-
-      // Format total work hours for better readability
-      const formatWorkHours = (totalWorkHrs: number) => {
-        if (!totalWorkHrs) return "0 hrs 0 mins";
-        const hours = Math.floor(totalWorkHrs);
-        const minutes = Math.round((totalWorkHrs % 1) * 60);
-        return `${hours} hrs ${minutes} mins`;
-      };
-
       // Build the exact set of fields for export
       const exportRow: any = {
         // renamed fields
@@ -486,7 +458,29 @@ const TimeSheetTable = ({
       return exportRow;
     });
 
-    const worksheet = XLSX.utils.json_to_sheet(processedRows);
+    // Group by employee name
+    const groupedByEmployee = processedRows.reduce((acc: any, row: any) => {
+      const employeeName = row.employeeName;
+      if (!acc[employeeName]) {
+        acc[employeeName] = [];
+      }
+      acc[employeeName].push(row);
+      return acc;
+    }, {});
+
+    // Sort each employee's timesheets by startDate and flatten the result
+    const sortedAndGroupedRows = Object.keys(groupedByEmployee)
+      .sort() // Sort employee names alphabetically
+      .flatMap((employeeName) => {
+        // Sort timesheets by startDate within each employee group
+        return groupedByEmployee[employeeName].sort((a: any, b: any) => {
+          const dateA = new Date(a.startDate).getTime();
+          const dateB = new Date(b.startDate).getTime();
+          return dateA - dateB;
+        });
+      });
+
+    const worksheet = XLSX.utils.json_to_sheet(sortedAndGroupedRows);
     
     // Set column widths for better readability
     const columnWidths = [
