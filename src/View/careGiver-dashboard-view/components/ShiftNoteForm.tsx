@@ -73,6 +73,8 @@ interface AddNoteFormProps {
   setSelectedShiftNote: React.Dispatch<
     React.SetStateAction<{ shiftNoteID: string | null }>
   >;
+  onSubmitValidation?: (errors: Record<string, string>) => void;
+  isSubmitting?: boolean;
 }
 
 export interface UIShowingFile {
@@ -86,6 +88,8 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
   isEditMode,
   selectedShiftNote,
   setSelectedShiftNote,
+  onSubmitValidation,
+  isSubmitting = false,
   foreignDetails,
   pureNew,
 }) => {
@@ -307,7 +311,32 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
       initialValues={initialValues}
       validationSchema={validationSchema(shiftNoteStates?.selectedShiftNote)}
       enableReinitialize={true}
-      onSubmit={(values, { setSubmitting }) => {
+      onSubmit={async (values, formikHelpers) => {
+        const errors = await formikHelpers.validateForm();
+        
+        // Check for validation errors
+        if (Object.keys(errors).length > 0) {
+          // Format errors for display
+          const formattedErrors: Record<string, string> = {};
+          Object.entries(errors).forEach(([key, value]) => {
+            if (typeof value === 'string') {
+              formattedErrors[key] = value;
+            } else if (typeof value === 'object' && value !== null) {
+              // Handle nested errors
+              Object.entries(value as Record<string, any>).forEach(([nestedKey, nestedValue]) => {
+                if (typeof nestedValue === 'string') {
+                  formattedErrors[`${key}.${nestedKey}`] = nestedValue;
+                }
+              });
+            }
+          });
+          
+          if (onSubmitValidation) {
+            onSubmitValidation(formattedErrors);
+          }
+          return;
+        }
+        
         const notePayload: updateShiftNote = { ...values };
         if (pureNew) {
           notePayload.employeeID = authUser?.userID || "";
@@ -733,6 +762,7 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
                 id="note-submit-button"
                 style={{ display: "none" }}
                 type="submit"
+                disabled={isSubmitting}
               >
                 Submit
               </button>

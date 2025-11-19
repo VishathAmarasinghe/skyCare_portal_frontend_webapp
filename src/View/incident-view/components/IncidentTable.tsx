@@ -77,7 +77,12 @@ const IncidentTable = ({
   };
 
   useEffect(() => {
-    setIncidents(incidentSlice.incidents);
+    const sortedIncidents = [...incidentSlice.incidents].sort((a, b) => {
+      const dateA = new Date(a.incidentDate).getTime();
+      const dateB = new Date(b.incidentDate).getTime();
+      return dateB - dateA; // Descending order (newest first)
+    });
+    setIncidents(sortedIncidents);
   }, [incidentSlice.incidents]);
 
 
@@ -267,6 +272,9 @@ const IncidentTable = ({
         initialState={{
           pagination: {
             paginationModel: { pageSize: 10 },
+          },
+          sorting: {
+            sortModel: [{ field: "incidentDate", sort: "desc" }],
           },
         }}
         slots={{

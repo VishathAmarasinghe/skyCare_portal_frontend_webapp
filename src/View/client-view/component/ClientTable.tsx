@@ -2,13 +2,12 @@ import React, { useEffect, useState } from "react";
 import {
   DataGrid,
   GridColDef,
-  GridToolbar,
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarFilterButton,
   GridToolbarQuickFilter,
 } from "@mui/x-data-grid";
-import { Avatar, Box, Chip, IconButton, useTheme } from "@mui/material";
+import { Avatar, Box, Chip, Checkbox, FormControlLabel, IconButton, useTheme } from "@mui/material";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../../slices/store";
@@ -18,12 +17,28 @@ import malAvatar from "../../../assets/images/maleavatar.jpg";
 import femaleAvatar from "../../../assets/images/female.png";
 import roboAvatar from "../../../assets/images/roboavatar.png";
 
-function CustomToolbar() {
+interface CustomToolbarProps {
+  showDeactivated: boolean;
+  onToggleDeactivated: (checked: boolean) => void;
+}
+
+function CustomToolbar({ showDeactivated, onToggleDeactivated }: CustomToolbarProps) {
   return (
     <GridToolbarContainer>
       <GridToolbarColumnsButton />
       <GridToolbarFilterButton />
       <GridToolbarQuickFilter placeholder="Search" />
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={showDeactivated}
+            onChange={(e) => onToggleDeactivated(e.target.checked)}
+            size="small"
+          />
+        }
+        label="Show deactivated clients"
+        sx={{ marginLeft: 2 }}
+      />
     </GridToolbarContainer>
   );
 }
@@ -154,10 +169,19 @@ const ClientTable = () => {
   const theme = useTheme();
   const clientInfo = useAppSelector((state) => state.clients);
   const [clients, setClients] = useState<Client[]>([]);
+  const [showDeactivated, setShowDeactivated] = useState<boolean>(false);
 
   useEffect(() => {
-    setClients(clientInfo.clients);
-  }, [clientInfo.State]);
+    let filteredClients = clientInfo.clients;
+    
+    if (!showDeactivated) {
+      filteredClients = clientInfo.clients.filter(
+        (client) => client.status !== "Deactivated"
+      );
+    }
+    
+    setClients(filteredClients);
+  }, [clientInfo.State, clientInfo.clients, showDeactivated]);
 
   return (
     <Box
@@ -183,7 +207,12 @@ const ClientTable = () => {
           },
         }}
         slots={{
-          toolbar: CustomToolbar,
+          toolbar: () => (
+            <CustomToolbar
+              showDeactivated={showDeactivated}
+              onToggleDeactivated={setShowDeactivated}
+            />
+          ),
         }}
         sx={{
           height: "100%",

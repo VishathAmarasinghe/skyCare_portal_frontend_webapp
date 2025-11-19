@@ -42,11 +42,15 @@ dayjs.extend(isSameOrAfter);
 interface IncidentFormProps {
   isEditMode: boolean;
   activeStep: number;
+  onSubmitValidation?: (errors: Record<string, string>) => void;
+  isSubmitting?: boolean;
 }
 
 const IncidentForm: React.FC<IncidentFormProps> = ({
   isEditMode,
   activeStep,
+  onSubmitValidation,
+  isSubmitting = false,
 }) => {
   const theme = useTheme();
   const incidentSlice = useAppSelector((state) => state.incident);
@@ -290,6 +294,30 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
     formikHelpers: FormikHelpers<Incidents>
   ) => {
     const errors = await formikHelpers.validateForm();
+    
+    // Check for validation errors
+    if (Object.keys(errors).length > 0) {
+      // Format errors for display
+      const formattedErrors: Record<string, string> = {};
+      Object.entries(errors).forEach(([key, value]) => {
+        if (typeof value === 'string') {
+          formattedErrors[key] = value;
+        } else if (typeof value === 'object' && value !== null) {
+          // Handle nested errors (e.g., address.address)
+          Object.entries(value as Record<string, any>).forEach(([nestedKey, nestedValue]) => {
+            if (typeof nestedValue === 'string') {
+              formattedErrors[`${key}.${nestedKey}`] = nestedValue;
+            }
+          });
+        }
+      });
+      
+      if (onSubmitValidation) {
+        onSubmitValidation(formattedErrors);
+      }
+      return;
+    }
+    
     values.parties = involvedPartiesRows;
     values.answers = answers;
     if (incidentSlice?.selectedIncident) {
@@ -365,7 +393,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
 
         return (
           <Form>
-            <Grid container spacing={2}>
+            <Grid container spacing={2} >
               {/* Title */}
               {activeStep === 0 && (
                 <>
@@ -394,7 +422,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                       InputProps={{ readOnly: !isEditMode }}
                     />
                   </Grid> */}
-                  <Grid item xs={12} md={4}>
+                  <Grid item xs={12} md={4} mt={2}>
                     <TextField
                       fullWidth
                       label="Incident Date"
@@ -409,7 +437,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                       InputProps={{ readOnly: !isEditMode }}
                     />
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid item xs={12} md={4} mt={2}>
                     <TextField
                       fullWidth
                       label="Incident Time"
@@ -424,7 +452,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                       InputProps={{ readOnly: !isEditMode }}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={4} md={4}>
+                  <Grid item xs={12} sm={4} md={4} mt={2}>
                     <TextField
                       select
                       fullWidth
@@ -671,7 +699,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
                   <button
                     id="incident-submit-btn"
                     type="submit"
-                    disabled={!isEditMode}
+                    disabled={!isEditMode || isSubmitting}
                     style={{ display: "none" }}
                   >
                     {isEditMode ? "Save Changes" : "View Appointment"}

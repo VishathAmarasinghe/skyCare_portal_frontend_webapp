@@ -492,16 +492,24 @@ export const updatehiftNotes = createAsyncThunk(
           if (axios.isCancel(error)) {
             return rejectWithValue("Request canceled");
           }
+          // Handle duplicate error (409 Conflict)
+          const errorMessage = 
+            error.response?.status === HttpStatusCode.Conflict
+              ? error.response?.data?.error || "A duplicate timesheet already exists with the same start date, start time, end time, client, and employee."
+              : error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.shiftUpdate
+              : String(error.response?.data?.error || error.response?.data || "An error occurred while updating the timesheet");
+          
           dispatch(
             enqueueSnackbarMessage({
-              message:
-                error.response?.status === HttpStatusCode.InternalServerError
-                  ? SnackMessage.error.shiftUpdate
-                  : String(error.response?.data),
+              message: errorMessage,
               type: "error",
             })
           );
-          reject(error.response?.data);
+          rejectWithValue({ 
+            error: errorMessage,
+            duplicate: error.response?.status === HttpStatusCode.Conflict 
+          });
         });
     });
   }
@@ -626,16 +634,24 @@ export const saveShiftNotes = createAsyncThunk(
           if (axios.isCancel(error)) {
             return rejectWithValue("Request canceled");
           }
+          // Handle duplicate error (409 Conflict)
+          const errorMessage = 
+            error.response?.status === HttpStatusCode.Conflict
+              ? error.response?.data?.error || "A duplicate timesheet already exists with the same start date, start time, end time, client, and employee."
+              : error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.shiftNoteCreated
+              : String(error.response?.data?.error || error.response?.data || "An error occurred while saving the timesheet");
+          
           dispatch(
             enqueueSnackbarMessage({
-              message:
-                error.response?.status === HttpStatusCode.InternalServerError
-                  ? SnackMessage.error.shiftNoteCreated
-                  : String(error.response?.data),
+              message: errorMessage,
               type: "error",
             })
           );
-          reject(error.response?.data);
+          rejectWithValue({ 
+            error: errorMessage,
+            duplicate: error.response?.status === HttpStatusCode.Conflict 
+          });
         });
     });
   }
@@ -688,9 +704,25 @@ const ShiftNoteSlice = createSlice({
         state.submitState = State.success;
         state.stateMessage = "Save Successfully!";
       })
-      .addCase(saveShiftNotes.rejected, (state) => {
+      .addCase(saveShiftNotes.rejected, (state, action) => {
         state.submitState = State.failed;
-        state.stateMessage = "Failed to save shiftNote!";
+        // Extract error message from the rejected action payload
+        const errorPayload = action.payload as any;
+        if (errorPayload && typeof errorPayload === 'object') {
+          if (errorPayload.error) {
+            state.stateMessage = errorPayload.error;
+            state.errorMessage = errorPayload.error;
+          } else if (errorPayload.message) {
+            state.stateMessage = errorPayload.message;
+            state.errorMessage = errorPayload.message;
+          } else {
+            state.stateMessage = "Failed to save shiftNote!";
+            state.errorMessage = "Failed to save shiftNote!";
+          }
+        } else {
+          state.stateMessage = "Failed to save shiftNote!";
+          state.errorMessage = "Failed to save shiftNote!";
+        }
       })
       .addCase(getAllShiftNotes.pending, (state) => {
         state.state = State.loading;
@@ -739,9 +771,25 @@ const ShiftNoteSlice = createSlice({
         state.updateState = State.success;
         state.stateMessage = "Shift note Updated Successfully!";
       })
-      .addCase(updatehiftNotes.rejected, (state) => {
+      .addCase(updatehiftNotes.rejected, (state, action) => {
         state.updateState = State.failed;
-        state.stateMessage = "fail to update shiftNote!";
+        // Extract error message from the rejected action payload
+        const errorPayload = action.payload as any;
+        if (errorPayload && typeof errorPayload === 'object') {
+          if (errorPayload.error) {
+            state.stateMessage = errorPayload.error;
+            state.errorMessage = errorPayload.error;
+          } else if (errorPayload.message) {
+            state.stateMessage = errorPayload.message;
+            state.errorMessage = errorPayload.message;
+          } else {
+            state.stateMessage = "Failed to update shiftNote!";
+            state.errorMessage = "Failed to update shiftNote!";
+          }
+        } else {
+          state.stateMessage = "Failed to update shiftNote!";
+          state.errorMessage = "Failed to update shiftNote!";
+        }
       })
       .addCase(fetchTimeSheets.pending, (state) => {
         state.state = State.loading;

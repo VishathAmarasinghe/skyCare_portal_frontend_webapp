@@ -587,16 +587,24 @@ export const saveIncident = createAsyncThunk(
           if (axios.isCancel(error)) {
             return rejectWithValue("Request canceled");
           }
+          // Handle duplicate error (409 Conflict)
+          const errorMessage = 
+            error.response?.status === HttpStatusCode.Conflict
+              ? error.response?.data?.error || "A duplicate incident already exists with the same date, time, client, and employee."
+              : error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.saveIncident
+              : String(error.response?.data?.error || error.response?.data || "An error occurred while saving the incident");
+          
           dispatch(
             enqueueSnackbarMessage({
-              message:
-                error.response?.status === HttpStatusCode.InternalServerError
-                  ? SnackMessage.error.saveIncident
-                  : String(error.response?.data?.error),
+              message: errorMessage,
               type: "error",
             })
           );
-          reject(error.response?.data);
+          rejectWithValue({ 
+            error: errorMessage,
+            duplicate: error.response?.status === HttpStatusCode.Conflict 
+          });
         });
     });
   }
@@ -743,9 +751,21 @@ const IncidentSlice = createSlice({
         state.submitState = State.success;
         state.stateMessage = "Successfully saved incident!";
       })
-      .addCase(saveIncident.rejected, (state) => {
+      .addCase(saveIncident.rejected, (state, action) => {
         state.submitState = State.failed;
-        state.stateMessage = "Failed to save incident!";
+        // Extract error message from the rejected action payload
+        const errorPayload = action.payload as any;
+        if (errorPayload && typeof errorPayload === 'object') {
+          if (errorPayload.error) {
+            state.stateMessage = errorPayload.error;
+          } else if (errorPayload.message) {
+            state.stateMessage = errorPayload.message;
+          } else {
+            state.stateMessage = "Failed to save incident!";
+          }
+        } else {
+          state.stateMessage = "Failed to save incident!";
+        }
       })
       .addCase(fetchAllIncidents.pending, (state) => {
         state.state = State.loading;
