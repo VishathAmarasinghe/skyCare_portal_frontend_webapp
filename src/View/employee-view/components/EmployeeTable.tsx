@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   DataGrid,
   GridColDef,
-  GridToolbar,
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarFilterButton,
@@ -12,6 +11,8 @@ import {
   Avatar,
   Box,
   Chip,
+  Checkbox,
+  FormControlLabel,
   IconButton,
   Stack,
   Typography,
@@ -29,12 +30,28 @@ import {
 import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
 import { fetchSingleCareGiverByEmployeeID } from "@slices/careGiverSlice/careGiver";
 
-function CustomToolbar() {
+interface CustomToolbarProps {
+  showDeactivated: boolean;
+  onToggleDeactivated: (checked: boolean) => void;
+}
+
+function CustomToolbar({ showDeactivated, onToggleDeactivated }: CustomToolbarProps) {
   return (
     <GridToolbarContainer>
       <GridToolbarColumnsButton />
       <GridToolbarFilterButton />
       <GridToolbarQuickFilter placeholder="Search" />
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={showDeactivated}
+            onChange={(e) => onToggleDeactivated(e.target.checked)}
+            size="small"
+          />
+        }
+        label="Show deactivated employees"
+        sx={{ marginLeft: 2 }}
+      />
     </GridToolbarContainer>
   );
 }
@@ -45,11 +62,20 @@ const EmployeeTable = ({}: ClientTableProps) => {
   const theme = useTheme();
   const employeeSlice = useAppSelector((state) => state.employees);
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [showDeactivated, setShowDeactivated] = useState<boolean>(false);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    setEmployees(employeeSlice.employees);
-  }, [employeeSlice.state]);
+    let filteredEmployees = employeeSlice.employees;
+    
+    if (!showDeactivated) {
+      filteredEmployees = employeeSlice.employees.filter(
+        (employee) => employee.status !== "Deactivated"
+      );
+    }
+    
+    setEmployees(filteredEmployees);
+  }, [employeeSlice.state, employeeSlice.employees, showDeactivated]);
 
   const handlePageChange = (newPage: number) => {};
 
@@ -217,7 +243,12 @@ const EmployeeTable = ({}: ClientTableProps) => {
           },
         }}
         slots={{
-          toolbar: CustomToolbar,
+          toolbar: () => (
+            <CustomToolbar
+              showDeactivated={showDeactivated}
+              onToggleDeactivated={setShowDeactivated}
+            />
+          ),
         }}
         sx={{
           height: "100%",
