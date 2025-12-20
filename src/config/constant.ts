@@ -48,6 +48,7 @@ export const SnackMessage = {
     chatCreated:"Chat created successfully",
     deleteChatMessage:"Chat message deleted successfully",
     clientActivation:"Client activation status updated successfully",
+    employeeActivation:"Employee activation status updated successfully",
     updateChat:"Chat updated successfully",
   },
   error: {
@@ -142,6 +143,7 @@ export const SnackMessage = {
     deleteChatMessage:"Fail to delete chat message",
     fetchPastAppointments:"Fail to fetch past appointments",
     clientActivation:"Fail to update client activation status",
+    employeeActivation:"Fail to update employee activation status",
     fetchChatmembers:"Fail to fetch chat members",
     updateChat:"Fail to update chat",
     fetchUnseenMessageCount:"Fail to fetch message notifications",

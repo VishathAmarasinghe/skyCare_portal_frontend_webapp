@@ -28,6 +28,8 @@ import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import {
   Employee,
   fetchEmployeesByRole,
+  fetchSingleEmployee,
+  updateEmployeeState,
 } from "../../../slices/employeeSlice/employee";
 import { enqueueSnackbarMessage } from "../../../slices/commonSlice/common";
 import {
@@ -269,12 +271,40 @@ const StaffModal = ({
 
   const handleStatusChange = (newStatus: "Activated" | "Deactivated" | "Pending") => {
     if (careGiverStatus.selectedCareGiver) {
-      const updatedCareGiver = {
-        ...careGiverStatus.selectedCareGiver,
-        status: newStatus,
-      };
-      employeeBasicInformation.status = newStatus;
-      setEmployeeState(newStatus);
+      const employeeID = 
+        employeeSlice?.selectedEmployee?.employeeID || 
+        careGiverStatus.selectedCareGiver?.employee?.employeeID || 
+        "";
+      
+      if (!employeeID) {
+        return;
+      }
+
+      const action = newStatus === "Activated" ? "activate" : "deactivate";
+      Modal.confirm({
+        title: `Confirm ${action.charAt(0).toUpperCase() + action.slice(1)}`,
+        content: `Are you sure you want to ${action} this employee?`,
+        okText: "Yes",
+        cancelText: "No",
+        onOk: async () => {
+          try {
+            await dispatch(
+              updateEmployeeState({
+                employeeID: employeeID,
+                status: newStatus,
+              })
+            ).unwrap();
+            setEmployeeState(newStatus);
+            employeeBasicInformation.status = newStatus;
+            dispatch(fetchEmployeesByRole("CareGiver"));
+            if (employeeID) {
+              dispatch(fetchSingleEmployee(employeeID));
+            }
+          } catch (error) {
+            // Error is already handled in the thunk
+          }
+        },
+      });
     }
   };
 

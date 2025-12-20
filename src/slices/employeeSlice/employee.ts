@@ -499,6 +499,47 @@ export const updateEmployee = createAsyncThunk(
   }
 );
 
+// Update employee activation state
+export const updateEmployeeState = createAsyncThunk(
+  "employee/updateEmployeeState",
+  async (
+    payload: { employeeID: string; status: string },
+    { dispatch, rejectWithValue }
+  ) => {
+    return new Promise<String>((resolve, reject) => {
+      APIService.getInstance()
+        .patch(
+          AppConfig.serviceUrls.employees +
+            `/${payload.employeeID}/${payload.status}`
+        )
+        .then((response) => {
+          dispatch(
+            enqueueSnackbarMessage({
+              message: SnackMessage.success.employeeActivation,
+              type: "success",
+            })
+          );
+          resolve(response.data);
+        })
+        .catch((error) => {
+          if (axios.isCancel(error)) {
+            return rejectWithValue("Request canceled");
+          }
+          dispatch(
+            enqueueSnackbarMessage({
+              message:
+                error.response?.status === HttpStatusCode.InternalServerError
+                  ? SnackMessage.error.employeeActivation
+                  : String(error.response?.data),
+              type: "error",
+            })
+          );
+          reject(error.response?.data);
+        });
+    });
+  }
+);
+
 // Create Employee Slice
 const EmployeeSlice = createSlice({
   name: "employee",
@@ -670,6 +711,18 @@ const EmployeeSlice = createSlice({
       .addCase(fetchCareGiversAssignToClientID.rejected, (state) => {
         state.state = State.failed;
         state.stateMessage = "Failed to fetch employees assigned to client!";
+      })
+      .addCase(updateEmployeeState.pending, (state) => {
+        state.updateState = State.loading;
+        state.stateMessage = "Updating employee status...";
+      })
+      .addCase(updateEmployeeState.fulfilled, (state, action) => {
+        state.updateState = State.success;
+        state.stateMessage = "Successfully updated employee status!";
+      })
+      .addCase(updateEmployeeState.rejected, (state) => {
+        state.updateState = State.failed;
+        state.stateMessage = "Failed to update employee status!";
       });
   },
 });
