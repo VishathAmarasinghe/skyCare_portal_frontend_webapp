@@ -17,13 +17,20 @@ import { State } from "../../../types/types";
 import EmployeeBasicInfoForm from "../components/EmployeeBasicInfoForm";
 import {
   Employee,
+  fetchEmployeesByRole,
+  fetchSingleEmployee,
   resetSelectedEmployee,
   resetSubmitState,
   saveEmployee,
   updateEmployee,
+  updateEmployeeState,
 } from "../../../slices/employeeSlice/employee";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import { set } from "date-fns";
+import {
+  APPLICATION_ADMIN,
+  APPLICATION_SUPER_ADMIN,
+} from "../../../config/config";
 
 interface AddNewClientModalProps {
   isEmployeeAddModalVisible: boolean;
@@ -46,6 +53,10 @@ const AdminModal = ({
     "Pending"
   );
   const dispatch = useAppDispatch();
+  const [employeeState, setEmployeeState] = useState<
+    "Activated" | "Deactivated" | "Pending"
+  >("Pending");
+  const authRole = useAppSelector((state) => state?.auth?.roles);
   const [employeeBasicInformation, setEmployeeBasicInformation] =
     useState<Employee>({
       employeeID: "",
@@ -88,6 +99,17 @@ const AdminModal = ({
   useEffect(() => {
     console.log("selected eom   ployee is", employeeSlice?.selectedEmployee);
   }, [employeeSlice?.selectedEmployee, employeeSlice?.state]);
+
+  useEffect(() => {
+    if (employeeSlice?.selectedEmployee) {
+      setEmployeeState(
+        employeeSlice?.selectedEmployee?.status as
+          | "Pending"
+          | "Activated"
+          | "Deactivated"
+      );
+    }
+  }, [employeeSlice?.selectedEmployee]);
 
   // Handle next step
   const handleNext = () => {
@@ -136,6 +158,36 @@ const AdminModal = ({
     setIsEditMode(event.target.checked);
   };
 
+  const handleStatusChange = (newStatus: "Activated" | "Deactivated" | "Pending") => {
+    if (employeeSlice?.selectedEmployee) {
+      const action = newStatus === "Activated" ? "activate" : "deactivate";
+      Modal.confirm({
+        title: `Confirm ${action.charAt(0).toUpperCase() + action.slice(1)}`,
+        content: `Are you sure you want to ${action} this employee?`,
+        okText: "Yes",
+        cancelText: "No",
+        onOk: async () => {
+          try {
+            await dispatch(
+              updateEmployeeState({
+                employeeID: employeeSlice.selectedEmployee?.employeeID || "",
+                status: newStatus,
+              })
+            ).unwrap();
+            setEmployeeState(newStatus);
+            employeeBasicInformation.status = newStatus;
+            dispatch(fetchEmployeesByRole("Admin"));
+            if (employeeSlice?.selectedEmployee?.employeeID) {
+              dispatch(fetchSingleEmployee(employeeSlice.selectedEmployee.employeeID));
+            }
+          } catch (error) {
+            // Error is already handled in the thunk
+          }
+        },
+      });
+    }
+  };
+
   return (
     <Modal
       title={
@@ -171,7 +223,35 @@ const AdminModal = ({
       }}
       footer={
         <Box display="flex" justifyContent="end" width="100%">
-          {/* Back Button */}
+          {/* Activate/Deactivate Button */}
+          {employeeSlice?.selectedEmployee &&
+            (authRole?.includes(APPLICATION_ADMIN) ||
+              authRole?.includes(APPLICATION_SUPER_ADMIN)) && (
+              <Button
+                variant="outlined"
+                sx={{ mx: 1 }}
+                color={employeeState === "Pending" ? "success" : employeeState === "Activated" ? "error" : "success"}
+                onClick={() =>
+                  handleStatusChange(
+                    employeeState === "Pending"
+                      ? "Activated"
+                      : employeeState === "Activated"
+                      ? "Deactivated"
+                      : employeeState === "Deactivated"
+                      ? "Activated"
+                      : "Pending"
+                  )
+                }
+              >
+                {employeeState === "Pending"
+                  ? "Activate"
+                  : employeeState === "Activated"
+                  ? "Deactivate"
+                  : employeeState === "Deactivated"
+                  ? "Activate"
+                  : "Pending"}
+              </Button>
+            )}
           <Button
             variant="outlined"
             onClick={() => setIsEmployeeAddModalVisible(false)}
