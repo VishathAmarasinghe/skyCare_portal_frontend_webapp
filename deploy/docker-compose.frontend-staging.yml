@@ -1,15 +1,9 @@
-# Frontend-only deploy (branch dev). Keep ports/network/image in sync with
-# skyCarePortal_backend/docker-compose.dev.yml → service frontend-staging.
+# Frontend-only deploy (branch dev). Published port must match host nginx upstream (8082).
+# No custom Docker network: SPA is served to host nginx only; API calls go via browser to public URL.
 services:
   frontend-staging:
     container_name: frontend-staging
     image: frontend:staging
     ports:
       - "127.0.0.1:8082:80"
-    networks:
-      - app-network
     restart: always
-
-networks:
-  app-network:
-    external: true
