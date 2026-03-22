@@ -1,0 +1,9 @@
+# Frontend-only deploy (branch main). Published port must match host nginx upstream (8081).
+# No custom Docker network: SPA is served to host nginx only; API calls go via browser to public URL.
+services:
+  frontend-production:
+    container_name: frontend-production
+    image: frontend:production
+    ports:
+      - "127.0.0.1:8081:80"
+    restart: always
