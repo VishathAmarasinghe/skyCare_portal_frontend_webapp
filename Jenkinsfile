@@ -1,5 +1,6 @@
-// Multibranch: branch `dev` → staging build, branch `main` → production build.
-// Images are tagged per environment so staging and production do not overwrite each other on the same host.
+// Multibranch: dev → build frontend:staging + deploy only frontend-staging
+// main → build frontend:production + deploy only frontend-production
+// Prunes dangling images, stopped containers, and build cache after build/deploy.
 pipeline {
     agent any
     stages {
@@ -18,8 +19,23 @@ pipeline {
                             --build-arg VITE_APPLICATION_CLIENT=client.skyCarePortal \
                             --build-arg VITE_FILE_DOWNLOAD_PATH=/file/download \
                             --build-arg VITE_GOOGLE_MAP_API_KEY="$VITE_GOOGLE_MAP_API_KEY" .
+                        docker image prune -f
+                        docker builder prune -f
                     '''
                 }
+            }
+        }
+        stage('Deploy frontend (staging)') {
+            when {
+                branch 'dev'
+            }
+            steps {
+                sh '''
+                    docker compose -f deploy/docker-compose.frontend-staging.yml up -d --force-recreate --remove-orphans
+                    docker image prune -f
+                    docker container prune -f
+                    docker builder prune -f
+                '''
             }
         }
         stage('Build image (production)') {
@@ -37,14 +53,29 @@ pipeline {
                             --build-arg VITE_APPLICATION_CLIENT=client.skyCarePortal \
                             --build-arg VITE_FILE_DOWNLOAD_PATH=/file/download \
                             --build-arg VITE_GOOGLE_MAP_API_KEY="$VITE_GOOGLE_MAP_API_KEY" .
+                        docker image prune -f
+                        docker builder prune -f
                     '''
                 }
+            }
+        }
+        stage('Deploy frontend (production)') {
+            when {
+                branch 'main'
+            }
+            steps {
+                sh '''
+                    docker compose -f deploy/docker-compose.frontend-production.yml up -d --force-recreate --remove-orphans
+                    docker image prune -f
+                    docker container prune -f
+                    docker builder prune -f
+                '''
             }
         }
     }
     post {
         success {
-            echo 'Frontend image built. Run the backend multibranch pipeline on the same agent to deploy (compose pulls frontend:staging or frontend:production).'
+            echo 'Frontend build and deploy finished.'
         }
         failure {
             echo 'Frontend pipeline failed.'

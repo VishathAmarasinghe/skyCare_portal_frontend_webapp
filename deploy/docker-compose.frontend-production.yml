@@ -1,0 +1,15 @@
+# Frontend-only deploy (branch main). Keep ports/network/image in sync with
+# skyCarePortal_backend/docker-compose.prod.yml → service frontend-production.
+services:
+  frontend-production:
+    container_name: frontend-production
+    image: frontend:production
+    ports:
+      - "127.0.0.1:8081:80"
+    networks:
+      - app-network
+    restart: always
+
+networks:
+  app-network:
+    external: true

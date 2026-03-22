@@ -1,0 +1,15 @@
+# Frontend-only deploy (branch dev). Keep ports/network/image in sync with
+# skyCarePortal_backend/docker-compose.dev.yml → service frontend-staging.
+services:
+  frontend-staging:
+    container_name: frontend-staging
+    image: frontend:staging
+    ports:
+      - "127.0.0.1:8082:80"
+    networks:
+      - app-network
+    restart: always
+
+networks:
+  app-network:
+    external: true
