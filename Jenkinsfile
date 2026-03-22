@@ -1,5 +1,7 @@
 // Multibranch: dev → build frontend:staging + deploy only frontend-staging
 // main → build frontend:production + deploy only frontend-production
+// Use distinct compose -p names so staging vs production are separate projects;
+// otherwise --remove-orphans on one file removes the other env's frontend container.
 // Prunes dangling images, stopped containers, and build cache after build/deploy.
 pipeline {
     agent any
@@ -31,7 +33,7 @@ pipeline {
             }
             steps {
                 sh '''
-                    docker compose -f deploy/docker-compose.frontend-staging.yml up -d --force-recreate --remove-orphans
+                    docker compose -p skycare-frontend-staging -f deploy/docker-compose.frontend-staging.yml up -d --force-recreate --remove-orphans
                     docker image prune -f
                     docker container prune -f
                     docker builder prune -f
@@ -65,7 +67,7 @@ pipeline {
             }
             steps {
                 sh '''
-                    docker compose -f deploy/docker-compose.frontend-production.yml up -d --force-recreate --remove-orphans
+                    docker compose -p skycare-frontend-production -f deploy/docker-compose.frontend-production.yml up -d --force-recreate --remove-orphans
                     docker image prune -f
                     docker container prune -f
                     docker builder prune -f
