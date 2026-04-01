@@ -130,7 +130,11 @@ const DocumentsTable = ({
         density="compact"
         pagination
         pageSizeOptions={[5, 10, 20]}
-        paginationModel={{ pageSize: 5, page: 0 }}
+        initialState={{
+          pagination: {
+            paginationModel: { pageSize: 10, page: 0 },
+          },
+        }}
         slots={{
           toolbar: CustomToolbar,
         }}
