@@ -84,13 +84,18 @@ const CareGiverFileUploader = ({
   useEffect(() => {
     setUploadFiles(documents.map((doc) => doc.file).filter(Boolean) as File[]);
     setCareGiverDocuments(
-      documents.map((doc) => ({
-        careGiverID: careGiverSlice.selectedCareGiver?.careGiverID || "",
-        documentTypeID: doc.documentTypeID,
-        expDate: doc.expirationDate || "",
-        status: "Pending",
-        document: doc.uploadedDocument || "",
-      }))
+      documents.map((doc) => {
+        const existing = careGiverSlice.selectedCareGiver?.careGiverDocuments?.find(
+          (d) => d.documentTypeID === doc.documentTypeID
+        );
+        return {
+          careGiverID: careGiverSlice.selectedCareGiver?.careGiverID || "",
+          documentTypeID: doc.documentTypeID,
+          expDate: doc.expirationDate || existing?.expDate || "",
+          status: existing?.status || "Pending",
+          document: doc.uploadedDocument || "",
+        };
+      })
     );
   }, [documents]);
 
