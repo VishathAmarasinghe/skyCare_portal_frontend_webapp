@@ -229,10 +229,14 @@ const StaffModal = ({
         careGiverStatus?.selectedCareGiver != null &&
         checkIsRequiredFilesUploaded()
       ) {
+        const documentsForUpdate = careGiverDocuments?.filter((doc) => {
+          if (doc?.document == null || doc?.document === "") {
+            return false;
+          }
+          return uploadFiles.some((file) => file.name === doc.document);
+        });
         const careGiverPayload: CareGiver = {
-          careGiverDocuments: careGiverDocuments?.filter(
-            (doc) => doc?.document != "" && doc?.document != null
-          ),
+          careGiverDocuments: documentsForUpdate,
           careGiverPayments: careGiverPayments,
           employee: { ...employeeBasicInformation, status: employeeState },
           careGiverID: careGiverStatus.selectedCareGiver.careGiverID,
