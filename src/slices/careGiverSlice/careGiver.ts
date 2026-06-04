@@ -290,6 +290,41 @@ export const fetchCareGivers = createAsyncThunk(
   }
 );
 
+export const deleteCareGiverDocument = createAsyncThunk(
+  "careGiver/deleteCareGiverDocument",
+  async (
+    payload: { careGiverID: string; documentTypeID: string },
+    { dispatch, rejectWithValue }
+  ) => {
+    try {
+      await APIService.getInstance().delete(
+        `${AppConfig.serviceUrls.careGiverDocuments}/${payload.careGiverID}/${payload.documentTypeID}`
+      );
+      dispatch(
+        enqueueSnackbarMessage({
+          message: SnackMessage.success.deleteCareGiverDocument,
+          type: "success",
+        })
+      );
+      return payload;
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
+      }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.deleteCareGiverDocument
+              : String(error.response?.data),
+          type: "error",
+        })
+      );
+      throw error.response?.data;
+    }
+  }
+);
+
 // Fetch a single caregiver
 export const fetchSingleCareGiverByEmployeeID = createAsyncThunk(
   "careGiver/fetchSingleCareGiverByEmployeeID",
@@ -603,6 +638,24 @@ const CareGiverSlice = createSlice({
       .addCase(updateCareGiver.rejected, (state) => {
         state.updateState = State.failed;
         state.stateMessage = "Failed to save caregiver Payment types!";
+      })
+      .addCase(deleteCareGiverDocument.pending, (state) => {
+        state.updateState = State.loading;
+        state.stateMessage = "Deleting caregiver document...";
+      })
+      .addCase(deleteCareGiverDocument.fulfilled, (state, action) => {
+        state.updateState = State.success;
+        state.stateMessage = "Successfully deleted caregiver document!";
+        if (state.selectedCareGiver?.careGiverID === action.payload.careGiverID) {
+          state.selectedCareGiver.careGiverDocuments =
+            state.selectedCareGiver.careGiverDocuments.filter(
+              (doc) => doc.documentTypeID !== action.payload.documentTypeID
+            );
+        }
+      })
+      .addCase(deleteCareGiverDocument.rejected, (state) => {
+        state.updateState = State.failed;
+        state.stateMessage = "Failed to delete caregiver document";
       });
   },
 });

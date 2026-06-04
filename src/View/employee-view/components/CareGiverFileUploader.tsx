@@ -8,8 +8,15 @@ import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import {
   CareGiverDocuments,
   CareGiverDocumentTypes,
+  deleteCareGiverDocument,
 } from "../../../slices/careGiverSlice/careGiver";
-import { useAppSelector } from "../../../slices/store";
+import { useAppDispatch, useAppSelector } from "../../../slices/store";
+import { useConfirmationModalContext } from "../../../context/DialogContext";
+import { ConfirmationType } from "../../../types/types";
+import {
+  APPLICATION_ADMIN,
+  APPLICATION_SUPER_ADMIN,
+} from "../../../config/config";
 import FileViewerWithModal from "../../../component/common/FileViewerWithModal";
 import UploadIcon from "@mui/icons-material/CloudUpload";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -43,8 +50,15 @@ const CareGiverFileUploader = ({
   onlyView=false,
 }: CareGiverFileUploaderProps) => {
   const theme = useTheme();
+  const dispatch = useAppDispatch();
+  const { showConfirmation } = useConfirmationModalContext();
   const [openModal, setOpenModal] = useState(false);
   const careGiverSlice = useAppSelector((state) => state.careGivers);
+  const authRoles = useAppSelector((state) => state.auth?.roles);
+  const isAdmin =
+    authRoles?.includes(APPLICATION_ADMIN) ||
+    authRoles?.includes(APPLICATION_SUPER_ADMIN);
+  const canDeleteDocument = isAdmin || !onlyView;
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [expirationDateError, setExpirationDateError] = useState<string | null>(
@@ -229,6 +243,37 @@ const CareGiverFileUploader = ({
     setDocuments(updatedDocuments);
   };
 
+  const isStoredCareGiverDocument = (document: string | null) =>
+    !!document && document.trim().length > 0;
+
+  const handleDeleteClick = (doc: DocumentAdder) => {
+    const careGiverID = careGiverSlice.selectedCareGiver?.careGiverID;
+    const hasPersistedRecord =
+      isStoredCareGiverDocument(doc.uploadedDocument) && !!careGiverID;
+
+    const performDelete = () => {
+      if (hasPersistedRecord && careGiverID) {
+        dispatch(
+          deleteCareGiverDocument({
+            careGiverID,
+            documentTypeID: doc.documentTypeID,
+          })
+        );
+        return;
+      }
+      handleDeleteFile(doc);
+    };
+
+    showConfirmation(
+      "Delete Document",
+      "Are you sure you want to delete this document? This action cannot be undone.",
+      "accept" as ConfirmationType,
+      performDelete,
+      "Delete Now",
+      "Cancel"
+    );
+  };
+
   const columns: GridColDef[] = [
     { field: "documentTypeID", headerName: "ID", flex: 1 },
     { field: "documentName", headerName: "Document Name", flex: 1 },
@@ -299,15 +344,16 @@ const CareGiverFileUploader = ({
                   <VisibilityIcon />
                 </IconButton>
               </Tooltip>
-              {
-                !onlyView ? <Tooltip title="Delete">
-                <IconButton
-                  color="error"
-                  onClick={() => handleDeleteFile(params.row)}
-                >
-                  <DeleteIcon />
-                </IconButton></Tooltip>:<></>
-              }
+              {canDeleteDocument ? (
+                <Tooltip title="Delete">
+                  <IconButton
+                    color="error"
+                    onClick={() => handleDeleteClick(params.row)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+              ) : null}
             </>
           )}
         </Stack>
@@ -362,15 +408,17 @@ const CareGiverFileUploader = ({
       renderCell: (params: GridRenderCellParams) => (
         <Stack width="100%" flexDirection="row">
           {!params.row.uploadedDocument ? (
-            <Tooltip title="Upload">
-              <IconButton
-                color="primary"
-                onClick={() => handleOpenModal(params.row)}
-                disabled={!!params.row.uploadedDocument}
-              >
-                <UploadIcon />
-              </IconButton>
-            </Tooltip>
+            !onlyView ? (
+              <Tooltip title="Upload">
+                <IconButton
+                  color="primary"
+                  onClick={() => handleOpenModal(params.row)}
+                  disabled={!!params.row.uploadedDocument}
+                >
+                  <UploadIcon />
+                </IconButton>
+              </Tooltip>
+            ) : null
           ) : (
             <>
               <Tooltip title="View">
@@ -381,14 +429,16 @@ const CareGiverFileUploader = ({
                   <VisibilityIcon />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Delete">
-                <IconButton
-                  color="error"
-                  onClick={() => handleDeleteFile(params.row)}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
+              {canDeleteDocument ? (
+                <Tooltip title="Delete">
+                  <IconButton
+                    color="error"
+                    onClick={() => handleDeleteClick(params.row)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+              ) : null}
             </>
           )}
         </Stack>
@@ -429,6 +479,13 @@ const CareGiverFileUploader = ({
           columns={isMobile?columnsMobile:columns}
           getRowId={(row) => row.documentTypeID}
           disableRowSelectionOnClick
+          pagination
+          pageSizeOptions={[10, 25, 50]}
+          initialState={{
+            pagination: {
+              paginationModel: { pageSize: 10, page: 0 },
+            },
+          }}
           sx={{
             "& .MuiDataGrid-cell": {
       whiteSpace: "normal", // Allow wrapping
