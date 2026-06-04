@@ -26,6 +26,7 @@ export const AppConfig = {
     appointments: `${ServiceBaseUrl}/appointments`,
     employees: `${ServiceBaseUrl}/employees`,
     careGivers: `${ServiceBaseUrl}/care-givers`,
+    careGiverDocuments: `${ServiceBaseUrl}/care-giver-documents`,
     careGiverDocumentTypes: `${ServiceBaseUrl}/care-giver-document-types`,
     careGiverPaymentTypes: `${ServiceBaseUrl}/care-giver-payment-types`,
     appointmentTypes: `${ServiceBaseUrl}/appointment-types`,
