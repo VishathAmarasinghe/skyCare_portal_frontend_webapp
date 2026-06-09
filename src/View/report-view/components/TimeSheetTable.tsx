@@ -394,7 +394,7 @@ const TimeSheetTable = ({
     },
     {
       field: "comments",
-      headerName: "Comments",
+      headerName: "Travel (Km) & Expenses",
       width: 250,
     },
     {
@@ -503,7 +503,7 @@ const TimeSheetTable = ({
         endTime: row.endTime || "N/A",
         clientName: row.clientName || "N/A",
         shiftNotes: row.shiftNotes || "N/A",
-        comments: row.comments || "N/A",
+        "Travel (Km) & Expenses": row.comments || "N/A",
       };
 
       return exportRow;

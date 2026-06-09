@@ -736,14 +736,14 @@ const ShiftNoteForm: React.FC<AddNoteFormProps> = ({
                 />
               </Grid>
 
-              {/* Comments */}
+              {/* Travel (Km) & Expenses */}
               {authRoles?.includes(APPLICATION_ADMIN) && 
               <Grid item xs={12}>
                 <TextField
                   fullWidth
                   name="comments"
                   InputProps={{ readOnly: !isEditMode }}
-                  label="Comments"
+                  label="Travel (Km) & Expenses"
                   value={
                     authRoles?.includes(APPLICATION_CARE_GIVER)
                       ? (values.comments?.replace(/CLIENT:.*$/, "").trim() || "")

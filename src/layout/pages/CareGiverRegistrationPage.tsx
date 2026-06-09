@@ -20,7 +20,7 @@ import { enqueueSnackbarMessage } from "../../slices/commonSlice/common";
 import { Employee } from "../../slices/employeeSlice/employee";
 import { useAppDispatch, useAppSelector } from "../../slices/store";
 import React, { useEffect, useState } from "react";
-import { CREATE_CARE_GIVER_OUTSIDE_REGISTRATION } from "../../constants/index";
+import { CREATE_CARE_GIVER_OUTSIDE_REGISTRATION, DEFAULT_CARE_GIVER_TYPE } from "../../constants/index";
 import AgreementComponent from "../../component/common/AgreementComponent";
 import EmployeeBasicInfoForm from "../../View/employee-view/components/EmployeeBasicInfoForm";
 import CareGiverFileUploader from "../../View/employee-view/components/CareGiverFileUploader";
@@ -44,6 +44,9 @@ const CareGiverRegistrationPage = () => {
   const [IsCareGiverAddModalVisible, setIsCareGiverAddModalVisible] =
     useState<boolean>(false);
   const [isEditMode, setIsEditMode] = useState<boolean>(true);
+  const [careGiverType, setCareGiverType] = useState<string>(
+    DEFAULT_CARE_GIVER_TYPE
+  );
   const dispatch = useAppDispatch();
   const [isAgreed, setIsAgreed] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -141,6 +144,7 @@ const CareGiverRegistrationPage = () => {
           employee: employeeBasicInformation,
           careGiverID: "",
           status: "Active",
+          careGiverType,
         };
         dispatch(
           saveCareGiver({
@@ -224,6 +228,9 @@ const CareGiverRegistrationPage = () => {
               modalOpenState={IsCareGiverAddModalVisible}
               isEditMode={isEditMode}
               setIsEditMode={setIsEditMode}
+              showCareGiverType
+              careGiverType={careGiverType}
+              setCareGiverType={setCareGiverType}
             />
           </Stack>
           <Stack sx={{ display: activeStep === 1 ? "flex" : "none" }}>

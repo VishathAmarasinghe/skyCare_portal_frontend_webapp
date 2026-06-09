@@ -4,10 +4,18 @@ import { useAppSelector } from "@slices/store";
 import { capitalize } from "@utils/utils";
 import { Descriptions, DescriptionsProps } from "antd";
 import React from "react";
+import {
+  DEFAULT_CARE_GIVER_TYPE,
+  getCareGiverTypeChipStyle,
+  getCareGiverTypeLabel,
+} from "../../../../constants/index";
 
 const CareGiverbasicInfo = () => {
   const careGiverInfo = useAppSelector((state) => state.careGivers);
   const careGiver = careGiverInfo?.selectedCareGiver;
+  const careGiverType =
+    careGiver?.careGiverType?.trim() || DEFAULT_CARE_GIVER_TYPE;
+  const careGiverTypeChipStyle = getCareGiverTypeChipStyle(careGiverType);
 
   const getChipStyle = (status: string) => {
     switch (status) {
@@ -50,8 +58,19 @@ const CareGiverbasicInfo = () => {
     },
     {
       key: "6",
-      label: "Job Role",
-      children: capitalize(careGiver?.employee?.accessRole),
+      label: "Care Giver Type",
+      children: (
+        <Chip
+          label={getCareGiverTypeLabel(careGiverType)}
+          variant="outlined"
+          size="small"
+          sx={{
+            fontWeight: 600,
+            ...careGiverTypeChipStyle,
+            border: `1px solid ${careGiverTypeChipStyle.borderColor}`,
+          }}
+        />
+      ),
     },
     {
       key: "7",

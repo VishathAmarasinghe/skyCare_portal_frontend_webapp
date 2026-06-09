@@ -14,6 +14,7 @@ import { State } from "../../../types/types";
 import DocumentsTab from "../component/tabs/documents-tab";
 import CarePlanBillings from "../component/tabs/carePlanBillings-tab";
 import ClientTimeSheetTab from "../component/tabs/ClientTimeSheetTab";
+import ServiceAgreementsTab from "../../employee-view/components/ServiceAgreementsTab";
 
 const ClientInfoPanel = () => {
   const theme = useTheme();
@@ -29,6 +30,13 @@ const ClientInfoPanel = () => {
   useEffect(() => {
     fetchClientDetails();
   }, [clientID]);
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab === "10" || tab === "agreements") {
+      setTabValue("10");
+    }
+  }, [searchParams]);
 
   const fetchClientDetails = async () => {
     if (clientID && clientID !== "") {
@@ -93,10 +101,10 @@ const ClientInfoPanel = () => {
           />
         </Stack>
       </Stack>
-      <Stack width="100%" height="100%">
+      <Stack width="100%" height="90%" sx={{ minHeight: 0 }}>
         <TabContext value={tabValue}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <TabList onChange={handleChange} aria-label="client tabs">
+            <TabList onChange={handleChange} aria-label="client tabs" variant="scrollable" scrollButtons="auto">
               <Tab label="General Infomation" value="1" />
               <Tab label="Interest" value="2" />
               <Tab label="Notes" value="3" />
@@ -105,6 +113,7 @@ const ClientInfoPanel = () => {
               <Tab label="Care Plan Billings" value="8" />
               <Tab label="Documents" value="7" />
               <Tab label="Time Sheets" value="9" />
+              <Tab label="Service Agreements" value="10" />
             </TabList>
           </Box>
           <TabPanel sx={{height:"100%"}} value="1">
@@ -130,6 +139,15 @@ const ClientInfoPanel = () => {
           </TabPanel>
           <TabPanel sx={{height:"100%"}} value="9">
             <ClientTimeSheetTab/>
+          </TabPanel>
+          <TabPanel sx={{ height: "100%", overflow: "auto", p: 0 }} value="10">
+            {clientID && (
+              <ServiceAgreementsTab
+                recipientType="CLIENT"
+                recipientId={clientID}
+                recipientLabel={`${client?.firstName || ""} ${client?.lastName || ""}`.trim()}
+              />
+            )}
           </TabPanel>
         </TabContext>
       </Stack>

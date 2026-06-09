@@ -17,11 +17,11 @@ const SettingsCard: React.FC<SettingsCardProps> = ({ title, icon: Icon, subText,
   return (
     <Card
      onClick={() => {
-       if (setDrawerOpen && !drawerOpen) {
+       if (setDrawerOpen) {
          setDrawerOpen(true);
-         if (setDrawerType) {
-           setDrawerType(title);
-         }
+       }
+       if (setDrawerType) {
+         setDrawerType(title);
        }
      }}
       elevation={3}

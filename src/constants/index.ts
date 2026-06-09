@@ -14,6 +14,15 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+import CampaignIcon from "@mui/icons-material/Campaign";
+import DescriptionIcon from "@mui/icons-material/Description";
+import DataObjectIcon from "@mui/icons-material/DataObject";
+import EmailIcon from "@mui/icons-material/Email";
+import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
+import RuleIcon from "@mui/icons-material/Rule";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
+import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
 
 export const CREATE_CLIENT_STEPS = [
   "Basic Info",
@@ -21,7 +30,14 @@ export const CREATE_CLIENT_STEPS = [
   "Address Info"
 ];
 
-export const CREATE_CARE_PLAN_STEPS = ["Basic Info", "Goals", "Billing/budget"];
+export const CREATE_CARE_PLAN_STEPS = [
+  "Basic Info",
+  "Goals",
+  "Living Situation & Supports",
+  "Support Schedule",
+  "Risk & Outcomes",
+  "Billing & Budget",
+];
 
 export const CREATE_APPOINTMENT_STEPS = [
   "Basic Info",
@@ -30,6 +46,52 @@ export const CREATE_APPOINTMENT_STEPS = [
 ];
 
 export const CREATE_CARE_GIVER_STEPS = ["Basic Info", "File Uploads", "Salary"];
+
+export const DEFAULT_CARE_GIVER_TYPE = "Not specified";
+
+export const CARE_GIVER_TYPES = [
+  "Not specified",
+  "Casual",
+  "Contractor",
+  "Full-time",
+  "Part-time",
+] as const;
+
+export type CareGiverType = (typeof CARE_GIVER_TYPES)[number];
+
+export const getCareGiverTypeLabel = (careGiverType?: string | null): string =>
+  careGiverType?.trim() || DEFAULT_CARE_GIVER_TYPE;
+
+export const isUnspecifiedCareGiverType = (careGiverType?: string | null): boolean =>
+  getCareGiverTypeLabel(careGiverType) === DEFAULT_CARE_GIVER_TYPE;
+
+export const RETIRED_AGREEMENT_TEMPLATE_KEYS = ["worker_unspecified"] as const;
+
+export const isVisibleAgreementTemplate = (template: {
+  templateKey: string;
+  status?: string | null;
+}): boolean =>
+  template.status?.toLowerCase() !== "inactive" &&
+  !RETIRED_AGREEMENT_TEMPLATE_KEYS.includes(
+    template.templateKey as (typeof RETIRED_AGREEMENT_TEMPLATE_KEYS)[number]
+  );
+
+export const getCareGiverTypeChipStyle = (
+  careGiverType?: string | null
+): { backgroundColor: string; color: string; borderColor: string } => {
+  switch (getCareGiverTypeLabel(careGiverType)) {
+    case "Casual":
+      return { backgroundColor: "#E3F2FD", color: "#1565C0", borderColor: "#1565C0" };
+    case "Contractor":
+      return { backgroundColor: "#FFF3E0", color: "#E65100", borderColor: "#E65100" };
+    case "Full-time":
+      return { backgroundColor: "#E8F5E9", color: "#2E7D32", borderColor: "#2E7D32" };
+    case "Part-time":
+      return { backgroundColor: "#F3E5F5", color: "#6A1B9A", borderColor: "#6A1B9A" };
+    default:
+      return { backgroundColor: "#F5F5F5", color: "#616161", borderColor: "#9E9E9E" };
+  }
+};
 
 export const CREATE_CARE_GIVER_OUTSIDE_REGISTRATION = [
   "Basic Info",
@@ -136,5 +198,50 @@ export const SETTINGS_CARD_ARRAY: SettingsCardProps[] = [
     title: "Care Giver Salary",
     icon: MonetizationOnIcon,
     subText: "Track and update care giver salary details",
+  },
+  {
+    title: "Home Message",
+    icon: CampaignIcon,
+    subText: "Configure the home banner message for caregivers",
+  },
+  {
+    title: "Agreement Templates",
+    icon: DescriptionIcon,
+    subText: "Create and publish service agreement templates",
+  },
+  {
+    title: "Placeholder Reference",
+    icon: DataObjectIcon,
+    subText: "Browse merge field tokens for templates",
+  },
+  {
+    title: "Email Templates",
+    icon: EmailIcon,
+    subText: "Manage agreement email templates and test send",
+  },
+  {
+    title: "Organization Details",
+    icon: BusinessCenterIcon,
+    subText: "Configure organization info and logo for agreements",
+  },
+  {
+    title: "Assignment Rules",
+    icon: RuleIcon,
+    subText: "Map care giver types to agreement templates",
+  },
+  {
+    title: "Reference Materials",
+    icon: AttachFileIcon,
+    subText: "Upload documents to attach when sending agreements",
+  },
+  {
+    title: "Staff Training Settings",
+    icon: SchoolOutlinedIcon,
+    subText: "Configure training courses and providers",
+  },
+  {
+    title: "Behavior Support Settings",
+    icon: PsychologyOutlinedIcon,
+    subText: "Configure RP types, authorisation and intensity options",
   },
 ];

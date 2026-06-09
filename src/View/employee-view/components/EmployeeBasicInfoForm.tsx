@@ -15,8 +15,11 @@ import { useAppSelector } from "../../../slices/store";
 import { State } from "../../../types/types";
 import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
 import { Autocomplete } from "@react-google-maps/api";
-import { set } from "date-fns";
 import dayjs from "dayjs";
+import {
+  CARE_GIVER_TYPES,
+  DEFAULT_CARE_GIVER_TYPE,
+} from "../../../constants/index";
 
 // Validation schema using Yup
 const validationSchema = Yup.object({
@@ -68,6 +71,9 @@ interface EmployeeBasicInfoFormProps {
   modalOpenState: boolean;
   isEditMode: boolean;
   setIsEditMode: (value: boolean) => void;
+  showCareGiverType?: boolean;
+  careGiverType?: string;
+  setCareGiverType?: (value: string) => void;
 }
 
 const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
@@ -80,6 +86,9 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
   setProfilePic,
   setErrorState,
   errorState,
+  showCareGiverType = false,
+  careGiverType = DEFAULT_CARE_GIVER_TYPE,
+  setCareGiverType,
 }) => {
   const [profilePhotoPreview, setProfilePhotoPreview] = useState<string | null>(
     null
@@ -450,6 +459,29 @@ const EmployeeBasicInfoForm: React.FC<EmployeeBasicInfoFormProps> = ({
                       helperText={touched.joinDate && errors.joinDate}
                     />
                   </Grid>
+                  {showCareGiverType && (
+                    <Grid item xs={6}>
+                      <TextField
+                        select
+                        fullWidth
+                        label="Care Giver Type"
+                        value={careGiverType}
+                        onChange={(event) =>
+                          setCareGiverType?.(event.target.value)
+                        }
+                        InputProps={{
+                          readOnly: !isEditMode,
+                        }}
+                        disabled={!isEditMode}
+                      >
+                        {CARE_GIVER_TYPES.map((type) => (
+                          <MenuItem key={type} value={type}>
+                            {type}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    </Grid>
+                  )}
                   <Grid item xs={6}>
                     {/* <Field
                     as={TextField}

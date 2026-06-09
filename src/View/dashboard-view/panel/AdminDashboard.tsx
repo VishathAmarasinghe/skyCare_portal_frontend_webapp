@@ -1,216 +1,215 @@
-import { Box, Grid, Paper, Stack, Typography } from "@mui/material";
-import React, { useEffect } from "react";
-import { AccessAlarm } from "@mui/icons-material"; // Importing MUI icon
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  Box,
+  CircularProgress,
+  Grid,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
+import PeopleIcon from "@mui/icons-material/People";
+import HailIcon from "@mui/icons-material/Hail";
+import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
+import dayjs from "dayjs";
 import HelloCard from "../Components/HelloCard";
-import { DASHBOARD_CARDS } from "../../../constants/index";
 import DashboardCard from "../Components/DashboardCard";
+import DashboardDateRangeSelector, {
+  DateRangeValue,
+} from "../Components/admin-insights/DashboardDateRangeSelector";
+import TimesheetSubmissionsBarChart from "../Components/admin-insights/TimesheetSubmissionsBarChart";
+import DocumentComplianceSection from "../Components/admin-insights/DocumentComplianceSection";
+import KpiCard from "../Components/admin-insights/KpiCard";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
-import { fetchAdminDashboard } from "../../../slices/dashboardSlice/dashboard";
-import { DashboardCardProps } from "../../../types/types";
-import AppointmentBarChart from "../Components/AppointmentBarChart";
-import AppointmentTypePieChart from "../Components/AppointmentTypePieChart";
-import AppointmentProgressChart from "../Components/AppointmentProgressChart";
-import { theme } from "antd";
-import { fetchAppointmentTypes } from "@slices/appointmentSlice/appointment";
-import AppointmentCard from "../Components/AppointmentCard";
+import { fetchAdminInsightsDashboard } from "../../../slices/dashboardSlice/dashboard";
+import { State } from "../../../types/types";
+
+const defaultRange = (): DateRangeValue => {
+  const to = dayjs();
+  const from = to.subtract(13, "day");
+  return { from: from.format("YYYY-MM-DD"), to: to.format("YYYY-MM-DD") };
+};
 
 const AdminDashboard = () => {
   const dispatch = useAppDispatch();
   const dashboardSlice = useAppSelector((state) => state.dashboard);
+  const [dateRange, setDateRange] = useState<DateRangeValue>(defaultRange);
 
   useEffect(() => {
-    dispatch(fetchAdminDashboard());
-    dispatch(fetchAppointmentTypes());
-  }, [dispatch]);
+    dispatch(fetchAdminInsightsDashboard(dateRange));
+  }, [dispatch, dateRange.from, dateRange.to]);
 
-  const Item = ({ children }: { children: React.ReactNode }) => (
-    <Paper
-      sx={{
-        padding: 2,
-        width: "100%",
-        height: "100%",
-        color: "text.secondary",
-        backgroundColor: "white",
-        boxShadow: 1,
-        borderRadius: 2,
-      }}
-    >
-      {children}
-    </Paper>
-  );
+  const insights = dashboardSlice.adminInsights;
+  const loading = dashboardSlice.state === State.loading && !insights;
 
-  const dashboardCardInfo: DashboardCardProps[] = DASHBOARD_CARDS.map(
-    (card) => {
-      return {
-        ...card,
-        value:
-          typeof dashboardSlice.adminDashboard?.[
-            card.name as keyof typeof dashboardSlice.adminDashboard
-          ] === "number"
-            ? (dashboardSlice.adminDashboard[
-                card.name as keyof typeof dashboardSlice.adminDashboard
-              ] as number)
-            : 0,
-      };
+  const documentIssueTotal = useMemo(() => {
+    if (!insights?.documents?.summary) {
+      return 0;
     }
-  );
+    const s = insights.documents.summary;
+    return (
+      s.expired +
+      s.expiringIn30Days +
+      s.missingRequired +
+      s.pending +
+      s.missingExpiryDate
+    );
+  }, [insights]);
+
+  const changeLabel = useMemo(() => {
+    const change = insights?.timesheet?.changePercent;
+    if (change == null) {
+      return "New activity vs previous period";
+    }
+    const sign = change > 0 ? "+" : "";
+    return `${sign}${change.toFixed(1)}% vs previous period`;
+  }, [insights]);
 
   return (
-    <Stack
-      width="100%"
-      height="100%"
-      flexDirection="column"
-      alignItems="center"
-      data-aos="fade-right"
-      data-aos-duration="200"
-    >
-      <Stack width="100%" height="5%">
-        <Typography variant="h6">Dashboard</Typography>
-      </Stack>
-      <HelloCard />
-      <Stack
-        width={"100%"}
-        my={2}
-        height={"10%"}
-        flexDirection="row"
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <Grid container spacing={2}>
-          {dashboardCardInfo.map((card) => (
-            <Grid item xs={6} sm={3} md={3} key={card.title}>
-              <DashboardCard {...card} />
-            </Grid>
-          ))}
-        </Grid>
-      </Stack>
-      <Stack
+    <>
+      <Box
         sx={{
-          display: "grid",
-          // border: "2px solid red",
-          height: "100%",
+          display: { xs: "flex", lg: "none" },
           width: "100%",
-          gridTemplateColumns: {
-            xs: "repeat(1, 1fr)", // 1 column for mobile
-            sm: "repeat(1, 1fr)", // 1 column for small screens
-            md: "repeat(12, 1fr)", // 12-column grid for medium+ screens
-          },
-          gap: 2,
+          height: "100%",
+          alignItems: "center",
+          justifyContent: "center",
+          p: 4,
         }}
       >
-        {/* Left Top Item */}
-        <Stack
-          sx={{
-            gridColumn: { md: "span 4", xs: "span 12" },
-            // border: "2px solid green",
-            height: "100%",
-          }}
-        >
-          <Item>
-            <AppointmentProgressChart
-              todayCompletedCount={
-                dashboardSlice?.adminDashboard?.todayCompletedCount ?? 0
-              }
-              todayTotalCount={
-                dashboardSlice?.adminDashboard?.todayTotalCount ?? 0
-              }
-            />
-            
-          </Item>
-        </Stack>
+        <Typography variant="h6" color="text.secondary" textAlign="center">
+          The admin dashboard is designed for desktop. Please open this page on a
+          larger screen.
+        </Typography>
+      </Box>
 
-        <Stack
-          sx={{
-            gridColumn: { md: "span 4", xs: "span 12" },
-            // border: "2px solid green",
-            height: "100%",
-          }}
-        >
-          <Item>
-            <AppointmentTypePieChart
-              appointmentCountByType={
-                dashboardSlice?.adminDashboard?.appointmentCountByType || {}
-              }
-            />
-          </Item>
-        </Stack>
+      <Stack
+        width="100%"
+        height="100%"
+        gap={2}
+        sx={{
+          display: { xs: "none", lg: "flex" },
+          minWidth: 1100,
+          overflow: "auto",
+          pb: 3,
+        }}
+        data-aos="fade-right"
+        data-aos-duration="200"
+      >
+        <HelloCard />
 
-        {/* Right Item */}
-        <Box
-          sx={{
-            gridColumn: { md: "span 4", xs: "span 12" },
-            // border: "2px solid green",
-            height: "100%",
-            gridRow: "span 2",
-          }}
-        >
-          <Item>
-            <Stack height={"100%"}>
-              <Typography variant="h6" fontWeight={"bold"}>
-                Today Appointments
+        <Paper sx={{ p: 2, borderRadius: 2 }} elevation={0} variant="outlined">
+          <DashboardDateRangeSelector value={dateRange} onChange={setDateRange} />
+        </Paper>
+
+        {loading && (
+          <Stack alignItems="center" py={6}>
+            <CircularProgress />
+          </Stack>
+        )}
+
+        {!loading && insights && (
+          <>
+            <Grid container spacing={2}>
+              <Grid item lg={3} md={3} sm={6} xs={12}>
+                <DashboardCard
+                  title="Clients"
+                  name="clientCount"
+                  value={insights.clientCount}
+                  icon={PeopleIcon}
+                  urlLink="/Clients"
+                />
+              </Grid>
+              <Grid item lg={3} md={3} sm={6} xs={12}>
+                <DashboardCard
+                  title="Staff"
+                  name="staffCount"
+                  value={insights.staffCount}
+                  icon={HailIcon}
+                  urlLink="/Employees"
+                />
+              </Grid>
+              <Grid item lg={3} md={3} sm={6} xs={12}>
+                <DashboardCard
+                  title="Timesheets received"
+                  name="timesheetReceived"
+                  value={insights.timesheet.totalReceived}
+                  icon={AssignmentTurnedInIcon}
+                  urlLink="/Reports"
+                />
+              </Grid>
+              <Grid item lg={3} md={3} sm={6} xs={12}>
+                <DashboardCard
+                  title="Document issues"
+                  name="documentIssues"
+                  value={documentIssueTotal}
+                  icon={WarningAmberIcon}
+                  urlLink="/Employees"
+                />
+              </Grid>
+            </Grid>
+
+            <Stack gap={2}>
+              <Typography variant="h6" fontWeight={700}>
+                Timesheet intake
               </Typography>
-              <Stack
-                width="100%"
-                flexGrow={1}
-                height="100%"
-                flexDirection="column"
-                alignItems="center"
-                sx={{ overflowY: "auto", maxHeight: "100%" }}
-              >
-                {(dashboardSlice.adminDashboard?.todayAppointments?.length|| 0) > 0 ? (
-                  <AppointmentCard
-                    todayAppointments={
-                      dashboardSlice.adminDashboard?.todayAppointments || []
-                    }
-                  />
-                ) : (
-                  <Stack
-                    width="100%"
-                    height="100%"
-                    // border={"2px solid red"}
-                    justifyContent="center"
-                    alignItems="center"
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      textAlign: "center",
-                      mt: 10,
-                    }}
-                  >
-                    <AccessAlarm style={{ fontSize: 30 }} color="primary" />{" "}
-                    {/* MUI icon */}
-                    <Typography
-                      variant="h6"
-                      color="textSecondary"
-                      sx={{ marginTop: 2 }}
-                    >
-                      No Appointments
-                    </Typography>
-                  </Stack>
-                )}
+              <Stack direction="row" gap={2} flexWrap="wrap">
+                <KpiCard
+                  label="Received this period"
+                  value={insights.timesheet.totalReceived}
+                  helper={`${insights.timesheet.fromDate} to ${insights.timesheet.toDate}`}
+                />
+                <KpiCard
+                  label="Previous period"
+                  value={insights.timesheet.previousPeriodTotal}
+                  helper={`${insights.timesheet.previousFromDate} to ${insights.timesheet.previousToDate}`}
+                />
+                <KpiCard label="Change" value={changeLabel} />
+                <KpiCard
+                  label="Average per day"
+                  value={insights.timesheet.averagePerDay.toFixed(1)}
+                />
+                <KpiCard
+                  label="Peak day"
+                  value={insights.timesheet.peakDayCount}
+                  helper={insights.timesheet.peakDay}
+                />
               </Stack>
             </Stack>
-          </Item>
-        </Box>
 
-        {/* Left Bottom Item */}
-        <Stack
-          sx={{
-            gridColumn: { md: "span 8", xs: "span 12" },
-            // border: "2px solid pink",
-            height: "100%",
-          }}
-        >
-          <Item>
-            <AppointmentBarChart
-              twoWeekAppointmentCount={
-                dashboardSlice?.adminDashboard?.twoWeekAppointmentCount || {}
-              }
-            />
-          </Item>
-        </Stack>
+            <Paper sx={{ p: 2.5, borderRadius: 2 }} elevation={0} variant="outlined">
+              <TimesheetSubmissionsBarChart
+                submissionsByDay={insights.timesheet.submissionsByDay}
+              />
+            </Paper>
+
+            <DocumentComplianceSection documents={insights.documents} />
+
+            {(insights.agreements.awaitingSignature > 0 ||
+              insights.agreements.expired > 0) && (
+              <Paper sx={{ p: 0, borderRadius: 2, backgroundColor:"transparent" }} elevation={0} >
+                <Typography variant="h6" fontWeight={700} mb={1}>
+                  Service agreements
+                </Typography>
+                <Stack direction="row" gap={2} flexWrap="wrap">
+                  <KpiCard
+                    label="Awaiting signature"
+                    value={insights.agreements.awaitingSignature}
+                  />
+                  <KpiCard label="Sent" value={insights.agreements.sent} />
+                  <KpiCard label="Viewed" value={insights.agreements.viewed} />
+                  <KpiCard
+                    label="Expired"
+                    value={insights.agreements.expired}
+                    accent="error.main"
+                  />
+                </Stack>
+              </Paper>
+            )}
+          </>
+        )}
       </Stack>
-    </Stack>
+    </>
   );
 };
 

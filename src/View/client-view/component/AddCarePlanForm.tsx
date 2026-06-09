@@ -51,6 +51,15 @@ const AddCarePlanForm = ({
   >([]);
   const [goalOutcomeList, setGoalOutcomeList] = useState<GoalOutcome[]>([]);
   const [searchParams] = useSearchParams();
+  const defaultSchedule = [
+    { scheduleID: "", day: "Monday", supportType: "", hours: 0, rate: 0 },
+    { scheduleID: "", day: "Tuesday", supportType: "", hours: 0, rate: 0 },
+    { scheduleID: "", day: "Wednesday", supportType: "", hours: 0, rate: 0 },
+    { scheduleID: "", day: "Thursday", supportType: "", hours: 0, rate: 0 },
+    { scheduleID: "", day: "Friday", supportType: "", hours: 0, rate: 0 },
+    { scheduleID: "", day: "Saturday", supportType: "", hours: 0, rate: 0 },
+    { scheduleID: "", day: "Sunday", supportType: "", hours: 0, rate: 0 },
+  ];
   const [initialValues, setInitialValues] = useState<CarePlan>({
     title: "",
     careplanID: "",
@@ -60,6 +69,14 @@ const AddCarePlanForm = ({
     clientID: "",
     carePlanLongTermGoals: [],
     carePlanBillables: [],
+    currentLivingSituation: "",
+    supportsFundedCore: "",
+    supportsFundedCapacityBuilding: "",
+    supportsFundedCapital: "",
+    supportSchedule: defaultSchedule,
+    riskManagement: "",
+    expectedOutcomes: "",
+    billingBudgetNotes: "",
     status: "Active",
   });
   const clientID = searchParams.get("clientID");
@@ -98,8 +115,14 @@ const AddCarePlanForm = ({
 
   useEffect(() => {
     if (carePlanSlice.selectedCarePlan) {
+      const incomingSchedule =
+        carePlanSlice.selectedCarePlan.supportSchedule &&
+        carePlanSlice.selectedCarePlan.supportSchedule.length > 0
+          ? carePlanSlice.selectedCarePlan.supportSchedule
+          : defaultSchedule;
       setInitialValues({
         ...carePlanSlice.selectedCarePlan,
+        supportSchedule: incomingSchedule,
         carePlanStatusID: carePlanStatusList.find(
           (status) =>
             status.status === carePlanSlice?.selectedCarePlan?.carePlanStatusID
@@ -115,6 +138,14 @@ const AddCarePlanForm = ({
         clientID: "",
         carePlanLongTermGoals: [],
         carePlanBillables: [],
+        currentLivingSituation: "",
+        supportsFundedCore: "",
+        supportsFundedCapacityBuilding: "",
+        supportsFundedCapital: "",
+        supportSchedule: defaultSchedule,
+        riskManagement: "",
+        expectedOutcomes: "",
+        billingBudgetNotes: "",
         status: "Active",
       });
     }
@@ -557,9 +588,219 @@ const AddCarePlanForm = ({
 
             {/* Step 2 */}
             {activeStepper === 2 && (
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <Typography variant="body1" fontWeight={600}>
+                    Current Living Situation
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    name="currentLivingSituation"
+                    label="Current Living Situation"
+                    InputProps={{ readOnly: !isEditMode }}
+                    value={values.currentLivingSituation}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    multiline
+                    minRows={4}
+                  />
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Typography variant="body1" fontWeight={600} mb={1}>
+                    Supports Funded In The Plan
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <TextField
+                    fullWidth
+                    name="supportsFundedCore"
+                    label="Core Supports"
+                    InputProps={{ readOnly: !isEditMode }}
+                    value={values.supportsFundedCore}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    multiline
+                    minRows={4}
+                  />
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <TextField
+                    fullWidth
+                    name="supportsFundedCapacityBuilding"
+                    label="Capacity Building Supports"
+                    InputProps={{ readOnly: !isEditMode }}
+                    value={values.supportsFundedCapacityBuilding}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    multiline
+                    minRows={4}
+                  />
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <TextField
+                    fullWidth
+                    name="supportsFundedCapital"
+                    label="Capital Supports"
+                    InputProps={{ readOnly: !isEditMode }}
+                    value={values.supportsFundedCapital}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    multiline
+                    minRows={4}
+                  />
+                </Grid>
+              </Grid>
+            )}
+
+            {/* Step 3 */}
+            {activeStepper === 3 && (
+              <FieldArray name="supportSchedule">
+                {() => (
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <Typography variant="body1" fontWeight={600}>
+                        Support Schedule
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Grid container spacing={1}>
+                        <Grid item xs={12} md={3}>
+                          <Typography variant="caption" fontWeight={700}>
+                            Day
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={12} md={3}>
+                          <Typography variant="caption" fontWeight={700}>
+                            Support Type
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={12} md={3}>
+                          <Typography variant="caption" fontWeight={700}>
+                            Hours
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={12} md={3}>
+                          <Typography variant="caption" fontWeight={700}>
+                            Rate
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+
+                    {(values.supportSchedule || []).map((row, index) => (
+                      <Grid item xs={12} key={index}>
+                        <Grid container spacing={1} alignItems="center">
+                          <Grid item xs={12} md={3}>
+                            <TextField
+                              fullWidth
+                              name={`supportSchedule[${index}].day`}
+                              value={row.day}
+                              InputProps={{ readOnly: true }}
+                              label="Day"
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={3}>
+                            <TextField
+                              fullWidth
+                              name={`supportSchedule[${index}].supportType`}
+                              value={row.supportType}
+                              InputProps={{ readOnly: !isEditMode }}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              label="Support Type"
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={3}>
+                            <TextField
+                              fullWidth
+                              type="number"
+                              name={`supportSchedule[${index}].hours`}
+                              value={row.hours}
+                              InputProps={{ readOnly: !isEditMode }}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              label="Hours"
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={3}>
+                            <TextField
+                              fullWidth
+                              type="number"
+                              name={`supportSchedule[${index}].rate`}
+                              value={row.rate}
+                              InputProps={{ readOnly: !isEditMode }}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              label="Rate"
+                            />
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    ))}
+                  </Grid>
+                )}
+              </FieldArray>
+            )}
+
+            {/* Step 4 */}
+            {activeStepper === 4 && (
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <Typography variant="body1" fontWeight={600}>
+                    Risk Management
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    name="riskManagement"
+                    label="Risk Management"
+                    InputProps={{ readOnly: !isEditMode }}
+                    value={values.riskManagement}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    multiline
+                    minRows={4}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="body1" fontWeight={600}>
+                    Expected Outcomes
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    name="expectedOutcomes"
+                    label="Expected Outcomes"
+                    InputProps={{ readOnly: !isEditMode }}
+                    value={values.expectedOutcomes}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    multiline
+                    minRows={4}
+                  />
+                </Grid>
+              </Grid>
+            )}
+
+            {/* Step 5 */}
+            {activeStepper === 5 && (
               <FieldArray name="carePlanBillables">
                 {({ push, remove }) => (
                   <div>
+                    <Grid container spacing={2} mb={2}>
+                      <Grid item xs={12}>
+                        <TextField
+                          fullWidth
+                          name="billingBudgetNotes"
+                          label="Billing And Budget Notes"
+                          InputProps={{ readOnly: !isEditMode }}
+                          value={values.billingBudgetNotes}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          multiline
+                          minRows={3}
+                        />
+                      </Grid>
+                    </Grid>
                     {values.carePlanBillables.map((_, index) => (
                       <Stack
                         key={index}

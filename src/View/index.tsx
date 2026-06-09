@@ -21,6 +21,9 @@ const clientDashboardView = lazy(()=>import("./client-dashboard-view"));
 const clientPastAppointmentView = lazy(()=>import("./client-pastAppointment-view"));
 const skyChatView  = lazy(()=>import("./communication-channel-view"));
 const clientPendingAppointments = lazy(()=>import("./client-pendingAppointment-view"));
+const myAgreementsView = lazy(() => import("./my-agreements-view"));
+const staffTrainingView = lazy(() => import("./staff-training-view"));
+const behaviorSupportView = lazy(() => import("./behavior-support-view"));
 
 //views
 export const View = {
@@ -42,5 +45,8 @@ export const View = {
   clientTimeSheetView,
   skyChatView,
   clientPastAppointmentView,
-  clientPendingAppointments
+  clientPendingAppointments,
+  myAgreementsView,
+  staffTrainingView,
+  behaviorSupportView,
 };
