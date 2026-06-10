@@ -499,6 +499,38 @@ export const updateEmployee = createAsyncThunk(
   }
 );
 
+export const deletePendingEmployee = createAsyncThunk(
+  "employee/deletePendingEmployee",
+  async (employeeID: string, { dispatch, rejectWithValue }) => {
+    try {
+      await APIService.getInstance().delete(
+        `${AppConfig.serviceUrls.employees}/${employeeID}`
+      );
+      dispatch(
+        enqueueSnackbarMessage({
+          message: SnackMessage.success.deleteEmployee,
+          type: "success",
+        })
+      );
+      return employeeID;
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
+      }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.deleteEmployee
+              : String(error.response?.data?.message || error.response?.data),
+          type: "error",
+        })
+      );
+      return rejectWithValue(error.response?.data);
+    }
+  }
+);
+
 // Update employee activation state
 export const updateEmployeeState = createAsyncThunk(
   "employee/updateEmployeeState",
@@ -723,6 +755,11 @@ const EmployeeSlice = createSlice({
       .addCase(updateEmployeeState.rejected, (state) => {
         state.updateState = State.failed;
         state.stateMessage = "Failed to update employee status!";
+      })
+      .addCase(deletePendingEmployee.fulfilled, (state, action) => {
+        state.employees = state.employees.filter(
+          (employee) => employee.employeeID !== action.payload
+        );
       });
   },
 });

@@ -28,8 +28,13 @@ import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import BulkSendAgreementsDialog from "./BulkSendAgreementsDialog";
 import {
   Employee,
+  deletePendingEmployee,
+  fetchEmployeesByRole,
   fetchSingleEmployee,
 } from "../../../slices/employeeSlice/employee";
+import { fetchCareGivers } from "@slices/careGiverSlice/careGiver";
+import { useConfirmationModalContext } from "../../../context/DialogContext";
+import { ConfirmationType } from "../../../types/types";
 import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
 import { fetchSingleCareGiverByEmployeeID } from "@slices/careGiverSlice/careGiver";
 import {
@@ -95,6 +100,31 @@ const EmployeeTable = ({}: ClientTableProps) => {
   const [bulkSendOpen, setBulkSendOpen] = useState(false);
   const auth = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
+  const { showConfirmation } = useConfirmationModalContext();
+
+  const refreshEmployees = (accessRole: string) => {
+    const role = accessRole === "Admin" ? "Admin" : "CareGiver";
+    dispatch(fetchEmployeesByRole(role));
+    if (role === "CareGiver") {
+      dispatch(fetchCareGivers());
+    }
+  };
+
+  const confirmDeletePendingEmployee = (employee: Employee) => {
+    const name = `${employee.firstName || ""} ${employee.lastName || ""}`.trim() || employee.email;
+    showConfirmation(
+      "Delete pending employee",
+      `Are you sure you want to delete "${name}"? This will permanently remove their pending profile. This action cannot be undone.`,
+      "accept" as ConfirmationType,
+      async () => {
+        await dispatch(deletePendingEmployee(employee.employeeID)).unwrap();
+        setSelectedRows((current) => current.filter((id) => id !== employee.employeeID));
+        refreshEmployees(employee.accessRole);
+      },
+      "Delete",
+      "Cancel"
+    );
+  };
 
   const careGiverTypeByEmployeeId = React.useMemo(() => {
     const map = new Map<string, string>();
@@ -273,11 +303,15 @@ const EmployeeTable = ({}: ClientTableProps) => {
     {
       field: "action",
       headerName: "Action",
-      width: 110,
+      width: 150,
+      headerAlign: "center",
+      align: "center",
       renderCell: (params) => {
         const navigate = useNavigate();
+        const isPending = params.row.status === "Pending";
+
         return (
-          <Stack flexDirection="row">
+          <Stack flexDirection="row" justifyContent="center">
             <IconButton
               aria-label="view"
               onClick={() => {
@@ -295,6 +329,15 @@ const EmployeeTable = ({}: ClientTableProps) => {
             >
               <RemoveRedEyeOutlinedIcon />
             </IconButton>
+            {isPending && (
+              <IconButton
+                aria-label="delete pending employee"
+                color="error"
+                onClick={() => confirmDeletePendingEmployee(params.row as Employee)}
+              >
+                <DeleteIcon />
+              </IconButton>
+            )}
           </Stack>
         );
       },

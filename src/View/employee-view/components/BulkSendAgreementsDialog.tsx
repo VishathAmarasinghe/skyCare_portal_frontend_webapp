@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Button,
@@ -18,7 +18,8 @@ import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import { bulkSendAgreements } from "../../../slices/agreementInstanceSlice/agreementInstance";
 import { fetchEmailTemplates } from "../../../slices/emailTemplateSlice/emailTemplate";
-import { fetchApplicableTemplates } from "../../../slices/agreementInstanceSlice/agreementInstance";
+import { fetchAgreementTemplates } from "../../../slices/agreementTemplateSlice/agreementTemplate";
+import { isVisibleAgreementTemplate } from "../../../constants";
 
 interface BulkSendAgreementsDialogProps {
   open: boolean;
@@ -44,6 +45,7 @@ const BulkSendAgreementsDialog: React.FC<BulkSendAgreementsDialogProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const { templates: emailTemplates } = useAppSelector((state) => state.emailTemplates);
+  const { templates: agreementTemplates } = useAppSelector((state) => state.agreementTemplates);
   const [templateKey, setTemplateKey] = useState("");
   const [emailTemplateId, setEmailTemplateId] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
@@ -52,14 +54,23 @@ const BulkSendAgreementsDialog: React.FC<BulkSendAgreementsDialogProps> = ({
     null
   );
 
+  const templateOptions = useMemo(
+    () =>
+      agreementTemplates
+        .filter(
+          (template) =>
+            template.audience === recipientType &&
+            isVisibleAgreementTemplate(template) &&
+            Boolean(template.publishedVersionId)
+        )
+        .sort((a, b) => a.displayName.localeCompare(b.displayName)),
+    [agreementTemplates, recipientType]
+  );
+
   useEffect(() => {
     if (open) {
       dispatch(fetchEmailTemplates());
-      if (recipientIds[0]) {
-        dispatch(
-          fetchApplicableTemplates({ recipientType, recipientId: recipientIds[0] })
-        );
-      }
+      dispatch(fetchAgreementTemplates());
       const d = new Date();
       d.setDate(d.getDate() + 14);
       setExpiryDate(d.toISOString().slice(0, 10));
@@ -67,19 +78,23 @@ const BulkSendAgreementsDialog: React.FC<BulkSendAgreementsDialogProps> = ({
       setTemplateKey("");
       setEmailTemplateId("");
     }
-  }, [open, recipientIds, recipientType, dispatch]);
-
-  const { applicableTemplates } = useAppSelector((state) => state.agreementInstances);
+  }, [open, dispatch]);
 
   useEffect(() => {
-    if (applicableTemplates.length && !templateKey) {
-      setTemplateKey(applicableTemplates[0].templateKey);
+    if (!open || templateOptions.length === 0) {
+      return;
     }
+    if (!templateKey || !templateOptions.some((template) => template.templateKey === templateKey)) {
+      setTemplateKey(templateOptions[0].templateKey);
+    }
+  }, [open, templateOptions, templateKey]);
+
+  useEffect(() => {
     const invite = emailTemplates.find((t) => t.category === "AGREEMENT_INVITE") || emailTemplates[0];
     if (invite && !emailTemplateId) {
       setEmailTemplateId(invite.templateID);
     }
-  }, [applicableTemplates, emailTemplates, templateKey, emailTemplateId]);
+  }, [emailTemplates, emailTemplateId]);
 
   const handleSend = async () => {
     setSubmitting(true);
@@ -124,13 +139,20 @@ const BulkSendAgreementsDialog: React.FC<BulkSendAgreementsDialogProps> = ({
               value={templateKey}
               onChange={(e) => setTemplateKey(e.target.value)}
             >
-              {applicableTemplates.map((t) => (
-                <MenuItem key={t.templateKey} value={t.templateKey}>
-                  {t.displayName}
+              {templateOptions.map((template) => (
+                <MenuItem key={template.templateKey} value={template.templateKey}>
+                  {template.displayName}
+                  {template.careGiverType ? ` (${template.careGiverType})` : ""}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
+          {templateOptions.length === 0 && (
+            <Alert severity="warning">
+              No published agreement templates are available. Publish templates in Settings →
+              Agreements before bulk sending.
+            </Alert>
+          )}
           <FormControl size="small" fullWidth>
             <InputLabel>Email template</InputLabel>
             <Select
@@ -170,7 +192,13 @@ const BulkSendAgreementsDialog: React.FC<BulkSendAgreementsDialogProps> = ({
         <Button
           variant="contained"
           startIcon={<SendOutlinedIcon />}
-          disabled={!templateKey || !emailTemplateId || submitting || recipientIds.length === 0}
+          disabled={
+            !templateKey ||
+            !emailTemplateId ||
+            submitting ||
+            recipientIds.length === 0 ||
+            templateOptions.length === 0
+          }
           onClick={handleSend}
         >
           {submitting ? "Sending…" : "Send all"}
