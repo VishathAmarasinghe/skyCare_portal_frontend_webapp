@@ -73,6 +73,11 @@ import {
   updateDocumentTypes,
   updatePaymentTypes,
 } from "../../../slices/careGiverSlice/careGiver";
+import {
+  HomeMessageSetting,
+  updateHomeMessageSetting,
+} from "../../../slices/appSettingsSlice/appSettings";
+import { State } from "../../../types/types";
 
 interface SettingsDrawerProps {
   open: boolean;
@@ -117,6 +122,7 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
   const appointmentSlice = useAppSelector((state) => state?.appointments);
   const incidentSlice = useAppSelector((state) => state?.incident);
   const careGiverSlice = useAppSelector((state) => state?.careGivers);
+  const appSettingsSlice = useAppSelector((state) => state?.appSettings);
   const dispatch = useAppDispatch();
   const [selectedRowData, setSelectedRowData] = useState<string | null>(null);
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>(
@@ -146,6 +152,10 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
     appointmentTypeStatus: "Active",
     paymentName: "",
     paymentStatus: "Active",
+
+    homeMessageEnabled: false,
+    homeMessageType: "GENERAL",
+    homeMessageText: "",
   });
 
   let columns: GridColDef[];
@@ -179,6 +189,9 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
       break;
     case "Care Giver Salary":
       columns = paymentType;
+      break;
+    case "Home Message":
+      columns = [];
       break;
     default:
       columns = [];
@@ -232,8 +245,24 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
       appointmentTypeStatus: "Active",
       paymentName: "",
       paymentStatus: "Active",
+
+      homeMessageEnabled: false,
+      homeMessageType: "GENERAL",
+      homeMessageText: "",
     });
   };
+
+  React.useEffect(() => {
+    if (settingType === "Home Message") {
+      const current = appSettingsSlice?.homeMessage;
+      setFormState((prev) => ({
+        ...prev,
+        homeMessageEnabled: current?.enabled ?? false,
+        homeMessageType: (current?.type ?? "GENERAL") as any,
+        homeMessageText: current?.message ?? "",
+      }));
+    }
+  }, [settingType, appSettingsSlice?.homeMessage]);
 
   const handleAdd = () => {
     if (settingType === "Languages") {
@@ -447,6 +476,15 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
           })
         );
       }
+    } else if (settingType === "Home Message") {
+      const payload: HomeMessageSetting = {
+        enabled: !!formState.homeMessageEnabled,
+        type: (formState.homeMessageType as any) || "GENERAL",
+        message: formState.homeMessageEnabled
+          ? (formState.homeMessageText || "").trim()
+          : "",
+      };
+      dispatch(updateHomeMessageSetting(payload));
     }
     setSelectedRowData(null);
     resetForm();
@@ -630,6 +668,9 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
           appointmentTypeStatus: "Active",
           paymentName: "",
           paymentStatus: "Active",
+          homeMessageEnabled: false,
+          homeMessageType: "GENERAL",
+          homeMessageText: "",
         });
       }
     } else {
@@ -1073,8 +1114,74 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
         </Stack>
       )}
 
+      {settingType === "Home Message" && (
+        <Stack spacing={2}>
+          <FormControlLabel
+            control={
+              <Switch
+                name="homeMessageEnabled"
+                checked={formState.homeMessageEnabled}
+                onChange={handleInputChange}
+              />
+            }
+            label="Enable Home Message"
+          />
+          <FormControl fullWidth>
+            <InputLabel id="home-message-type-label">Message Type</InputLabel>
+            <Select
+              labelId="home-message-type-label"
+              label="Message Type"
+              name="homeMessageType"
+              value={formState.homeMessageType}
+              onChange={handleSelectChange}
+              variant="outlined"
+              fullWidth
+            >
+              <MenuItem value="GENERAL">General</MenuItem>
+              <MenuItem value="IMPORTANT">Important</MenuItem>
+              <MenuItem value="WARNING">Warning</MenuItem>
+            </Select>
+            <FormHelperText>
+              Caregiver app will color this banner based on the selected type.
+            </FormHelperText>
+          </FormControl>
+          <TextField
+            label="Message"
+            name="homeMessageText"
+            value={formState.homeMessageText}
+            onChange={handleInputChange}
+            variant="outlined"
+            fullWidth
+            multiline
+            minRows={3}
+            disabled={!formState.homeMessageEnabled}
+            placeholder="Type the message shown on caregiver home screen..."
+          />
+          <Stack
+            width={"100%"}
+            direction="column"
+            spacing={2}
+            justifyItems={"flex-end"}
+            alignItems={"flex-end"}
+            mb={2}
+          >
+            <Button
+              sx={{ marginBottom: 2 }}
+              variant="contained"
+              color="primary"
+              onClick={handleAdd}
+              disabled={appSettingsSlice?.updateState === State.loading}
+            >
+              {appSettingsSlice?.updateState === State.loading
+                ? "Saving..."
+                : "Save Home Message"}
+            </Button>
+          </Stack>
+        </Stack>
+      )}
+
       <Stack width={"100%"} my={1}>
-        {settingType !== "Incident Questions" && (
+        {settingType !== "Incident Questions" && settingType !== "Home Message" && (
           <DataGrid
             density="compact"
             pagination

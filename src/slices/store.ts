@@ -16,6 +16,15 @@ import IncidentReducer from "./incidentSlice/incident";
 import DashboardReducer from "./dashboardSlice/dashboard";
 import ChatReducer from './chatSlice/chat';
 import SignatureReducer from './signatureSlice/signature';
+import AppSettingsReducer from "./appSettingsSlice/appSettings";
+import AgreementTemplateReducer from "./agreementTemplateSlice/agreementTemplate";
+import OrganizationReducer from "./organizationSlice/organization";
+import EmailTemplateReducer from "./emailTemplateSlice/emailTemplate";
+import AgreementInstanceReducer from "./agreementInstanceSlice/agreementInstance";
+import AgreementReferenceMaterialReducer from "./agreementReferenceMaterialSlice/agreementReferenceMaterial";
+import ComplianceLookupReducer from "./complianceLookupSlice/complianceLookup";
+import StaffTrainingReducer from "./staffTrainingSlice/staffTraining";
+import BehaviorSupportReducer from "./behaviorSupportSlice/behaviorSupport";
 
 export const store = configureStore({
   reducer: {
@@ -35,6 +44,15 @@ export const store = configureStore({
     dashboard: DashboardReducer,
     chat: ChatReducer,
     signature: SignatureReducer,
+    appSettings: AppSettingsReducer,
+    agreementTemplates: AgreementTemplateReducer,
+    organization: OrganizationReducer,
+    emailTemplates: EmailTemplateReducer,
+    agreementInstances: AgreementInstanceReducer,
+    agreementReferenceMaterials: AgreementReferenceMaterialReducer,
+    complianceLookup: ComplianceLookupReducer,
+    staffTraining: StaffTrainingReducer,
+    behaviorSupport: BehaviorSupportReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

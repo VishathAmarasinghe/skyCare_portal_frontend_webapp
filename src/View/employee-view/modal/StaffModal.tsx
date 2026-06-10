@@ -12,6 +12,7 @@ import {
 import {
   CREATE_CARE_GIVER_STEPS,
   CREATE_CLIENT_STEPS,
+  DEFAULT_CARE_GIVER_TYPE,
 } from "../../../constants/index";
 import { State } from "../../../types/types";
 import EmployeeBasicInfoForm from "../components/EmployeeBasicInfoForm";
@@ -23,6 +24,7 @@ import {
   CareGiverPayments,
   saveCareGiver,
   updateCareGiver,
+  fetchCareGivers,
 } from "../../../slices/careGiverSlice/careGiver";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import {
@@ -69,6 +71,9 @@ const StaffModal = ({
   const [employeeState, setEmployeeState] = useState<
     "Activated" | "Deactivated" | "Pending"
   >("Pending");
+  const [careGiverType, setCareGiverType] = useState<string>(
+    DEFAULT_CARE_GIVER_TYPE
+  );
   const authRole = useAppSelector((state) => state?.auth?.roles);
   const [employeeBasicInformation, setEmployeeBasicInformation] =
     useState<Employee>({
@@ -146,6 +151,7 @@ const StaffModal = ({
       setIsCareGiverAddModalVisible(false);
       setIsEditMode(false);
       dispatch(fetchEmployeesByRole("CareGiver"));
+      dispatch(fetchCareGivers());
     }
   }, [careGiverStatus?.submitState, careGiverStatus?.updateState]);
 
@@ -153,8 +159,19 @@ const StaffModal = ({
     setActiveStep(0);
     if (!IsCareGiverAddModalVisible) {
       resetEmployeeBasicInformation();
+      setCareGiverType(DEFAULT_CARE_GIVER_TYPE);
     }
   }, [IsCareGiverAddModalVisible]);
+
+  useEffect(() => {
+    if (careGiverStatus?.selectedCareGiver) {
+      setCareGiverType(
+        careGiverStatus.selectedCareGiver.careGiverType || DEFAULT_CARE_GIVER_TYPE
+      );
+    } else if (!IsCareGiverAddModalVisible) {
+      setCareGiverType(DEFAULT_CARE_GIVER_TYPE);
+    }
+  }, [careGiverStatus?.selectedCareGiver, IsCareGiverAddModalVisible]);
 
   useEffect(() => {
     if (careGiverStatus.submitState === State.success) {
@@ -173,6 +190,11 @@ const StaffModal = ({
   };
 
   const checkIsRequiredFilesUploaded = () => {
+    // Existing employees may already have documents on the server; only enforce on create.
+    if (careGiverStatus?.selectedCareGiver) {
+      return true;
+    }
+
     const requiredFiles = careGiverStatus?.careGiverDocumentTypes?.filter(
       (doc) => doc?.status === "Active" && doc?.required === true
     );
@@ -184,81 +206,72 @@ const StaffModal = ({
           file?.document != ""
       )
     );
-    if (careGiverStatus?.selectedCareGiver) {
-      if (allRequiredFilesUploaded) {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      if (
-        allRequiredFilesUploaded &&
-        requiredFiles.length <= uploadFiles.length
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    }
+
+    return (
+      !!allRequiredFilesUploaded &&
+      (requiredFiles?.length ?? 0) <= uploadFiles.length
+    );
   };
 
   useEffect(() => {
-    if (errorState === "Validated") {
-      if (
-        careGiverStatus?.selectedCareGiver == null &&
-        checkIsRequiredFilesUploaded()
-      ) {
-        const careGiverPayload: CareGiver = {
-          careGiverDocuments: careGiverDocuments?.filter(
-            (doc) => doc?.document != "" && doc?.document != null
-          ),
-          careGiverPayments: careGiverPayments,
-          employee: employeeBasicInformation,
-          careGiverID: "",
-          status: employeeBasicInformation?.status,
-        };
-        dispatch(
-          saveCareGiver({
-            careGiverData: careGiverPayload,
-            profilePhoto: profilePic,
-            uploadFiles: uploadFiles,
-          })
-        );
-        setErrorState("Pending");
-      } else if (
-        careGiverStatus?.selectedCareGiver != null &&
-        checkIsRequiredFilesUploaded()
-      ) {
-        const documentsForUpdate = careGiverDocuments?.filter((doc) => {
-          if (doc?.document == null || doc?.document === "") {
-            return false;
-          }
-          return uploadFiles.some((file) => file.name === doc.document);
-        });
-        const careGiverPayload: CareGiver = {
-          careGiverDocuments: documentsForUpdate,
-          careGiverPayments: careGiverPayments,
-          employee: { ...employeeBasicInformation, status: employeeState },
-          careGiverID: careGiverStatus.selectedCareGiver.careGiverID,
-          status: employeeState,
-        };
-        dispatch(
-          updateCareGiver({
-            careGiverData: careGiverPayload,
-            profilePhoto: profilePic,
-            uploadFiles: uploadFiles,
-          })
-        );
-      } else {
+    if (errorState !== "Validated") {
+      return;
+    }
+
+    if (careGiverStatus?.selectedCareGiver == null) {
+      if (!checkIsRequiredFilesUploaded()) {
         dispatch(
           enqueueSnackbarMessage({
             message:
-              "Please upload atleaset required documents, and fill all the required fields",
+              "Please upload all required documents and fill all required fields.",
             type: "error",
           })
         );
+        setErrorState("Pending");
+        return;
       }
+
+      const careGiverPayload: CareGiver = {
+        careGiverDocuments: careGiverDocuments?.filter(
+          (doc) => doc?.document != "" && doc?.document != null
+        ),
+        careGiverPayments: careGiverPayments,
+        employee: employeeBasicInformation,
+        careGiverID: "",
+        status: employeeBasicInformation?.status,
+        careGiverType,
+      };
+      dispatch(
+        saveCareGiver({
+          careGiverData: careGiverPayload,
+          profilePhoto: profilePic,
+          uploadFiles: uploadFiles,
+        })
+      );
+    } else {
+      const documentsForUpdate = careGiverDocuments?.filter((doc) => {
+        if (doc?.document == null || doc?.document === "") {
+          return false;
+        }
+        return uploadFiles.some((file) => file.name === doc.document);
+      });
+      const careGiverPayload: CareGiver = {
+        careGiverDocuments: documentsForUpdate,
+        careGiverPayments: careGiverPayments,
+        employee: { ...employeeBasicInformation, status: employeeState },
+        careGiverID: careGiverStatus.selectedCareGiver.careGiverID,
+        status: employeeState,
+        careGiverType,
+      };
+      dispatch(
+        updateCareGiver({
+          careGiverData: careGiverPayload,
+          profilePhoto: profilePic,
+          uploadFiles: uploadFiles,
+        })
+      );
     }
+
     setErrorState("Pending");
   }, [errorState]);
 
@@ -266,11 +279,13 @@ const StaffModal = ({
   const handleSave = async () => {
     document.getElementById("employeeMainData")?.click();
     employeeBasicInformation.accessRole = "CareGiver";
-    setCareGiverDocuments(
-      careGiverDocuments?.filter(
-        (doc) => doc?.document != "" && doc?.document != null
-      )
-    );
+    if (!careGiverStatus?.selectedCareGiver) {
+      setCareGiverDocuments(
+        careGiverDocuments?.filter(
+          (doc) => doc?.document != "" && doc?.document != null
+        )
+      );
+    }
   };
 
   const handleStatusChange = (newStatus: "Activated" | "Deactivated" | "Pending") => {
@@ -395,6 +410,9 @@ const StaffModal = ({
             modalOpenState={IsCareGiverAddModalVisible}
             isEditMode={isEditMode}
             setIsEditMode={setIsEditMode}
+            showCareGiverType
+            careGiverType={careGiverType}
+            setCareGiverType={setCareGiverType}
           />
         </Stack>
         <Stack sx={{ display: activeStep === 1 ? "flex" : "none" }}>

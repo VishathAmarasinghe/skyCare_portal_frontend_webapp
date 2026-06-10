@@ -56,7 +56,16 @@ export type SettingsCardTitle =
   | "Incident Status"
   | "Incident Questions"
   | "Care Giver File Uploads"
-  | "Care Giver Salary";
+  | "Care Giver Salary"
+  | "Home Message"
+  | "Agreement Templates"
+  | "Placeholder Reference"
+  | "Email Templates"
+  | "Organization Details"
+  | "Assignment Rules"
+  | "Reference Materials"
+  | "Staff Training Settings"
+  | "Behavior Support Settings";
 
 
   export interface Chat {

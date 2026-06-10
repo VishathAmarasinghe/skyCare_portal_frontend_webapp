@@ -261,7 +261,7 @@ const ClientTimeSheetTable = ({
       endTime: row.endTime || "N/A",
       clientName: row.clientName || "N/A",
       shiftNotes: row.shiftNotes || "N/A",
-      comments: row.comments || "N/A",
+      "Travel (Km) & Expenses": row.comments || "N/A",
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(processedRows);

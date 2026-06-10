@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Stack, Typography, useTheme } from "@mui/material";
+import { useSearchParams } from "react-router-dom";
 import { SETTINGS_CARD_ARRAY } from "../../constants/index";
 import SettingsCard from "./components/SettingsCard";
 import SettingsDrawer from "./Drawers/SettingsDrawer";
+import AgreementSettingsDrawer, {
+  isAgreementSetting,
+} from "./AgreementSettingsDrawer";
+import ComplianceSettingsDrawer, {
+  isComplianceSetting,
+} from "./ComplianceSettingsDrawer";
 import { SettingsCardTitle } from "../../types/types";
 import { useAppDispatch, useAppSelector } from "../../slices/store";
 import {
@@ -22,11 +29,15 @@ import {
   fetchDocumentTypes,
   fetchPaymentTypes,
 } from "../../slices/careGiverSlice/careGiver";
+import { fetchHomeMessageSetting } from "../../slices/appSettingsSlice/appSettings";
 
 const SettingsView = () => {
   const theme = useTheme();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [drawerType, setDrawerType] = useState<SettingsCardTitle | null>(null);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+  const agreementTemplateId = searchParams.get("templateId");
+  const agreementVersionId = searchParams.get("versionId");
 
   const selectorSlice = useAppSelector((state) => state?.selector);
   const carePlanSlice = useAppSelector((state) => state?.carePlans);
@@ -35,6 +46,23 @@ const SettingsView = () => {
   const careGiverSlice = useAppSelector((state) => state?.careGivers);
 
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (searchParams.get("agreementTemplates")) {
+      setDrawerType("Agreement Templates");
+      setDrawerOpen(true);
+    }
+  }, [searchParams]);
+
+  const handleAgreementDrawerClose = () => {
+    setDrawerOpen(false);
+    if (searchParams.get("agreementTemplates")) {
+      searchParams.delete("agreementTemplates");
+      searchParams.delete("templateId");
+      searchParams.delete("versionId");
+      setSearchParams(searchParams, { replace: true });
+    }
+  };
 
   useEffect(() => {
     if (drawerOpen) {
@@ -49,6 +77,7 @@ const SettingsView = () => {
       dispatch(fetchAllIncidentActionTypeQuestions());
       dispatch(fetchDocumentTypes());
       dispatch(fetchPaymentTypes());
+      dispatch(fetchHomeMessageSetting());
     }
   }, [
     drawerOpen,
@@ -110,10 +139,22 @@ const SettingsView = () => {
       </Grid>
       <SettingsDrawer
         onClose={() => setDrawerOpen(false)}
-        open={drawerOpen}
+        open={drawerOpen && !isAgreementSetting(drawerType) && !isComplianceSetting(drawerType)}
         title={drawerType}
         settingType={drawerType}
         setSettingType={setDrawerType}
+      />
+      <ComplianceSettingsDrawer
+        open={drawerOpen && isComplianceSetting(drawerType)}
+        title={drawerType}
+        onClose={() => setDrawerOpen(false)}
+      />
+      <AgreementSettingsDrawer
+        open={drawerOpen && isAgreementSetting(drawerType)}
+        title={drawerType}
+        onClose={handleAgreementDrawerClose}
+        templateId={agreementTemplateId}
+        versionId={agreementVersionId}
       />
     </Stack>
   );

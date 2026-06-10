@@ -13,12 +13,14 @@ import StaffModal from "../modal/StaffModal";
 import { fetchSingleEmployee } from "@slices/employeeSlice/employee";
 import TimeSheetTabs from "../components/tabs/TimeSheetTabs";
 import CareGiverAppointments from "../components/tabs/CareGiverAppointments";
+import ServiceAgreementsTab from "../components/ServiceAgreementsTab";
 
 const CareGiverTab = () => {
   const theme = useTheme();
   const [tabValue, setTabValue] = useState("1");
   const [searchParams] = useSearchParams();
   const employeeID = searchParams.get("employeeID");
+  const tabParam = searchParams.get("tab");
   const dispatch = useAppDispatch();
   const careGiverInfo = useAppSelector((state) => state.careGivers);
   const careGiver = careGiverInfo?.selectedCareGiver;
@@ -28,6 +30,12 @@ const CareGiverTab = () => {
   useEffect(() => {
     fetchCareGiverDetails();
   }, [employeeID]);
+
+  useEffect(() => {
+    if (tabParam === "2" || tabParam === "documents") {
+      setTabValue("2");
+    }
+  }, [tabParam, employeeID]);
 
   const fetchCareGiverDetails = async () => {
     if (employeeID && employeeID !== "") {
@@ -110,6 +118,7 @@ const CareGiverTab = () => {
               <Tab label="Payments" value="3" />
               <Tab label="Time Sheets" value="4" />
               <Tab label="Appointments" value="5" />
+              <Tab label="Service Agreements" value="6" />
             </TabList>
           </Box>
           <TabPanel sx={{height:"100%"}}  value="1">
@@ -126,6 +135,16 @@ const CareGiverTab = () => {
           </TabPanel>
           <TabPanel sx={{height:"100%"}} value="5">
             <CareGiverAppointments/>
+          </TabPanel>
+          <TabPanel sx={{height:"100%"}} value="6">
+            {careGiver?.careGiverID && (
+              <ServiceAgreementsTab
+                recipientType="WORKER"
+                recipientId={careGiver.careGiverID}
+                careGiverType={careGiver.careGiverType}
+                recipientLabel={`${careGiver?.employee?.firstName || ""} ${careGiver?.employee?.lastName || ""}`.trim()}
+              />
+            )}
           </TabPanel>
         </TabContext>
       </Stack>

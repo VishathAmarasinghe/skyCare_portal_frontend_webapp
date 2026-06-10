@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { APIService } from "../../utils/apiService";
 import { State } from "../../types/types";
 import { AppConfig } from "../../config/config";
@@ -6,43 +6,111 @@ import { enqueueSnackbarMessage } from "../commonSlice/common";
 import { SnackMessage } from "../../config/constant";
 import axios, { HttpStatusCode } from "axios";
 import {
-  AppointmentAddress,
   AppointmentCalenderType,
 } from "../appointmentSlice/appointment";
 
-export interface Dashboard {
+export interface LegacyAdminDashboard {
   clientCount: number;
   serviceCount: number;
   staffCount: number;
   adminCount: number;
-
   todayTotalCount: number;
   todayCompletedCount: number;
   todayAppointments: AppointmentCalenderType[];
-
   twoWeekAppointmentCount: Record<string, number>;
   appointmentCountByType: Record<string, number>;
 }
 
-export interface CareGiverDashboard {
-  twoWeekAppointmentCount: Record<string, number>;
+export interface TimesheetInsights {
+  fromDate: string;
+  toDate: string;
+  previousFromDate: string;
+  previousToDate: string;
+  totalReceived: number;
+  previousPeriodTotal: number;
+  changePercent: number | null;
+  averagePerDay: number;
+  peakDay: string;
+  peakDayCount: number;
+  submissionsByDay: Record<string, number>;
+}
+
+export interface DocumentComplianceSummary {
+  expired: number;
+  expiringIn7Days: number;
+  expiringIn30Days: number;
+  missingRequired: number;
+  pending: number;
+  missingExpiryDate: number;
+}
+
+export type DocumentIssueType =
+  | "EXPIRED"
+  | "EXPIRING"
+  | "MISSING_REQUIRED"
+  | "PENDING"
+  | "NO_EXPIRY_DATE";
+
+export interface DocumentComplianceItem {
+  employeeId: string;
+  careGiverId: string;
+  employeeName: string;
+  careGiverType: string;
+  documentTypeId: string;
+  documentTypeName: string;
+  status: string | null;
+  expDate: string | null;
+  daysUntilExpiry: number | null;
+  issueType: DocumentIssueType;
+  required: boolean;
+}
+
+export interface DocumentComplianceInsights {
+  summary: DocumentComplianceSummary;
+  expiryTimelineByWeek: Record<string, number>;
+  expiringByDocumentType: Record<string, number>;
+  attentionItems: DocumentComplianceItem[];
+  items: DocumentComplianceItem[];
+}
+
+export interface AgreementAttention {
+  awaitingSignature: number;
+  sent: number;
+  viewed: number;
+  expired: number;
+}
+
+export interface AdminInsightsDashboard {
+  staffCount: number;
+  clientCount: number;
+  timesheet: TimesheetInsights;
+  documents: DocumentComplianceInsights;
+  agreements: AgreementAttention;
+}
+
+export interface AdminInsightsQuery {
+  from: string;
+  to: string;
 }
 
 interface DashboardState {
   state: State;
   submitState: State;
-  adminDashboard: Dashboard | null;
-  careGiverDashboard: CareGiverDashboard | null;
+  adminInsights: AdminInsightsDashboard | null;
+  adminInsightsQuery: AdminInsightsQuery | null;
+  adminDashboard: LegacyAdminDashboard | null;
+  careGiverDashboard: { twoWeekAppointmentCount: Record<string, number> } | null;
   stateMessage: string | null;
   errorMessage: string | null;
   backgroundProcess: boolean;
   backgroundProcessMessage: string | null;
 }
 
-// Define the initial state for the ResourceSlice
 const initialState: DashboardState = {
   state: State.idle,
   submitState: State.idle,
+  adminInsights: null,
+  adminInsightsQuery: null,
   adminDashboard: null,
   careGiverDashboard: null,
   stateMessage: "",
@@ -51,9 +119,8 @@ const initialState: DashboardState = {
   backgroundProcessMessage: null,
 };
 
-// Fetch single resources
 export const fetchAdminDashboard = createAsyncThunk(
-  "incident/fetchAdminDashboard",
+  "dashboard/fetchAdminDashboard",
   async (_, { dispatch, rejectWithValue }) => {
     try {
       const response = await APIService.getInstance().get(
@@ -70,7 +137,7 @@ export const fetchAdminDashboard = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchDashboard
-              : String((error as any).response?.data),
+              : String((error as { response?: { data?: unknown } }).response?.data),
           type: "error",
         })
       );
@@ -79,9 +146,35 @@ export const fetchAdminDashboard = createAsyncThunk(
   }
 );
 
-// Fetch single resources
+export const fetchAdminInsightsDashboard = createAsyncThunk(
+  "dashboard/fetchAdminInsightsDashboard",
+  async (query: AdminInsightsQuery, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await APIService.getInstance().get(
+        `${AppConfig.serviceUrls.dashboard}/admin/insights?from=${query.from}&to=${query.to}`
+      );
+      return { data: response.data as AdminInsightsDashboard, query };
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
+      }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            axios.isAxiosError(error) &&
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.fetchDashboard
+              : String((error as { response?: { data?: unknown } }).response?.data),
+          type: "error",
+        })
+      );
+      throw error;
+    }
+  }
+);
+
 export const fetchCareGiverDashboard = createAsyncThunk(
-  "incident/fetchCareGiverDashboard",
+  "dashboard/fetchCareGiverDashboard",
   async (employeeID: string, { dispatch, rejectWithValue }) => {
     try {
       const response = await APIService.getInstance().get(
@@ -98,7 +191,7 @@ export const fetchCareGiverDashboard = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.fetchDashboard
-              : String((error as any).response?.data),
+              : String((error as { response?: { data?: unknown } }).response?.data),
           type: "error",
         })
       );
@@ -107,7 +200,6 @@ export const fetchCareGiverDashboard = createAsyncThunk(
   }
 );
 
-// Define the slice with reducers and extraReducers
 const DashboardSlice = createSlice({
   name: "dashboard",
   initialState,
@@ -127,6 +219,20 @@ const DashboardSlice = createSlice({
         state.state = State.failed;
         state.stateMessage = "Failed to fetch AdminDashboard!";
       })
+      .addCase(fetchAdminInsightsDashboard.pending, (state) => {
+        state.state = State.loading;
+        state.stateMessage = "Fetching admin dashboard..";
+      })
+      .addCase(fetchAdminInsightsDashboard.fulfilled, (state, action) => {
+        state.state = State.success;
+        state.stateMessage = "Successfully fetched admin dashboard!";
+        state.adminInsights = action.payload.data;
+        state.adminInsightsQuery = action.payload.query;
+      })
+      .addCase(fetchAdminInsightsDashboard.rejected, (state) => {
+        state.state = State.failed;
+        state.stateMessage = "Failed to fetch AdminDashboard!";
+      })
       .addCase(fetchCareGiverDashboard.pending, (state) => {
         state.state = State.loading;
         state.stateMessage = "Fetching caregiver dashboard..";
@@ -143,5 +249,4 @@ const DashboardSlice = createSlice({
   },
 });
 
-export const {} = DashboardSlice.actions;
 export default DashboardSlice.reducer;

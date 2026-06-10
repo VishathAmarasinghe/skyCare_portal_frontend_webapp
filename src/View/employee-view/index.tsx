@@ -83,6 +83,7 @@ const EmployeeView = () => {
     }
     if (userType === "Staff") {
       dispatch(fetchEmployeesByRole("CareGiver"));
+      dispatch(fetchCareGivers());
     }
   };
 

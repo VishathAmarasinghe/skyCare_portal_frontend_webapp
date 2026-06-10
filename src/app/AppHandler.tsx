@@ -14,6 +14,12 @@ import { checkAuthToken } from "../slices/authSlice/auth";
 import { State } from "../types/types";
 import CareGiverRegistrationPage from "../layout/pages/CareGiverRegistrationPage";
 import ForgetPassword from "../layout/pages/ForgetPassword";
+import PublicSignPage from "../View/public-sign/PublicSignPage";
+
+const publicSignRoute = {
+  path: "/sign/:token",
+  element: <PublicSignPage />,
+};
 
 const AppHandler = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -36,6 +42,7 @@ const AppHandler = () => {
   }, [message, timestamp]);
 
   const router = createBrowserRouter([
+    publicSignRoute,
     {
       path: "/",
       element: <Layout />,
@@ -45,6 +52,7 @@ const AppHandler = () => {
   ]);
 
   const preAuthRoutes = createBrowserRouter([
+    publicSignRoute,
     {
       path: "/",
       element: <LoginPage />,

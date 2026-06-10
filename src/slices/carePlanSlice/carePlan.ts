@@ -30,6 +30,14 @@ export interface CarePlanBillable {
   amount: number;
 }
 
+export interface CarePlanSupportSchedule {
+  scheduleID: string;
+  day: string;
+  supportType: string;
+  hours: number;
+  rate: number;
+}
+
 export interface CarePlanBillablesWithCarePlan{
   carePlanBilables: CarePlanBillable;
   carePlan:CarePlan;
@@ -44,6 +52,14 @@ export interface CarePlan {
   clientID: string;
   carePlanLongTermGoals: LongTermGoal[];
   carePlanBillables: CarePlanBillable[];
+  currentLivingSituation?: string;
+  supportsFundedCore?: string;
+  supportsFundedCapacityBuilding?: string;
+  supportsFundedCapital?: string;
+  supportSchedule?: CarePlanSupportSchedule[];
+  riskManagement?: string;
+  expectedOutcomes?: string;
+  billingBudgetNotes?: string;
   status: string;
 }
 

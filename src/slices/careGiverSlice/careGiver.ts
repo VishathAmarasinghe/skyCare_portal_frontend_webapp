@@ -40,6 +40,7 @@ export interface CareGiver {
   careGiverID: string;
   employee: Employee;
   status: string;
+  careGiverType?: string;
   careGiverPayments: CareGiverPayments[];
   careGiverDocuments: CareGiverDocuments[];
 }

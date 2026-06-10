@@ -15,7 +15,6 @@ import {
   CareGiverDocuments,
   fetchDocumentTypes,
   fetchSingleCareGiverByEmployeeID,
-  saveCareGiver,
   updateCareGiver,
 } from "../../slices/careGiverSlice/careGiver";
 import { useAppDispatch, useAppSelector } from "../../slices/store";
@@ -27,6 +26,7 @@ import { enqueueSnackbarMessage } from "../../slices/commonSlice/common";
 import {
   CREATE_CARE_GIVER_INTERNAL_UPDATE,
   CREATE_CARE_GIVER_OUTSIDE_REGISTRATION,
+  DEFAULT_CARE_GIVER_TYPE,
 } from "../../constants/index";
 import EmployeeBasicInfoForm from "../employee-view/components/EmployeeBasicInfoForm";
 import CareGiverFileUploader from "../employee-view/components/CareGiverFileUploader";
@@ -147,6 +147,8 @@ const CareGiverInfoView = () => {
           },
           careGiverID: careGiverStatus.selectedCareGiver.careGiverID,
           status: employeeSlice?.selectedEmployee?.status || "",
+          careGiverType:
+            careGiverStatus.selectedCareGiver.careGiverType || DEFAULT_CARE_GIVER_TYPE,
         };
         dispatch(
           updateCareGiver({

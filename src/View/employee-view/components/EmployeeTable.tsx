@@ -10,6 +10,7 @@ import {
 import {
   Avatar,
   Box,
+  Button,
   Chip,
   Checkbox,
   FormControlLabel,
@@ -19,39 +20,70 @@ import {
   useTheme,
 } from "@mui/material";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
+import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
+import BulkSendAgreementsDialog from "./BulkSendAgreementsDialog";
 import {
   Employee,
+  deletePendingEmployee,
+  fetchEmployeesByRole,
   fetchSingleEmployee,
 } from "../../../slices/employeeSlice/employee";
+import { fetchCareGivers } from "@slices/careGiverSlice/careGiver";
+import { useConfirmationModalContext } from "../../../context/DialogContext";
+import { ConfirmationType } from "../../../types/types";
 import { FILE_DOWNLOAD_BASE_URL } from "../../../config/config";
 import { fetchSingleCareGiverByEmployeeID } from "@slices/careGiverSlice/careGiver";
+import {
+  DEFAULT_CARE_GIVER_TYPE,
+  getCareGiverTypeChipStyle,
+  getCareGiverTypeLabel,
+} from "../../../constants/index";
 
 interface CustomToolbarProps {
   showDeactivated: boolean;
   onToggleDeactivated: (checked: boolean) => void;
+  selectedCount: number;
+  onBulkSend: () => void;
 }
 
-function CustomToolbar({ showDeactivated, onToggleDeactivated }: CustomToolbarProps) {
+function CustomToolbar({
+  showDeactivated,
+  onToggleDeactivated,
+  selectedCount,
+  onBulkSend,
+}: CustomToolbarProps) {
   return (
-    <GridToolbarContainer>
-      <GridToolbarColumnsButton />
-      <GridToolbarFilterButton />
-      <GridToolbarQuickFilter placeholder="Search" />
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={showDeactivated}
-            onChange={(e) => onToggleDeactivated(e.target.checked)}
-            size="small"
-          />
-        }
-        label="Show deactivated employees"
-        sx={{ marginLeft: 2 }}
-      />
+    <GridToolbarContainer sx={{ justifyContent: "space-between" }}>
+      <Stack direction="row" alignItems="center" spacing={1}>
+        <GridToolbarColumnsButton />
+        <GridToolbarFilterButton />
+        <GridToolbarQuickFilter placeholder="Search" />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={showDeactivated}
+              onChange={(e) => onToggleDeactivated(e.target.checked)}
+              size="small"
+            />
+          }
+          label="Show deactivated employees"
+          sx={{ marginLeft: 2 }}
+        />
+      </Stack>
+      {selectedCount > 0 && (
+        <Button
+          variant="contained"
+          size="small"
+          startIcon={<SendOutlinedIcon />}
+          onClick={onBulkSend}
+        >
+          Bulk send agreements ({selectedCount})
+        </Button>
+      )}
     </GridToolbarContainer>
   );
 }
@@ -61,9 +93,65 @@ interface ClientTableProps {}
 const EmployeeTable = ({}: ClientTableProps) => {
   const theme = useTheme();
   const employeeSlice = useAppSelector((state) => state.employees);
+  const careGiverSlice = useAppSelector((state) => state.careGivers);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [showDeactivated, setShowDeactivated] = useState<boolean>(false);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [bulkSendOpen, setBulkSendOpen] = useState(false);
+  const auth = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
+  const { showConfirmation } = useConfirmationModalContext();
+
+  const refreshEmployees = (accessRole: string) => {
+    const role = accessRole === "Admin" ? "Admin" : "CareGiver";
+    dispatch(fetchEmployeesByRole(role));
+    if (role === "CareGiver") {
+      dispatch(fetchCareGivers());
+    }
+  };
+
+  const confirmDeletePendingEmployee = (employee: Employee) => {
+    const name = `${employee.firstName || ""} ${employee.lastName || ""}`.trim() || employee.email;
+    showConfirmation(
+      "Delete pending employee",
+      `Are you sure you want to delete "${name}"? This will permanently remove their pending profile. This action cannot be undone.`,
+      "accept" as ConfirmationType,
+      async () => {
+        await dispatch(deletePendingEmployee(employee.employeeID)).unwrap();
+        setSelectedRows((current) => current.filter((id) => id !== employee.employeeID));
+        refreshEmployees(employee.accessRole);
+      },
+      "Delete",
+      "Cancel"
+    );
+  };
+
+  const careGiverTypeByEmployeeId = React.useMemo(() => {
+    const map = new Map<string, string>();
+    careGiverSlice.careGivers?.forEach((careGiver) => {
+      const employeeId = careGiver?.employee?.employeeID;
+      if (employeeId) {
+        map.set(
+          employeeId,
+          careGiver.careGiverType?.trim() || DEFAULT_CARE_GIVER_TYPE
+        );
+      }
+    });
+    return map;
+  }, [careGiverSlice.careGivers]);
+
+  const selectedCareGiverIds = React.useMemo(
+    () =>
+      selectedRows
+        .map((employeeId) => {
+          const cg = careGiverSlice.careGivers?.find(
+            (c) => c.employee?.employeeID === employeeId
+          );
+          return cg?.careGiverID;
+        })
+        .filter(Boolean) as string[],
+    [selectedRows, careGiverSlice.careGivers]
+  );
 
   useEffect(() => {
     let filteredEmployees = employeeSlice.employees;
@@ -136,24 +224,40 @@ const EmployeeTable = ({}: ClientTableProps) => {
     },
     {
       field: "accessRole",
-      headerName: "Occupation",
-      width: 150,
+      headerName: "Care Giver Type",
+      width: 140,
       headerAlign: "center",
       align: "center",
       renderCell: (params) => {
-        const role = params.value; // Role value (e.g., "Admin" or "CareGiver")
-        let color: "default" | "success" | "primary" = "default";
+        const role = params.value;
 
-        // Assign colors based on the role
+        if (role === "CareGiver") {
+          const careGiverType =
+            careGiverTypeByEmployeeId.get(params.row.employeeID) ||
+            DEFAULT_CARE_GIVER_TYPE;
+          const chipStyle = getCareGiverTypeChipStyle(careGiverType);
+
+          return (
+            <Chip
+              size="small"
+              label={getCareGiverTypeLabel(careGiverType)}
+              variant="outlined"
+              sx={{
+                fontWeight: 600,
+                ...chipStyle,
+                border: `1px solid ${chipStyle.borderColor}`,
+              }}
+            />
+          );
+        }
+
+        let color: "default" | "success" | "primary" = "default";
         switch (role) {
           case "Admin":
-            color = "success"; // Green color
-            break;
-          case "CareGiver":
-            color = "primary"; // Blue color
+            color = "success";
             break;
           default:
-            color = "default"; // Default grey
+            color = "default";
         }
 
         return (
@@ -199,11 +303,15 @@ const EmployeeTable = ({}: ClientTableProps) => {
     {
       field: "action",
       headerName: "Action",
-      width: 110,
+      width: 150,
+      headerAlign: "center",
+      align: "center",
       renderCell: (params) => {
         const navigate = useNavigate();
+        const isPending = params.row.status === "Pending";
+
         return (
-          <Stack flexDirection="row">
+          <Stack flexDirection="row" justifyContent="center">
             <IconButton
               aria-label="view"
               onClick={() => {
@@ -221,6 +329,15 @@ const EmployeeTable = ({}: ClientTableProps) => {
             >
               <RemoveRedEyeOutlinedIcon />
             </IconButton>
+            {isPending && (
+              <IconButton
+                aria-label="delete pending employee"
+                color="error"
+                onClick={() => confirmDeletePendingEmployee(params.row as Employee)}
+              >
+                <DeleteIcon />
+              </IconButton>
+            )}
           </Stack>
         );
       },
@@ -242,11 +359,18 @@ const EmployeeTable = ({}: ClientTableProps) => {
             paginationModel: { pageSize: 8 },
           },
         }}
+        checkboxSelection
+        disableRowSelectionOnClick
+        rowSelectionModel={selectedRows}
+        onRowSelectionModelChange={(model) => setSelectedRows(model as string[])}
+        isRowSelectable={(params) => params.row.accessRole === "CareGiver"}
         slots={{
           toolbar: () => (
             <CustomToolbar
               showDeactivated={showDeactivated}
               onToggleDeactivated={setShowDeactivated}
+              selectedCount={selectedCareGiverIds.length}
+              onBulkSend={() => setBulkSendOpen(true)}
             />
           ),
         }}
@@ -261,6 +385,17 @@ const EmployeeTable = ({}: ClientTableProps) => {
           "& .MuiDataGrid-columnSeparator": {
             display: "none",
           },
+        }}
+      />
+      <BulkSendAgreementsDialog
+        open={bulkSendOpen}
+        onClose={() => setBulkSendOpen(false)}
+        recipientType="WORKER"
+        recipientIds={selectedCareGiverIds}
+        adminEmployeeId={auth.userInfo?.userID ?? ""}
+        onComplete={() => {
+          setBulkSendOpen(false);
+          setSelectedRows([]);
         }}
       />
     </Box>

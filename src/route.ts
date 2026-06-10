@@ -17,7 +17,9 @@ import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import SendIcon from '@mui/icons-material/Send';
 import TaskOutlinedIcon from '@mui/icons-material/TaskOutlined';
-import PendingActionsIcon from '@mui/icons-material/PendingActions';
+import DescriptionIcon from "@mui/icons-material/Description";
+import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
+import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
 
 // APP imports
 import { View } from "./View/index";
@@ -165,6 +167,13 @@ export const routes: RouteObjectWithRole[] = [
     ],
   },
   {
+    path: "/my-agreements",
+    text: "Agreements",
+    icon: React.createElement(DescriptionIcon),
+    element: React.createElement(View.myAgreementsView),
+    allowRoles: [APPLICATION_CARE_GIVER, APPLICATION_CLIENT],
+  },
+  {
     path: "/time-sheets",
     text: "Time Sheets",
     icon: React.createElement(SpeakerNotesIcon),
@@ -184,6 +193,20 @@ export const routes: RouteObjectWithRole[] = [
     icon: React.createElement(TaskOutlinedIcon),
     element: React.createElement(View.clientPastAppointmentView),
     allowRoles: [APPLICATION_CLIENT],
+  },
+  {
+    path: "/staff-training",
+    text: "Staff Training",
+    icon: React.createElement(SchoolOutlinedIcon),
+    element: React.createElement(View.staffTrainingView),
+    allowRoles: [APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN, APPLICATION_CARE_GIVER],
+  },
+  {
+    path: "/behavior-support",
+    text: "Behavior Support",
+    icon: React.createElement(PsychologyOutlinedIcon),
+    element: React.createElement(View.behaviorSupportView),
+    allowRoles: [APPLICATION_ADMIN, APPLICATION_SUPER_ADMIN, APPLICATION_CARE_GIVER],
   },
   {
     path: "/chat",

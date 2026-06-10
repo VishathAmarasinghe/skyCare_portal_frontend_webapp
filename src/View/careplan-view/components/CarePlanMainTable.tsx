@@ -15,12 +15,14 @@ import {
   IconButton,
   Stack,
   Typography,
+  Tooltip,
   useTheme,
 } from "@mui/material";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import {
   CarePlan,
@@ -30,6 +32,7 @@ import { State } from "../../../types/types";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { Employee } from "../../../slices/employeeSlice/employee";
 import { Client } from "../../../slices/clientSlice/client";
+import { AppConfig } from "../../../config/config";
 
 function CustomToolbar() {
   return (
@@ -54,12 +57,32 @@ const CarePlanMainTable = ({
   const [carePlans, setCarePlans] = useState<CarePlan[]>([]);
   const theme = useTheme();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const employees = useAppSelector(
     (state) => state?.employees?.metaAllEmployees
   );
   const clients = useAppSelector((state) => state?.clients?.clients);
   const [employeeArray, setEmployeeArray] = useState<Employee[]>([]);
   const [clientArray, setClientArray] = useState<Client[]>([]);
+
+  const downloadPdf = async (careplanID: string) => {
+    const response = await fetch(
+      `${AppConfig.serviceUrls.carePlans}/${careplanID}/ndis-support-plan.pdf`,
+      { method: "GET" }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to download PDF");
+    }
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `NDIS-Support-Plan-${careplanID}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  };
 
   useEffect(() => {
     setClientArray(clients);
@@ -125,18 +148,30 @@ const CarePlanMainTable = ({
       width: 150,
       align: "center",
       renderCell: (params) => {
-        const navigate = useNavigate();
         return (
           <Stack flexDirection="row">
-            <IconButton
-              aria-label="view"
-              onClick={() => {
-                setIsCarePlanModalVisible(true);
-                dispatch(fetchSingleCarePlan(params.row.careplanID));
-              }}
-            >
-              <RemoveRedEyeOutlinedIcon />
-            </IconButton>
+            <Tooltip title="View Care Plan">
+              <IconButton
+                aria-label="view"
+                onClick={() => {
+                  setIsCarePlanModalVisible(true);
+                  dispatch(fetchSingleCarePlan(params.row.careplanID));
+                }}
+              >
+                <RemoveRedEyeOutlinedIcon />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Download Plan PDF">
+              <IconButton
+                aria-label="download-pdf"
+                onClick={async () => {
+                  await downloadPdf(params.row.careplanID);
+                }}
+              >
+                <PictureAsPdfIcon />
+              </IconButton>
+            </Tooltip>
           </Stack>
         );
       },
