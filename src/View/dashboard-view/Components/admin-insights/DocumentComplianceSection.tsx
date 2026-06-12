@@ -23,7 +23,6 @@ const ISSUE_LABELS: Record<DocumentIssueType, string> = {
   EXPIRED: "Expired",
   EXPIRING: "Expiring soon",
   MISSING_REQUIRED: "Missing required",
-  PENDING: "Pending review",
   NO_EXPIRY_DATE: "No expiry date",
 };
 
@@ -31,7 +30,6 @@ const ISSUE_COLORS: Record<DocumentIssueType, "error" | "warning" | "info" | "de
   EXPIRED: "error",
   EXPIRING: "warning",
   MISSING_REQUIRED: "error",
-  PENDING: "info",
   NO_EXPIRY_DATE: "warning",
 };
 
@@ -40,7 +38,6 @@ type FilterTab =
   | "EXPIRED"
   | "EXPIRING"
   | "MISSING_REQUIRED"
-  | "PENDING"
   | "NO_EXPIRY_DATE";
 
 interface DocumentComplianceSectionProps {
@@ -141,7 +138,6 @@ const DocumentComplianceSection: React.FC<DocumentComplianceSectionProps> = ({
           value={summary.missingRequired}
           accent="error.dark"
         />
-        <KpiCard label="Pending review" value={summary.pending} accent="info.main" />
         <KpiCard
           label="No expiry date"
           value={summary.missingExpiryDate}
@@ -222,7 +218,6 @@ const DocumentComplianceSection: React.FC<DocumentComplianceSectionProps> = ({
             label={`Missing (${summary.missingRequired})`}
             value="MISSING_REQUIRED"
           />
-          <Tab label={`Pending (${summary.pending})`} value="PENDING" />
           <Tab
             label={`No expiry (${summary.missingExpiryDate})`}
             value="NO_EXPIRY_DATE"
