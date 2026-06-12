@@ -40,7 +40,6 @@ export interface DocumentComplianceSummary {
   expiringIn7Days: number;
   expiringIn30Days: number;
   missingRequired: number;
-  pending: number;
   missingExpiryDate: number;
 }
 
@@ -48,7 +47,6 @@ export type DocumentIssueType =
   | "EXPIRED"
   | "EXPIRING"
   | "MISSING_REQUIRED"
-  | "PENDING"
   | "NO_EXPIRY_DATE";
 
 export interface DocumentComplianceItem {

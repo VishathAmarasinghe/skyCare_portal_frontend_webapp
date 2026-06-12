@@ -92,7 +92,7 @@ const CareGiverFileUploader = ({
           careGiverID: careGiverSlice.selectedCareGiver?.careGiverID || "",
           documentTypeID: doc.documentTypeID,
           expDate: doc.expirationDate || existing?.expDate || "",
-          status: existing?.status || "Pending",
+          status: existing?.status || "Active",
           document: doc.uploadedDocument || "",
         };
       })
