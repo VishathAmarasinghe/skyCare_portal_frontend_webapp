@@ -51,7 +51,6 @@ const AdminDashboard = () => {
       s.expired +
       s.expiringIn30Days +
       s.missingRequired +
-      s.pending +
       s.missingExpiryDate
     );
   }, [insights]);
