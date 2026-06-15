@@ -334,7 +334,14 @@ export const submitStartShiftNote = createAsyncThunk(
             axios.isAxiosError(error) &&
             error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.shiftStarted
-              : String((error as any).response?.data),
+              : axios.isAxiosError(error) &&
+                  error.response?.status === HttpStatusCode.Forbidden
+                ? typeof error.response?.data === "string"
+                  ? error.response.data
+                  : error.response?.data?.error ||
+                    error.response?.data?.message ||
+                    "You cannot submit a timesheet due to non-compliance status. Please review your compliance documents and upload any missing documents."
+                : String((error as any).response?.data),
           type: "error",
         })
       );
@@ -493,12 +500,18 @@ export const updatehiftNotes = createAsyncThunk(
             return rejectWithValue("Request canceled");
           }
           // Handle duplicate error (409 Conflict)
-          const errorMessage = 
-            error.response?.status === HttpStatusCode.Conflict
+          const errorMessage =
+            error.response?.status === HttpStatusCode.Forbidden
+              ? typeof error.response?.data === "string"
+                ? error.response.data
+                : error.response?.data?.error ||
+                  error.response?.data?.message ||
+                  "You cannot submit a timesheet due to non-compliance status. Please review your compliance documents and upload any missing documents."
+              : error.response?.status === HttpStatusCode.Conflict
               ? error.response?.data?.error || "A duplicate timesheet already exists with the same start date, start time, end time, client, and employee."
               : error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.shiftUpdate
-              : String(error.response?.data?.error || error.response?.data || "An error occurred while updating the timesheet");
+              : String(error.response?.data?.error || error.response?.data?.message || error.response?.data || "An error occurred while updating the timesheet");
           
           dispatch(
             enqueueSnackbarMessage({
@@ -593,7 +606,19 @@ export const saveNewShiftNotes = createAsyncThunk(
               message:
                 error.response?.status === HttpStatusCode.InternalServerError
                   ? SnackMessage.error.shiftFinished
-                  : String(error.response?.data),
+                  : error.response?.status === HttpStatusCode.Forbidden
+                    ? typeof error.response?.data === "string"
+                      ? error.response.data
+                      : error.response?.data?.error ||
+                        error.response?.data?.message ||
+                        "You cannot submit a timesheet due to non-compliance status. Please review your compliance documents and upload any missing documents."
+                    : typeof error.response?.data === "string"
+                      ? error.response.data
+                      : String(
+                          error.response?.data?.error ||
+                            error.response?.data?.message ||
+                            error.response?.data
+                        ),
               type: "error",
             })
           );
@@ -635,12 +660,18 @@ export const saveShiftNotes = createAsyncThunk(
             return rejectWithValue("Request canceled");
           }
           // Handle duplicate error (409 Conflict)
-          const errorMessage = 
-            error.response?.status === HttpStatusCode.Conflict
+          const errorMessage =
+            error.response?.status === HttpStatusCode.Forbidden
+              ? typeof error.response?.data === "string"
+                ? error.response.data
+                : error.response?.data?.error ||
+                  error.response?.data?.message ||
+                  "You cannot submit a timesheet due to non-compliance status. Please review your compliance documents and upload any missing documents."
+              : error.response?.status === HttpStatusCode.Conflict
               ? error.response?.data?.error || "A duplicate timesheet already exists with the same start date, start time, end time, client, and employee."
               : error.response?.status === HttpStatusCode.InternalServerError
               ? SnackMessage.error.shiftNoteCreated
-              : String(error.response?.data?.error || error.response?.data || "An error occurred while saving the timesheet");
+              : String(error.response?.data?.error || error.response?.data?.message || error.response?.data || "An error occurred while saving the timesheet");
           
           dispatch(
             enqueueSnackbarMessage({
