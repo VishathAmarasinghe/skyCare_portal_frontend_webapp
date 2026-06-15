@@ -23,6 +23,7 @@ import RuleIcon from "@mui/icons-material/Rule";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
 import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
+import TuneIcon from "@mui/icons-material/Tune";
 
 export const CREATE_CLIENT_STEPS = [
   "Basic Info",
@@ -203,6 +204,11 @@ export const SETTINGS_CARD_ARRAY: SettingsCardProps[] = [
     title: "Home Message",
     icon: CampaignIcon,
     subText: "Configure the home banner message for caregivers",
+  },
+  {
+    title: "General Settings",
+    icon: TuneIcon,
+    subText: "Portal-wide rules such as timesheet compliance enforcement",
   },
   {
     title: "Agreement Templates",

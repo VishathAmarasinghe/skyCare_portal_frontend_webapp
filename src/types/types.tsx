@@ -58,6 +58,7 @@ export type SettingsCardTitle =
   | "Care Giver File Uploads"
   | "Care Giver Salary"
   | "Home Message"
+  | "General Settings"
   | "Agreement Templates"
   | "Placeholder Reference"
   | "Email Templates"

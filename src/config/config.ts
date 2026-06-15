@@ -45,6 +45,7 @@ export const AppConfig = {
     chat:`${ServiceBaseUrl}/chats`,
     signatures: `${ServiceBaseUrl}/signatures`,
     homeMessage: `${ServiceBaseUrl}/settings/home-message`,
+    generalSettings: `${ServiceBaseUrl}/settings/general`,
     agreementTemplates: `${ServiceBaseUrl}/agreement-templates`,
     agreementTemplateVersions: `${ServiceBaseUrl}/agreement-template-versions`,
     agreementTemplateAssets: `${ServiceBaseUrl}/agreement-templates/assets/upload`,

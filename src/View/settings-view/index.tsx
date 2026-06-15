@@ -10,6 +10,9 @@ import AgreementSettingsDrawer, {
 import ComplianceSettingsDrawer, {
   isComplianceSetting,
 } from "./ComplianceSettingsDrawer";
+import GeneralSettingsDrawer, {
+  isGeneralSetting,
+} from "./GeneralSettingsDrawer";
 import { SettingsCardTitle } from "../../types/types";
 import { useAppDispatch, useAppSelector } from "../../slices/store";
 import {
@@ -139,10 +142,15 @@ const SettingsView = () => {
       </Grid>
       <SettingsDrawer
         onClose={() => setDrawerOpen(false)}
-        open={drawerOpen && !isAgreementSetting(drawerType) && !isComplianceSetting(drawerType)}
+        open={drawerOpen && !isAgreementSetting(drawerType) && !isComplianceSetting(drawerType) && !isGeneralSetting(drawerType)}
         title={drawerType}
         settingType={drawerType}
         setSettingType={setDrawerType}
+      />
+      <GeneralSettingsDrawer
+        open={drawerOpen && isGeneralSetting(drawerType)}
+        title={drawerType}
+        onClose={() => setDrawerOpen(false)}
       />
       <ComplianceSettingsDrawer
         open={drawerOpen && isComplianceSetting(drawerType)}
