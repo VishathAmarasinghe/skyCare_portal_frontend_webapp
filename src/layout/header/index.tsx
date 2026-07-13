@@ -39,7 +39,7 @@ import {
   fetchLoggedClients,
 } from "../../slices/employeeSlice/employee";
 import { State } from "../../types/types";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   ChatInfo,
   fetchChatListByUser,
@@ -70,6 +70,7 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
   const chatSlice = useAppSelector((state) => state?.chat);
   const [subscriberList, setSubscriberList] = useState<number[]>([]);
   const navigate = useNavigate();
+  const location = useLocation();
   const [notificationAnchorEl, setNotificationAnchorEl] =
     useState<null | HTMLElement>(null);
   const [messageApi, contextHolder] = message.useMessage();
@@ -144,6 +145,11 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
 
   useEffect(() => {
     if (auth?.status === State.success && auth?.mode === "active") {
+      // Preserve deep links (e.g. employee/client opened in a new tab).
+      // Only send users to their home dashboard from the app root.
+      if (location.pathname !== "/") {
+        return;
+      }
       if (
         auth?.roles.includes(APPLICATION_ADMIN) ||
         auth?.roles.includes(APPLICATION_SUPER_ADMIN)
@@ -158,7 +164,7 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
         navigate("/dashboard/client");
       }
     }
-  }, [auth?.status, auth?.mode, auth?.roles]);
+  }, [auth?.status, auth?.mode, auth?.roles, location.pathname, navigate]);
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);

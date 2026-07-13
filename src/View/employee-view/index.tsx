@@ -39,14 +39,9 @@ const EmployeeView = () => {
 
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const [selectedCUser, setSelectedCUser] = useState<string | null>(null);
+  const selectedCUser = searchParams.get("employeeID");
 
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    const employeeID = searchParams.get("employeeID");
-    setSelectedCUser(employeeID);
-  }, [location, searchParams]);
 
   useEffect(() => {
     const selectedEmployee = employeeSlice?.selectedEmployee;

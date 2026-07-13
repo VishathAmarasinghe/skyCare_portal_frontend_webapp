@@ -39,11 +39,13 @@ const RpRegisterModal: React.FC<RpRegisterModalProps> = ({ open, onClose, record
   const [form, setForm] = useState<RpRegisterRecord>({ clientID: "" });
   const [client, setClient] = useState<ClientLookupOption | null>(null);
   const [practitioner, setPractitioner] = useState<Employee | null>(null);
+  const [clientError, setClientError] = useState("");
   const requester = getRequesterParams(auth.roles, auth.userInfo?.userID);
 
   useEffect(() => {
     if (!open) return;
     dispatch(resetBehaviorSupportSubmitState());
+    setClientError("");
     if (record) {
       setForm({ ...record, incidentIds: record.incidentIds || [] });
       setClient(record.clientID ? { clientID: record.clientID, firstName: "", lastName: "", displayName: record.participantName, referenceNo: record.ndisNumber } : null);
@@ -66,7 +68,11 @@ const RpRegisterModal: React.FC<RpRegisterModalProps> = ({ open, onClose, record
   }, [submitState, onClose, onSaved, dispatch]);
 
   const handleSave = () => {
-    if (!client?.clientID) return;
+    if (!client?.clientID) {
+      setClientError("Participant is required");
+      return;
+    }
+    setClientError("");
     dispatch(saveRpRegister({
       record: { ...form, clientID: client.clientID, practitionerEmployeeID: practitioner?.employeeID, incidentIds: form.incidentIds || [] },
       isUpdate: !!record?.registerID,
@@ -79,7 +85,18 @@ const RpRegisterModal: React.FC<RpRegisterModalProps> = ({ open, onClose, record
       <DialogTitle>{record ? "Edit RP register" : "Add RP register entry"}</DialogTitle>
       <DialogContent>
         <Grid container spacing={2} sx={{ mt: 0.5 }}>
-          <Grid item xs={12} md={6}><ClientAutocomplete value={client} onChange={setClient} required /></Grid>
+          <Grid item xs={12} md={6}>
+            <ClientAutocomplete
+              value={client}
+              onChange={(value) => {
+                setClient(value);
+                if (value?.clientID) setClientError("");
+              }}
+              required
+              error={!!clientError}
+              helperText={clientError}
+            />
+          </Grid>
           <Grid item xs={12} md={6}>
             <TextField label="NDIS number" size="small" fullWidth value={form.ndisNumber || ""}
               onChange={(e) => setForm({ ...form, ndisNumber: e.target.value })} />
