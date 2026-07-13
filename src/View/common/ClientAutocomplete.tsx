@@ -17,6 +17,8 @@ interface ClientAutocompleteProps {
   onChange: (value: ClientLookupOption | null) => void;
   disabled?: boolean;
   required?: boolean;
+  error?: boolean;
+  helperText?: string;
 }
 
 const ClientAutocomplete: React.FC<ClientAutocompleteProps> = ({
@@ -25,6 +27,8 @@ const ClientAutocomplete: React.FC<ClientAutocompleteProps> = ({
   onChange,
   disabled,
   required,
+  error,
+  helperText,
 }) => {
   const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState<ClientLookupOption[]>([]);
@@ -71,7 +75,14 @@ const ClientAutocomplete: React.FC<ClientAutocompleteProps> = ({
       }
       isOptionEqualToValue={(a, b) => a.clientID === b.clientID}
       renderInput={(params) => (
-        <TextField {...params} label={label} required={required} size="small" />
+        <TextField
+          {...params}
+          label={label}
+          required={required}
+          size="small"
+          error={error}
+          helperText={helperText}
+        />
       )}
     />
   );

@@ -257,7 +257,8 @@ const AddCarePlanForm = ({
                       value={values.carePlanStatusID}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      readOnly={!isEditMode}
+                      IconComponent={isEditMode ? undefined : () => null}
+                      sx={!isEditMode ? { pointerEvents: "none", "& .MuiSelect-icon": { display: "none" } } : undefined}
                     >
                       {carePlanStatusList.map((status) => (
                         <MenuItem value={status.careplanStatusID}>
@@ -279,7 +280,8 @@ const AddCarePlanForm = ({
                     <Select
                       name="clientID"
                       onBlur={handleBlur}
-                      readOnly={!isEditMode}
+                      IconComponent={isEditMode ? undefined : () => null}
+                      sx={!isEditMode ? { pointerEvents: "none", "& .MuiSelect-icon": { display: "none" } } : undefined}
                       value={values.clientID}
                       onChange={handleChange}
                     >
@@ -301,6 +303,15 @@ const AddCarePlanForm = ({
                     name="startDate"
                     label="Start Date"
                     InputProps={{ readOnly: !isEditMode }}
+                    sx={
+                      !isEditMode
+                        ? {
+                            "& input::-webkit-calendar-picker-indicator": {
+                              display: "none",
+                            },
+                          }
+                        : undefined
+                    }
                     value={values.startDate}
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -316,6 +327,15 @@ const AddCarePlanForm = ({
                     name="endDate"
                     label="End Date"
                     InputProps={{ readOnly: !isEditMode }}
+                    sx={
+                      !isEditMode
+                        ? {
+                            "& input::-webkit-calendar-picker-indicator": {
+                              display: "none",
+                            },
+                          }
+                        : undefined
+                    }
                     value={values.endDate}
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -389,7 +409,13 @@ const AddCarePlanForm = ({
                               onChange={handleChange}
                             />
                             <Stack>
-                              <IconButton onClick={() => remove(index)}>
+                              <IconButton
+                                disabled={!isEditMode}
+                                onClick={() => {
+                                  if (!isEditMode) return;
+                                  remove(index);
+                                }}
+                              >
                                 <DeleteOutlineIcon />
                               </IconButton>
                             </Stack>
@@ -482,7 +508,8 @@ const AddCarePlanForm = ({
                                             Goal Outcome Type
                                           </InputLabel>
                                           <Select
-                                            readOnly={!isEditMode}
+                                            IconComponent={isEditMode ? undefined : () => null}
+                                            sx={!isEditMode ? { pointerEvents: "none", "& .MuiSelect-icon": { display: "none" } } : undefined}
                                             name={`carePlanLongTermGoals[${index}].carePlanShortTermGoals[${subIndex}].goalOutcomeTypeID`}
                                             value={
                                               values.carePlanLongTermGoals?.[
@@ -535,9 +562,11 @@ const AddCarePlanForm = ({
                                           onChange={handleChange}
                                         />
                                         <IconButton
-                                          onClick={() =>
-                                            removeShortTermGoal(subIndex)
-                                          }
+                                          disabled={!isEditMode}
+                                          onClick={() => {
+                                            if (!isEditMode) return;
+                                            removeShortTermGoal(subIndex);
+                                          }}
                                         >
                                           <DeleteOutlineIcon />
                                         </IconButton>
@@ -838,7 +867,13 @@ const AddCarePlanForm = ({
                               value={values.carePlanBillables[index].amount}
                               onChange={handleChange}
                             />
-                            <IconButton onClick={() => remove(index)}>
+                            <IconButton
+                              disabled={!isEditMode}
+                              onClick={() => {
+                                if (!isEditMode) return;
+                                remove(index);
+                              }}
+                            >
                               <DeleteOutlineIcon />
                             </IconButton>
                           </Grid>

@@ -51,6 +51,7 @@ export const SnackMessage = {
     deleteChatMessage:"Chat message deleted successfully",
     clientActivation:"Client activation status updated successfully",
     employeeActivation:"Employee activation status updated successfully",
+    timesheetSubmissionToggle:"Timesheet submission setting updated successfully",
     updateChat:"Chat updated successfully",
   },
   error: {
@@ -147,6 +148,7 @@ export const SnackMessage = {
     fetchPastAppointments:"Fail to fetch past appointments",
     clientActivation:"Fail to update client activation status",
     employeeActivation:"Fail to update employee activation status",
+    timesheetSubmissionToggle:"Failed to update timesheet submission setting",
     deleteEmployee: "Failed to delete employee",
     fetchChatmembers:"Fail to fetch chat members",
     updateChat:"Fail to update chat",

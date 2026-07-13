@@ -31,6 +31,13 @@ interface BehaviourDataModalProps {
   onSaved: () => void;
 }
 
+type BehaviourDataFieldErrors = {
+  client?: string;
+  recordDate?: string;
+  recordTime?: string;
+  behaviourObserved?: string;
+};
+
 const BehaviourDataModal: React.FC<BehaviourDataModalProps> = ({ open, onClose, record, onSaved }) => {
   const dispatch = useAppDispatch();
   const auth = useAppSelector((state) => state.auth);
@@ -39,12 +46,14 @@ const BehaviourDataModal: React.FC<BehaviourDataModalProps> = ({ open, onClose, 
   const [form, setForm] = useState<BehaviourDataRecord>({ clientID: "", staffEmployeeID: "" });
   const [client, setClient] = useState<ClientLookupOption | null>(null);
   const [staff, setStaff] = useState<Employee | null>(null);
+  const [errors, setErrors] = useState<BehaviourDataFieldErrors>({});
   const isAdmin = isAdminUser(auth.roles);
   const requester = getRequesterParams(auth.roles, auth.userInfo?.userID);
 
   useEffect(() => {
     if (open) {
       dispatch(resetBehaviorSupportSubmitState());
+      setErrors({});
       if (record) {
         setForm({ ...record });
         setClient(record.clientID ? { clientID: record.clientID, firstName: "", lastName: "", displayName: record.participantName } : null);
@@ -72,13 +81,30 @@ const BehaviourDataModal: React.FC<BehaviourDataModalProps> = ({ open, onClose, 
     onClose();
   }, [submitState, onClose, onSaved, dispatch]);
 
+  const clearError = (field: keyof BehaviourDataFieldErrors) => {
+    setErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
+
   const handleSave = () => {
-    if (!client?.clientID) return;
+    const nextErrors: BehaviourDataFieldErrors = {};
+    if (!client?.clientID) nextErrors.client = "Participant is required";
+    if (!form.recordDate?.trim()) nextErrors.recordDate = "Date is required";
+    if (!form.recordTime?.trim()) nextErrors.recordTime = "Time is required";
+    if (!form.behaviourObserved?.trim()) nextErrors.behaviourObserved = "Behaviour observed is required";
+
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
+
     dispatch(
       saveBehaviourData({
         record: {
           ...form,
-          clientID: client.clientID,
+          clientID: client!.clientID,
           staffEmployeeID: isAdmin ? staff?.employeeID || form.staffEmployeeID : requester.requesterEmployeeId,
         },
         isUpdate: !!record?.recordID,
@@ -93,15 +119,50 @@ const BehaviourDataModal: React.FC<BehaviourDataModalProps> = ({ open, onClose, 
       <DialogContent>
         <Grid container spacing={2} sx={{ mt: 0.5 }}>
           <Grid item xs={12} md={6}>
-            <ClientAutocomplete value={client} onChange={setClient} required />
+            <ClientAutocomplete
+              value={client}
+              onChange={(value) => {
+                setClient(value);
+                if (value?.clientID) clearError("client");
+              }}
+              required
+              error={!!errors.client}
+              helperText={errors.client}
+            />
           </Grid>
           <Grid item xs={6} md={3}>
-            <TextField label="Date" type="date" size="small" fullWidth InputLabelProps={{ shrink: true }}
-              value={form.recordDate || ""} onChange={(e) => setForm({ ...form, recordDate: e.target.value })} />
+            <TextField
+              label="Date"
+              type="date"
+              size="small"
+              fullWidth
+              required
+              InputLabelProps={{ shrink: true }}
+              value={form.recordDate || ""}
+              onChange={(e) => {
+                setForm({ ...form, recordDate: e.target.value });
+                if (e.target.value.trim()) clearError("recordDate");
+              }}
+              error={!!errors.recordDate}
+              helperText={errors.recordDate}
+            />
           </Grid>
           <Grid item xs={6} md={3}>
-            <TextField label="Time" type="time" size="small" fullWidth InputLabelProps={{ shrink: true }}
-              value={form.recordTime || ""} onChange={(e) => setForm({ ...form, recordTime: e.target.value })} />
+            <TextField
+              label="Time"
+              type="time"
+              size="small"
+              fullWidth
+              required
+              InputLabelProps={{ shrink: true }}
+              value={form.recordTime || ""}
+              onChange={(e) => {
+                setForm({ ...form, recordTime: e.target.value });
+                if (e.target.value.trim()) clearError("recordTime");
+              }}
+              error={!!errors.recordTime}
+              helperText={errors.recordTime}
+            />
           </Grid>
           {isAdmin && (
             <Grid item xs={12} md={6}>
@@ -117,8 +178,21 @@ const BehaviourDataModal: React.FC<BehaviourDataModalProps> = ({ open, onClose, 
             </TextField>
           </Grid>
           <Grid item xs={12}>
-            <TextField label="Behaviour observed" size="small" fullWidth multiline minRows={2}
-              value={form.behaviourObserved || ""} onChange={(e) => setForm({ ...form, behaviourObserved: e.target.value })} />
+            <TextField
+              label="Behaviour observed"
+              size="small"
+              fullWidth
+              required
+              multiline
+              minRows={2}
+              value={form.behaviourObserved || ""}
+              onChange={(e) => {
+                setForm({ ...form, behaviourObserved: e.target.value });
+                if (e.target.value.trim()) clearError("behaviourObserved");
+              }}
+              error={!!errors.behaviourObserved}
+              helperText={errors.behaviourObserved}
+            />
           </Grid>
           <Grid item xs={12} md={6}>
             <TextField label="Antecedent (trigger)" size="small" fullWidth multiline minRows={2}

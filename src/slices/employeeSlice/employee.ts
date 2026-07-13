@@ -35,6 +35,7 @@ export interface Employee {
   employeePhoneNo: string[];
   emergencyPhoneNo:string;
   emergencyUser:string;
+  timesheetSubmissionDisabled?: boolean;
 }
 
 export interface EmployeeBasicInfoUpdater {
@@ -572,6 +573,43 @@ export const updateEmployeeState = createAsyncThunk(
   }
 );
 
+export const updateTimesheetSubmissionDisabled = createAsyncThunk(
+  "employee/updateTimesheetSubmissionDisabled",
+  async (
+    payload: { employeeID: string; disabled: boolean },
+    { dispatch, rejectWithValue }
+  ) => {
+    try {
+      await APIService.getInstance().patch(
+        `${AppConfig.serviceUrls.employees}/${payload.employeeID}/timesheet-submission`,
+        null,
+        { params: { disabled: payload.disabled } }
+      );
+      dispatch(
+        enqueueSnackbarMessage({
+          message: SnackMessage.success.timesheetSubmissionToggle,
+          type: "success",
+        })
+      );
+      return payload;
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
+      }
+      dispatch(
+        enqueueSnackbarMessage({
+          message:
+            error.response?.status === HttpStatusCode.InternalServerError
+              ? SnackMessage.error.timesheetSubmissionToggle
+              : String(error.response?.data?.message || error.response?.data || "Failed to update timesheet setting"),
+          type: "error",
+        })
+      );
+      return rejectWithValue(error.response?.data);
+    }
+  }
+);
+
 // Create Employee Slice
 const EmployeeSlice = createSlice({
   name: "employee",
@@ -755,6 +793,20 @@ const EmployeeSlice = createSlice({
       .addCase(updateEmployeeState.rejected, (state) => {
         state.updateState = State.failed;
         state.stateMessage = "Failed to update employee status!";
+      })
+      .addCase(updateTimesheetSubmissionDisabled.fulfilled, (state, action) => {
+        const { employeeID, disabled } = action.payload;
+        state.employees = state.employees.map((employee) =>
+          employee.employeeID === employeeID
+            ? { ...employee, timesheetSubmissionDisabled: disabled }
+            : employee
+        );
+        if (state.selectedEmployee?.employeeID === employeeID) {
+          state.selectedEmployee = {
+            ...state.selectedEmployee,
+            timesheetSubmissionDisabled: disabled,
+          };
+        }
       })
       .addCase(deletePendingEmployee.fulfilled, (state, action) => {
         state.employees = state.employees.filter(

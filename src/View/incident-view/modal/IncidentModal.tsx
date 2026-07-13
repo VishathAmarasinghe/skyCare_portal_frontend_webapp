@@ -20,6 +20,7 @@ import {
   fetchAllIncidentStatus,
   fetchAllIncidentTypes,
   resetSelectedIncident,
+  resetSubmitState,
 } from "../../../slices/incidentSlice/incident";
 import { CREATE_INCIDENT_STEPS } from "../../../constants/index";
 import { Modal } from "antd";
@@ -74,6 +75,7 @@ const IncidentModal = ({
       dispatch(resetSelectedIncident());
       setActiveStep(0);
     } else {
+      dispatch(resetSubmitState());
       dispatch(fetchAllIncidentTypes());
       dispatch(fetchAllIncidentActionTypeQuestions());
       dispatch(fetchAllIncidentStatus());
@@ -81,9 +83,13 @@ const IncidentModal = ({
   }, [isIncidentModalVisible]);
 
   useEffect(() => {
-    if (incidentSlice?.submitState === State?.success) {
+    if (
+      incidentSlice?.submitState === State.success ||
+      incidentSlice?.updateState === State.success
+    ) {
       setIsIncidentModalVisible(false);
       dispatch(resetSelectedIncident());
+      dispatch(resetSubmitState());
     }
   }, [incidentSlice?.submitState, incidentSlice?.updateState]);
 

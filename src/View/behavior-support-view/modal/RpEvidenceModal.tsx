@@ -39,11 +39,13 @@ const RpEvidenceModal: React.FC<RpEvidenceModalProps> = ({ open, onClose, record
   const [form, setForm] = useState<RpEvidenceRecord>({ clientID: "" });
   const [client, setClient] = useState<ClientLookupOption | null>(null);
   const [responsible, setResponsible] = useState<Employee | null>(null);
+  const [clientError, setClientError] = useState("");
   const requester = getRequesterParams(auth.roles, auth.userInfo?.userID);
 
   useEffect(() => {
     if (!open) return;
     dispatch(resetBehaviorSupportSubmitState());
+    setClientError("");
     if (record) {
       setForm({ ...record });
       setClient(record.clientID ? { clientID: record.clientID, firstName: "", lastName: "", displayName: record.participantName } : null);
@@ -62,7 +64,11 @@ const RpEvidenceModal: React.FC<RpEvidenceModalProps> = ({ open, onClose, record
   }, [submitState, onClose, onSaved, dispatch]);
 
   const handleSave = () => {
-    if (!client?.clientID) return;
+    if (!client?.clientID) {
+      setClientError("Participant is required");
+      return;
+    }
+    setClientError("");
     dispatch(saveRpEvidence({
       record: { ...form, clientID: client.clientID, responsibleEmployeeID: responsible?.employeeID },
       isUpdate: !!record?.evidenceID,
@@ -75,7 +81,18 @@ const RpEvidenceModal: React.FC<RpEvidenceModalProps> = ({ open, onClose, record
       <DialogTitle>{record ? "Edit RP evidence" : "Add RP evidence"}</DialogTitle>
       <DialogContent>
         <Grid container spacing={2} sx={{ mt: 0.5 }}>
-          <Grid item xs={12} md={6}><ClientAutocomplete value={client} onChange={setClient} required /></Grid>
+          <Grid item xs={12} md={6}>
+            <ClientAutocomplete
+              value={client}
+              onChange={(value) => {
+                setClient(value);
+                if (value?.clientID) setClientError("");
+              }}
+              required
+              error={!!clientError}
+              helperText={clientError}
+            />
+          </Grid>
           <Grid item xs={12} md={6}>
             <TextField select label="Restrictive practice type" size="small" fullWidth value={form.restrictivePracticeType || ""}
               onChange={(e) => setForm({ ...form, restrictivePracticeType: e.target.value })}>

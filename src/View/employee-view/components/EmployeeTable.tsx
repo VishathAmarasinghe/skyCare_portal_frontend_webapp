@@ -15,15 +15,20 @@ import {
   Checkbox,
   FormControlLabel,
   IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
   Stack,
-  Typography,
-  useTheme,
 } from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
-import { useNavigate } from "react-router-dom";
-import EditIcon from "@mui/icons-material/Edit";
+import BlockIcon from "@mui/icons-material/Block";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import BulkSendAgreementsDialog from "./BulkSendAgreementsDialog";
 import {
@@ -31,6 +36,7 @@ import {
   deletePendingEmployee,
   fetchEmployeesByRole,
   fetchSingleEmployee,
+  updateTimesheetSubmissionDisabled,
 } from "../../../slices/employeeSlice/employee";
 import { fetchCareGivers } from "@slices/careGiverSlice/careGiver";
 import { useConfirmationModalContext } from "../../../context/DialogContext";
@@ -88,16 +94,21 @@ function CustomToolbar({
   );
 }
 
+const employeeInfoPath = (employeeID: string) =>
+  `/Employees/employeeInfo?employeeID=${employeeID}`;
+
 interface ClientTableProps {}
 
 const EmployeeTable = ({}: ClientTableProps) => {
-  const theme = useTheme();
+  const navigate = useNavigate();
   const employeeSlice = useAppSelector((state) => state.employees);
   const careGiverSlice = useAppSelector((state) => state.careGivers);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [showDeactivated, setShowDeactivated] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [bulkSendOpen, setBulkSendOpen] = useState(false);
+  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+  const [menuEmployee, setMenuEmployee] = useState<Employee | null>(null);
   const auth = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const { showConfirmation } = useConfirmationModalContext();
@@ -110,18 +121,89 @@ const EmployeeTable = ({}: ClientTableProps) => {
     }
   };
 
+  const closeActionMenu = () => {
+    setMenuAnchor(null);
+    setMenuEmployee(null);
+  };
+
+  const openActionMenu = (
+    event: React.MouseEvent<HTMLElement>,
+    employee: Employee
+  ) => {
+    event.stopPropagation();
+    setMenuAnchor(event.currentTarget);
+    setMenuEmployee(employee);
+  };
+
+  const viewCareGiverDetails = (employee: Employee, newTab = false) => {
+    dispatch(fetchSingleCareGiverByEmployeeID(employee.employeeID));
+    const path = employeeInfoPath(employee.employeeID);
+    if (newTab) {
+      window.open(`${window.location.origin}${path}`, "_blank", "noopener,noreferrer");
+    } else {
+      navigate(path);
+    }
+  };
+
+  const handleRowClick = (employee: Employee, event: React.MouseEvent) => {
+    if (employee.accessRole !== "CareGiver") return;
+    const target = event.target as HTMLElement;
+    if (
+      target.closest("button") ||
+      target.closest(".MuiCheckbox-root") ||
+      target.closest('[role="checkbox"]') ||
+      target.closest(".MuiDataGrid-cellCheckbox")
+    ) {
+      return;
+    }
+    viewCareGiverDetails(employee, false);
+  };
+
   const confirmDeletePendingEmployee = (employee: Employee) => {
-    const name = `${employee.firstName || ""} ${employee.lastName || ""}`.trim() || employee.email;
+    const name =
+      `${employee.firstName || ""} ${employee.lastName || ""}`.trim() ||
+      employee.email;
     showConfirmation(
       "Delete pending employee",
       `Are you sure you want to delete "${name}"? This will permanently remove their pending profile. This action cannot be undone.`,
       "accept" as ConfirmationType,
       async () => {
         await dispatch(deletePendingEmployee(employee.employeeID)).unwrap();
-        setSelectedRows((current) => current.filter((id) => id !== employee.employeeID));
+        setSelectedRows((current) =>
+          current.filter((id) => id !== employee.employeeID)
+        );
         refreshEmployees(employee.accessRole);
       },
       "Delete",
+      "Cancel"
+    );
+  };
+
+  const confirmTimesheetToggle = (employee: Employee) => {
+    const name =
+      `${employee.firstName || ""} ${employee.lastName || ""}`.trim() ||
+      employee.email;
+    const currentlyDisabled = !!employee.timesheetSubmissionDisabled;
+    const willDisable = !currentlyDisabled;
+
+    showConfirmation(
+      willDisable
+        ? "Disable timesheet submissions"
+        : "Enable timesheet submissions",
+      willDisable
+        ? `Warning: "${name}" will no longer be able to submit timesheets from the portal or mobile app until you enable this again. Are you sure you want to disable timesheet submissions for this caregiver?`
+        : `You are about to enable timesheet submissions for "${name}". They will be able to submit timesheets again. Do you want to continue?`,
+      "accept" as ConfirmationType,
+      async () => {
+        await dispatch(
+          updateTimesheetSubmissionDisabled({
+            employeeID: employee.employeeID,
+            disabled: willDisable,
+          })
+        ).unwrap();
+        refreshEmployees(employee.accessRole);
+      },
+      willDisable ? "Disable" : "Enable",
       "Cancel"
     );
   };
@@ -155,25 +237,17 @@ const EmployeeTable = ({}: ClientTableProps) => {
 
   useEffect(() => {
     let filteredEmployees = employeeSlice.employees;
-    
+
     if (!showDeactivated) {
       filteredEmployees = employeeSlice.employees.filter(
         (employee) => employee.status !== "Deactivated"
       );
     }
-    
+
     setEmployees(filteredEmployees);
   }, [employeeSlice.state, employeeSlice.employees, showDeactivated]);
 
-  const handlePageChange = (newPage: number) => {};
-
   const initialColumns: GridColDef[] = [
-    // {
-    //   field: "employeeID",
-    //   headerName: "Employee ID",
-    //   width: 100,
-    //   align: "center",
-    // },
     { field: "firstName", headerName: "First Name", width: 130 },
     { field: "lastName", headerName: "Last Name", width: 130 },
     {
@@ -194,7 +268,7 @@ const EmployeeTable = ({}: ClientTableProps) => {
                         employeeImage
                       )}`
                     : ""
-                } // Replace with your avatar URL logic
+                }
                 alt={
                   params.row.firstName ||
                   params.row.lastName ||
@@ -213,7 +287,7 @@ const EmployeeTable = ({}: ClientTableProps) => {
     {
       field: "address",
       headerName: "Address",
-      flex:2,
+      flex: 2,
       renderCell: (params) => params?.row?.employeeAddresses[0]?.address,
     },
     {
@@ -268,84 +342,105 @@ const EmployeeTable = ({}: ClientTableProps) => {
     {
       field: "status",
       headerName: "Status",
-      width: 100,
+      width: 250,
       headerAlign: "center",
       align: "center",
       renderCell: (params) => {
         const status = params.value;
-        let chipStyle = {}; // Default style
+        let chipStyle = {};
 
-        // Assign background and text colors based on the status
         switch (status) {
           case "Activated":
-            chipStyle = { backgroundColor: "#4caf50", color: "white" }; // Green
+            chipStyle = { backgroundColor: "#4caf50", color: "white" };
             break;
           case "Deactivated":
-            chipStyle = { backgroundColor: "#f44336", color: "white" }; // Red
+            chipStyle = { backgroundColor: "#f44336", color: "white" };
             break;
           case "Pending":
-            chipStyle = { backgroundColor: "#ffc107", color: "black" }; // Yellow
+            chipStyle = { backgroundColor: "#ffc107", color: "black" };
             break;
           default:
-            chipStyle = { backgroundColor: "#9e9e9e", color: "white" }; // Grey
+            chipStyle = { backgroundColor: "#9e9e9e", color: "white" };
         }
 
         return (
-          <Chip
-            size="small"
-            label={status}
-            style={chipStyle} // Apply the custom style
-            variant="filled"
-          />
+          <Stack
+            direction="row"
+            spacing={0.75}
+            alignItems="center"
+            justifyContent="center"
+            sx={{ height: "100%" }}
+          >
+            <Chip size="small" label={status} style={chipStyle} variant="filled" />
+            {params.row.accessRole === "CareGiver" &&
+              params.row.timesheetSubmissionDisabled && (
+                <Chip
+                  size="small"
+                  label="Timesheets disabled"
+                  color="error"
+                  variant="filled"
+                  sx={{ fontWeight: 600 }}
+                />
+              )}
+          </Stack>
         );
       },
     },
     {
       field: "action",
       headerName: "Action",
-      width: 150,
+      width: 90,
       headerAlign: "center",
       align: "center",
+      sortable: false,
+      filterable: false,
       renderCell: (params) => {
-        const navigate = useNavigate();
-        const isPending = params.row.status === "Pending";
+        const employee = params.row as Employee;
+        const isCareGiver = employee.accessRole === "CareGiver";
+        const isPending = employee.status === "Pending";
+
+        if (!isCareGiver) {
+          return (
+            <Stack flexDirection="row" justifyContent="center">
+              <IconButton
+                aria-label="view"
+                onClick={() => {
+                  dispatch(fetchSingleEmployee(employee.employeeID));
+                }}
+              >
+                <RemoveRedEyeOutlinedIcon />
+              </IconButton>
+              {isPending && (
+                <IconButton
+                  aria-label="delete pending employee"
+                  color="error"
+                  onClick={() => confirmDeletePendingEmployee(employee)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              )}
+            </Stack>
+          );
+        }
 
         return (
           <Stack flexDirection="row" justifyContent="center">
             <IconButton
-              aria-label="view"
-              onClick={() => {
-                if (params?.row?.accessRole == "CareGiver") {
-                  dispatch(
-                    fetchSingleCareGiverByEmployeeID(params?.row?.employeeID)
-                  );
-                  navigate(
-                    `/Employees/employeeInfo?employeeID=${params.row.employeeID}`
-                  );
-                } else {
-                  dispatch(fetchSingleEmployee(params.row.employeeID));
-                }
-              }}
+              aria-label="employee actions"
+              onClick={(event) => openActionMenu(event, employee)}
             >
-              <RemoveRedEyeOutlinedIcon />
+              <MoreVertIcon />
             </IconButton>
-            {isPending && (
-              <IconButton
-                aria-label="delete pending employee"
-                color="error"
-                onClick={() => confirmDeletePendingEmployee(params.row as Employee)}
-              >
-                <DeleteIcon />
-              </IconButton>
-            )}
           </Stack>
         );
       },
     },
   ];
 
+  const timesheetsDisabled = !!menuEmployee?.timesheetSubmissionDisabled;
+
   return (
-    <Box sx={{ height: "100%", width: "100%", overflowY:"auto" }}>
+    <Box sx={{ height: "100%", width: "100%", overflowY: "auto" }}>
       <DataGrid
         rows={employees}
         columns={initialColumns}
@@ -364,6 +459,9 @@ const EmployeeTable = ({}: ClientTableProps) => {
         rowSelectionModel={selectedRows}
         onRowSelectionModelChange={(model) => setSelectedRows(model as string[])}
         isRowSelectable={(params) => params.row.accessRole === "CareGiver"}
+        onRowClick={(params, event) =>
+          handleRowClick(params.row as Employee, event as unknown as React.MouseEvent)
+        }
         slots={{
           toolbar: () => (
             <CustomToolbar
@@ -376,6 +474,9 @@ const EmployeeTable = ({}: ClientTableProps) => {
         }}
         sx={{
           height: "100%",
+          "& .MuiDataGrid-row": {
+            cursor: "pointer",
+          },
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: "white",
           },
@@ -387,6 +488,76 @@ const EmployeeTable = ({}: ClientTableProps) => {
           },
         }}
       />
+
+      <Menu
+        anchorEl={menuAnchor}
+        open={Boolean(menuAnchor) && !!menuEmployee}
+        onClose={closeActionMenu}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <MenuItem
+          onClick={() => {
+            if (!menuEmployee) return;
+            viewCareGiverDetails(menuEmployee, false);
+            closeActionMenu();
+          }}
+        >
+          <ListItemIcon>
+            <RemoveRedEyeOutlinedIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>View details</ListItemText>
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            if (!menuEmployee) return;
+            viewCareGiverDetails(menuEmployee, true);
+            closeActionMenu();
+          }}
+        >
+          <ListItemIcon>
+            <OpenInNewIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Open in new tab</ListItemText>
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            if (!menuEmployee) return;
+            const employee = menuEmployee;
+            closeActionMenu();
+            confirmTimesheetToggle(employee);
+          }}
+        >
+          <ListItemIcon>
+            {timesheetsDisabled ? (
+              <CheckCircleOutlineIcon fontSize="small" color="success" />
+            ) : (
+              <BlockIcon fontSize="small" color="error" />
+            )}
+          </ListItemIcon>
+          <ListItemText>
+            {timesheetsDisabled
+              ? "Enable timesheet submissions"
+              : "Disable timesheet submissions"}
+          </ListItemText>
+        </MenuItem>
+        {menuEmployee?.status === "Pending" && (
+          <MenuItem
+            onClick={() => {
+              if (!menuEmployee) return;
+              const employee = menuEmployee;
+              closeActionMenu();
+              confirmDeletePendingEmployee(employee);
+            }}
+          >
+            <ListItemIcon>
+              <DeleteIcon fontSize="small" color="error" />
+            </ListItemIcon>
+            <ListItemText>Delete pending employee</ListItemText>
+          </MenuItem>
+        )}
+      </Menu>
+
       <BulkSendAgreementsDialog
         open={bulkSendOpen}
         onClose={() => setBulkSendOpen(false)}
