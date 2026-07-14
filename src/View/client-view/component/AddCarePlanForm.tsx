@@ -7,7 +7,6 @@ import {
   Select,
   InputLabel,
   FormControl,
-  FormHelperText,
   Stack,
   IconButton,
   Typography,
@@ -23,7 +22,6 @@ import {
   saveCarePlan,
   UpdateCarePlan,
 } from "../../../slices/carePlanSlice/carePlan";
-import * as Yup from "yup";
 import { useAppDispatch, useAppSelector } from "../../../slices/store";
 import { useSearchParams } from "react-router-dom";
 import { Client } from "../../../slices/clientSlice/client";
@@ -158,51 +156,9 @@ const AddCarePlanForm = ({
     }
   }, [carePlanSlice.selectedCarePlan, carePlanStatusList]);
 
-  const validationSchema = Yup.object({
-    title: Yup.string().required("Title is required"),
-    carePlanStatusID: Yup.string().required("Care Plan Status is required"),
-    startDate: Yup.date().required("Start Date is required"),
-    endDate: Yup.date()
-      .required("End Date is required")
-      .min(Yup.ref("startDate"), "End Date must be after Start Date"),
-    clientID: Yup.string().required("Client is required"),
-    carePlanLongTermGoals: Yup.array().of(
-      Yup.object({
-        longTermGoal: Yup.string().required("Long Term Goal is required"),
-        achieveWay: Yup.string().required("Achieve Way is required"),
-        supportWay: Yup.string().required("Support Way is required"),
-        //   notes: Yup.string().required("Notes are required"),
-        carePlanShortTermGoals: Yup.array().of(
-          Yup.object({
-            goalTitle: Yup.string().required("Goal Title is required"),
-            goalDescription: Yup.string().required(
-              "Goal Description is required"
-            ),
-            goalOutcomeTypeID: Yup.string().required(
-              "Goal Outcome Type is required"
-            ),
-            outcomeDetails: Yup.string().required(
-              "Outcome Details are required"
-            ),
-            goalStrategy: Yup.string().required("Goal Strategy is required"),
-          })
-        ),
-      })
-    ),
-    carePlanBillables: Yup.array().of(
-      Yup.object({
-        name: Yup.string().required("Billable Item Name is required"),
-        amount: Yup.number()
-          .required("Amount is required")
-          .positive("Amount must be positive"),
-      })
-    ),
-  });
-
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={validationSchema}
       enableReinitialize={true}
       onSubmit={(values) => {
         console.log("Form Submitted", values);
@@ -219,18 +175,12 @@ const AddCarePlanForm = ({
         setFieldValue,
         handleBlur,
         resetForm,
-        errors,
-        touched,
       }: FormikProps<CarePlan>) => {
         useEffect(() => {
           if (carePlanSlice.submitState === State.success) {
             resetForm();
           }
         }, [carePlanSlice.submitState]);
-
-        useEffect(() => {
-          console.log("errors", errors);
-        }, [errors]);
 
         return (
           <Form>
@@ -246,18 +196,10 @@ const AddCarePlanForm = ({
                     value={values.title}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    error={touched.title && Boolean(errors.title)}
-                    helperText={touched.title && errors.title}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <FormControl
-                    fullWidth
-                    error={
-                      touched.carePlanStatusID &&
-                      Boolean(errors.carePlanStatusID)
-                    }
-                  >
+                  <FormControl fullWidth>
                     <InputLabel>Care Plan Status</InputLabel>
                     <Select
                       name="carePlanStatusID"
@@ -273,16 +215,10 @@ const AddCarePlanForm = ({
                         </MenuItem>
                       ))}
                     </Select>
-                    <FormHelperText>
-                      {touched.carePlanStatusID && errors.carePlanStatusID}
-                    </FormHelperText>
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <FormControl
-                    fullWidth
-                    error={touched.clientID && Boolean(errors.clientID)}
-                  >
+                  <FormControl fullWidth>
                     <InputLabel>Client</InputLabel>
                     <Select
                       name="clientID"
@@ -298,9 +234,6 @@ const AddCarePlanForm = ({
                         </MenuItem>
                       ))}
                     </Select>
-                    <FormHelperText>
-                      {touched.clientID && errors.clientID}
-                    </FormHelperText>
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -322,8 +255,6 @@ const AddCarePlanForm = ({
                     value={values.startDate}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    error={touched.startDate && Boolean(errors.startDate)}
-                    helperText={touched.startDate && errors.startDate}
                     InputLabelProps={{ shrink: true }}
                   />
                 </Grid>
@@ -346,8 +277,6 @@ const AddCarePlanForm = ({
                     value={values.endDate}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    error={touched.endDate && Boolean(errors.endDate)}
-                    helperText={touched.endDate && errors.endDate}
                     InputLabelProps={{ shrink: true }}
                   />
                 </Grid>
@@ -492,25 +421,7 @@ const AddCarePlanForm = ({
                                         />
                                       </Grid>
                                       <Grid item xs={12} sm={4}>
-                                        <FormControl
-                                          fullWidth
-                                          error={
-                                            touched.carePlanLongTermGoals?.[
-                                              index
-                                            ]?.carePlanShortTermGoals?.[
-                                              subIndex
-                                            ]?.goalOutcomeTypeID &&
-                                            Boolean(
-                                              (
-                                                errors.carePlanLongTermGoals?.[
-                                                  index
-                                                ] as any
-                                              )?.carePlanShortTermGoals?.[
-                                                subIndex
-                                              ]?.goalOutcomeTypeID
-                                            )
-                                          }
-                                        >
+                                        <FormControl fullWidth>
                                           <InputLabel>
                                             Goal Outcome Type
                                           </InputLabel>
@@ -535,10 +446,6 @@ const AddCarePlanForm = ({
                                               </MenuItem>
                                             ))}
                                           </Select>
-                                          <FormHelperText>
-                                            {touched.carePlanStatusID &&
-                                              errors.carePlanStatusID}
-                                          </FormHelperText>
                                         </FormControl>
                                       </Grid>
                                       <Grid item xs={12} sm={6}>
