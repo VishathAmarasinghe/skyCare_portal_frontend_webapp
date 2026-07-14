@@ -99,6 +99,13 @@ const CarePlanMainTable = ({
     return employee ? employee : null;
   };
 
+  const resolveStatusName = (statusId: string): string => {
+    const match = carePlanDetails.carePlanStatusList.find(
+      (item) => item.careplanStatusID === statusId
+    );
+    return match?.status || statusId || "Unknown";
+  };
+
   const initialColumns: GridColDef[] = [
     // {
     //   field: "careplanID",
@@ -138,9 +145,11 @@ const CarePlanMainTable = ({
     {
       field: "carePlanStatusID",
       headerName: "Status",
-      width: 100,
+      width: 140,
       headerAlign: "center",
       align: "center",
+      valueGetter: (_value, row) => resolveStatusName(row.carePlanStatusID),
+      renderCell: (params) => resolveStatusName(params.row.carePlanStatusID),
     },
     {
       field: "action",

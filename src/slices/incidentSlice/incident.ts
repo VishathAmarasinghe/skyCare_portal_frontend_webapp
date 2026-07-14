@@ -523,10 +523,7 @@ export const updateIncident = createAsyncThunk(
       APIService.getInstance()
         .put(
           AppConfig.serviceUrls.incident + `/${payload?.incident?.incidentID}`,
-          formData,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
+          formData
         )
         .then((response) => {
           dispatch(
@@ -571,9 +568,7 @@ export const saveIncident = createAsyncThunk(
         formData.append("files", file);
       });
       APIService.getInstance()
-        .post(AppConfig.serviceUrls.incident, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        })
+        .post(AppConfig.serviceUrls.incident, formData)
         .then((response) => {
           dispatch(
             enqueueSnackbarMessage({
@@ -801,6 +796,11 @@ const IncidentSlice = createSlice({
         state.updateState = State.success;
         state.stateMessage = "Successfully updated incident!";
         state.selectedIncident = action.payload;
+        state.incidents = state.incidents.map((incident) =>
+          incident.incidentID === action.payload.incidentID
+            ? { ...incident, ...action.payload }
+            : incident
+        );
       })
       .addCase(updateIncident.rejected, (state) => {
         state.updateState = State.failed;

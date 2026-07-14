@@ -123,10 +123,17 @@ const AddCarePlanForm = ({
       setInitialValues({
         ...carePlanSlice.selectedCarePlan,
         supportSchedule: incomingSchedule,
-        carePlanStatusID: carePlanStatusList.find(
-          (status) =>
-            status.status === carePlanSlice?.selectedCarePlan?.carePlanStatusID
-        )?.careplanStatusID as string,
+        carePlanStatusID: (() => {
+          const statusValue = carePlanSlice.selectedCarePlan.carePlanStatusID || "";
+          const byId = carePlanStatusList.find(
+            (status) => status.careplanStatusID === statusValue
+          );
+          if (byId) return byId.careplanStatusID;
+          const byTitle = carePlanStatusList.find(
+            (status) => status.status === statusValue
+          );
+          return byTitle?.careplanStatusID || statusValue;
+        })(),
       });
     } else {
       setInitialValues({
@@ -149,7 +156,7 @@ const AddCarePlanForm = ({
         status: "Active",
       });
     }
-  }, [carePlanSlice.selectedCarePlan]);
+  }, [carePlanSlice.selectedCarePlan, carePlanStatusList]);
 
   const validationSchema = Yup.object({
     title: Yup.string().required("Title is required"),

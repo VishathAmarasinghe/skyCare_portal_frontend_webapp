@@ -320,6 +320,7 @@ const IncidentForm: React.FC<IncidentFormProps> = ({
     
     values.parties = involvedPartiesRows;
     values.answers = answers;
+    values.documents = previouslyUploadedFiles;
     if (incidentSlice?.selectedIncident) {
       dispatch(updateIncident({ incident: values, files: uploadedFils }));
     } else {

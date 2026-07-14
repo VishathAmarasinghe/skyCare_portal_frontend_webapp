@@ -54,10 +54,10 @@ const IncidentInvolvedPartiesComponent: React.FC<
   };
 
   useEffect(() => {
-    if (incidentSlice) {
+    if (incidentSlice?.selectedIncident) {
       setRows(incidentSlice.selectedIncident?.parties || []);
     }
-  }, [incidentSlice]);
+  }, [incidentSlice.selectedIncident]);
 
   const handleViewModalClose = () => {
     setOpenViewModal(false);

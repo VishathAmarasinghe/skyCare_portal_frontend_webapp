@@ -88,6 +88,13 @@ const CarePlanTable = ({
     carePlanDetails?.fetchState
   ]);
 
+  const resolveStatusName = (statusId: string): string => {
+    const match = carePlanDetails.carePlanStatusList.find(
+      (item) => item.careplanStatusID === statusId
+    );
+    return match?.status || statusId || "Unknown";
+  };
+
   const initialColumns: GridColDef[] = [
     {
       field: "careplanID",
@@ -111,6 +118,8 @@ const CarePlanTable = ({
       width: 170,
       headerAlign: "center",
       align: "center",
+      valueGetter: (_value, row) => resolveStatusName(row.carePlanStatusID),
+      renderCell: (params) => resolveStatusName(params.row.carePlanStatusID),
     },
     {
       field: "action",
