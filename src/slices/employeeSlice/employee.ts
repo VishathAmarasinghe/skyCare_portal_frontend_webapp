@@ -9,6 +9,22 @@ import axios, { HttpStatusCode } from "axios";
 import { string } from "yup/lib/locale";
 import { Client } from "@slices/clientSlice/client";
 
+/** TEMP: keep in sync with backend TemporaryHiddenEmployees */
+const TEMP_HIDDEN_EMPLOYEE_IDS = new Set([
+  "EM105", "EM118", "EM111", "EM103", "EM112", "EM102", "EM101", "EM100",
+  "EM96", "EM92", "EM91", "EM90", "EM88", "EM86", "EM87", "EM85",
+  "EM83", "EM82", "EM81", "EM80", "EM78", "EM75", "EM72", "EM73",
+  "EM70", "EM69", "EM67", "EM66", "EM62", "EM63", "EM65", "EM61",
+  "EM59", "EM56", "EM55", "EM53", "EM50", "EM47", "EM39", "EM40",
+  "EM37", "EM13", "EM25", "EM21", "EM48", "EM16", "EM30", "EM26",
+  "EM24", "EM77", "EM33", "EM29", "EM28", "EM35",
+]);
+
+const excludeHiddenEmployees = <T extends { employeeID?: string }>(employees: T[] = []) =>
+  employees.filter(
+    (employee) => !TEMP_HIDDEN_EMPLOYEE_IDS.has(String(employee?.employeeID || "").toUpperCase())
+  );
+
 // Define types for Employee and Address
 export interface EmployeeAddress {
   longitude: string;
@@ -632,7 +648,7 @@ const EmployeeSlice = createSlice({
       .addCase(fetchEmployees.fulfilled, (state, action) => {
         state.state = State.success;
         state.stateMessage = "Successfully fetched employees!";
-        state.employees = action.payload;
+        state.employees = excludeHiddenEmployees(action.payload);
       })
       .addCase(fetchEmployees.rejected, (state) => {
         state.state = State.failed;
@@ -670,7 +686,7 @@ const EmployeeSlice = createSlice({
       .addCase(fetchEmployeesByRole.fulfilled, (state, action) => {
         state.state = State.success;
         state.stateMessage = "Successfully fetched employees!";
-        state.employees = action.payload;
+        state.employees = excludeHiddenEmployees(action.payload);
       })
       .addCase(fetchEmployeesByRole.rejected, (state) => {
         state.state = State.failed;
@@ -776,7 +792,7 @@ const EmployeeSlice = createSlice({
       .addCase(fetchCareGiversAssignToClientID.fulfilled, (state, action) => {
         state.state = State.success;
         state.stateMessage = "fetched employees assigned to client successfully!";
-        state.employees = action.payload;
+        state.employees = excludeHiddenEmployees(action.payload);
       })
       .addCase(fetchCareGiversAssignToClientID.rejected, (state) => {
         state.state = State.failed;
