@@ -7,6 +7,21 @@ import { enqueueSnackbarMessage } from "../commonSlice/common";
 import { SnackMessage } from "../../config/constant";
 import axios, { Axios, HttpStatusCode } from "axios";
 
+/** TEMP: keep in sync with backend TemporaryHiddenClients */
+const TEMP_HIDDEN_CLIENT_IDS = new Set([
+  "CU53",
+  "CU49",
+  "CU43",
+  "CU39",
+  "CU38",
+  "CU36",
+  "CU37",
+  "CU31",
+]);
+
+const excludeHiddenClients = <T extends { clientID?: string }>(clients: T[] = []) =>
+  clients.filter((client) => !TEMP_HIDDEN_CLIENT_IDS.has(String(client?.clientID || "").toUpperCase()));
+
 // Define a type for the slice state
 interface ClientState {
   State: State;
@@ -439,7 +454,7 @@ const ClientSlice = createSlice({
       .addCase(fetchClients.fulfilled, (state, action) => {
         state.State = State.success;
         state.stateMessage = "Successfully fetched!";
-        state.clients = action.payload;
+        state.clients = excludeHiddenClients(action.payload);
       })
       .addCase(fetchClients.rejected, (state) => {
         state.State = State.failed;
@@ -489,7 +504,7 @@ const ClientSlice = createSlice({
       .addCase(fetchClientsAssociatedToCareGiver.fulfilled, (state, action) => {
         state.State = State.success;
         state.stateMessage = "Successfully fetched Client!";
-        state.clients = action?.payload;
+        state.clients = excludeHiddenClients(action?.payload || []);
       })
       .addCase(fetchClientsAssociatedToCareGiver.rejected, (state) => {
         state.State = State.failed;
