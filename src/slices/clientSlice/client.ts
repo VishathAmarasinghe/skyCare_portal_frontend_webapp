@@ -21,6 +21,8 @@ const TEMP_HIDDEN_CLIENT_IDS = new Set([
   "CU48",
   "CU32",
   "CU28",
+  "CU56",
+  "CU65",
 ]);
 
 const excludeHiddenClients = <T extends { clientID?: string }>(clients: T[] = []) =>
