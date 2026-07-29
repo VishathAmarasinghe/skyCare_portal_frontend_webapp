@@ -18,6 +18,8 @@ const TEMP_HIDDEN_EMPLOYEE_IDS = new Set([
   "EM59", "EM56", "EM55", "EM53", "EM50", "EM47", "EM39", "EM40",
   "EM37", "EM13", "EM25", "EM21", "EM48", "EM16", "EM30", "EM26",
   "EM24", "EM77", "EM33", "EM29", "EM28", "EM35",
+  "EM114", "EM108", "EM98", "EM84", "EM9", "EM79", "EM74", "EM60",
+  "EM54", "EM52", "EM49", "EM34", "EM38", "EM36", "EM14", "EM5", "EM124",
 ]);
 
 const excludeHiddenEmployees = <T extends { employeeID?: string }>(employees: T[] = []) =>
