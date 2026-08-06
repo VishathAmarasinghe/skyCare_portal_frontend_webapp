@@ -48,7 +48,6 @@ function CustomToolbar({
         <GridToolbarColumnsButton />
         <GridToolbarFilterButton />
         <GridToolbarQuickFilter placeholder="Search" />
-        {/* Temporarily hidden: show deactivated clients toggle
         <FormControlLabel
           control={
             <Checkbox
@@ -60,7 +59,6 @@ function CustomToolbar({
           label="Show deactivated clients"
           sx={{ marginLeft: 2 }}
         />
-        */}
       </Stack>
       {selectedCount > 0 && (
         <Button
