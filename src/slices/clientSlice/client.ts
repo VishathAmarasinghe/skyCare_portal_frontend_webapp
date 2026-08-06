@@ -20,7 +20,6 @@ const TEMP_HIDDEN_CLIENT_IDS = new Set([
   "CU61",
   "CU48",
   "CU32",
-  "CU28",
   "CU56",
   "CU65",
 ]);
