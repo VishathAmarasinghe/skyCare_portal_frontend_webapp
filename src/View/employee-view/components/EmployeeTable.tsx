@@ -68,7 +68,6 @@ function CustomToolbar({
         <GridToolbarColumnsButton />
         <GridToolbarFilterButton />
         <GridToolbarQuickFilter placeholder="Search" />
-        {/* Temporarily hidden: show deactivated employees toggle
         <FormControlLabel
           control={
             <Checkbox
@@ -80,7 +79,6 @@ function CustomToolbar({
           label="Show deactivated employees"
           sx={{ marginLeft: 2 }}
         />
-        */}
       </Stack>
       {selectedCount > 0 && (
         <Button
