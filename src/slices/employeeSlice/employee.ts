@@ -11,7 +11,7 @@ import { Client } from "@slices/clientSlice/client";
 
 /** TEMP: keep in sync with backend TemporaryHiddenEmployees */
 const TEMP_HIDDEN_EMPLOYEE_IDS = new Set([
-  "EM105", "EM118", "EM111", "EM103", "EM112", "EM102", "EM101", "EM100",
+  "EM118", "EM111", "EM103", "EM112", "EM102", "EM101", "EM100",
   "EM96", "EM92", "EM91", "EM90", "EM88", "EM86", "EM87", "EM85",
   "EM83", "EM82", "EM81", "EM80", "EM78", "EM75", "EM72", "EM73",
   "EM70", "EM69", "EM67", "EM66", "EM62", "EM63", "EM65", "EM61",
@@ -20,7 +20,6 @@ const TEMP_HIDDEN_EMPLOYEE_IDS = new Set([
   "EM24", "EM77", "EM33", "EM29", "EM28", "EM35",
   "EM114", "EM108", "EM98", "EM84", "EM9", "EM79", "EM74", "EM60",
   "EM54", "EM52", "EM49", "EM34", "EM38", "EM36", "EM14", "EM5", "EM124",
-  "EM57", "EM58",
 ]);
 
 const excludeHiddenEmployees = <T extends { employeeID?: string }>(employees: T[] = []) =>
